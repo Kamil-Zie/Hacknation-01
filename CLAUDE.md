@@ -31,7 +31,7 @@ Do czasu decyzji (`technologies.status = "decided"`) nie zakładaj żadnego fram
 4. Gałąź `main`: małe commity, `git pull --rebase` przed każdym `push`, push po każdej działającej części.
 5. Najprostsze rozwiązanie, które działa w demo. Bez abstrakcji i optymalizacji na zapas.
 6. Stoisz ponad 20 minut: `blocker` do koordynatora i bierzesz inną część zadania.
-7. Po zamrożeniu funkcji (faza 20–22,5h) tylko poprawki błędów na ścieżce demo.
+7. Po zamrożeniu funkcji (od 7:00 rano, 20h) tylko poprawki błędów na ścieżce demo.
 
 ## Wiadomości (bez narzędzi, zwykłe pliki)
 

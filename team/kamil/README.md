@@ -54,12 +54,12 @@ Jako koordynator możesz edytować wszystko, ale zanim poprawisz cudzy kod, spra
 
 | Godziny | Co robisz |
 |---|---|
-| 0–1,5h | koncepcja, stack, kontrakty, zadania; uzupełnij `clock.started_at` |
+| 0–1,5h (11:00–12:30) | koncepcja, stack, kontrakty, zadania |
 | 1,5–3h | szkielet repo, aplikacja startuje u wszystkich |
-| 3–16h | odpowiadasz na blokery i decision_request, review integracji co 1–2h |
+| 3–16h | blokery i decision_request, review integracji co 1–2h; do 20:00 (9h) draft w HackTribe: repo i opis gotowe |
 | 16–20h | integracja całego scenariusza, przegląd bezpieczeństwa |
-| 20–22,5h | wdrożenie prod, próba prezentacji |
-| 22,5–24h | prezentacja |
+| 20–24h (7:00–11:00) | zamrożenie funkcji; prezentacja, wideo do 2 min, README dla jurorów |
+| 11:00–15:15 | prod stabilny, próba pokazu; pokaz na żywo o 15:15 |
 
 ## 7. Zasady, które musisz znać
 

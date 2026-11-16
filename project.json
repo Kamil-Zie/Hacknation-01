@@ -640,38 +640,78 @@
         "communication.message_types.contract_change.requires_ack": false
       },
       "clock": {
+        "timezone": "Europe/Warsaw",
+        "started_at": "2026-11-21T11:00:00+01:00",
         "duration_hours": 24,
-        "started_at": null,
+        "ends_at": "2026-11-22T11:00:00+01:00",
+        "milestones": [
+          {
+            "at": "2026-11-21T20:00:00+01:00",
+            "hour": 9,
+            "name": "Draft w HackTribe",
+            "goal": "Zgłoszenie draftu w HackTribe. Repo publicznie gotowe (README z opisem, działający start aplikacji) i opis projektu wpisany."
+          },
+          {
+            "at": "2026-11-22T07:00:00+01:00",
+            "hour": 20,
+            "name": "Zamrożenie funkcji",
+            "goal": "Od teraz tylko poprawki błędów na ścieżce demo."
+          },
+          {
+            "at": "2026-11-22T11:00:00+01:00",
+            "hour": 24,
+            "name": "Oddanie materiałów",
+            "goal": "Prezentacja, wideo do 2 minut i README dla jurorów oddane."
+          },
+          {
+            "at": "2026-11-22T15:15:00+01:00",
+            "hour": 28.25,
+            "name": "Pokaz na żywo",
+            "goal": "Pokaz przed jury na wersji produkcyjnej. Prod musi stać stabilnie."
+          }
+        ],
         "phases": [
           {
             "until_hour": 1.5,
+            "until": "2026-11-21T12:30:00+01:00",
             "name": "Koncepcja i kontrakt",
             "goal": "project.concept uzupełniony, scenariusz demo spisany, kontrakty kroków demo w statusie agreed, zadania rozdane."
           },
           {
             "until_hour": 3,
+            "until": "2026-11-21T14:00:00+01:00",
             "name": "Szkielet",
-            "goal": "Aplikacja uruchamia się u wszystkich; pierwszy krok demo przechodzi na mockach."
+            "goal": "Aplikacja uruchamia się u wszystkich; pierwszy krok demo przechodzi na mockach. Szkielet wdrożony na prod (app/api.kamil-zielinski.pl)."
+          },
+          {
+            "until_hour": 9,
+            "until": "2026-11-21T20:00:00+01:00",
+            "name": "Budowa I i draft HackTribe",
+            "goal": "Pierwsze kroki demo jako pionowe plastry. Do 20:00 README z opisem projektu i repo gotowe do draftu w HackTribe."
           },
           {
             "until_hour": 16,
-            "name": "Budowa",
+            "until": "2026-11-22T03:00:00+01:00",
+            "name": "Budowa II",
             "goal": "Kolejne kroki demo jako pionowe plastry: endpoint i ekran razem, scalane na bieżąco."
           },
           {
             "until_hour": 20,
+            "until": "2026-11-22T07:00:00+01:00",
             "name": "Integracja i dopracowanie",
-            "goal": "Cały scenariusz demo działa na prawdziwym API; mocki usunięte ze ścieżki demo."
-          },
-          {
-            "until_hour": 22.5,
-            "name": "Zamrożenie funkcji",
-            "goal": "Tylko poprawki błędów na ścieżce demo. Próba prezentacji, dane demonstracyjne, plan awaryjny."
+            "goal": "Cały scenariusz demo działa na prawdziwym API i na prod; mocki usunięte ze ścieżki demo."
           },
           {
             "until_hour": 24,
-            "name": "Prezentacja",
-            "goal": "Bez zmian w kodzie. Prezentacja i zapas na niespodzianki."
+            "until": "2026-11-22T11:00:00+01:00",
+            "name": "Zamrożenie funkcji i materiały",
+            "goal": "Tylko poprawki błędów na ścieżce demo. Prezentacja, wideo do 2 minut, README dla jurorów. Próba prezentacji, dane demo, plan awaryjny."
+          },
+          {
+            "until_hour": 28.25,
+            "until": "2026-11-22T15:15:00+01:00",
+            "name": "Stabilizacja prod i pokaz na żywo",
+            "goal": "Bez nowych zmian w kodzie poza krytycznymi poprawkami. Prod stoi stabilnie, próba pokazu, pokaz na żywo o 15:15."
           }
         ]
       },

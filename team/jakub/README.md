@@ -56,8 +56,10 @@ Hook zablokuje edycję poza Twoimi katalogami. To celowe. Agent wyśle wtedy wia
 | 1,5–3h | layout i motyw aplikacji |
 | 3–16h | komponenty i formularze kolejnych kroków demo |
 | 16–20h | dopracowanie wyglądu i responsywności |
-| 20–22,5h | tylko poprawki błędów na ścieżce demo |
-| 22,5–24h | bez zmian w kodzie |
+| 20–24h (7:00–11:00) | zamrożenie funkcji: tylko poprawki błędów na ścieżce demo |
+| 24h–15:15 | bez zmian w kodzie poza krytycznymi poprawkami prod; pokaz na żywo o 15:15 |
+
+Start: sobota 21.11, 11:00. Kamień milowy: o 20:00 (9h) draft w HackTribe, więc repo i opis muszą być gotowe.
 
 ## 7. Zasady, które musisz znać
 
