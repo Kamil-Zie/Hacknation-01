@@ -1,0 +1,44 @@
+{
+  "owner_team": "frontend",
+  "version": "0.1.0",
+  "design_tokens": {
+    "colors": {},
+    "typography": {},
+    "spacing": {},
+    "breakpoints": {}
+  },
+  "components": [
+    {
+      "id": "UI-C-001",
+      "status": "draft",
+      "name": "ItemList",
+      "description": "[PRZYKŁAD] Lista elementów ze stanami: ładowanie, pusta, błąd",
+      "props": {
+        "items": "Item[]",
+        "loading": "boolean"
+      },
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "ready"
+      ],
+      "accessibility": "Lista jako <ul>, komunikat błędu z role=alert"
+    }
+  ],
+  "screens": [
+    {
+      "id": "UI-S-001",
+      "status": "draft",
+      "name": "Lista elementów",
+      "route": "/items",
+      "description": "[PRZYKŁAD] Ekran z listą i paginacją",
+      "components": [
+        "UI-C-001"
+      ],
+      "api_refs": [
+        "API-001"
+      ]
+    }
+  ]
+}

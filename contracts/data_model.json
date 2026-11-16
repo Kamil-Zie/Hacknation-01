@@ -1,0 +1,31 @@
+{
+  "owner_team": "backend",
+  "version": "0.1.0",
+  "entities": [
+    {
+      "id": "DM-001",
+      "status": "draft",
+      "name": "Item",
+      "description": "[PRZYKŁAD] Element listy",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string(120)",
+          "required": true
+        },
+        {
+          "name": "createdAt",
+          "type": "datetime",
+          "required": true
+        }
+      ],
+      "relations": [],
+      "indexes": []
+    }
+  ]
+}

@@ -1,0 +1,697 @@
+{
+  "schema_version": "1.0",
+  "project": {
+    "name": "<UZUPEŁNIJ: nazwa projektu>",
+    "description": "<UZUPEŁNIJ: co budujemy, dla kogo i po co>",
+    "goals": [
+      "<UZUPEŁNIJ: cel biznesowy nr 1>"
+    ],
+    "repository": {
+      "type": "monorepo",
+      "default_branch": "main"
+    },
+    "language": "pl",
+    "concept": {
+      "problem": "<UZUPEŁNIJ: jaki problem rozwiązujemy i czyj>",
+      "target_users": "<UZUPEŁNIJ: dla kogo>",
+      "solution": "<UZUPEŁNIJ: co budujemy, w dwóch zdaniach>",
+      "value_proposition": "<UZUPEŁNIJ: dlaczego to lepsze od tego, co jest>",
+      "judging_criteria": [
+        "<UZUPEŁNIJ: kryterium oceny z regulaminu>"
+      ],
+      "mvp_scope": {
+        "must": [
+          "<UZUPEŁNIJ: bez tego nie ma demo>"
+        ],
+        "should": [],
+        "wont": []
+      },
+      "demo_scenario": [
+        {
+          "step": 1,
+          "user_action": "<UZUPEŁNIJ: co robi użytkownik>",
+          "result": "<UZUPEŁNIJ: co widzi na ekranie>",
+          "contract_refs": []
+        }
+      ],
+      "risks": []
+    }
+  },
+  "technologies": {
+    "status": "pending",
+    "decided_by": "coord-architect",
+    "decide_in_phase": "Koncepcja i kontrakt (do 1,5h)",
+    "selection_rules": [
+      "Stack dobieramy do projektu dopiero po uzupełnieniu project.concept.",
+      "Kryteria w kolejności: najszybsza droga do działającego scenariusza demo, potem jakość efektu na prezentacji, potem znajomość w zespole (JS/TS).",
+      "Jeden wybór na pole. Lista kandydatów to tylko podpowiedź.",
+      "Jeśli koncepcja niczego nie wymusza, bierzemy recommended_default.",
+      "Wybór zapisujemy w polach choice i jako ADR w documentation.architecture.decisions, potem status = decided.",
+      "Po decyzji zmiana stacku tylko przez decision_request do koordynatora."
+    ],
+    "recommended_default": {
+      "frontend": "React + TypeScript + Vite, MUI (bez Tailwind), Zustand + TanStack Query, React Hook Form + Zod",
+      "backend": "Node.js + TypeScript + Express, Zod, JWT (tylko jeśli demo wymaga logowania)",
+      "database": "MongoDB Atlas + Mongoose, seed skryptem zamiast migracji",
+      "package_manager": "npm workspaces",
+      "why": "Najmniej konfiguracji, najszybszy start i hot reload, gotowe komponenty MUI wyglądają dobrze bez projektowania od zera."
+    },
+    "frontend": {
+      "directory": "apps/frontend",
+      "choice": {
+        "language": null,
+        "framework": null,
+        "ui_library": null,
+        "styling": null,
+        "state_management": null,
+        "testing": null,
+        "package_manager": null
+      },
+      "candidates": {
+        "language": "TypeScript, JavaScript, HTML, CSS, JSX/TSX",
+        "framework": "ReactJS, ReactTS, ReactNative, Next.js",
+        "ui_library": "MuiUI",
+        "styling": "TailwindCSS",
+        "state_management": "Zustand (stan klienta), TanStack Query (dane z API)",
+        "testing": "UX tests, Integration tests, Unit tests",
+        "package_manager": "npm, yarn, pnpm"
+      },
+      "commands": {
+        "install": "npm install",
+        "dev": "npm run dev",
+        "lint": "npm run lint",
+        "typecheck": "npm run typecheck",
+        "test": "npm run test",
+        "build": "npm run build"
+      }
+    },
+    "backend": {
+      "directory": "apps/backend",
+      "choice": {
+        "language": null,
+        "framework": null,
+        "api_style": null,
+        "auth": null,
+        "validation": null,
+        "testing": null
+      },
+      "candidates": {
+        "language": "JavaScript, TypeScript",
+        "framework": "Express.js, NestJS",
+        "api_style": "REST",
+        "auth": "JWT, OAuth2",
+        "validation": "Zod",
+        "testing": "Unit tests, Integration tests, End-to-end tests"
+      },
+      "commands": {
+        "install": "npm install",
+        "dev": "npm run dev",
+        "lint": "npm run lint",
+        "test": "npm run test",
+        "build": "npm run build"
+      }
+    },
+    "database": {
+      "directory": "database",
+      "choice": {
+        "engine": null,
+        "orm": null,
+        "migrations_tool": null
+      },
+      "candidates": {
+        "engine": "MongoDB",
+        "orm": "query builder, ODM, or ORM library (e.g., Mongoose)",
+        "migrations_tool": "migrate-mongo"
+      },
+      "commands": {
+        "migrate": "npm run migrate",
+        "rollback": "npm run rollback",
+        "seed": "npm run seed"
+      }
+    },
+    "infrastructure": {
+      "ci_cd": "GitHub Actions (lint, typecheck, test, build); wdrożenie przez docker compose pull/up na Synology",
+      "containerization": "Docker + docker-compose (Container Manager na Synology)",
+      "hosting": "Synology DS225+ 24/7 (Container Manager) + domena kamil-zielinski.pl (app.kamil-zielinski.pl = frontend, api.kamil-zielinski.pl = backend); ruch przez Cloudflare (DNS, proxy, Cloudflare Tunnel, SSL); baza w MongoDB Atlas",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "status": "default",
+      "note": "Domyślna infrastruktura zespołu. coord-devops może ją zmienić, jeśli wybrany stack tego wymaga."
+    }
+  },
+  "documentation": {
+    "architecture": {
+      "overview": "Monorepo z frontendem, backendem i bazą danych. Konfiguracja i zasady w project.json, kontrakty w contracts/*.json (jeden plik na team-właściciela), zadania w tasks/*.json (jeden plik na zadanie), komunikacja w .claude/sync/.",
+      "modules": [
+        {
+          "name": "frontend",
+          "path": "apps/frontend",
+          "responsibility": "Interfejs użytkownika, warstwa klienta API",
+          "owner_team": "frontend"
+        },
+        {
+          "name": "backend",
+          "path": "apps/backend",
+          "responsibility": "API, logika biznesowa, autoryzacja",
+          "owner_team": "backend"
+        },
+        {
+          "name": "database",
+          "path": "database",
+          "responsibility": "Schemat, migracje, dane startowe",
+          "owner_team": "backend"
+        },
+        {
+          "name": "contracts",
+          "path": "contracts",
+          "responsibility": "Kontrakty API, modelu danych i UI; każdy plik ma jeden team-właściciela",
+          "owner_team": "coordinator"
+        },
+        {
+          "name": "tasks",
+          "path": "tasks",
+          "responsibility": "Zadania, jeden plik JSON na zadanie",
+          "owner_team": "coordinator"
+        }
+      ],
+      "decisions": [
+        {
+          "id": "ADR-001",
+          "title": "Kontrakt przed implementacją",
+          "status": "accepted",
+          "date": "2026-11-11",
+          "context": "Dwa teamy pracują równolegle nad tym samym API.",
+          "decision": "Każda zmiana na styku frontend-backend najpierw trafia do contracts/*.json i jest potwierdzana przez drugi team, dopiero potem jest implementowana.",
+          "consequences": "Frontend może pracować na uzgodnionym kontrakcie, zanim backend skończy implementację."
+        },
+        {
+          "id": "ADR-002",
+          "title": "Kontrakty i zadania w osobnych plikach",
+          "status": "accepted",
+          "date": "2026-11-16",
+          "context": "Pięć osób pracuje na gałęzi main. Jeden duży project.json zmieniany przez wszystkich powodowałby ciągłe konflikty przy git pull --rebase.",
+          "decision": "project.json zmienia tylko koordynator. Kontrakty są w contracts/api.json, contracts/data_model.json, contracts/ui.json, zadania w tasks/<id>.json.",
+          "consequences": "Teamy edytują różne pliki, więc konflikty są rzadkie i małe."
+        },
+        {
+          "id": "ADR-003",
+          "title": "Komunikacja i rezerwacje przez pliki, bez dodatkowych narzędzi",
+          "status": "accepted",
+          "date": "2026-11-16",
+          "context": "Na hackathonie nie ma czasu na budowę i utrzymanie własnych narzędzi.",
+          "decision": "Wiadomość to osobny plik w .claude/sync/messages/, rezerwacja to plik osoby w .claude/sync/claims/. Agenci tworzą je narzędziami Write/Edit i commitują razem ze zmianą.",
+          "consequences": "Zero dodatkowego kodu, każdy plik ma jednego autora, więc nie ma konfliktów."
+        },
+        {
+          "id": "ADR-004",
+          "title": "Stack dobierany do projektu",
+          "status": "accepted",
+          "date": "2026-11-16",
+          "context": "Temat hackathonu nie jest jeszcze znany.",
+          "decision": "coord-architect wybiera technologie po uzupełnieniu project.concept, według technologies.selection_rules.",
+          "consequences": "Szkielet aplikacji powstaje w fazie Szkielet, nie wcześniej."
+        }
+      ]
+    },
+    "conventions": {
+      "git": {
+        "branch_naming": "wszyscy pracują na gałęzi głównej",
+        "commit_format": "<typ>(<zakres>): <opis> [<id-zadania>]",
+        "pull_requests": "Bez PR. Małe commity, git pull --rebase przed każdym push, push po każdej działającej części."
+      },
+      "code_style": {
+        "frontend": "Używanie języka angielskiego, camelCase dla zmiennych i funkcji, PascalCase dla komponentów React, JSX/TSX zgodne z ESLint i Prettier",
+        "backend": "używanie języka angielskiego, camelCase dla zmiennych i funkcji, PascalCase dla klas, zgodne z ESLint i Prettier"
+      },
+      "api": {
+        "naming": "zasoby w liczbie mnogiej, np. /items, /users",
+        "error_format": "JSON z polami code, message, details; statusy HTTP 2xx, 4xx, 5xx zgodne z kontraktem w contracts/api.json",
+        "versioning": "api/v1 w URL, zmiana kontraktu wymaga zmiany wersji"
+      },
+      "definition_of_done": [
+        "Krok scenariusza demo działa od kliknięcia do wyniku",
+        "Implementacja zgadza się z kontraktem w contracts/",
+        "Zmiany są na gałęzi głównej, a rezerwacja zwolniona z opisem",
+        "Wiadomości breaking_change dotyczące zadania są potwierdzone"
+      ]
+    },
+    "glossary": [
+      {
+        "term": "<UZUPEŁNIJ: pojęcie domenowe>",
+        "definition": "<UZUPEŁNIJ>"
+      }
+    ]
+  },
+  "contracts": {
+    "description": "Kontrakty są w osobnych plikach. Edytuje je tylko team-właściciel (i koordynator); drugi team proponuje zmiany wiadomością.",
+    "statuses": [
+      "draft",
+      "proposed",
+      "agreed",
+      "implemented",
+      "deprecated"
+    ],
+    "files": {
+      "api": {
+        "path": "contracts/api.json",
+        "owner_team": "backend"
+      },
+      "data_model": {
+        "path": "contracts/data_model.json",
+        "owner_team": "backend"
+      },
+      "ui": {
+        "path": "contracts/ui.json",
+        "owner_team": "frontend"
+      }
+    }
+  },
+  "teams": {
+    "coordinator": {
+      "description": "Planowanie, architektura, spójność między teamami, dokumentacja, wydania",
+      "lead_agent": "coordinator",
+      "members": [
+        {
+          "id": "coord-1",
+          "name": "Kamil Zieliński",
+          "focus": "lead",
+          "folder": "team/kamil"
+        }
+      ],
+      "agents": [
+        "coordinator",
+        "coord-concept",
+        "coord-task-planner",
+        "coord-architect",
+        "coord-integration-reviewer",
+        "coord-security",
+        "coord-docs",
+        "coord-devops"
+      ],
+      "builtin_agents": [
+        "Explore",
+        "Plan"
+      ],
+      "paths": {
+        "write": [
+          "**"
+        ]
+      }
+    },
+    "backend": {
+      "description": "API, logika biznesowa, baza danych",
+      "lead_agent": "backend-lead",
+      "members": [
+        {
+          "id": "backend-1",
+          "name": "Jan Mickiewicz",
+          "focus": "complex",
+          "folder": "team/jan"
+        },
+        {
+          "id": "backend-2",
+          "name": "Nataniel Gadziński",
+          "focus": "standard",
+          "folder": "team/nataniel"
+        }
+      ],
+      "agents": [
+        "backend-lead",
+        "be-api",
+        "be-database",
+        "be-tester",
+        "be-reviewer",
+        "be-integration"
+      ],
+      "builtin_agents": [
+        "Explore",
+        "Plan"
+      ],
+      "paths": {
+        "write": [
+          "apps/backend/**",
+          "database/**",
+          "contracts/api.json",
+          "contracts/data_model.json",
+          "tasks/**",
+          ".claude/sync/**"
+        ]
+      }
+    },
+    "frontend": {
+      "description": "UI/UX, komponenty, ekrany, warstwa klienta API",
+      "lead_agent": "frontend-lead",
+      "members": [
+        {
+          "id": "frontend-1",
+          "name": "Dawid Jurek",
+          "focus": "complex",
+          "folder": "team/dawid"
+        },
+        {
+          "id": "frontend-2",
+          "name": "Jakub Grzywiński",
+          "focus": "standard",
+          "folder": "team/jakub"
+        }
+      ],
+      "agents": [
+        "frontend-lead",
+        "fe-uiux",
+        "fe-developer",
+        "fe-integration",
+        "fe-tester",
+        "fe-reviewer"
+      ],
+      "builtin_agents": [
+        "Explore",
+        "Plan"
+      ],
+      "paths": {
+        "write": [
+          "apps/frontend/**",
+          "contracts/ui.json",
+          "tasks/**",
+          ".claude/sync/**"
+        ]
+      }
+    },
+    "_focus_rule": "focus=complex: zadania o wysokiej złożoności (logika, integracje, złożone widoki). focus=standard: pozostałe. coord-task-planner i leadzi przydzielają zadania według tego pola.",
+    "_paths_enforcement": "Hook .claude/hooks/guard-paths.mjs blokuje Edit/Write poza paths.write teamu osoby ustawionej w HACK_MEMBER (.claude/settings.local.json)."
+  },
+  "communication": {
+    "channel": ".claude/sync/messages",
+    "message_types": {
+      "contract_proposal": {
+        "description": "Propozycja nowego elementu kontraktu lub zmiany przed implementacją",
+        "requires_ack": true
+      },
+      "contract_change": {
+        "description": "Zmiana kontraktu zgodna wstecz (np. nowe pole opcjonalne)",
+        "requires_ack": false
+      },
+      "breaking_change": {
+        "description": "Zmiana kontraktu, która psuje istniejący kod drugiego teamu",
+        "requires_ack": true
+      },
+      "question": {
+        "description": "Pytanie do drugiego teamu",
+        "requires_ack": true
+      },
+      "blocker": {
+        "description": "Zadanie stoi i czeka na drugi team",
+        "requires_ack": true
+      },
+      "decision_request": {
+        "description": "Prośba do koordynatora o rozstrzygnięcie sporu lub decyzję architektoniczną",
+        "requires_ack": true
+      },
+      "handoff": {
+        "description": "Przekazanie gotowej części do integracji (np. endpoint wdrożony)",
+        "requires_ack": false
+      },
+      "info": {
+        "description": "Informacja bez wymaganej reakcji",
+        "requires_ack": false
+      },
+      "ack": {
+        "description": "Potwierdzenie wiadomości (pole reply_to)",
+        "requires_ack": false
+      }
+    },
+    "rules": [
+      "Agent nigdy nie edytuje kodu ani pliku kontraktu należących do innego teamu; zamiast tego wysyła wiadomość.",
+      "Każda zmiana w contracts/*.json wymaga wiadomości contract_proposal, contract_change albo breaking_change do teamu, którego dotyczy.",
+      "breaking_change wolno wdrożyć dopiero po ack od odbiorcy.",
+      "Na początku sesji lead robi git pull --rebase, czyta otwarte wiadomości do swojego teamu i odpowiada na nie, zanim zacznie nową pracę.",
+      "Spór, którego teamy nie rozstrzygną w dwóch wymianach, trafia do koordynatora jako decision_request.",
+      "Wiadomości są commitowane razem ze zmianą, której dotyczą."
+    ],
+    "discord": {
+      "enabled": true,
+      "purpose": "Powiadomienia dla ludzi. Discord nie jest źródłem prawdy: blokady i dziennik zmian żyją w repozytorium (sekcja coordination).",
+      "webhook_env": {
+        "backend": "DISCORD_WEBHOOK_BACKEND",
+        "frontend": "DISCORD_WEBHOOK_FRONTEND",
+        "coordinator": "DISCORD_WEBHOOK_COORDINATOR",
+        "sync": "DISCORD_WEBHOOK_SYNC"
+      },
+      "setup": "Adresy webhooków są sekretem: wpisuje się je tylko w .claude/settings.local.json (sekcja env), skopiowanym z team/<osoba>/settings.local.json. Brak webhooka = pomijamy powiadomienie.",
+      "send": "curl -s -H 'Content-Type: application/json' -d '{\"content\":\"<tekst>\"}' \"$DISCORD_WEBHOOK_<TEAM>\"",
+      "when": [
+        "breaking_change",
+        "blocker",
+        "decision_request",
+        "handoff",
+        "zmiana fazy hackathonu"
+      ]
+    },
+    "transport": "files",
+    "message_file": ".claude/sync/messages/<YYYYMMDD-HHMM>-<from-member-id>-<type>.md",
+    "message_format": {
+      "frontmatter": [
+        "id (= nazwa pliku bez .md)",
+        "from (member-id)",
+        "to (team: backend | frontend | coordinator | all)",
+        "type",
+        "refs (ID zadań i elementów kontraktu)",
+        "requires_ack (true/false)"
+      ],
+      "body": "Krótko: co, dlaczego, czego oczekujesz.",
+      "ack": "Odbiorca odpowiada nowym plikiem typu ack z polem reply_to: <id>. Wiadomość jest otwarta, dopóki requires_ack=true i nie ma ack.",
+      "never_edit": "Nie edytuje się cudzych wiadomości. Każda odpowiedź to nowy plik."
+    }
+  },
+  "coordination": {
+    "description": "Obowiązkowa koordynacja wewnątrz teamu w czasie rzeczywistym: rezerwacje obszarów i dziennik zmian.",
+    "teams": [
+      "backend",
+      "frontend"
+    ],
+    "remote": "origin",
+    "stale_after_hours": 1,
+    "exempt_paths": [
+      "tasks/**",
+      ".claude/sync/**"
+    ],
+    "rules": [
+      "Przed edycją lead robi git pull --rebase, sprawdza pliki w .claude/sync/claims/ i rezerwuje moduł (katalog) oraz elementy kontraktu z zadania wpisem we własnym pliku claim, potem commit i push.",
+      "Obszaru zarezerwowanego przez kolegę nie wolno edytować; potrzebę zmiany zgłasza się wiadomością typu question albo na Discordzie.",
+      "Zwolnienie: usuń wpis z własnego pliku claim w commicie razem ze zmianami; w opisie commita napisz, co się zmieniło i co z tego wynika dla kolegi.",
+      "Zanim zaczniesz pracę w obszarze niedawno zwolnionym przez kolegę, zrób git pull --rebase.",
+      "Rezerwacja starsza niż stale_after_hours jest nieaktualna; można ją przejąć po wiadomości na Discordzie.",
+      "Rezerwuj wąsko i krótko: moduł, nad którym faktycznie pracujesz."
+    ],
+    "claims_dir": ".claude/sync/claims",
+    "claim_file": ".claude/sync/claims/<member-id>.md",
+    "claim_format": "Lista rezerwacji osoby: ścieżka modułu lub ID kontraktu, ID zadania, godzina rezerwacji. Plik edytuje tylko jego właściciel."
+  },
+  "workflow": {
+    "statuses": [
+      "backlog",
+      "ready",
+      "in_progress",
+      "in_review",
+      "integration",
+      "done",
+      "blocked"
+    ],
+    "transitions": {
+      "backlog": [
+        "ready"
+      ],
+      "ready": [
+        "in_progress",
+        "blocked"
+      ],
+      "in_progress": [
+        "in_review",
+        "done",
+        "blocked"
+      ],
+      "in_review": [
+        "in_progress",
+        "integration",
+        "done"
+      ],
+      "integration": [
+        "in_progress",
+        "done"
+      ],
+      "blocked": [
+        "ready",
+        "in_progress"
+      ],
+      "done": [
+        "in_progress"
+      ]
+    },
+    "team_editable_task_fields": [
+      "status",
+      "assignee",
+      "review",
+      "notes",
+      "updated_at"
+    ],
+    "gates": {
+      "done_requires_review_approved": false,
+      "done_requires_no_open_messages": true
+    },
+    "pipelines": {
+      "coordinator": [
+        "coord-concept",
+        "coord-task-planner",
+        "coord-architect",
+        "coord-integration-reviewer",
+        "coord-security",
+        "coord-docs",
+        "coord-devops"
+      ],
+      "backend": [
+        "be-database",
+        "be-api",
+        "be-integration"
+      ],
+      "frontend": [
+        "fe-uiux",
+        "fe-developer",
+        "fe-integration"
+      ]
+    }
+  },
+  "modes": {
+    "active": "hackathon",
+    "standard": {
+      "description": "Zwykły projekt: gałęzie na zadanie, testy i review każdego zadania.",
+      "set": {
+        "workflow.gates.done_requires_review_approved": true,
+        "workflow.transitions.in_progress": [
+          "in_review",
+          "blocked"
+        ],
+        "workflow.pipelines.backend": [
+          "be-database",
+          "be-api",
+          "be-tester",
+          "be-reviewer",
+          "be-integration"
+        ],
+        "workflow.pipelines.frontend": [
+          "fe-uiux",
+          "fe-developer",
+          "fe-integration",
+          "fe-tester",
+          "fe-reviewer"
+        ],
+        "coordination.stale_after_hours": 12,
+        "documentation.conventions.git": {
+          "branch_naming": "<team>/<id-zadania>-<krótki-opis>",
+          "commit_format": "<typ>(<zakres>): <opis> [<id-zadania>]",
+          "pull_requests": "Jeden PR na zadanie; w opisie ID zadania i ID wiadomości sync, jeśli zmieniał się kontrakt."
+        },
+        "documentation.conventions.definition_of_done": [
+          "Kryteria akceptacji zadania są spełnione",
+          "Testy przechodzą, lint i typecheck bez błędów",
+          "Review w teamie ma status approved",
+          "Implementacja zgadza się z kontraktem w contracts/",
+          "Wszystkie wiadomości sync dotyczące zadania są potwierdzone"
+        ],
+        "communication.message_types.contract_change.requires_ack": true
+      },
+      "rules": [
+        "Każde zadanie przechodzi cały pipeline teamu: implementacja, testy, review, integracja.",
+        "Jedna gałąź i jeden PR na zadanie."
+      ]
+    },
+    "hackathon": {
+      "description": "24 godziny do działającego prototypu i prezentacji. Liczy się scenariusz demo.",
+      "set": {
+        "workflow.gates.done_requires_review_approved": false,
+        "workflow.transitions.in_progress": [
+          "in_review",
+          "done",
+          "blocked"
+        ],
+        "workflow.pipelines.backend": [
+          "be-database",
+          "be-api",
+          "be-integration"
+        ],
+        "workflow.pipelines.frontend": [
+          "fe-uiux",
+          "fe-developer",
+          "fe-integration"
+        ],
+        "coordination.stale_after_hours": 1,
+        "documentation.conventions.git": {
+          "branch_naming": "wszyscy pracują na gałęzi głównej",
+          "commit_format": "<typ>(<zakres>): <opis> [<id-zadania>]",
+          "pull_requests": "Bez PR. Małe commity, git pull --rebase przed każdym push, push po każdej działającej części."
+        },
+        "documentation.conventions.definition_of_done": [
+          "Krok scenariusza demo działa od kliknięcia do wyniku",
+          "Implementacja zgadza się z kontraktem w contracts/",
+          "Zmiany są na gałęzi głównej, a rezerwacja zwolniona z opisem",
+          "Wiadomości breaking_change dotyczące zadania są potwierdzone"
+        ],
+        "communication.message_types.contract_change.requires_ack": false
+      },
+      "clock": {
+        "duration_hours": 24,
+        "started_at": null,
+        "phases": [
+          {
+            "until_hour": 1.5,
+            "name": "Koncepcja i kontrakt",
+            "goal": "project.concept uzupełniony, scenariusz demo spisany, kontrakty kroków demo w statusie agreed, zadania rozdane."
+          },
+          {
+            "until_hour": 3,
+            "name": "Szkielet",
+            "goal": "Aplikacja uruchamia się u wszystkich; pierwszy krok demo przechodzi na mockach."
+          },
+          {
+            "until_hour": 16,
+            "name": "Budowa",
+            "goal": "Kolejne kroki demo jako pionowe plastry: endpoint i ekran razem, scalane na bieżąco."
+          },
+          {
+            "until_hour": 20,
+            "name": "Integracja i dopracowanie",
+            "goal": "Cały scenariusz demo działa na prawdziwym API; mocki usunięte ze ścieżki demo."
+          },
+          {
+            "until_hour": 22.5,
+            "name": "Zamrożenie funkcji",
+            "goal": "Tylko poprawki błędów na ścieżce demo. Próba prezentacji, dane demonstracyjne, plan awaryjny."
+          },
+          {
+            "until_hour": 24,
+            "name": "Prezentacja",
+            "goal": "Bez zmian w kodzie. Prezentacja i zapas na niespodzianki."
+          }
+        ]
+      },
+      "rules": [
+        "Liczy się działający scenariusz demo (project.concept.demo_scenario). Praca spoza scenariusza czeka.",
+        "Buduj pionowymi plastrami: jeden krok demo od endpointu do ekranu, potem następny.",
+        "Frontend zaczyna od mocka zgodnego z kontraktem i nie czeka na backend.",
+        "Wszyscy pracują na gałęzi głównej: małe commity, git pull --rebase przed push, push po każdej działającej części.",
+        "Najprostsze rozwiązanie, które działa w demo. Bez abstrakcji na zapas, bez optymalizacji, bez obsługi przypadków spoza scenariusza.",
+        "Testy i review tylko tam, gdzie błąd wywróci prezentację; tester i recenzent są uruchamiani na decyzję leada.",
+        "Zmieniasz kontrakt: zapisz, wyślij wiadomość i pracuj dalej. Na potwierdzenie czekasz tylko przy breaking_change.",
+        "Stoisz dłużej niż 20 minut: wyślij blocker do koordynatora i weź inną część zadania.",
+        "Po zamrożeniu funkcji nikt nie dodaje nowych rzeczy."
+      ]
+    }
+  },
+  "tasks": {
+    "directory": "tasks",
+    "file": "tasks/<id>.json, jeden plik na zadanie",
+    "ids": "T-001… tworzy koordynator (coord-task-planner); teamy, jeśli muszą, tworzą T-BE-001… i T-FE-001…",
+    "edit_rules": "Team zmienia w swoich zadaniach tylko workflow.team_editable_task_fields. Resztę zmienia koordynator."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "T-003",
+  "title": "[PRZYKŁAD] Ekran listy elementów",
+  "description": "Zbudować ekran UI-S-001 z komponentem UI-C-001, korzystający z API-001. Do czasu wdrożenia endpointu praca na mocku zgodnym z kontraktem.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": [
+    "T-001"
+  ],
+  "contract_refs": [
+    "API-001",
+    "UI-C-001",
+    "UI-S-001"
+  ],
+  "acceptance_criteria": [
+    "Stany: ładowanie, pusta lista, błąd, dane",
+    "Typy klienta API zgodne z API-001",
+    "Obsługa klawiatury i czytnika ekranu"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [],
+  "created_at": "2026-11-11",
+  "updated_at": "2026-11-11"
+}
