@@ -49,7 +49,13 @@ requires_ack: false
 Dodałem opcjonalne pole `avatarUrl` do odpowiedzi API-002. Nic nie psuje.
 ```
 
-Potwierdzenie to **nowy** plik typu `ack` z polem `reply_to: <id>`. Nigdy nie edytuj cudzej wiadomości. Typy i wymagane potwierdzenia znajdziesz w `project.json → communication.message_types`. Przy `breaking_change`, `blocker`, `decision_request` i `handoff` wyślij też powiadomienie na Discord (`communication.discord.send`), o ile webhook jest ustawiony.
+Potwierdzenie to **nowy** plik typu `ack` z polem `reply_to: <id>`. Nigdy nie edytuj cudzej wiadomości. Typy i wymagane potwierdzenia znajdziesz w `project.json → communication.message_types`. Przy `breaking_change`, `blocker`, `decision_request` i `handoff` wyślij też powiadomienie na Discord, o ile webhook jest ustawiony. Zawsze tylko przez skrypt, który buduje wspólny szablon z `communication.discord.template` (nigdy ręczny `curl`):
+
+```bash
+node .claude/scripts/discord-notify.mjs .claude/sync/messages/<plik>.md   # --dry-run podgląd, --test wiadomość testowa
+```
+
+Sekcje `## Zrobione`, `## Potrzebuję od <team>` itd. w treści wiadomości stają się polami na Discordzie, a opcjonalne pole `title` we frontmatterze trafia do tytułu. Wzór: `communication.message_example`.
 
 ## Commity
 

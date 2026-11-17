@@ -440,7 +440,50 @@
         "sync": "DISCORD_WEBHOOK_SYNC"
       },
       "setup": "Adresy webhooków są sekretem: wpisuje się je tylko w .claude/settings.local.json (sekcja env), skopiowanym z team/<osoba>/settings.local.json. Brak webhooka = pomijamy powiadomienie.",
-      "send": "curl -s -H 'Content-Type: application/json' -d '{\"content\":\"<tekst>\"}' \"$DISCORD_WEBHOOK_<TEAM>\"",
+      "send": "node .claude/scripts/discord-notify.mjs <plik-wiadomości.md> [--channel backend|frontend|coordinator|sync] [--test] [--dry-run]",
+      "send_rule": "Każde powiadomienie na Discord idzie tylko przez discord-notify.mjs, nigdy ręcznym curl. Najpierw zapisz wiadomość w .claude/sync/messages/, potem wyślij ten plik. Ogłoszenie zmiany fazy to wiadomość typu info do all.",
+      "template": {
+        "default_channel": "sync",
+        "footer": "HackNation",
+        "test": {
+          "emoji": "🧪",
+          "prefix": "[TEST]",
+          "footer": "wiadomość testowa, można zignorować"
+        },
+        "layout": [
+          "content: <emoji typu> <typ> — <Imię> (<member-id>)",
+          "embed.title: <typ> · <pierwsze T-xxx z refs> · <title z frontmattera>",
+          "embed.description: <Imię> (<from>) → <to>, pusta linia, wstęp z treści",
+          "embed.fields: każda sekcja '## Nagłówek' z treści, potem 📌 Refs i ⏱️ Ack",
+          "embed.footer: HackNation · <id wiadomości>"
+        ],
+        "types": {
+          "handoff": { "label": "handoff", "emoji": "📦", "color": "#5865F2" },
+          "blocker": { "label": "blocker", "emoji": "🛑", "color": "#ED4245" },
+          "breaking_change": { "label": "breaking_change", "emoji": "💥", "color": "#E67E22" },
+          "decision_request": { "label": "decision_request", "emoji": "⚖️", "color": "#FEE75C" },
+          "contract_proposal": { "label": "contract_proposal", "emoji": "📝", "color": "#1ABC9C" },
+          "contract_change": { "label": "contract_change", "emoji": "🔧", "color": "#57F287" },
+          "question": { "label": "question", "emoji": "❓", "color": "#3498DB" },
+          "info": { "label": "info", "emoji": "📣", "color": "#95A5A6" },
+          "ack": { "label": "ack", "emoji": "👍", "color": "#57F287" }
+        },
+        "sections": {
+          "Zrobione": "✅",
+          "Potrzebuję": "🔗",
+          "Do zrobienia": "🧩",
+          "Problem": "⚠️",
+          "Decyzja": "⚖️",
+          "Jak sprawdzić": "🧪",
+          "Zmiana": "🔧",
+          "Pytanie": "❓",
+          "Refs": "📌",
+          "Ack": "⏱️",
+          "Odpowiedź na": "↩️"
+        },
+        "default_section_emoji": "▪️",
+        "ack_labels": { "required": "wymagany", "not_required": "niewymagany" }
+      },
       "when": [
         "breaking_change",
         "blocker",
@@ -449,6 +492,7 @@
         "zmiana fazy hackathonu"
       ]
     },
+    "message_example": "---\nid: 20261121-1430-frontend-2-handoff\nfrom: frontend-2\nto: backend\ntype: handoff\ntitle: Ekran listy zgłoszeń\nrefs: [T-004, API-002]\nrequires_ack: true\n---\nSkończyłem ekran listy zgłoszeń na mocku zgodnym z contracts/api.json (API-002).\n\n## Zrobione\n- lista z paginacją\n- filtr po statusie\n\n## Potrzebuję od backendu\nEndpoint GET /items?page=&status= na stagingu + seed\n",
     "transport": "files",
     "message_file": ".claude/sync/messages/<YYYYMMDD-HHMM>-<from-member-id>-<type>.md",
     "message_format": {
@@ -457,10 +501,11 @@
         "from (member-id)",
         "to (team: backend | frontend | coordinator | all)",
         "type",
+        "title (opcjonalnie: krótki tytuł do powiadomienia na Discordzie)",
         "refs (ID zadań i elementów kontraktu)",
         "requires_ack (true/false)"
       ],
-      "body": "Krótko: co, dlaczego, czego oczekujesz.",
+      "body": "Krótko: co, dlaczego, czego oczekujesz. Wstęp, potem opcjonalne sekcje '## Zrobione', '## Potrzebuję od <team>' itd. (stają się polami na Discordzie).",
       "ack": "Odbiorca odpowiada nowym plikiem typu ack z polem reply_to: <id>. Wiadomość jest otwarta, dopóki requires_ack=true i nie ma ack.",
       "never_edit": "Nie edytuje się cudzych wiadomości. Każda odpowiedź to nowy plik."
     }
