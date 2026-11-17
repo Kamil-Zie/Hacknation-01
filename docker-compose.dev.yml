@@ -1,0 +1,22 @@
+# Local dev environment: MongoDB only. Frontend and backend run on the host with `npm run dev`.
+# Start: docker compose -f docker-compose.dev.yml up -d
+# Stop:  docker compose -f docker-compose.dev.yml down      (add -v to wipe local data)
+services:
+  mongo:
+    image: mongo:7
+    container_name: hacknation-mongo-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: hacknation_dev
+    volumes:
+      - mongo-dev-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo-dev-data:

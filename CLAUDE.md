@@ -23,6 +23,26 @@ Zmienna środowiskowa `HACK_MEMBER` (np. `frontend-1`) mówi, czyja to sesja. Te
 
 Do czasu decyzji (`technologies.status = "decided"`) nie zakładaj żadnego frameworka. Po decyzji używaj **tylko** wartości z pól `technologies.*.choice`. Nowa biblioteka spoza wyboru wymaga `decision_request` do koordynatora, chyba że jest drobna i lokalna (np. `date-fns`). Wtedy dopisz ją do notatek zadania.
 
+## Środowisko dev = lokalnie
+
+Dev działa tylko lokalnie (`technologies.infrastructure.environment_config.dev`): MongoDB w Dockerze, frontend i backend na `localhost`. Atlas, Synology i Cloudflare są wyłącznie dla staging i prod.
+
+```bash
+cp .env.example .env
+docker compose -f docker-compose.dev.yml up -d   # mongodb://localhost:27017/hacknation_dev
+npm install && npm run seed && npm run dev       # front :5173, API :3000/api/v1
+```
+
+## Baza danych = źródło aktualnych zmian
+
+Każda zmiana w `contracts/data_model.json`, `database/**` lub `apps/backend/src/models/**` wymaga **obowiązkowego zadania update danych** `tasks/T-DB-NNN.json` w tym samym commicie. Hook `.claude/hooks/require-data-task.mjs` blokuje commit bez niego.
+
+```bash
+node .claude/scripts/new-data-task.mjs --title "<co się zmieniło>" [--refs DM-001] [--breaking]
+```
+
+Po `git pull --rebase`, który przyniósł nowe `T-DB` albo zmiany w `database/`, uruchom `npm run seed`, żeby Twoja lokalna baza odpowiadała aktualnemu stanowi. Pełne zasady: `project.json → data_updates`.
+
 ## Zasady hackathonu (skrót, pełna lista w project.json)
 
 1. Pracujemy tylko nad krokami `project.concept.demo_scenario`. Reszta czeka.

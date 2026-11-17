@@ -138,6 +138,43 @@
         "staging",
         "prod"
       ],
+      "environment_config": {
+        "dev": {
+          "mode": "local",
+          "description": "Środowisko dev działa wyłącznie lokalnie na komputerze każdej osoby. Bez MongoDB Atlas, bez Synology, bez Cloudflare.",
+          "database": "Lokalny MongoDB w Dockerze: docker compose -f docker-compose.dev.yml up -d",
+          "env": {
+            "NODE_ENV": "development",
+            "MONGODB_URI": "mongodb://localhost:27017/hacknation_dev",
+            "PORT": "3000",
+            "CORS_ORIGIN": "http://localhost:5173",
+            "VITE_API_URL": "http://localhost:3000/api/v1"
+          },
+          "urls": {
+            "frontend": "http://localhost:5173",
+            "backend": "http://localhost:3000/api/v1"
+          },
+          "env_file": ".env (kopia .env.example, nie trafia do gita)",
+          "start": [
+            "cp .env.example .env",
+            "docker compose -f docker-compose.dev.yml up -d",
+            "npm install",
+            "npm run seed",
+            "npm run dev"
+          ],
+          "reset_data": "npm run seed (seed jest idempotentny i odtwarza dane demo od zera)"
+        },
+        "staging": {
+          "mode": "remote",
+          "database": "MongoDB Atlas, baza hacknation_staging",
+          "hosting": "Synology + Cloudflare Tunnel"
+        },
+        "prod": {
+          "mode": "remote",
+          "database": "MongoDB Atlas, baza hacknation_prod",
+          "hosting": "Synology + Cloudflare Tunnel (app.kamil-zielinski.pl, api.kamil-zielinski.pl)"
+        }
+      },
       "status": "default",
       "note": "Domyślna infrastruktura zespołu. coord-devops może ją zmienić, jeśli wybrany stack tego wymaga."
     }
@@ -776,7 +813,44 @@
   "tasks": {
     "directory": "tasks",
     "file": "tasks/<id>.json, jeden plik na zadanie",
-    "ids": "T-001… tworzy koordynator (coord-task-planner); teamy, jeśli muszą, tworzą T-BE-001… i T-FE-001…",
+    "ids": "T-001… tworzy koordynator (coord-task-planner); teamy, jeśli muszą, tworzą T-BE-001… i T-FE-001…; zadania update danych to T-DB-001… (patrz data_updates).",
     "edit_rules": "Team zmienia w swoich zadaniach tylko workflow.team_editable_task_fields. Resztę zmienia koordynator."
+  },
+  "data_updates": {
+    "description": "Baza danych jest kluczem do aktualnych zmian: stan modelu danych i seeda mówi, na czym pracują wszyscy. Każda zmiana w bazie tworzy obowiązkowe zadanie update danych.",
+    "enforce": true,
+    "watched_paths": [
+      "contracts/data_model.json",
+      "database/**",
+      "apps/backend/src/models/**"
+    ],
+    "task_id_format": "T-DB-NNN (tasks/T-DB-001.json, T-DB-002.json, ...)",
+    "create": "node .claude/scripts/new-data-task.mjs --title \"<co się zmieniło>\" [--refs DM-001,API-002] [--breaking]",
+    "enforced_by": "Hook .claude/hooks/require-data-task.mjs blokuje git commit, który zmienia watched_paths bez pliku tasks/T-DB-*.json w tym samym commicie.",
+    "rules": [
+      "Każda zmiana w watched_paths (model, schemat, seed, migracja) = nowe zadanie T-DB w tym samym commicie. Bez wyjątków, także dla drobnych zmian.",
+      "Przy zmianie contracts/data_model.json podbij jego version (patch: dane/seed, minor: nowe pole, major: zmiana psująca).",
+      "Zadanie T-DB może utworzyć każdy team, który zmienia bazę (wyjątek od zasady, że zadania tworzy koordynator). Wykonuje je backend.",
+      "Zmiana psująca (usunięte lub przemianowane pole, zmiana typu) = flaga --breaking, wiadomość breaking_change do frontendu i czekanie na ack.",
+      "Po git pull --rebase, który przyniósł nowe T-DB albo zmiany w database/**, każdy uruchamia lokalnie npm run seed, żeby jego baza dev odpowiadała aktualnemu stanowi.",
+      "Lead backendu na starcie sesji najpierw zamyka otwarte zadania T-DB, potem bierze inne."
+    ],
+    "task": {
+      "team": "backend",
+      "default_assignee": "backend-2",
+      "priority": "high",
+      "acceptance_criteria": [
+        "contracts/data_model.json opisuje nowy stan i ma podbite version",
+        "Model/schemat w kodzie zgadza się z contracts/data_model.json",
+        "Seed w database/ zaktualizowany pod nowy model, idempotentny, z realistycznymi danymi demo",
+        "npm run seed przechodzi na lokalnej bazie dev bez błędów",
+        "Wysłana wiadomość contract_change (lub breaking_change) do frontendu, żeby zaktualizował mocki",
+        "Baza staging zaktualizowana seedem przed kolejnym wdrożeniem"
+      ],
+      "breaking_extra_criteria": [
+        "Frontend potwierdził breaking_change wiadomością ack przed wdrożeniem",
+        "Dane w staging/prod zmigrowane albo odtworzone seedem bez utraty danych demo"
+      ]
+    }
   }
 }
