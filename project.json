@@ -131,7 +131,7 @@
     },
     "infrastructure": {
       "ci_cd": "GitHub Actions (lint, typecheck, test, build); wdrożenie przez docker compose pull/up na Synology",
-      "containerization": "Docker + docker-compose (Container Manager na Synology)",
+      "containerization": "Tylko staging/prod: Docker + docker-compose w Container Manager na Synology. Na komputerach zespołu (dev) bez kontenerów.",
       "hosting": "Synology DS225+ 24/7 (Container Manager) + domena kamil-zielinski.pl (app.kamil-zielinski.pl = frontend, api.kamil-zielinski.pl = backend); ruch przez Cloudflare (DNS, proxy, Cloudflare Tunnel, SSL); baza w MongoDB Atlas",
       "environments": [
         "dev",
@@ -141,8 +141,9 @@
       "environment_config": {
         "dev": {
           "mode": "local",
-          "description": "Środowisko dev działa wyłącznie lokalnie na komputerze każdej osoby. Bez MongoDB Atlas, bez Synology, bez Cloudflare.",
-          "database": "Lokalny MongoDB w Dockerze: docker compose -f docker-compose.dev.yml up -d",
+          "description": "Środowisko dev działa wyłącznie lokalnie na komputerze każdej osoby i bez konteneryzacji (część zespołu ma za słaby sprzęt na Dockera). Bez MongoDB Atlas, bez Synology, bez Cloudflare.",
+          "containers": false,
+          "database": "Lokalny MongoDB jako zwykły proces: npm run db (scripts/dev-db.mjs, mongodb-memory-server, dane w .data/mongo). Natywna instalacja MongoDB na porcie 27017 też działa i jest wykrywana automatycznie.",
           "env": {
             "NODE_ENV": "development",
             "MONGODB_URI": "mongodb://localhost:27017/hacknation_dev",
@@ -157,8 +158,8 @@
           "env_file": ".env (kopia .env.example, nie trafia do gita)",
           "start": [
             "cp .env.example .env",
-            "docker compose -f docker-compose.dev.yml up -d",
             "npm install",
+            "npm run db (w osobnym terminalu)",
             "npm run seed",
             "npm run dev"
           ],

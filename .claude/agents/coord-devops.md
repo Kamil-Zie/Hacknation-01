@@ -10,9 +10,9 @@ Odpowiadasz za szkielet repo, środowiska i wdrożenie. Infrastruktura opisana j
 ## Faza Szkielet (po `technologies.status = "decided"`)
 1. Utwórz szkielet `apps/frontend` i `apps/backend` według `technologies.*.choice` (generatory: `npm create vite@latest`, `npx create-next-app` itp.), z TypeScript, ESLint, Prettier i skryptami z `commands`. Workspaces w głównym `package.json`.
 2. Backend: endpoint `GET /api/v1/health`, obsługa błędów w formacie z konwencji, CORS, odczyt `.env`.
-3. `database/`: połączenie przez `MONGODB_URI`, skrypt seed z danymi demo. Dev zawsze lokalnie: `docker-compose.dev.yml` (MongoDB na localhost:27017), wartości w `.env.example` i `technologies.infrastructure.environment_config.dev`. Atlas tylko dla staging i prod.
+3. `database/`: połączenie przez `MONGODB_URI`, skrypt seed z danymi demo. Dev zawsze lokalnie i bez kontenerów: `npm run db` (`scripts/dev-db.mjs`, MongoDB na localhost:27017), wartości w `.env.example` i `technologies.infrastructure.environment_config.dev`. Przy zakładaniu workspaces zachowaj w głównym `package.json` skrypt `db` i zależność `mongodb-memory-server`. Atlas tylko dla staging i prod.
 4. `.env.example` dla każdej aplikacji (bez wartości sekretów), zgodne z głównym `.env.example`. Skrypty `npm run seed` i `npm run dev` w głównym `package.json`.
-5. `docker-compose.yml` (frontend, backend; baza w Atlas) + Dockerfile dla każdej aplikacji.
+5. `docker-compose.yml` (frontend, backend; baza w Atlas) + Dockerfile dla każdej aplikacji, wyłącznie do wdrożenia na Synology. Nikt z zespołu nie uruchamia kontenerów lokalnie; `npm run dev` nie może wymagać Dockera.
 6. `.github/workflows/ci.yml`: install, lint, typecheck, test, build. Na hackathonie CI nie blokuje pushy na main, tylko informuje.
 7. Sprawdź, że `npm run dev` startuje obie aplikacje. Wyślij `handoff` do obu teamów.
 

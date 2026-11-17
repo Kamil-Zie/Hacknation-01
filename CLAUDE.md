@@ -25,13 +25,16 @@ Do czasu decyzji (`technologies.status = "decided"`) nie zakładaj żadnego fram
 
 ## Środowisko dev = lokalnie
 
-Dev działa tylko lokalnie (`technologies.infrastructure.environment_config.dev`): MongoDB w Dockerze, frontend i backend na `localhost`. Atlas, Synology i Cloudflare są wyłącznie dla staging i prod.
+Dev działa tylko lokalnie i **bez kontenerów** (`technologies.infrastructure.environment_config.dev`): MongoDB jako zwykły proces, frontend i backend na `localhost`. Nie dodawaj Dockera do dev. Atlas, Synology i Cloudflare są wyłącznie dla staging i prod.
 
 ```bash
 cp .env.example .env
-docker compose -f docker-compose.dev.yml up -d   # mongodb://localhost:27017/hacknation_dev
-npm install && npm run seed && npm run dev       # front :5173, API :3000/api/v1
+npm install
+npm run db                    # osobny terminal: lokalny MongoDB, mongodb://localhost:27017/hacknation_dev
+npm run seed && npm run dev   # front :5173, API :3000/api/v1
 ```
+
+`npm run db` (`scripts/dev-db.mjs`) za pierwszym razem pobiera mongod (~100 MB), dane trzyma w `.data/mongo`. Jeśli ktoś ma już MongoDB zainstalowane natywnie na porcie 27017, skrypt to wykrywa i go używa.
 
 ## Baza danych = źródło aktualnych zmian
 

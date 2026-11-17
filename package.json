@@ -1,0 +1,11 @@
+{
+  "name": "hacknation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db": "node scripts/dev-db.mjs"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.3.0"
+  }
+}
