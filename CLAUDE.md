@@ -23,18 +23,16 @@ Zmienna środowiskowa `HACK_MEMBER` (np. `frontend-1`) mówi, czyja to sesja. Te
 
 Do czasu decyzji (`technologies.status = "decided"`) nie zakładaj żadnego frameworka. Po decyzji używaj **tylko** wartości z pól `technologies.*.choice`. Nowa biblioteka spoza wyboru wymaga `decision_request` do koordynatora, chyba że jest drobna i lokalna (np. `date-fns`). Wtedy dopisz ją do notatek zadania.
 
-## Środowisko dev = lokalnie
+## Środowisko dev: aplikacje lokalnie, baza w MongoDB Atlas
 
-Dev działa tylko lokalnie i **bez kontenerów** (`technologies.infrastructure.environment_config.dev`): MongoDB jako zwykły proces, frontend i backend na `localhost`. Nie dodawaj Dockera do dev. Atlas, Synology i Cloudflare są wyłącznie dla staging i prod.
+Frontend i backend działają lokalnie, **bez kontenerów** (nie dodawaj Dockera do dev). Baza danych jest w chmurze: wspólny klaster MongoDB Atlas, baza `hacknation_dev`, ta sama dla całego zespołu (`technologies.infrastructure.environment_config.dev`). Synology i Cloudflare są tylko dla staging i prod.
 
 ```bash
-cp .env.example .env
-npm install
-npm run db                    # osobny terminal: lokalny MongoDB, mongodb://localhost:27017/hacknation_dev
-npm run seed && npm run dev   # front :5173, API :3000/api/v1
+cp .env.example .env    # wklej MONGODB_URI od Kamila (sekret: tylko .env, nigdy repo ani Discord)
+npm install && npm run dev   # front :5173, API :3000/api/v1
 ```
 
-`npm run db` (`scripts/dev-db.mjs`) za pierwszym razem pobiera mongod (~100 MB), dane trzyma w `.data/mongo`. Jeśli ktoś ma już MongoDB zainstalowane natywnie na porcie 27017, skrypt to wykrywa i go używa.
+Baza dev jest wspólna, więc **nie uruchamiaj seeda ani nie zmieniaj danych ręcznie**. Seed na `hacknation_dev` puszcza tylko wykonawca zadania `T-DB`.
 
 ## Baza danych = źródło aktualnych zmian
 
@@ -44,7 +42,7 @@ Każda zmiana w `contracts/data_model.json`, `database/**` lub `apps/backend/src
 node .claude/scripts/new-data-task.mjs --title "<co się zmieniło>" [--refs DM-001] [--breaking]
 ```
 
-Po `git pull --rebase`, który przyniósł nowe `T-DB` albo zmiany w `database/`, uruchom `npm run seed`, żeby Twoja lokalna baza odpowiadała aktualnemu stanowi. Pełne zasady: `project.json → data_updates`.
+Wykonawca `T-DB` po zmianie kodu uruchamia `npm run seed` na wspólnej bazie dev w Atlas i wysyła wiadomość do frontendu. Przy zmianie psującej najpierw czeka na ack, dopiero potem seeduje. Pełne zasady: `project.json → data_updates`.
 
 ## Zasady hackathonu (skrót, pełna lista w project.json)
 

@@ -140,13 +140,20 @@
       ],
       "environment_config": {
         "dev": {
-          "mode": "local",
-          "description": "Środowisko dev działa wyłącznie lokalnie na komputerze każdej osoby i bez konteneryzacji (część zespołu ma za słaby sprzęt na Dockera). Bez MongoDB Atlas, bez Synology, bez Cloudflare.",
+          "mode": "local-app-cloud-db",
+          "description": "Frontend i backend działają lokalnie na komputerze każdej osoby, bez konteneryzacji (część zespołu ma za słaby sprzęt na Dockera). Baza danych w chmurze: jeden wspólny klaster MongoDB Atlas, baza hacknation_dev, wspólna dla całego zespołu. Bez Synology i Cloudflare.",
           "containers": false,
-          "database": "Lokalny MongoDB jako zwykły proces: npm run db (scripts/dev-db.mjs, mongodb-memory-server, dane w .data/mongo). Natywna instalacja MongoDB na porcie 27017 też działa i jest wykrywana automatycznie.",
+          "database": "MongoDB Atlas (wspólny klaster zespołu), baza hacknation_dev. Wszyscy pracują na tych samych danych, więc stan bazy dev = aktualny stan projektu.",
+          "atlas": {
+            "cluster": "jeden klaster zespołu (wystarczy darmowy M0); osobne bazy hacknation_dev, hacknation_staging, hacknation_prod",
+            "users": "dev: użytkownik z prawami readWrite tylko do hacknation_dev; staging i prod mają osobnych użytkowników, których zna tylko koordynator",
+            "network_access": "Na czas hackathonu 0.0.0.0/0 dla dev (domowe IP zespołu się zmieniają); staging/prod dodatkowo IP Synology",
+            "secret": "MONGODB_URI z hasłem rozdaje Kamil; trafia tylko do .env (gitignored) i nigdy do repo, wiadomości ani Discorda",
+            "setup_owner": "coord-1 (Kamil)"
+          },
           "env": {
             "NODE_ENV": "development",
-            "MONGODB_URI": "mongodb://localhost:27017/hacknation_dev",
+            "MONGODB_URI": "mongodb+srv://<user>:<password>@<cluster>.mongodb.net/hacknation_dev?retryWrites=true&w=majority",
             "PORT": "3000",
             "CORS_ORIGIN": "http://localhost:5173",
             "VITE_API_URL": "http://localhost:3000/api/v1"
@@ -157,13 +164,12 @@
           },
           "env_file": ".env (kopia .env.example, nie trafia do gita)",
           "start": [
-            "cp .env.example .env",
+            "cp .env.example .env i wklej MONGODB_URI od Kamila",
             "npm install",
-            "npm run db (w osobnym terminalu)",
-            "npm run seed",
             "npm run dev"
           ],
-          "reset_data": "npm run seed (seed jest idempotentny i odtwarza dane demo od zera)"
+          "seed_policy": "Baza dev jest wspólna, więc seed na niej uruchamia tylko osoba realizująca zadanie T-DB (albo koordynator). Pozostali nie seedują, tylko robią git pull.",
+          "reset_data": "npm run seed (seed jest idempotentny i odtwarza dane demo od zera); tylko w ramach zadania T-DB albo na prośbę koordynatora"
         },
         "staging": {
           "mode": "remote",
@@ -833,7 +839,9 @@
       "Przy zmianie contracts/data_model.json podbij jego version (patch: dane/seed, minor: nowe pole, major: zmiana psująca).",
       "Zadanie T-DB może utworzyć każdy team, który zmienia bazę (wyjątek od zasady, że zadania tworzy koordynator). Wykonuje je backend.",
       "Zmiana psująca (usunięte lub przemianowane pole, zmiana typu) = flaga --breaking, wiadomość breaking_change do frontendu i czekanie na ack.",
-      "Po git pull --rebase, który przyniósł nowe T-DB albo zmiany w database/**, każdy uruchamia lokalnie npm run seed, żeby jego baza dev odpowiadała aktualnemu stanowi.",
+      "Baza dev to wspólny MongoDB Atlas (hacknation_dev): zmiana danych jest od razu widoczna u wszystkich. Seed na niej uruchamia tylko wykonawca zadania T-DB, po zmianie kodu i przed wiadomością do frontendu.",
+      "Kolejność przy zmianie psującej: najpierw ack od frontendu, potem seed na wspólnej bazie dev, żeby nie wywrócić pracy drugiego teamu.",
+      "Nikt nie czyści ani nie zmienia ręcznie danych w hacknation_dev poza seedem; ręczne poprawki danych też idą przez seed i zadanie T-DB.",
       "Lead backendu na starcie sesji najpierw zamyka otwarte zadania T-DB, potem bierze inne."
     ],
     "task": {
@@ -844,7 +852,7 @@
         "contracts/data_model.json opisuje nowy stan i ma podbite version",
         "Model/schemat w kodzie zgadza się z contracts/data_model.json",
         "Seed w database/ zaktualizowany pod nowy model, idempotentny, z realistycznymi danymi demo",
-        "npm run seed przechodzi na lokalnej bazie dev bez błędów",
+        "npm run seed przechodzi na wspólnej bazie dev w MongoDB Atlas (hacknation_dev) bez błędów",
         "Wysłana wiadomość contract_change (lub breaking_change) do frontendu, żeby zaktualizował mocki",
         "Baza staging zaktualizowana seedem przed kolejnym wdrożeniem"
       ],

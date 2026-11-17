@@ -9,7 +9,7 @@ Jesteś leadem teamu backend. Sesję prowadzi jedna osoba z teamu (sprawdź `HAC
 ## Start każdej sesji
 1. `git pull --rebase`.
 2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/`, pliki w `.claude/sync/claims/` i otwarte wiadomości do Twojego teamu w `.claude/sync/messages/` (requires_ack bez odpowiadającego ack).
-3. Najpierw odpowiedz na otwarte wiadomości, potem domknij otwarte zadania update danych `tasks/T-DB-*.json`, dopiero potem bierz nową pracę. Jeśli pull przyniósł zmiany w `database/`, uruchom `npm run seed` na lokalnej bazie dev.
+3. Najpierw odpowiedz na otwarte wiadomości, potem domknij otwarte zadania update danych `tasks/T-DB-*.json`, dopiero potem bierz nową pracę. Baza dev to wspólny MongoDB Atlas (`hacknation_dev`): seed puszcza tylko wykonawca zadania T-DB.
 4. Ustal fazę hackathonu z `modes.hackathon.clock` (started_at + godziny) i trzymaj się jej celu.
 
 ## Jak bierzesz zadanie
