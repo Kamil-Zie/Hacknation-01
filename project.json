@@ -867,5 +867,40 @@
         "Dane w staging/prod zmigrowane albo odtworzone seedem bez utraty danych demo"
       ]
     }
+  },
+  "tooling": {
+    "description": "Weryfikacja na start sesji: czy osoba ma narzędzia wymagane przez stack swojego teamu, poprawny HACK_MEMBER i .env. Wymagania wynikają z technologies.*.choice (przed decyzją z recommended_default).",
+    "check": "node .claude/scripts/check-tools.mjs",
+    "runs": "Automatycznie przy starcie każdej sesji Claude (hook SessionStart w .claude/settings.json) i ręcznie tą komendą.",
+    "rules": [
+      "Lead na starcie sesji czyta wynik sprawdzenia. Jeśli są pozycje ❌, najpierw mówi o nich osobie i podaje komendę instalacji, potem dopiero bierze zadanie.",
+      "Agent nie instaluje narzędzi systemowych sam (node, git, python); robi to osoba. Brakujące zależności projektu (npm install) agent może doinstalować.",
+      "Po decyzji o stacku coord-architect dopisuje do stack_rules każde narzędzie, którego nie ma na liście."
+    ],
+    "common": ["git", "node", "npm"],
+    "tools": {
+      "git": { "cmd": "git --version", "min": "2.30.0", "install": { "darwin": "xcode-select --install (albo brew install git)", "win32": "winget install Git.Git", "linux": "sudo apt install git" } },
+      "node": { "cmd": "node --version", "min": "20.19.0", "install": { "darwin": "brew install node@22 (albo instalator LTS z https://nodejs.org)", "win32": "winget install OpenJS.NodeJS.LTS", "linux": "nvm install --lts (https://github.com/nvm-sh/nvm)" } },
+      "npm": { "cmd": "npm --version", "min": "10.0.0", "install": { "any": "npm install -g npm@latest (instaluje się razem z Node)" } },
+      "pnpm": { "cmd": "pnpm --version", "min": "9.0.0", "install": { "any": "npm install -g pnpm" } },
+      "yarn": { "cmd": "yarn --version", "min": "1.22.0", "install": { "any": "npm install -g yarn" } },
+      "python3": { "cmd": "python3 --version", "min": "3.10.0", "install": { "darwin": "brew install python", "win32": "winget install Python.Python.3.12", "linux": "sudo apt install python3" } },
+      "gh": { "cmd": "gh --version", "min": "2.0.0", "install": { "darwin": "brew install gh", "win32": "winget install GitHub.cli", "linux": "https://cli.github.com" } },
+      "claude": { "cmd": "claude --version", "min": "1.0.0", "install": { "any": "npm install -g @anthropic-ai/claude-code" } }
+    },
+    "stack_rules": [
+      { "match": ["node", "express", "nestjs", "typescript", "javascript", "mongoose", "react", "vite", "next", "npm"], "tools": ["node", "npm"] },
+      { "match": ["pnpm"], "tools": ["pnpm"] },
+      { "match": ["yarn"], "tools": ["yarn"] },
+      { "match": ["python", "fastapi", "django", "flask"], "tools": ["python3"] }
+    ],
+    "teams": {
+      "frontend": { "stack_scope": ["frontend"], "env_required": [], "env_recommended": ["VITE_API_URL"], "optional_tools": ["claude"] },
+      "backend": { "stack_scope": ["backend", "database"], "env_required": ["MONGODB_URI"], "env_recommended": ["PORT", "CORS_ORIGIN"], "optional_tools": ["claude"] },
+      "coordinator": { "stack_scope": ["frontend", "backend", "database"], "env_required": ["MONGODB_URI"], "env_recommended": [], "optional_tools": ["claude", "gh"] }
+    },
+    "env_file": ".env",
+    "placeholder_markers": ["<user>", "<password>", "<id>", "<cluster>"],
+    "atlas_dns_check": true
   }
 }

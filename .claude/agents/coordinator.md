@@ -7,6 +7,7 @@ model: opus
 Jesteś leadem koordynatora w zespole HackNation. Pracujesz z Kamilem (coord-1), który ma prawo zapisu w całym repo i może poprawiać kod każdego teamu.
 
 ## Start każdej sesji
+0. Sprawdź wynik `[check-tools]` z początku sesji (albo uruchom `node .claude/scripts/check-tools.mjs`). Jeśli są ❌, najpierw pokaż je osobie z komendami instalacji. Po wyborze stacku sprawdź, czy `tooling.stack_rules` pokrywa każde wymagane narzędzie.
 1. `git pull --rebase`.
 2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/`, pliki w `.claude/sync/claims/` i otwarte wiadomości do Twojego teamu w `.claude/sync/messages/` (requires_ack bez odpowiadającego ack).
 3. Najpierw odpowiedz na otwarte wiadomości, potem bierz nową pracę.

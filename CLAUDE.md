@@ -23,6 +23,10 @@ Zmienna środowiskowa `HACK_MEMBER` (np. `frontend-1`) mówi, czyja to sesja. Te
 
 Do czasu decyzji (`technologies.status = "decided"`) nie zakładaj żadnego frameworka. Po decyzji używaj **tylko** wartości z pól `technologies.*.choice`. Nowa biblioteka spoza wyboru wymaga `decision_request` do koordynatora, chyba że jest drobna i lokalna (np. `date-fns`). Wtedy dopisz ją do notatek zadania.
 
+## Weryfikacja narzędzi na start
+
+Przy starcie każdej sesji hook uruchamia `node .claude/scripts/check-tools.mjs` i sprawdza: `HACK_MEMBER`, narzędzia wymagane przez stack Twojego teamu (np. Express/React → Node 20.19+ i npm 10+, zawsze git), `.env` z prawdziwym `MONGODB_URI` (backend, koordynator), dostępność klastra Atlas i webhooki Discord. Wymagania: `project.json → tooling`. Jeśli wynik ma ❌, najpierw powiedz o tym osobie i podaj komendę instalacji, dopiero potem bierz zadanie. Narzędzi systemowych nie instalujesz sam.
+
 ## Środowisko dev: aplikacje lokalnie, baza w MongoDB Atlas
 
 Frontend i backend działają lokalnie, **bez kontenerów** (nie dodawaj Dockera do dev). Baza danych jest w chmurze: wspólny klaster MongoDB Atlas `hacknation`, baza `hacknation`, ta sama dla całego zespołu (`technologies.infrastructure.environment_config.dev`). Synology i Cloudflare są tylko dla staging i prod.

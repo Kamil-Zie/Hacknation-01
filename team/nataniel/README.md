@@ -13,7 +13,15 @@ git clone <adres-repo> && cd <repo>
 cp team/nataniel/settings.local.json .claude/settings.local.json
 ```
 
-Otwórz `.claude/settings.local.json` i wklej adresy webhooków Discord (dostaniesz je od Kamila). Ten plik nie trafia do gita. Potem uruchom:
+Otwórz `.claude/settings.local.json` i wklej adresy webhooków Discord (dostaniesz je od Kamila). Ten plik nie trafia do gita.
+
+Sprawdź, czy masz wszystkie narzędzia potrzebne Twojemu teamowi (Node, npm, git, `.env`):
+
+```bash
+node .claude/scripts/check-tools.mjs
+```
+
+Jeśli coś ma ❌, zainstaluj to komendą z wyniku. To samo sprawdzenie odpala się automatycznie przy każdym starcie sesji. Potem uruchom:
 
 ```bash
 claude

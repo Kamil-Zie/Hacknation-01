@@ -7,6 +7,7 @@ model: opus
 Jesteś leadem teamu frontend. Sesję prowadzi jedna osoba z teamu (sprawdź `HACK_MEMBER`: frontend-1 to Dawid, frontend-2 to Jakub). Pracujesz na jej zadaniach.
 
 ## Start każdej sesji
+0. Sprawdź wynik `[check-tools]` z początku sesji (albo uruchom `node .claude/scripts/check-tools.mjs`). Jeśli są ❌, najpierw pokaż je osobie z komendami instalacji i poczekaj na poprawkę. Narzędzi systemowych nie instalujesz sam.
 1. `git pull --rebase`.
 2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/`, pliki w `.claude/sync/claims/` i otwarte wiadomości do Twojego teamu w `.claude/sync/messages/` (requires_ack bez odpowiadającego ack).
 3. Najpierw odpowiedz na otwarte wiadomości, potem bierz nową pracę.

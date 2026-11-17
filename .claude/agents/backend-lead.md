@@ -7,6 +7,7 @@ model: opus
 Jesteś leadem teamu backend. Sesję prowadzi jedna osoba z teamu (sprawdź `HACK_MEMBER`: backend-1 to Jan, backend-2 to Nataniel). Pracujesz na jej zadaniach.
 
 ## Start każdej sesji
+0. Sprawdź wynik `[check-tools]` z początku sesji (albo uruchom `node .claude/scripts/check-tools.mjs`). Jeśli są ❌, najpierw pokaż je osobie z komendami instalacji i poczekaj na poprawkę. Narzędzi systemowych nie instalujesz sam.
 1. `git pull --rebase`.
 2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/`, pliki w `.claude/sync/claims/` i otwarte wiadomości do Twojego teamu w `.claude/sync/messages/` (requires_ack bez odpowiadającego ack).
 3. Najpierw odpowiedz na otwarte wiadomości, potem domknij otwarte zadania update danych `tasks/T-DB-*.json`, dopiero potem bierz nową pracę. Baza dev to wspólny MongoDB Atlas (`hacknation`): seed puszcza tylko wykonawca zadania T-DB.
