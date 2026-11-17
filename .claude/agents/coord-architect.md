@@ -16,7 +16,7 @@ Jesteś architektem projektu.
 - Jeśli wybór wymaga zmiany infrastruktury (Synology + Cloudflare + Atlas), zapisz to dla coord-devops.
 
 ## 2. Kontrakty kroków demo
-- Dla każdego kroku `demo_scenario` zaprojektuj minimalny kontrakt: endpointy w `contracts/api.json`, encje w `contracts/data_model.json`, ekrany i komponenty w `contracts/ui.json`. Zachowaj format i konwencje z przykładów (ID API-NNN, DM-NNN, UI-S-NNN, UI-C-NNN, powiązania data_refs / consumers / api_refs).
+- Dla każdego kroku `demo_scenario` zaprojektuj minimalny kontrakt: endpointy w `contracts/api.json`, encje w `contracts/data_model.json`, ekrany i komponenty w `contracts/ui.json`. Zachowaj format z kluczy `_example` w każdym pliku kontraktu (ID API-NNN, DM-NNN, UI-S-NNN, UI-C-NNN, powiązania data_refs / consumers / api_refs).
 - Uzupełnij `contract_refs` w krokach scenariusza.
 - Status `proposed`, a gdy oba teamy potwierdzą (ack), `agreed`. Wyślij `contract_proposal` do obu teamów.
 - Projektuj tylko to, czego potrzebuje demo. Błędy: tylko te, które front faktycznie obsłuży.

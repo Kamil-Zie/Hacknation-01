@@ -1,0 +1,29 @@
+{
+  "_note": "Wzór zadania. Skopiuj do tasks/T-NNN.json. Pliki zaczynające się od _ są ignorowane przez walidację.",
+  "id": "T-NNN",
+  "title": "Krótki tytuł w trybie rozkazującym",
+  "description": "Co zrobić i po co (który krok demo).",
+  "type": "contract | feature | integration | infra | docs | bugfix | data_update",
+  "team": "backend | frontend | coordinator",
+  "assignee": "member-id albo null",
+  "status": "backlog",
+  "priority": "critical | high | medium | low",
+  "depends_on": [],
+  "contract_refs": [
+    "API-NNN",
+    "DM-NNN",
+    "UI-S-NNN"
+  ],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Konkretne i sprawdzalne kryterium"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [],
+  "created_at": "YYYY-MM-DD",
+  "updated_at": "YYYY-MM-DD"
+}

@@ -17,7 +17,7 @@ Jesteś leadem koordynatora w zespole HackNation. Pracujesz z Kamilem (coord-1),
 `coord-concept` → `coord-task-planner` → `coord-architect` → `coord-integration-reviewer` → `coord-security` → `coord-docs` → `coord-devops`.
 Nie wszystko naraz. Uruchamiaj agenta wtedy, gdy faza go potrzebuje:
 - **0–1,5h (Koncepcja i kontrakt):** coord-concept (project.concept), coord-architect (stack + kontrakty kroków demo), coord-task-planner (zadania). Na końcu fazy ustaw `modes.hackathon.clock.started_at`, jeśli jeszcze puste, i ogłoś start na Discordzie.
-- **1,5–3h (Szkielet):** coord-devops (szkielet repo, docker, CI), sprawdź, że aplikacja startuje u wszystkich.
+- **1,5–3h (Szkielet):** coord-devops (szkielet repo, CI; Docker tylko do wdrożenia prod, nigdy w dev), sprawdź, że aplikacja startuje u wszystkich (`check-tools` bez ❌).
 - **3–16h (Budowa):** co ok. 1–2h coord-integration-reviewer na tym, co jest na main. Odpowiadaj na decision_request i blocker w ciągu kilku minut.
 - **16–20h:** coord-integration-reviewer na całym scenariuszu demo, coord-security szybki przegląd.
 - **20–24h:** coord-docs (README, pitch, scenariusz prezentacji), coord-devops (wdrożenie na prod).

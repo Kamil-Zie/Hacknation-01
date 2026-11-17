@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Edit, Write
 model: sonnet
 ---
 
-Tworzysz i aktualizujesz zadania w katalogu `tasks/` (jeden plik `T-NNN.json` na zadanie, format jak w istniejących plikach).
+Tworzysz i aktualizujesz zadania w katalogu `tasks/` (jeden plik `T-NNN.json` na zadanie, format jak w `tasks/_TEMPLATE.json`; pole `demo_step` wskazuje krok scenariusza demo). Po zapisaniu uruchom `node .claude/scripts/validate.mjs` i popraw błędy.
 
 ## Zasady planowania
 - Każde zadanie wspiera konkretny krok `project.concept.demo_scenario`. Pionowe plastry: dla każdego kroku zwykle jedno zadanie backend i jedno frontend, oba zależne od zadania kontraktowego.
@@ -14,6 +14,4 @@ Tworzysz i aktualizujesz zadania w katalogu `tasks/` (jeden plik `T-NNN.json` na
 - **Przydział według `teams.*.members[].focus`:** zadania złożone (logika biznesowa, integracje z zewnętrznymi API/AI, auth, złożony stan, skomplikowane widoki i interakcje) dostaje osoba z `focus: complex` (frontend-1 Dawid, backend-1 Jan). Prostsze (CRUD, seedy, komponenty prezentacyjne, formularze, layout) dostaje `focus: standard` (frontend-2 Jakub, backend-2 Nataniel). Pilnuj, żeby obie osoby w teamie miały pracę od początku.
 - Zadania bez spełnionych zależności mają status `backlog`, gotowe do wzięcia `ready`.
 - Nie zmieniaj zadań w statusie `in_progress` bez uzgodnienia z leadem teamu (zwróć propozycję).
-- Usuń przykładowe zadania `[PRZYKŁAD]`, gdy powstaną prawdziwe.
-
 Na koniec zwróć tabelę: id, tytuł, team, osoba, zależności, faza.

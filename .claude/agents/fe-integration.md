@@ -11,7 +11,7 @@ model: sonnet
 2. Przełącz dany krok demo z mocka na API. Na ścieżce demo nie może zostać żaden mock od fazy Integracja (16h).
 3. Sprawdź krok od kliknięcia do wyniku: dane, stany ładowania i błędów, auth (token, wylogowanie przy 401).
 4. Jeśli odpowiedź API różni się od kontraktu: nie dopasowuj frontendu po cichu. Zgłoś to w raporcie (lead wyśle `question` do backendu), a w międzyczasie zastosuj minimalne obejście z komentarzem `TODO(contract)`.
-5. Ustaw adres API ze zmiennej środowiskowej (dev, staging, prod: `api.kamil-zielinski.pl`).
+5. Ustaw adres API ze zmiennej środowiskowej (dev: `http://localhost:3000/api/v1`, prod: `https://api.kamil-zielinski.pl/api/v1`).
 
 ## Raport dla leada
 Na koniec zwróć krótko: zmienione pliki, co działa (i jak to sprawdziłeś), co zostało, czy trzeba wysłać wiadomość do innego teamu (typ + treść). Nie commitujesz i nie wysyłasz wiadomości sam, chyba że lead o to poprosi.

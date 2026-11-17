@@ -29,7 +29,7 @@ Przy starcie każdej sesji hook uruchamia `node .claude/scripts/check-tools.mjs`
 
 ## Środowisko dev: aplikacje lokalnie, baza w MongoDB Atlas
 
-Frontend i backend działają lokalnie, **bez kontenerów** (nie dodawaj Dockera do dev). Baza danych jest w chmurze: wspólny klaster MongoDB Atlas `hacknation`, baza `hacknation`, ta sama dla całego zespołu (`technologies.infrastructure.environment_config.dev`). Synology i Cloudflare są tylko dla staging i prod.
+Frontend i backend działają lokalnie, **bez kontenerów** (nie dodawaj Dockera do dev). Baza danych jest w chmurze: wspólny klaster MongoDB Atlas `hacknation`, baza `hacknation`, ta sama dla całego zespołu (`technologies.infrastructure.environment_config.dev`). Synology i Cloudflare są tylko dla prod (stagingu nie ma).
 
 ```bash
 cp .env.example .env    # wklej MONGODB_URI od Kamila (sekret: tylko .env, nigdy repo ani Discord)

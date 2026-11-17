@@ -1,0 +1,10 @@
+{
+  "agent": "coordinator",
+  "env": {
+    "HACK_MEMBER": "coord-1",
+    "DISCORD_WEBHOOK_BACKEND": "",
+    "DISCORD_WEBHOOK_FRONTEND": "",
+    "DISCORD_WEBHOOK_COORDINATOR": "",
+    "DISCORD_WEBHOOK_SYNC": ""
+  }
+}

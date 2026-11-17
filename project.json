@@ -131,11 +131,10 @@
     },
     "infrastructure": {
       "ci_cd": "GitHub Actions (lint, typecheck, test, build); wdrożenie przez docker compose pull/up na Synology",
-      "containerization": "Tylko staging/prod: Docker + docker-compose w Container Manager na Synology. Na komputerach zespołu (dev) bez kontenerów.",
+      "containerization": "Tylko prod: Docker + docker-compose w Container Manager na Synology. Na komputerach zespołu (dev) bez kontenerów.",
       "hosting": "Synology DS225+ 24/7 (Container Manager) + domena kamil-zielinski.pl (app.kamil-zielinski.pl = frontend, api.kamil-zielinski.pl = backend); ruch przez Cloudflare (DNS, proxy, Cloudflare Tunnel, SSL); baza w MongoDB Atlas",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "environment_config": {
@@ -147,13 +146,13 @@
           "atlas": {
             "organization": "Hacknation",
             "project": "Hacknation-01",
-            "cluster": "hacknation (aktywny; jeden klaster zespołu); bazy: hacknation (dev), hacknation_staging, hacknation_prod",
+            "cluster": "hacknation (aktywny; jeden klaster zespołu); bazy: hacknation (dev), hacknation_prod",
             "tier": "M0 FREE, AWS, 1 region, limit 512 MB danych",
             "mongodb_version": "8.0",
             "backups": "wyłączone (M0); kopią danych demo jest seed w database/, więc seed musi zawsze odtwarzać pełny stan demo",
             "limits": "M0: maks. 512 MB i ograniczona liczba połączeń; trzymaj seed mały, bez dużych plików w bazie",
-            "users": "dev: użytkownik z prawami readWrite tylko do hacknation; staging i prod mają osobnych użytkowników, których zna tylko koordynator",
-            "network_access": "Na czas hackathonu 0.0.0.0/0 dla dev (domowe IP zespołu się zmieniają); staging/prod dodatkowo IP Synology",
+            "users": "dev: użytkownik z prawami readWrite tylko do hacknation; prod ma osobnego użytkownika, którego zna tylko koordynator",
+            "network_access": "Na czas hackathonu 0.0.0.0/0 (domowe IP zespołu się zmieniają; Synology też łączy się z tego samego klastra)",
             "secret": "MONGODB_URI z hasłem rozdaje Kamil; trafia tylko do .env (gitignored) i nigdy do repo, wiadomości ani Discorda",
             "setup_owner": "coord-1 (Kamil)"
           },
@@ -177,11 +176,6 @@
           "seed_policy": "Baza dev jest wspólna, więc seed na niej uruchamia tylko osoba realizująca zadanie T-DB (albo koordynator). Pozostali nie seedują, tylko robią git pull.",
           "reset_data": "npm run seed (seed jest idempotentny i odtwarza dane demo od zera); tylko w ramach zadania T-DB albo na prośbę koordynatora"
         },
-        "staging": {
-          "mode": "remote",
-          "database": "MongoDB Atlas, baza hacknation_staging",
-          "hosting": "Synology + Cloudflare Tunnel"
-        },
         "prod": {
           "mode": "remote",
           "database": "MongoDB Atlas, baza hacknation_prod",
@@ -189,7 +183,7 @@
         }
       },
       "status": "default",
-      "note": "Domyślna infrastruktura zespołu. coord-devops może ją zmienić, jeśli wybrany stack tego wymaga."
+      "note": "Domyślna infrastruktura zespołu. coord-devops może ją zmienić, jeśli wybrany stack tego wymaga. Bez stagingu: na 24h wystarczą dev (lokalnie + Atlas) i prod (Synology)."
     }
   },
   "documentation": {
@@ -508,15 +502,51 @@
           "embed.footer: HackNation · <id wiadomości>"
         ],
         "types": {
-          "handoff": { "label": "handoff", "emoji": "📦", "color": "#5865F2" },
-          "blocker": { "label": "blocker", "emoji": "🛑", "color": "#ED4245" },
-          "breaking_change": { "label": "breaking_change", "emoji": "💥", "color": "#E67E22" },
-          "decision_request": { "label": "decision_request", "emoji": "⚖️", "color": "#FEE75C" },
-          "contract_proposal": { "label": "contract_proposal", "emoji": "📝", "color": "#1ABC9C" },
-          "contract_change": { "label": "contract_change", "emoji": "🔧", "color": "#57F287" },
-          "question": { "label": "question", "emoji": "❓", "color": "#3498DB" },
-          "info": { "label": "info", "emoji": "📣", "color": "#95A5A6" },
-          "ack": { "label": "ack", "emoji": "👍", "color": "#57F287" }
+          "handoff": {
+            "label": "handoff",
+            "emoji": "📦",
+            "color": "#5865F2"
+          },
+          "blocker": {
+            "label": "blocker",
+            "emoji": "🛑",
+            "color": "#ED4245"
+          },
+          "breaking_change": {
+            "label": "breaking_change",
+            "emoji": "💥",
+            "color": "#E67E22"
+          },
+          "decision_request": {
+            "label": "decision_request",
+            "emoji": "⚖️",
+            "color": "#FEE75C"
+          },
+          "contract_proposal": {
+            "label": "contract_proposal",
+            "emoji": "📝",
+            "color": "#1ABC9C"
+          },
+          "contract_change": {
+            "label": "contract_change",
+            "emoji": "🔧",
+            "color": "#57F287"
+          },
+          "question": {
+            "label": "question",
+            "emoji": "❓",
+            "color": "#3498DB"
+          },
+          "info": {
+            "label": "info",
+            "emoji": "📣",
+            "color": "#95A5A6"
+          },
+          "ack": {
+            "label": "ack",
+            "emoji": "👍",
+            "color": "#57F287"
+          }
         },
         "sections": {
           "Zrobione": "✅",
@@ -532,7 +562,10 @@
           "Odpowiedź na": "↩️"
         },
         "default_section_emoji": "▪️",
-        "ack_labels": { "required": "wymagany", "not_required": "niewymagany" }
+        "ack_labels": {
+          "required": "wymagany",
+          "not_required": "niewymagany"
+        }
       },
       "when": [
         "breaking_change",
@@ -542,7 +575,7 @@
         "zmiana fazy hackathonu"
       ]
     },
-    "message_example": "---\nid: 20261121-1430-frontend-2-handoff\nfrom: frontend-2\nto: backend\ntype: handoff\ntitle: Ekran listy zgłoszeń\nrefs: [T-004, API-002]\nrequires_ack: true\n---\nSkończyłem ekran listy zgłoszeń na mocku zgodnym z contracts/api.json (API-002).\n\n## Zrobione\n- lista z paginacją\n- filtr po statusie\n\n## Potrzebuję od backendu\nEndpoint GET /items?page=&status= na stagingu + seed\n",
+    "message_example": "---\nid: 20261121-1430-frontend-2-handoff\nfrom: frontend-2\nto: backend\ntype: handoff\ntitle: Ekran listy zgłoszeń\nrefs: [T-004, API-002]\nrequires_ack: true\n---\nSkończyłem ekran listy zgłoszeń na mocku zgodnym z contracts/api.json (API-002).\n\n## Zrobione\n- lista z paginacją\n- filtr po statusie\n\n## Potrzebuję od backendu\nEndpoint GET /items?page=&status= w bazie dev + seed\n",
     "transport": "files",
     "message_file": ".claude/sync/messages/<YYYYMMDD-HHMM>-<from-member-id>-<type>.md",
     "message_format": {
@@ -860,11 +893,11 @@
         "Seed w database/ zaktualizowany pod nowy model, idempotentny, z realistycznymi danymi demo",
         "npm run seed przechodzi na wspólnej bazie dev w MongoDB Atlas (hacknation) bez błędów",
         "Wysłana wiadomość contract_change (lub breaking_change) do frontendu, żeby zaktualizował mocki",
-        "Baza staging zaktualizowana seedem przed kolejnym wdrożeniem"
+        "Przy najbliższym wdrożeniu baza prod (hacknation_prod) odtworzona tym samym seedem (robi koordynator / coord-devops)"
       ],
       "breaking_extra_criteria": [
         "Frontend potwierdził breaking_change wiadomością ack przed wdrożeniem",
-        "Dane w staging/prod zmigrowane albo odtworzone seedem bez utraty danych demo"
+        "Dane w prod zmigrowane albo odtworzone seedem bez utraty danych demo"
       ]
     }
   },
@@ -877,30 +910,176 @@
       "Agent nie instaluje narzędzi systemowych sam (node, git, python); robi to osoba. Brakujące zależności projektu (npm install) agent może doinstalować.",
       "Po decyzji o stacku coord-architect dopisuje do stack_rules każde narzędzie, którego nie ma na liście."
     ],
-    "common": ["git", "node", "npm"],
+    "common": [
+      "git",
+      "node",
+      "npm"
+    ],
     "tools": {
-      "git": { "cmd": "git --version", "min": "2.30.0", "install": { "darwin": "xcode-select --install (albo brew install git)", "win32": "winget install Git.Git", "linux": "sudo apt install git" } },
-      "node": { "cmd": "node --version", "min": "20.19.0", "install": { "darwin": "brew install node@22 (albo instalator LTS z https://nodejs.org)", "win32": "winget install OpenJS.NodeJS.LTS", "linux": "nvm install --lts (https://github.com/nvm-sh/nvm)" } },
-      "npm": { "cmd": "npm --version", "min": "10.0.0", "install": { "any": "npm install -g npm@latest (instaluje się razem z Node)" } },
-      "pnpm": { "cmd": "pnpm --version", "min": "9.0.0", "install": { "any": "npm install -g pnpm" } },
-      "yarn": { "cmd": "yarn --version", "min": "1.22.0", "install": { "any": "npm install -g yarn" } },
-      "python3": { "cmd": "python3 --version", "min": "3.10.0", "install": { "darwin": "brew install python", "win32": "winget install Python.Python.3.12", "linux": "sudo apt install python3" } },
-      "gh": { "cmd": "gh --version", "min": "2.0.0", "install": { "darwin": "brew install gh", "win32": "winget install GitHub.cli", "linux": "https://cli.github.com" } },
-      "claude": { "cmd": "claude --version", "min": "1.0.0", "install": { "any": "npm install -g @anthropic-ai/claude-code" } }
+      "git": {
+        "cmd": "git --version",
+        "min": "2.30.0",
+        "install": {
+          "darwin": "xcode-select --install (albo brew install git)",
+          "win32": "winget install Git.Git",
+          "linux": "sudo apt install git"
+        }
+      },
+      "node": {
+        "cmd": "node --version",
+        "min": "20.19.0",
+        "install": {
+          "darwin": "brew install node@22 (albo instalator LTS z https://nodejs.org)",
+          "win32": "winget install OpenJS.NodeJS.LTS",
+          "linux": "nvm install --lts (https://github.com/nvm-sh/nvm)"
+        }
+      },
+      "npm": {
+        "cmd": "npm --version",
+        "min": "10.0.0",
+        "install": {
+          "any": "npm install -g npm@latest (instaluje się razem z Node)"
+        }
+      },
+      "pnpm": {
+        "cmd": "pnpm --version",
+        "min": "9.0.0",
+        "install": {
+          "any": "npm install -g pnpm"
+        }
+      },
+      "yarn": {
+        "cmd": "yarn --version",
+        "min": "1.22.0",
+        "install": {
+          "any": "npm install -g yarn"
+        }
+      },
+      "python3": {
+        "cmd": "python3 --version",
+        "min": "3.10.0",
+        "install": {
+          "darwin": "brew install python",
+          "win32": "winget install Python.Python.3.12",
+          "linux": "sudo apt install python3"
+        }
+      },
+      "gh": {
+        "cmd": "gh --version",
+        "min": "2.0.0",
+        "install": {
+          "darwin": "brew install gh",
+          "win32": "winget install GitHub.cli",
+          "linux": "https://cli.github.com"
+        }
+      },
+      "claude": {
+        "cmd": "claude --version",
+        "min": "1.0.0",
+        "install": {
+          "any": "npm install -g @anthropic-ai/claude-code"
+        }
+      }
     },
     "stack_rules": [
-      { "match": ["node", "express", "nestjs", "typescript", "javascript", "mongoose", "react", "vite", "next", "npm"], "tools": ["node", "npm"] },
-      { "match": ["pnpm"], "tools": ["pnpm"] },
-      { "match": ["yarn"], "tools": ["yarn"] },
-      { "match": ["python", "fastapi", "django", "flask"], "tools": ["python3"] }
+      {
+        "match": [
+          "node",
+          "express",
+          "nestjs",
+          "typescript",
+          "javascript",
+          "mongoose",
+          "react",
+          "vite",
+          "next",
+          "npm"
+        ],
+        "tools": [
+          "node",
+          "npm"
+        ]
+      },
+      {
+        "match": [
+          "pnpm"
+        ],
+        "tools": [
+          "pnpm"
+        ]
+      },
+      {
+        "match": [
+          "yarn"
+        ],
+        "tools": [
+          "yarn"
+        ]
+      },
+      {
+        "match": [
+          "python",
+          "fastapi",
+          "django",
+          "flask"
+        ],
+        "tools": [
+          "python3"
+        ]
+      }
     ],
     "teams": {
-      "frontend": { "stack_scope": ["frontend"], "env_required": [], "env_recommended": ["VITE_API_URL"], "optional_tools": ["claude"] },
-      "backend": { "stack_scope": ["backend", "database"], "env_required": ["MONGODB_URI"], "env_recommended": ["PORT", "CORS_ORIGIN"], "optional_tools": ["claude"] },
-      "coordinator": { "stack_scope": ["frontend", "backend", "database"], "env_required": ["MONGODB_URI"], "env_recommended": [], "optional_tools": ["claude", "gh"] }
+      "frontend": {
+        "stack_scope": [
+          "frontend"
+        ],
+        "env_required": [],
+        "env_recommended": [
+          "VITE_API_URL"
+        ],
+        "optional_tools": [
+          "claude"
+        ]
+      },
+      "backend": {
+        "stack_scope": [
+          "backend",
+          "database"
+        ],
+        "env_required": [
+          "MONGODB_URI"
+        ],
+        "env_recommended": [
+          "PORT",
+          "CORS_ORIGIN"
+        ],
+        "optional_tools": [
+          "claude"
+        ]
+      },
+      "coordinator": {
+        "stack_scope": [
+          "frontend",
+          "backend",
+          "database"
+        ],
+        "env_required": [
+          "MONGODB_URI"
+        ],
+        "env_recommended": [],
+        "optional_tools": [
+          "claude",
+          "gh"
+        ]
+      }
     },
     "env_file": ".env",
-    "placeholder_markers": ["<user>", "<password>", "<id>", "<cluster>"],
+    "placeholder_markers": [
+      "<user>",
+      "<password>",
+      "<id>",
+      "<cluster>"
+    ],
     "atlas_dns_check": true
   }
 }

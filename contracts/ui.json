@@ -7,12 +7,13 @@
     "spacing": {},
     "breakpoints": {}
   },
-  "components": [
-    {
+  "_example": {
+    "note": "Wzór formatu. Nie implementuj. id: UI-C-NNN (komponent), UI-S-NNN (ekran).",
+    "component": {
       "id": "UI-C-001",
       "status": "draft",
       "name": "ItemList",
-      "description": "[PRZYKŁAD] Lista elementów ze stanami: ładowanie, pusta, błąd",
+      "description": "Lista elementów ze stanami: ładowanie, pusta, błąd",
       "props": {
         "items": "Item[]",
         "loading": "boolean"
@@ -24,15 +25,13 @@
         "ready"
       ],
       "accessibility": "Lista jako <ul>, komunikat błędu z role=alert"
-    }
-  ],
-  "screens": [
-    {
+    },
+    "screen": {
       "id": "UI-S-001",
       "status": "draft",
       "name": "Lista elementów",
       "route": "/items",
-      "description": "[PRZYKŁAD] Ekran z listą i paginacją",
+      "description": "Ekran z listą i paginacją",
       "components": [
         "UI-C-001"
       ],
@@ -40,5 +39,7 @@
         "API-001"
       ]
     }
-  ]
+  },
+  "components": [],
+  "screens": []
 }

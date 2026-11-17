@@ -1,12 +1,13 @@
 {
   "owner_team": "backend",
   "version": "0.1.0",
-  "entities": [
-    {
+  "_example": {
+    "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
+    "entity": {
       "id": "DM-001",
       "status": "draft",
       "name": "Item",
-      "description": "[PRZYKŁAD] Element listy",
+      "description": "Element listy",
       "fields": [
         {
           "name": "id",
@@ -27,5 +28,6 @@
       "relations": [],
       "indexes": []
     }
-  ]
+  },
+  "entities": []
 }
