@@ -25,14 +25,14 @@ Do czasu decyzji (`technologies.status = "decided"`) nie zakładaj żadnego fram
 
 ## Środowisko dev: aplikacje lokalnie, baza w MongoDB Atlas
 
-Frontend i backend działają lokalnie, **bez kontenerów** (nie dodawaj Dockera do dev). Baza danych jest w chmurze: wspólny klaster MongoDB Atlas, baza `hacknation_dev`, ta sama dla całego zespołu (`technologies.infrastructure.environment_config.dev`). Synology i Cloudflare są tylko dla staging i prod.
+Frontend i backend działają lokalnie, **bez kontenerów** (nie dodawaj Dockera do dev). Baza danych jest w chmurze: wspólny klaster MongoDB Atlas `hacknation`, baza `hacknation`, ta sama dla całego zespołu (`technologies.infrastructure.environment_config.dev`). Synology i Cloudflare są tylko dla staging i prod.
 
 ```bash
 cp .env.example .env    # wklej MONGODB_URI od Kamila (sekret: tylko .env, nigdy repo ani Discord)
 npm install && npm run dev   # front :5173, API :3000/api/v1
 ```
 
-Baza dev jest wspólna, więc **nie uruchamiaj seeda ani nie zmieniaj danych ręcznie**. Seed na `hacknation_dev` puszcza tylko wykonawca zadania `T-DB`.
+Baza dev jest wspólna, więc **nie uruchamiaj seeda ani nie zmieniaj danych ręcznie**. Seed na bazie `hacknation` puszcza tylko wykonawca zadania `T-DB`.
 
 ## Baza danych = źródło aktualnych zmian
 
