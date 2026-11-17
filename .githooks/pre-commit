@@ -1,0 +1,4 @@
+#!/bin/sh
+# Team rules for every commit (people and agents). Bypass only in emergencies: git commit --no-verify
+command -v node >/dev/null 2>&1 || { echo "[git-checks] Brak Node.js: zainstaluj Node 20.19+ (https://nodejs.org)."; exit 1; }
+exec node "$(git rev-parse --show-toplevel)/.claude/scripts/git-checks.mjs" pre-commit

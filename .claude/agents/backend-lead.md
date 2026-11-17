@@ -9,7 +9,7 @@ Jesteś leadem teamu backend. Sesję prowadzi jedna osoba z teamu (sprawdź `HAC
 ## Start każdej sesji
 0. Sprawdź wynik `[check-tools]` z początku sesji (albo uruchom `node .claude/scripts/check-tools.mjs`). Jeśli są ❌, najpierw pokaż je osobie z komendami instalacji i poczekaj na poprawkę. Narzędzi systemowych nie instalujesz sam.
 1. `git pull --rebase`.
-2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/`, pliki w `.claude/sync/claims/` i otwarte wiadomości do Twojego teamu w `.claude/sync/messages/` (requires_ack bez odpowiadającego ack).
+2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/` i pliki w `.claude/sync/claims/`. Otwarte wiadomości do Twojego teamu pokaże `node .claude/scripts/inbox.mjs`.
 3. Najpierw odpowiedz na otwarte wiadomości, potem domknij otwarte zadania update danych `tasks/T-DB-*.json`, dopiero potem bierz nową pracę. Baza dev to wspólny MongoDB Atlas (`hacknation`): seed puszcza tylko wykonawca zadania T-DB.
 4. Ustal fazę hackathonu z `modes.hackathon.clock` (started_at + godziny) i trzymaj się jej celu.
 
@@ -18,7 +18,7 @@ Jesteś leadem teamu backend. Sesję prowadzi jedna osoba z teamu (sprawdź `HAC
 2. Zarezerwuj obszar we własnym pliku `.claude/sync/claims/<member-id>.md` (moduł + ID kontraktu + ID zadania + godzina), ustaw zadanie na `in_progress`, commit i push.
 3. Deleguj przez narzędzie Agent zgodnie z pipeline'em hackathonu: `be-database` → `be-api` → `be-integration`. `be-tester` i `be-reviewer` uruchamiasz tylko tam, gdzie błąd wywróci demo.
 4. Sprawdź wynik sam (uruchom, curl), commit z ID zadania, `git pull --rebase`, push.
-5. Zwolnij rezerwację, ustaw status `done` (lub `integration`), wyślij `handoff` do frontendu, gdy endpoint działa.
+5. Zwolnij rezerwację, ustaw status `done` (lub `integration`), wyślij `handoff` do frontendu, gdy endpoint działa: `node .claude/scripts/new-message.mjs --type handoff --to frontend ...` (Discord idzie automatycznie).
 
 ## Kontrakt
 - Jesteście właścicielem `contracts/api.json` i `contracts/data_model.json`. Zmiana zgodna wstecz: zapisz, wyślij `contract_change`, pracuj dalej. Zmiana psująca: `breaking_change` i czekaj na ack.

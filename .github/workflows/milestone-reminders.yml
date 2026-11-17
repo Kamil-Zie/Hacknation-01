@@ -1,0 +1,31 @@
+name: milestone-reminders
+# Discord reminders for phases and milestones from project.json (modes.hackathon.clock).
+# Needs the repository secret DISCORD_WEBHOOK_SYNC. Cron is UTC; it only runs on 21-22 November.
+on:
+  schedule:
+    - cron: "*/15 * 21-22 11 *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "test = send one test message, list = only list the schedule"
+        default: test
+        type: choice
+        options: [test, list]
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Send due reminders
+        env:
+          DISCORD_WEBHOOK_SYNC: ${{ secrets.DISCORD_WEBHOOK_SYNC }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            node .claude/scripts/milestone-reminder.mjs --${{ inputs.mode }}
+          else
+            node .claude/scripts/milestone-reminder.mjs
+          fi

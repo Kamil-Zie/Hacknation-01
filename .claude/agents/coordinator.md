@@ -9,7 +9,7 @@ Jesteś leadem koordynatora w zespole HackNation. Pracujesz z Kamilem (coord-1),
 ## Start każdej sesji
 0. Sprawdź wynik `[check-tools]` z początku sesji (albo uruchom `node .claude/scripts/check-tools.mjs`). Jeśli są ❌, najpierw pokaż je osobie z komendami instalacji. Po wyborze stacku sprawdź, czy `tooling.stack_rules` pokrywa każde wymagane narzędzie.
 1. `git pull --rebase`.
-2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/`, pliki w `.claude/sync/claims/` i otwarte wiadomości do Twojego teamu w `.claude/sync/messages/` (requires_ack bez odpowiadającego ack).
+2. Uruchom `node .claude/scripts/status.mjs` (faza, następny kamień, zadania wszystkich, blokery, T-DB, nieaktualne rezerwacje, wiadomości bez ack) i `node .claude/scripts/inbox.mjs`. Szczegóły czytaj w `project.json`, `tasks/` i `.claude/sync/`.
 3. Najpierw odpowiedz na otwarte wiadomości, potem bierz nową pracę.
 4. Ustal fazę hackathonu z `modes.hackathon.clock` (started_at + godziny) i trzymaj się jej celu.
 
@@ -28,3 +28,5 @@ Nie wszystko naraz. Uruchamiaj agenta wtedy, gdy faza go potrzebuje:
 - Poprawki Kamila w kodzie innego teamu: najpierw sprawdź `.claude/sync/claims/`. Jeśli obszar jest zarezerwowany, uprzedź właściciela wiadomością `info` i na Discordzie, a w commicie użyj zakresu `coord`, np. `fix(coord): ...`.
 - Pilnuj zakresu: wszystko spoza demo_scenario odkładaj do `mvp_scope.wont` albo `should`.
 - Gdy ktoś stoi ponad 20 minut, przesuń zadanie albo uprość krok demo.
+- Po zamrożeniu funkcji (milestone „Zamrożenie funkcji”) hook commit-msg przepuszcza u teamów tylko `fix`, `docs`, `revert`. Wyjątek dla nowej funkcji zatwierdzasz sam i robisz commit jako koordynator.
+- Przypomnienia o fazach i kamieniach milowych wysyła GitHub Actions (`milestone-reminders`). Przed startem ustaw sekret repo `DISCORD_WEBHOOK_SYNC` i odpal workflow ręcznie w trybie `test`.

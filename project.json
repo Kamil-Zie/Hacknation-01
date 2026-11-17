@@ -872,7 +872,7 @@
     ],
     "task_id_format": "T-DB-NNN (tasks/T-DB-001.json, T-DB-002.json, ...)",
     "create": "node .claude/scripts/new-data-task.mjs --title \"<co się zmieniło>\" [--refs DM-001,API-002] [--breaking]",
-    "enforced_by": "Hook .claude/hooks/require-data-task.mjs blokuje git commit, który zmienia watched_paths bez pliku tasks/T-DB-*.json w tym samym commicie.",
+    "enforced_by": "Hook gita pre-commit (.githooks → .claude/scripts/git-checks.mjs) blokuje commit, który zmienia watched_paths bez pliku tasks/T-DB-*.json w tym samym commicie. Zmiany tylko w kluczach zaczynających się od _ (np. _example) nie wymagają T-DB.",
     "rules": [
       "Każda zmiana w watched_paths (model, schemat, seed, migracja) = nowe zadanie T-DB w tym samym commicie. Bez wyjątków, także dla drobnych zmian.",
       "Przy zmianie contracts/data_model.json podbij jego version (patch: dane/seed, minor: nowe pole, major: zmiana psująca).",
@@ -907,6 +907,7 @@
     "runs": "Automatycznie przy starcie każdej sesji Claude (hook SessionStart w .claude/settings.json) i ręcznie tą komendą.",
     "rules": [
       "Lead na starcie sesji czyta wynik sprawdzenia. Jeśli są pozycje ❌, najpierw mówi o nich osobie i podaje komendę instalacji, potem dopiero bierze zadanie.",
+      "check-tools włącza hooki gita (core.hooksPath=.githooks), więc te same zasady obowiązują przy ręcznych commitach w terminalu.",
       "Agent nie instaluje narzędzi systemowych sam (node, git, python); robi to osoba. Brakujące zależności projektu (npm install) agent może doinstalować.",
       "Po decyzji o stacku coord-architect dopisuje do stack_rules każde narzędzie, którego nie ma na liście."
     ],
@@ -1081,5 +1082,35 @@
       "<cluster>"
     ],
     "atlas_dns_check": true
+  },
+  "automation": {
+    "description": "Skrypty zespołu (Node, bez zależności) w .claude/scripts/. Hooki gita działają dla ludzi i agentów; check-tools włącza je automatycznie (git config core.hooksPath .githooks).",
+    "commands": {
+      "check-tools": "node .claude/scripts/check-tools.mjs — narzędzia, .env, Atlas, włącza hooki gita (też automatycznie na start sesji)",
+      "inbox": "node .claude/scripts/inbox.mjs [--all] — wiadomości czekające na ack mojego teamu i moje bez ack",
+      "new-message": "node .claude/scripts/new-message.mjs --type <typ> --to <team> [--refs ...] [--title ...] --body \"...\" [--reply-to <id>] — tworzy wiadomość i powiadamia Discord dla typów z discord.when",
+      "status": "node .claude/scripts/status.mjs — faza, następny kamień, zadania każdej osoby, blokery, T-DB, nieaktualne rezerwacje, wiadomości bez ack",
+      "validate": "node .claude/scripts/validate.mjs — spójność zadań, kontraktów, wiadomości i rezerwacji",
+      "new-data-task": "node .claude/scripts/new-data-task.mjs --title \"...\" [--refs ...] [--breaking] — obowiązkowe zadanie update danych",
+      "discord-notify": "node .claude/scripts/discord-notify.mjs <plik-wiadomości> [--dry-run] [--test]",
+      "milestone-reminder": "node .claude/scripts/milestone-reminder.mjs --list — harmonogram przypomnień (wysyła GitHub Actions)"
+    },
+    "git_hooks": {
+      "pre-commit": [
+        "sekrety w dodanych liniach (MongoDB URI z hasłem, webhook Discord, klucze API, klucze prywatne) i pliki .env / settings.local.json",
+        "ścieżki zapisu teamu (paths.write) i cudze rezerwacje",
+        "zadanie T-DB przy zmianie bazy",
+        "walidacja, gdy zmieniają się tasks/, contracts/ lub .claude/sync/"
+      ],
+      "commit-msg": [
+        "format <typ>(<zakres>): <opis> [<id-zadania>]; ID wymagane dla feat, fix, refactor, test, perf (poza zakresem coord)",
+        "zamrożenie funkcji: po milestone 'Zamrożenie funkcji' tylko fix, docs, revert i chore dla tasks/, .claude/sync/, docs/, team/, README (koordynator bez ograniczeń)"
+      ],
+      "bypass": "git commit --no-verify tylko w awarii i z informacją do koordynatora"
+    },
+    "ci": {
+      "repo-checks": ".github/workflows/repo-checks.yml: walidacja, skan sekretów, składnia skryptów (na każdy push do main)",
+      "milestone-reminders": ".github/workflows/milestone-reminders.yml: przypomnienia na Discord co 15 min w dniach 21–22.11; wymaga sekretu repo DISCORD_WEBHOOK_SYNC; ręczny test przez workflow_dispatch"
+    }
   }
 }

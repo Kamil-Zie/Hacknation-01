@@ -76,5 +76,6 @@ Jako koordynator możesz edytować wszystko, ale zanim poprawisz cudzy kod, spra
 - Stoisz ponad 20 minut? Napisz agentowi: „wyślij blocker do koordynatora” i weź inną część zadania.
 - Wiadomości między teamami to pliki w `.claude/sync/messages/`. Agent je czyta i pisze za Ciebie.
 - Pilne sprawy dodatkowo na Discordzie.
+- Hooki gita sprawdzają każdy commit: brak sekretów, tylko pliki Twojego teamu, format `typ(zakres): opis [T-xxx]`, zadanie `T-DB` przy zmianie bazy, a od 7:00 w niedzielę tylko `fix`/`docs`. Komunikat błędu mówi, co poprawić. `--no-verify` tylko w awarii i po uzgodnieniu z Kamilem.
 
 Pełne zasady: `CLAUDE.md` i `project.json`.

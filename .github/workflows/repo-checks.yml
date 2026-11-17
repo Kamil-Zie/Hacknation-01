@@ -1,0 +1,23 @@
+name: repo-checks
+# Team rules that do not depend on the app stack. coord-devops adds lint/typecheck/test/build after the skeleton.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Scripts parse
+        run: for f in .claude/scripts/*.mjs .claude/hooks/*.mjs; do node --check "$f"; done
+      - name: project.json is valid JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('project.json','utf8'))"
+      - name: Tasks, contracts and messages are consistent
+        run: node .claude/scripts/validate.mjs
+      - name: No secrets in the repository
+        run: node .claude/scripts/git-checks.mjs scan --all

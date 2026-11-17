@@ -115,6 +115,14 @@ const wanted = [hooks.sync, teamName && hooks[teamName]].filter(Boolean);
 const missingHooks = wanted.filter((h) => !process.env[h]);
 if (missingHooks.length) warn(`Discord: brak ${missingHooks.join(', ')} w .claude/settings.local.json (powiadomienia będą pomijane).`);
 
+// --- git hooks for everyone (core.hooksPath) -----------------------------------------------------
+const run = (c) => { try { return execSync(c, { cwd: projectDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { return null; } };
+if (run('git rev-parse --is-inside-work-tree') === 'true') {
+  if (run('git config --get core.hooksPath') === '.githooks') ok('Hooki gita aktywne (.githooks)');
+  else if (run('git config core.hooksPath .githooks') !== null) ok('Hooki gita włączone teraz (git config core.hooksPath .githooks)');
+  else fail('Nie udało się włączyć hooków gita. Uruchom: git config core.hooksPath .githooks');
+}
+
 // --- summary ---------------------------------------------------------------------------------
 const head = errors
   ? `[check-tools] ❌ Brakuje ${errors} wymaganych rzeczy${warnings ? `, ${warnings} ostrzeżeń` : ''}. Najpierw to napraw.`

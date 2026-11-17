@@ -40,7 +40,7 @@ Baza dev jest wspólna, więc **nie uruchamiaj seeda ani nie zmieniaj danych rę
 
 ## Baza danych = źródło aktualnych zmian
 
-Każda zmiana w `contracts/data_model.json`, `database/**` lub `apps/backend/src/models/**` wymaga **obowiązkowego zadania update danych** `tasks/T-DB-NNN.json` w tym samym commicie. Hook `.claude/hooks/require-data-task.mjs` blokuje commit bez niego.
+Każda zmiana w `contracts/data_model.json`, `database/**` lub `apps/backend/src/models/**` wymaga **obowiązkowego zadania update danych** `tasks/T-DB-NNN.json` w tym samym commicie. Hook gita `pre-commit` blokuje commit bez niego (zmiany tylko w kluczach `_example`/`_note` się nie liczą).
 
 ```bash
 node .claude/scripts/new-data-task.mjs --title "<co się zmieniło>" [--refs DM-001] [--breaking]
@@ -58,9 +58,17 @@ Wykonawca `T-DB` po zmianie kodu uruchamia `npm run seed` na wspólnej bazie dev
 6. Stoisz ponad 20 minut: `blocker` do koordynatora i bierzesz inną część zadania.
 7. Po zamrożeniu funkcji (od 7:00 rano, 20h) tylko poprawki błędów na ścieżce demo.
 
-## Wiadomości (bez narzędzi, zwykłe pliki)
+## Wiadomości (zwykłe pliki)
 
-Plik `.claude/sync/messages/<YYYYMMDD-HHMM>-<member-id>-<type>.md`:
+Twórz je skryptem, który nadaje poprawną nazwę, id i frontmatter, a dla `blocker`, `breaking_change`, `decision_request` i `handoff` od razu wysyła Discord:
+
+```bash
+node .claude/scripts/inbox.mjs                       # co czeka na ack mojego teamu (start sesji, potem co jakiś czas)
+node .claude/scripts/new-message.mjs --type handoff --to frontend --refs T-004,API-002 --title "..." --body "Wstęp\n\n## Zrobione\n- ..."
+node .claude/scripts/new-message.mjs --type ack --to frontend --reply-to <id> --body "OK"
+```
+
+Wynikowy plik `.claude/sync/messages/<YYYYMMDD-HHMM>-<member-id>-<type>.md`:
 
 ```markdown
 ---
@@ -74,16 +82,16 @@ requires_ack: false
 Dodałem opcjonalne pole `avatarUrl` do odpowiedzi API-002. Nic nie psuje.
 ```
 
-Potwierdzenie to **nowy** plik typu `ack` z polem `reply_to: <id>`. Nigdy nie edytuj cudzej wiadomości. Typy i wymagane potwierdzenia znajdziesz w `project.json → communication.message_types`. Przy `breaking_change`, `blocker`, `decision_request` i `handoff` wyślij też powiadomienie na Discord, o ile webhook jest ustawiony. Zawsze tylko przez skrypt, który buduje wspólny szablon z `communication.discord.template` (nigdy ręczny `curl`):
-
-```bash
-node .claude/scripts/discord-notify.mjs .claude/sync/messages/<plik>.md   # --dry-run podgląd, --test wiadomość testowa
-```
+Potwierdzenie to **nowy** plik typu `ack` z polem `reply_to: <id>`. Nigdy nie edytuj cudzej wiadomości. Typy i wymagane potwierdzenia znajdziesz w `project.json → communication.message_types`. Discord idzie zawsze przez wspólny szablon z `communication.discord.template`, nigdy ręcznym `curl` (`new-message.mjs` robi to sam; ręcznie: `node .claude/scripts/discord-notify.mjs <plik> [--dry-run]`).
 
 Sekcje `## Zrobione`, `## Potrzebuję od <team>` itd. w treści wiadomości stają się polami na Discordzie, a opcjonalne pole `title` we frontmatterze trafia do tytułu. Wzór: `communication.message_example`.
 
-## Commity
+## Commity i hooki gita
 
-Format: `<typ>(<zakres>): <opis> [<id-zadania>]`, np. `feat(api): GET /items z paginacją [T-002]`. Wiadomości sync i zmiany rezerwacji idą w tym samym commicie co zmiana, której dotyczą.
+Format: `<typ>(<zakres>): <opis> [<id-zadania>]`, np. `feat(api): GET /items z paginacją [T-002]`. ID zadania jest wymagane dla `feat`, `fix`, `refactor`, `test`, `perf`. Wiadomości sync i zmiany rezerwacji idą w tym samym commicie co zmiana, której dotyczą.
+
+Hooki gita (`.githooks`, włącza je `check-tools`) sprawdzają każdy commit, także ręczny: sekrety (URI Mongo z hasłem, webhooki, klucze), pliki spoza `paths.write` teamu i cudze rezerwacje, zadanie `T-DB` przy zmianie bazy, spójność `tasks/`, `contracts/`, `.claude/sync/` (`validate.mjs`), format commita i **zamrożenie funkcji** (od 7:00 tylko `fix`, `docs`, `revert`). Gdy hook blokuje, popraw przyczynę z komunikatu. Nie używaj `--no-verify` bez zgody koordynatora. Kontrakty i zadania wzoruj na `_example` w `contracts/*.json` i `tasks/_TEMPLATE.json`.
+
+Koordynator: `node .claude/scripts/status.mjs` pokazuje fazę, zadania wszystkich, blokery, `T-DB`, nieaktualne rezerwacje i wiadomości bez ack.
 
 ## Odpowiadaj po polsku, kod i commity po angielsku.
