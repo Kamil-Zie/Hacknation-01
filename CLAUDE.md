@@ -17,7 +17,7 @@ Aktywny tryb to `project.json → modes.active` (teraz `hackathon`). Ustawienia 
 
 ## Kim jestem
 
-Zmienna środowiskowa `HACK_MEMBER` (np. `frontend-1`) mówi, czyja to sesja. Team i uprawnienia znajdziesz w `project.json → teams`. Pliki spoza `paths.write` Twojego teamu blokuje hook `.claude/hooks/guard-paths.mjs`. Nie obchodź go (np. przez Bash `echo >`, `sed -i`). Jeśli potrzebujesz zmiany w cudzym obszarze, wyślij wiadomość.
+Zmienna środowiskowa `HACK_MEMBER` (np. `frontend-1`) mówi, czyja to sesja. Team i uprawnienia znajdziesz w `project.json → teams`. Pliki spoza `paths.write` Twojego teamu blokuje hook `.claude/hooks/guard-paths.mjs` (Edit/Write), a zapis z terminala (`>`, `tee`, `sed -i`, `cp`/`mv`/`rm`, `node -e` z zapisem) blokuje `.claude/hooks/guard-bash.mjs`. Nie obchodź ich. Pliki zmieniaj narzędziami Edit/Write albo skryptami z `.claude/scripts/`. Jeśli potrzebujesz zmiany w cudzym obszarze, wyślij wiadomość.
 
 ## Stack
 

@@ -1,0 +1,28 @@
+# Same line endings on every OS. Git hooks and scripts with CRLF break on macOS/Linux
+# and in Git Bash on Windows ("/bin/sh^M: bad interpreter").
+* text=auto eol=lf
+
+.githooks/* text eol=lf
+*.sh text eol=lf
+*.mjs text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+
+# Windows-only scripts keep CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.mp4 binary
+*.woff binary
+*.woff2 binary

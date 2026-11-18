@@ -149,12 +149,31 @@ function scanAll() {
   }
 }
 
+// Every line ever added in any commit (run before making the repo public).
+function scanHistory() {
+  if (git('rev-parse --is-shallow-repository').trim() === 'true') {
+    fail('Płytki klon: najpierw git fetch --unshallow (albo --depth=10000), inaczej historia nie jest pełna.');
+    return;
+  }
+  const log = git('log --all -p -U0 --no-color --format=COMMIT:%h');
+  let commit = ''; let file = '';
+  for (const l of log.split('\n')) {
+    if (l.startsWith('COMMIT:')) { commit = l.slice(7); continue; }
+    if (l.startsWith('+++ ')) { file = l.slice(6); continue; }
+    if (l.startsWith('+') && !l.startsWith('+++')) scanText(`${file} (commit ${commit})`, l.slice(1), -1);
+  }
+  const ever = lines(git('log --all --format= --name-only --diff-filter=A'));
+  for (const f of new Set(ever)) if (FORBIDDEN_FILES.some((re) => re.test(f))) fail(`Plik ${f} był kiedyś w historii repo.`);
+  if (!problems.length) console.log(`[git-checks] ✅ Historia czysta: ${lines(git('rev-list --all')).length} commitów bez sekretów.`);
+}
+
 if (cmd === 'pre-commit') preCommit();
 else if (cmd === 'commit-msg') commitMsg(arg);
+else if (cmd === 'scan' && arg === '--history') scanHistory();
 else if (cmd === 'scan') scanAll();
 else { console.error('Usage: git-checks.mjs pre-commit | commit-msg <file> | scan --all'); process.exit(2); }
 
 if (problems.length) {
-  console.error(`\n[git-checks] ❌ Commit zablokowany:\n${problems.map((x) => `  - ${x}`).join('\n')}\n`);
+  console.error(`\n[git-checks] ❌ ${cmd === 'scan' ? 'Znaleziono problemy (usuń sekret, zmień hasło/klucz i wyczyść historię przed upublicznieniem)' : 'Commit zablokowany'}:\n${problems.map((x) => `  - ${x}`).join('\n')}\n`);
   process.exit(1);
 }

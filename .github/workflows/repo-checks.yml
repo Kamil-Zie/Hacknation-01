@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -21,3 +23,5 @@ jobs:
         run: node .claude/scripts/validate.mjs
       - name: No secrets in the repository
         run: node .claude/scripts/git-checks.mjs scan --all
+      - name: No secrets in the whole git history
+        run: node .claude/scripts/git-checks.mjs scan --history
