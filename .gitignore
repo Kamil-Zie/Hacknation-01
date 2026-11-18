@@ -9,3 +9,10 @@ coverage/
 .claude/settings.local.json
 .DS_Store
 .claude/state/
+
+# VS Code: shared settings only
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json

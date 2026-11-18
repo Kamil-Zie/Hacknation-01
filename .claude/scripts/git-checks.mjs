@@ -6,7 +6,8 @@
 //   node .claude/scripts/git-checks.mjs scan --all         secret scan of all tracked files (CI)
 //
 // Emergency bypass (tell the coordinator!): git commit --no-verify
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { project, loadLocalEnv, teamOf, matchesAny, git, lines, projectDir, now, freezeAt } from './lib.mjs';
 import { validate } from './validate.mjs';
@@ -108,10 +109,54 @@ function preCommit() {
     }
   }
 
+  // One code style: Prettier and ESLint on staged code files, once the skeleton installed them.
+  codeStyle(files.filter((f) => existsSync(resolve(projectDir, f))));
+
   // Repo consistency (tasks, contracts, messages) only when such files change.
   if (files.some((f) => /^(tasks|contracts)\/|^\.claude\/sync\//.test(f))) {
     const { errors } = validate();
     for (const e of errors) fail(`Walidacja: ${e}`);
+  }
+}
+
+// Finds a locally installed binary (app's node_modules first, then the root's). Null before the skeleton.
+function localBin(name, appDir) {
+  const ext = process.platform === 'win32' ? '.cmd' : '';
+  for (const dir of [appDir, '.'].filter(Boolean)) {
+    const bin = resolve(projectDir, dir, 'node_modules/.bin', name + ext);
+    if (existsSync(bin)) return bin;
+  }
+  return null;
+}
+const runBin = (bin, args, cwd) => {
+  try { execFileSync(bin, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8', shell: process.platform === 'win32' }); return null; }
+  catch (e) { return `${e.stdout || ''}${e.stderr || ''}`.trim(); }
+};
+
+function codeStyle(files) {
+  const groups = new Map(); // app dir -> files (relative to repo)
+  for (const f of files) {
+    const app = (f.match(/^apps\/[^/]+/) || [null])[0];
+    const key = app || '.';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(f);
+  }
+  for (const [app, list] of groups) {
+    const pretty = list.filter((f) => /\.(ts|tsx|js|jsx|mjs|cjs|json|css|scss|md|yml|yaml|html)$/.test(f));
+    const prettier = pretty.length && localBin('prettier', app === '.' ? null : app);
+    if (prettier) {
+      const out = runBin(prettier, ['--check', '--ignore-unknown', ...pretty.map((f) => resolve(projectDir, f))], projectDir);
+      if (out) {
+        const bad = out.split('\n').filter((l) => /^\[warn\] (?!Code style issues)/.test(l)).map((l) => l.replace('[warn] ', '').replace(projectDir + '/', ''));
+        fail(`Formatowanie niezgodne ze standardem (Prettier): ${bad.join(', ') || pretty.join(', ')}. Napraw: npx prettier --write ${bad.join(' ') || pretty.join(' ')} i dodaj pliki ponownie.`);
+      }
+    }
+    const lintable = list.filter((f) => /\.(ts|tsx|js|jsx)$/.test(f));
+    const eslint = lintable.length && app !== '.' && localBin('eslint', app);
+    if (eslint) {
+      const out = runBin(eslint, ['--max-warnings=0', ...lintable.map((f) => resolve(projectDir, f))], resolve(projectDir, app));
+      if (out) fail(`ESLint w ${app} (docs/coding-standard.md):\n${out.split('\n').slice(0, 25).join('\n')}`);
+    }
   }
 }
 

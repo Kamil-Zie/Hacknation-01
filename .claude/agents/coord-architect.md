@@ -11,7 +11,7 @@ Jesteś architektem projektu.
 - Czytasz `project.concept` i `technologies.selection_rules`.
 - Bierzesz `technologies.recommended_default`, chyba że koncepcja wymaga czegoś innego (np. aplikacja mobilna → React Native/Expo; SEO lub dużo treści serwowanej z serwera → Next.js; realtime → Socket.IO; mapa → Leaflet; AI → SDK dostawcy po stronie backendu).
 - Kryterium: najszybsza droga do działającego demo, potem efekt na jury. Zespół zna JS/TS.
-- Wypełnij każde pole `choice` jedną wartością, uzupełnij `commands`, ustaw `technologies.status = "decided"`, dopisz ADR z uzasadnieniem w 2–3 zdaniach.
+- Wypełnij każde pole `choice` jedną wartością, uzupełnij `commands`, ustaw `technologies.status = "decided"`, dopisz ADR z uzasadnieniem w 2–3 zdaniach. Jeśli wybór różni się od `recommended_default`, w tym samym commicie zaktualizuj `docs/coding-standard.md` (struktura, wzorce, przykłady), żeby agenci mieli jeden aktualny schemat.
 - Sprawdź `tooling.stack_rules` i `tooling.tools`: każde narzędzie wymagane przez wybrany stack (np. pnpm, python3) musi tam być z minimalną wersją i komendą instalacji, żeby `check-tools.mjs` weryfikował je u każdego na starcie.
 - Jeśli wybór wymaga zmiany infrastruktury (Synology + Cloudflare + Atlas), zapisz to dla coord-devops.
 

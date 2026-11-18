@@ -299,7 +299,9 @@
       "code_style": {
         "frontend": "Używanie języka angielskiego, camelCase dla zmiennych i funkcji, PascalCase dla komponentów React, JSX/TSX zgodne z ESLint i Prettier",
         "backend": "używanie języka angielskiego, camelCase dla zmiennych i funkcji, PascalCase dla klas, zgodne z ESLint i Prettier",
-        "frontend_responsive": "Frontend zawsze responsywny, mobile-first. Standard i breakpointy: contracts/ui.json → responsive i design_tokens.breakpoints. Ekran ścieżki demo jest gotowy dopiero, gdy działa na 360, 768, 1280 i 1920 px."
+        "frontend_responsive": "Frontend zawsze responsywny, mobile-first. Standard i breakpointy: contracts/ui.json → responsive i design_tokens.breakpoints. Ekran ścieżki demo jest gotowy dopiero, gdy działa na 360, 768, 1280 i 1920 px.",
+        "standard": "docs/coding-standard.md: jeden obowiązkowy schemat kodu dla wszystkich agentów (struktura, nazewnictwo, importy, warstwy, błędy, wzorce). Formatowanie: .prettierrc.json + .editorconfig; VS Code: .vscode/.",
+        "enforced_by": "Hook gita pre-commit: Prettier --check i ESLint --max-warnings=0 na zmienionych plikach, gdy narzędzia są zainstalowane (od szkieletu). Reviewerzy sprawdzają zgodność ze standardem."
       },
       "api": {
         "naming": "zasoby w liczbie mnogiej, np. /items, /users",
@@ -309,6 +311,7 @@
       "definition_of_done": [
         "Krok scenariusza demo działa od kliknięcia do wyniku",
         "Implementacja zgadza się z kontraktem w contracts/",
+        "Kod zgodny z docs/coding-standard.md, sformatowany Prettierem, bez błędów ESLint i typecheck",
         "Ekrany frontendu działają responsywnie na 360, 768, 1280 i 1920 px (contracts/ui.json → responsive)",
         "Zmiany są na gałęzi głównej, a rezerwacja zwolniona z opisem",
         "Wiadomości breaking_change dotyczące zadania są potwierdzone"

@@ -13,5 +13,8 @@ model: sonnet
 4. Jeśli odpowiedź API różni się od kontraktu: nie dopasowuj frontendu po cichu. Zgłoś to w raporcie (lead wyśle `question` do backendu), a w międzyczasie zastosuj minimalne obejście z komentarzem `TODO(contract)`.
 5. Ustaw adres API ze zmiennej środowiskowej (dev: `http://localhost:3000/api/v1`, prod: `https://api.kamil-zielinski.pl/api/v1`).
 
+## Standard kodu (obowiązkowy)
+Przed pierwszą zmianą przeczytaj `docs/coding-standard.md` i trzymaj się go co do joty: struktura folderów, nazwy plików i symboli, kolejność importów, wzorzec warstw, format błędów, komentarz z ID kontraktu na początku pliku. Nie wymyślaj własnych wzorców ani nie „poprawiaj” stylu cudzego kodu. Jeśli w kodzie już jest wzorzec dla podobnej rzeczy, skopiuj go. Formatuje Prettier (`npx prettier --write <pliki>`), a hook gita odrzuca niesformatowane pliki i błędy ESLint.
+
 ## Raport dla leada
 Na koniec zwróć krótko: zmienione pliki, co działa (i jak to sprawdziłeś), co zostało, czy trzeba wysłać wiadomość do innego teamu (typ + treść). Nie commitujesz i nie wysyłasz wiadomości sam, chyba że lead o to poprosi.

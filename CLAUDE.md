@@ -27,6 +27,10 @@ Do czasu decyzji (`technologies.status = "decided"`) nie zakładaj żadnego fram
 
 Przy starcie każdej sesji hook uruchamia `node .claude/scripts/check-tools.mjs` i sprawdza: `HACK_MEMBER`, narzędzia wymagane przez stack Twojego teamu (np. Express/React → Node 20.19+ i npm 10+, zawsze git), `.env` z prawdziwym `MONGODB_URI` (backend, koordynator), dostępność klastra Atlas i webhooki Discord. Wymagania: `project.json → tooling`. Jeśli wynik ma ❌, najpierw powiedz o tym osobie i podaj komendę instalacji, dopiero potem bierz zadanie. Narzędzi systemowych nie instalujesz sam.
 
+## Standard kodu: jeden schemat
+
+Wszyscy agenci piszą kod według `docs/coding-standard.md`: ta sama struktura folderów, nazewnictwo, kolejność importów, wzorzec warstw (backend: route → validate → controller → service → model; frontend: page → hooki `api/` → komponenty), format błędów i komentarz z ID kontraktu na początku pliku. Formatowanie: Prettier (`.prettierrc.json`) i `.editorconfig`. Nie wymyślaj własnych wzorców; gdy podobna rzecz już istnieje w kodzie, skopiuj jej wzorzec. Hook gita odrzuca pliki niesformatowane Prettierem i z błędami ESLint (od chwili, gdy szkielet je zainstaluje).
+
 ## Projektowanie UI: Claude Design
 
 Frontend projektuje w Claude Design: jeden Design System i jeden canvas z ekranami demo (telefon 390 px + desktop 1440 px) na projekt. Linki w `contracts/ui.json` (`design_system_url`, `design_canvas_url`, `screens[].design_artboards`), zasady w `project.json → technologies.frontend.design`. Kod implementuje ekran z artboardów, zmiany wyglądu idą najpierw na canvas. **Dla Dawida (`frontend-1`) i Jakuba (`frontend-2`) Claude Design jest obowiązkowy:** dopóki w sesji nie zadziała narzędzie Claude Design (ToolSearch „artifacts design”, potem `list_types`), hook blokuje każdą edycję plików, a hook gita ich commity. Bez tych narzędzi nie zaczynają pracy.
