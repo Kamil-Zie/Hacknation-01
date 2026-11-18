@@ -53,7 +53,7 @@ if (!args.includes('--dry-run')) {
     process.exit(1);
   }
   if (!/^https:\/\/(canary\.|ptb\.)?discord(app)?\.com\/api\/webhooks\/\d+\/[\w-]+/.test(url)) {
-    console.error(`DISCORD_WEBHOOK_SYNC is not a Discord webhook URL (length ${url.length}, starts with "${url.slice(0, 8)}"). ` +
+    console.error(`DISCORD_WEBHOOK_SYNC is not a Discord webhook URL (length ${url.length}, ${url.startsWith('https://') ? 'starts with https:// but the path is wrong' : 'does not start with https://'}). ` +
       'The secret value must be the full address: https://discord.com/api/webhooks/<id>/<token>. Nothing was sent.');
     process.exit(1);
   }
