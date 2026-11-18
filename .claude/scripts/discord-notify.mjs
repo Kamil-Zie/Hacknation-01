@@ -17,6 +17,9 @@
 // Refs and Ack fields are added automatically from frontmatter.
 import { readFileSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
+import { loadLocalEnv } from './lib.mjs';
+
+loadLocalEnv();
 
 const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
 const args = process.argv.slice(2);
