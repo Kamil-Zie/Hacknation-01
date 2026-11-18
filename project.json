@@ -218,18 +218,13 @@
                 "container": 80,
                 "host": "127.0.0.1:18080",
                 "tunnel_hostname": "app.kamil-zielinski.pl",
-                "tunnel_service": "http://frontend:80"
+                "tunnel_service": "http://localhost:18080"
               },
               "backend": {
                 "container": 3000,
                 "host": "127.0.0.1:13000",
                 "tunnel_hostname": "api.kamil-zielinski.pl",
-                "tunnel_service": "http://backend:3000"
-              },
-              "cloudflared": {
-                "container": null,
-                "host": null,
-                "note": "tylko ruch wychodzący"
+                "tunnel_service": "http://localhost:13000"
               }
             },
             "outbound": [
@@ -248,15 +243,15 @@
               5005,
               5006,
               6690
-            ]
+            ],
+            "tunnel": "istniejący kontener cloudflare-synology-kamil (cloudflare/cloudflared, sieć host); projekt nie ma własnego cloudflared"
           },
           "env": {
             "PORT": "3000",
             "NODE_ENV": "production",
             "CORS_ORIGIN": "https://app.kamil-zielinski.pl",
             "VITE_API_URL": "https://api.kamil-zielinski.pl/api/v1",
-            "MONGODB_URI": "<hacknation_prod, tylko w .env.prod na NAS-ie>",
-            "TUNNEL_TOKEN": "<tylko w .env na NAS-ie>"
+            "MONGODB_URI": "<hacknation_prod, tylko w .env.prod na NAS-ie>"
           }
         }
       },

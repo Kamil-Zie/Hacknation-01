@@ -1,6 +1,6 @@
 # Wdrożenie prod: Synology DSM + Cloudflare Tunnel
 
-Prod działa na Synology DS225+ (Container Manager). Ruch z internetu idzie wyłącznie przez Cloudflare Tunnel, więc **na routerze nie otwieramy żadnego portu**. Baza: MongoDB Atlas, klaster `hacknation`, baza `hacknation_prod`.
+Prod działa na Synology DS225+ (Container Manager). Ruch z internetu idzie wyłącznie przez Cloudflare Tunnel istniejącego kontenera `cloudflare-synology-kamil` (sieć **host**), więc **na routerze nie otwieramy żadnego portu**. Baza: MongoDB Atlas, klaster `hacknation`, baza `hacknation_prod`.
 
 ## Porty
 
@@ -10,40 +10,28 @@ Prod działa na Synology DS225+ (Container Manager). Ruch z internetu idzie wył
 |---|---|---|---|
 | `frontend` | **80** | **18080** | nginx serwujący zbudowany frontend (Vite `dist/`) |
 | `backend` | **3000** | **13000** | API Node/Express (`PORT=3000`), prefiks `/api/v1` |
-| `cloudflared` | — | — | tunel do Cloudflare; tylko połączenia wychodzące, nic nie publikuje |
+| `cloudflare-synology-kamil` | — | — | istniejący tunel na NAS-ie (sieć host), poza projektem; tylko połączenia wychodzące |
 
-`cloudflared` łączy się z kontenerami po nazwach w sieci Dockera (`frontend:80`, `backend:3000`). Porty 18080 i 13000 są wystawione tylko na `127.0.0.1`, żeby po SSH na NAS dało się sprawdzić `curl localhost:13000/api/v1/health`; z sieci LAN ani z internetu nie są dostępne.
+Tunel łączy się z `localhost:18080` i `localhost:13000`. Porty są wystawione tylko na `127.0.0.1`: z sieci LAN ani z internetu nie są dostępne, a po SSH na NAS sprawdzisz backend przez `curl localhost:13000/api/v1/health`.
 
-### Cloudflare Tunnel: Public Hostnames
+### Cloudflare Tunnel: Public Hostnames (USTALONE)
 
-Zero Trust → Networks → Tunnels → `hacknation` → Public Hostname:
+Tunel kontenera `cloudflare-synology-kamil` (sieć host) → Zero Trust → Networks → Tunnels → Public Hostname:
 
 | Subdomena | Domena | Typ usługi | URL usługi |
 |---|---|---|---|
-| `app` | `kamil-zielinski.pl` | HTTP | `frontend:80` |
-| `api` | `kamil-zielinski.pl` | HTTP | `backend:3000` |
+| `app` | `kamil-zielinski.pl` | HTTP | `localhost:18080` |
+| `api` | `kamil-zielinski.pl` | HTTP | `localhost:13000` |
+
+`cloudflared` w sieci host widzi porty NAS-a jako `localhost`, więc kontenery projektu wystawiają porty tylko na `127.0.0.1` (niewidoczne z LAN i internetu).
 
 Typ **HTTP**, nie HTTPS: szyfrowanie robi Cloudflare (przeglądarka ↔ Cloudflare) i tunel (Cloudflare ↔ NAS). Wewnątrz NAS-a ruch idzie po sieci Dockera.
-
-Jeśli `cloudflared` działa poza Compose (pakiet DSM albo osobny kontener bez sieci `hacknation`), zamiast nazw kontenerów użyj `http://<IP-NAS>:18080` i `http://<IP-NAS>:13000`, a w `docker-compose.yml` zmień wiązanie z `127.0.0.1:` na `<IP-NAS>:`.
-
-### Wariant faktyczny: istniejący `cloudflared` na NAS-ie (`cloudflare-synology-kamil`)
-
-Na NAS-ie działa już kontener `cloudflare-synology-kamil` (`cloudflare/cloudflared`), osobno od projektu. Używamy go zamiast trzeciego kontenera w Compose: w jego tunelu dodajemy dwa Public Hostnames. Usługa zależy od sieci tego kontenera (Container Manager → kontener → zakładka Sieć):
-
-| Sieć `cloudflare-synology-kamil` | `app` → | `api` → | Wiązanie portów w compose |
-|---|---|---|---|
-| **host** | `http://localhost:18080` | `http://localhost:13000` | `127.0.0.1:18080:80`, `127.0.0.1:13000:3000` (bez zmian) |
-| **bridge** (domyślna) | `http://<IP-NAS-w-LAN>:18080` | `http://<IP-NAS-w-LAN>:13000` | zmień `127.0.0.1:` na `<IP-NAS-w-LAN>:` |
-| podłączony do sieci `hacknation` (`docker network connect hacknation cloudflare-synology-kamil`) | `http://frontend:80` | `http://backend:3000` | dowolne |
-
-W tym wariancie usuń usługę `cloudflared` z `docker-compose.yml` poniżej. Porty 18080 i 13000 nie kolidują z innymi kontenerami na NAS-ie (vaultwarden, legalne-lowiska, node-1), o ile żaden z nich ich nie publikuje; sprawdź w Container Manager → kontener → Port.
 
 ### Ruch wychodzący z NAS-a (zapora DSM i router)
 
 | Port | Protokół | Dokąd | Po co |
 |---|---|---|---|
-| 7844 | TCP i UDP | Cloudflare (`region1/2.v2.argotunnel.com`) | tunel (QUIC; fallback HTTP/2) |
+| 7844 | TCP i UDP | Cloudflare (`region1/2.v2.argotunnel.com`) | tunel `cloudflare-synology-kamil` (już działa) |
 | 443 | TCP | Cloudflare, GitHub (GHCR), npm | API tunelu, pobieranie obrazów |
 | 27017 | TCP | `*.mongodb.net` | MongoDB Atlas |
 
@@ -80,26 +68,16 @@ services:
       retries: 3
     networks: [hacknation]
 
-  cloudflared:
-    image: cloudflare/cloudflared:latest # po pierwszym działającym starcie przypnij konkretną wersję
-    restart: unless-stopped
-    command: tunnel --no-autoupdate run
-    environment:
-      TUNNEL_TOKEN: ${TUNNEL_TOKEN} # z .env na NAS-ie, nigdy w repo
-    depends_on: [frontend, backend]
-    networks: [hacknation]
-
 networks:
   hacknation:
 ```
 
-Plik i Dockerfile'e aplikacji tworzy `coord-devops` w fazie Szkielet; powyższe to docelowy układ portów, którego ma się trzymać.
+Plik i Dockerfile'e aplikacji tworzy `coord-devops` w fazie Szkielet; powyższe to docelowy układ portów, którego ma się trzymać. Bez własnego kontenera `cloudflared`: tunel zapewnia istniejący `cloudflare-synology-kamil`.
 
 ## Zmienne prod
 
 | Zmienna | Gdzie | Wartość |
 |---|---|---|
-| `TUNNEL_TOKEN` | `.env` obok compose na NAS-ie | token tunelu z Cloudflare Zero Trust |
 | `MONGODB_URI` | `.env.prod` na NAS-ie | URI użytkownika prod do bazy `hacknation_prod` |
 | `PORT` | `.env.prod` | `3000` |
 | `NODE_ENV` | `.env.prod` | `production` |
@@ -119,8 +97,8 @@ Pliki `.env*` z prawdziwymi wartościami są tylko na NAS-ie (uprawnienia 600), 
 ## Kolejność konfiguracji
 
 1. DSM: Container Manager zainstalowany, użytkownik z dostępem do Dockera, SSH włączone tylko w LAN.
-2. Cloudflare Zero Trust: utwórz tunel `hacknation` (typ Cloudflared), skopiuj token do `.env` na NAS-ie.
-3. Dodaj dwa Public Hostnames z tabeli wyżej.
+2. Cloudflare Zero Trust: w tunelu kontenera `cloudflare-synology-kamil` dodaj dwa Public Hostnames z tabeli wyżej (`localhost:18080`, `localhost:13000`).
+3. Sprawdź w Container Manager, że żaden inny kontener nie publikuje portów 18080 i 13000.
 4. Atlas: użytkownik prod z `readWrite` tylko do `hacknation_prod`; URI do `.env.prod`.
 5. Po szkielecie: `docker compose pull && docker compose up -d` w folderze projektu na NAS-ie.
 6. Sprawdź: `curl -s https://api.kamil-zielinski.pl/api/v1/health` zwraca 200, `https://app.kamil-zielinski.pl` ładuje aplikację, w konsoli przeglądarki brak błędów CORS.

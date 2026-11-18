@@ -18,7 +18,7 @@ Odpowiadasz za szkielet repo, środowiska i wdrożenie. Infrastruktura opisana j
 
 ## Wdrożenie
 - Obrazy Docker budowane w GitHub Actions i publikowane do GHCR; na Synology `docker compose pull && docker compose up -d` (Container Manager).
-- Cloudflare Tunnel: `app.kamil-zielinski.pl` → `http://frontend:80`, `api.kamil-zielinski.pl` → `http://backend:3000`. SSL po stronie Cloudflare. Porty, `docker-compose.yml` dla NAS-a i zmienne prod są ustalone w `docs/deploy.md` (i `environment_config.prod.ports`): trzymaj się ich, nie zmieniaj portów bez uzgodnienia z Kamilem.
+- Cloudflare Tunnel: `app.kamil-zielinski.pl` → `http://localhost:18080`, `api.kamil-zielinski.pl` → `http://localhost:13000` przez istniejący kontener `cloudflare-synology-kamil` (sieć host); w compose projektu nie ma własnego `cloudflared`. SSL po stronie Cloudflare. Porty, `docker-compose.yml` dla NAS-a i zmienne prod są ustalone w `docs/deploy.md` (i `environment_config.prod.ports`): trzymaj się ich, nie zmieniaj portów bez uzgodnienia z Kamilem.
 - MongoDB Atlas: bazy `hacknation` (dev) i `hacknation_prod`, każda z własnym użytkownikiem readWrite tylko do swojej bazy. Network Access 0.0.0.0/0 na czas hackathonu. Przy wdrożeniu odtwórz `hacknation_prod` seedem.
 - Kroki wymagające dostępu do NAS-a, Cloudflare albo Atlas, których nie możesz wykonać, zapisz jako krótką checklistę dla Kamila.
 
