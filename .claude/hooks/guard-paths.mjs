@@ -39,6 +39,22 @@ if (rel.startsWith('..')) process.exit(0);
 // Osobiste ustawienia lokalne zawsze wolno edytować.
 if (rel === '.claude/settings.local.json') process.exit(0);
 
+// Claude Design is mandatory for some members (project.json → technologies.frontend.design.required_for):
+// no file in the repo may be edited until an artifacts MCP tool has succeeded in THIS session.
+const design = project.technologies?.frontend?.design || {};
+if (design.required && (design.required_for || []).includes(member)) {
+  let ok = false;
+  try {
+    const st = JSON.parse(readFileSync(resolve(projectDir, '.claude/state/design-mcp.json'), 'utf8'));
+    ok = !!st.sessions?.[data.session_id];
+  } catch {}
+  if (!ok) {
+    block(`Claude Design jest obowiązkowy dla ${member}: nie zaczynasz pracy, dopóki narzędzia Claude Design nie działają w tej sesji. ` +
+      `Załaduj je przez ToolSearch („artifacts design”) i wywołaj list_types (albo list_artifacts z typem „Design System”). ` +
+      `Udane wywołanie odblokuje edycję. Brak narzędzi: osoba loguje Claude Code kontem claude.ai (/login), sprawdza /mcp i uruchamia sesję ponownie.`);
+  }
+}
+
 const globToRegex = (g) => new RegExp('^' + g
   .replace(/[.+^${}()|[\]\\]/g, '\\$&')
   .replace(/\*\*\/?/g, '\u0000')

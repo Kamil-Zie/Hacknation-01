@@ -86,6 +86,13 @@
       },
       "design": {
         "tool": "Claude Design: artefakty claude.ai typu Design System (tokeny, komponenty, brand) i Design (canvas z ekranami)",
+        "required": true,
+        "required_for": [
+          "frontend-1",
+          "frontend-2"
+        ],
+        "enforced_by": "Hook PostToolUse (.claude/hooks/design-mcp-mark.mjs) zapisuje udane wywołanie narzędzia Claude Design w .claude/state/design-mcp.json. guard-paths.mjs blokuje każdą edycję plików repo przez frontend-1 i frontend-2, dopóki w tej sesji nie było udanego wywołania. Hook gita pre-commit blokuje ich commity, jeśli Claude Design nie działał u nich w ostatnich 24h.",
+        "verify": "Na start sesji: ToolSearch „artifacts design”, potem list_types albo list_artifacts z typem „Design System”. Udane wywołanie odblokowuje pracę.",
         "access": "Narzędzia artefaktów (list_types, create_from_type, publish_files, list_artifacts, list_files, read_file) są dostępne w Claude Code po zalogowaniu kontem claude.ai (/login; sprawdź /mcp). Agent szuka ich przez ToolSearch: 'artifacts design'.",
         "design_system": {
           "title": "HackNation – <nazwa projektu> Design System",
@@ -105,7 +112,7 @@
         ],
         "timebox": "Projekt ekranu na canvasie maks. 20 min. Frontend nie czeka na projekt: fe-developer zaczyna od contracts/ui.json, a dopasowuje wygląd, gdy artboard jest gotowy.",
         "sharing": "Właściciel (osoba, która utworzyła artefakt) udostępnia Design System i canvas reszcie zespołu w claude.ai (Share). Agent nie może zmienić udostępniania; jeśli inna osoba nie widzi artefaktu, zgłasza to leadowi.",
-        "fallback": "Brak narzędzi artefaktów w sesji: pracuj tylko na contracts/ui.json, napisz o tym w raporcie dla leada. Nie blokuj zadania."
+        "fallback": "Brak fallbacku dla frontend-1 i frontend-2: bez działających narzędzi Claude Design nie zaczynają pracy. Osoba loguje Claude Code kontem claude.ai (/login), sprawdza /mcp i restartuje sesję; nie da się w 20 min → blocker do koordynatora."
       }
     },
     "backend": {

@@ -12,7 +12,7 @@ Projektujesz w Claude Design: artefakty claude.ai typu **Design System** i **Des
 - **Jeden Design System na projekt.** Najpierw `list_artifacts` z typem „Design System”: jeśli istnieje system z tytułem z `technologies.frontend.design.design_system.title`, używaj go. Jeśli nie, utwórz go z tokenów (mały: 6–10 kolorów, 5–7 stylów tekstu, odstępy, promienie, README) i zapisz link w `contracts/ui.json → design_system_url`.
 - **Jeden canvas na projekt** (typ „Design”), podpięty pod ten Design System. Każdy ekran ścieżki demo = dwa artboardy: telefon 390 px i desktop/projektor 1440 px (strona płynna, nie sztywna). Link w `design_canvas_url`, ścieżki artboardów w `screens[].design_artboards`.
 - Projekt ekranu maks. 20 min. Bez lorem ipsum: mikroteksty po polsku i realistyczne dane demo.
-- Gdy w sesji nie ma narzędzi artefaktów: projektuj tylko w `contracts/ui.json` i napisz to w raporcie. Nie blokuj pracy.
+- Narzędzia Claude Design są obowiązkowe. Gdy ich nie ma albo zwracają błąd: przerwij i zgłoś to leadowi w raporcie. Nie projektuj „na sucho” tylko w `contracts/ui.json`.
 - Nie zmieniasz udostępniania artefaktów. W raporcie przypomnij leadowi, żeby właściciel udostępnił je zespołowi, jeśli to nowe artefakty.
 
 ## Zadania

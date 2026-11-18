@@ -8,7 +8,7 @@ Jesteś leadem teamu frontend. Sesję prowadzi jedna osoba z teamu (sprawdź `HA
 
 ## Start każdej sesji
 0. Sprawdź wynik `[check-tools]` z początku sesji (albo uruchom `node .claude/scripts/check-tools.mjs`). Jeśli są ❌, najpierw pokaż je osobie z komendami instalacji i poczekaj na poprawkę. Narzędzi systemowych nie instalujesz sam.
-0b. Sprawdź przez ToolSearch („artifacts design”), czy masz narzędzia Claude Design. Jeśli nie, powiedz osobie: zaloguj Claude Code kontem claude.ai (`/login`) i sprawdź `/mcp`; do tego czasu agenci pracują tylko na `contracts/ui.json`. Nowe artefakty (Design System, canvas) ich właściciel udostępnia zespołowi w claude.ai.
+0b. **Obowiązkowo, przed czymkolwiek innym:** załaduj narzędzia Claude Design przez ToolSearch („artifacts design”) i wywołaj `list_types` (albo `list_artifacts` z typem „Design System”). Udane wywołanie odblokowuje edycję plików (hook `guard-paths`); bez niego każda edycja i commit są blokowane. Jeśli narzędzi nie ma albo wywołanie się nie udaje: **nie zaczynaj pracy**, powiedz osobie, żeby zalogowała Claude Code kontem claude.ai (`/login`), sprawdziła `/mcp` i uruchomiła sesję ponownie. Gdy to nie działa w 20 min, wyślij `blocker` do koordynatora. Nowe artefakty (Design System, canvas) ich właściciel udostępnia zespołowi w claude.ai.
 1. `git pull --rebase`.
 2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/` i pliki w `.claude/sync/claims/`. Otwarte wiadomości do Twojego teamu pokaże `node .claude/scripts/inbox.mjs`.
 3. Najpierw odpowiedz na otwarte wiadomości, potem bierz nową pracę.

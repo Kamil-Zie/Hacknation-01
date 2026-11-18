@@ -115,6 +115,17 @@ const wanted = [hooks.sync, teamName && hooks[teamName]].filter(Boolean);
 const missingHooks = wanted.filter((h) => !process.env[h]);
 if (missingHooks.length) warn(`Discord: brak ${missingHooks.join(', ')} w .claude/settings.local.json (powiadomienia będą pomijane).`);
 
+// --- Claude Design (mandatory for some members) -------------------------------------------------
+const design = tech.frontend?.design || {};
+if (member && design.required && (design.required_for || []).includes(member)) {
+  let last = null;
+  try { last = JSON.parse(readFileSync(resolve(projectDir, '.claude/state/design-mcp.json'), 'utf8')).last_ok?.at; } catch {}
+  const msg = 'Claude Design jest obowiązkowy: na starcie sesji agent wywołuje list_types; dopóki się nie uda, edycja plików jest zablokowana. ' +
+    'Bez narzędzi: /login kontem claude.ai i sprawdź /mcp.';
+  if (last) ok(`Claude Design działał ostatnio ${new Date(last).toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' })}. Potwierdź w tej sesji: list_types.`);
+  else warn(msg);
+}
+
 // --- git hooks for everyone (core.hooksPath) -----------------------------------------------------
 const run = (c) => { try { return execSync(c, { cwd: projectDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { return null; } };
 if (run('git rev-parse --is-inside-work-tree') === 'true') {

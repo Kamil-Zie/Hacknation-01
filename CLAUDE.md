@@ -29,7 +29,7 @@ Przy starcie każdej sesji hook uruchamia `node .claude/scripts/check-tools.mjs`
 
 ## Projektowanie UI: Claude Design
 
-Frontend projektuje w Claude Design: jeden Design System i jeden canvas z ekranami demo (telefon 390 px + desktop 1440 px) na projekt. Linki w `contracts/ui.json` (`design_system_url`, `design_canvas_url`, `screens[].design_artboards`), zasady w `project.json → technologies.frontend.design`. Kod implementuje ekran z artboardów, zmiany wyglądu idą najpierw na canvas. Brak narzędzi artefaktów w sesji nie blokuje pracy: wtedy tylko `contracts/ui.json`.
+Frontend projektuje w Claude Design: jeden Design System i jeden canvas z ekranami demo (telefon 390 px + desktop 1440 px) na projekt. Linki w `contracts/ui.json` (`design_system_url`, `design_canvas_url`, `screens[].design_artboards`), zasady w `project.json → technologies.frontend.design`. Kod implementuje ekran z artboardów, zmiany wyglądu idą najpierw na canvas. **Dla Dawida (`frontend-1`) i Jakuba (`frontend-2`) Claude Design jest obowiązkowy:** dopóki w sesji nie zadziała narzędzie Claude Design (ToolSearch „artifacts design”, potem `list_types`), hook blokuje każdą edycję plików, a hook gita ich commity. Bez tych narzędzi nie zaczynają pracy.
 
 ## Środowisko dev: aplikacje lokalnie, baza w MongoDB Atlas
 
