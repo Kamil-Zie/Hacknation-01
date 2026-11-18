@@ -46,6 +46,11 @@ const due = args.includes('--test')
 if (!due.length) { console.log('Nothing due in this slot.'); process.exit(0); }
 
 const url = process.env.DISCORD_WEBHOOK_SYNC;
+// Missing webhook must be visible as a failed run, not a green one that sent nothing.
+if (!url && !args.includes('--dry-run')) {
+  console.error('DISCORD_WEBHOOK_SYNC is not set (GitHub: Settings → Secrets and variables → Actions → New repository secret). Nothing was sent.');
+  process.exitCode = 1;
+}
 for (const e of due) {
   const payload = {
     username: 'HackNation',
