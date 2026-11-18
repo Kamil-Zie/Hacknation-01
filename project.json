@@ -83,6 +83,29 @@
         "typecheck": "npm run typecheck",
         "test": "npm run test",
         "build": "npm run build"
+      },
+      "design": {
+        "tool": "Claude Design: artefakty claude.ai typu Design System (tokeny, komponenty, brand) i Design (canvas z ekranami)",
+        "access": "Narzędzia artefaktów (list_types, create_from_type, publish_files, list_artifacts, list_files, read_file) są dostępne w Claude Code po zalogowaniu kontem claude.ai (/login; sprawdź /mcp). Agent szuka ich przez ToolSearch: 'artifacts design'.",
+        "design_system": {
+          "title": "HackNation – <nazwa projektu> Design System",
+          "url": null
+        },
+        "canvas": {
+          "title": "HackNation – <nazwa projektu> ekrany demo",
+          "url": null
+        },
+        "workflow": [
+          "fe-uiux tworzy JEDEN Design System projektu (typ 'Design System') z tokenów: kolory, typografia, odstępy, promienie, breakpointy. Te same wartości trafiają do contracts/ui.json → design_tokens i motywu biblioteki UI.",
+          "fe-uiux tworzy JEDEN canvas projektu (typ 'Design') z tym Design Systemem i dodaje na nim artboard dla każdego ekranu ścieżki demo: wersja telefon 390 px i wersja desktop/projektor 1440 px, wszystkie stany (loading, empty, error, ready) gdy różnią się układem.",
+          "Linki zapisuje w contracts/ui.json: design_system_url, design_canvas_url, a przy ekranie design_artboards (ścieżki plików artboardów, np. project/ItemList-phone.dc.html).",
+          "fe-developer implementuje ekran na podstawie artboardów: czyta je narzędziem read_file i przenosi układ, hierarchię, odstępy i mikroteksty do komponentów biblioteki UI z technologies.frontend.choice. Kod aplikacji nie kopiuje markupu .dc.html 1:1.",
+          "Zmiana wyglądu najpierw na canvasie (albo w Design Systemie), potem w kodzie, żeby projekt i aplikacja się nie rozjechały.",
+          "Te same artboardy służą do slajdów i wideo w fazie materiałów (coord-docs może z nich korzystać)."
+        ],
+        "timebox": "Projekt ekranu na canvasie maks. 20 min. Frontend nie czeka na projekt: fe-developer zaczyna od contracts/ui.json, a dopasowuje wygląd, gdy artboard jest gotowy.",
+        "sharing": "Właściciel (osoba, która utworzyła artefakt) udostępnia Design System i canvas reszcie zespołu w claude.ai (Share). Agent nie może zmienić udostępniania; jeśli inna osoba nie widzi artefaktu, zgłasza to leadowi.",
+        "fallback": "Brak narzędzi artefaktów w sesji: pracuj tylko na contracts/ui.json, napisz o tym w raporcie dla leada. Nie blokuj zadania."
       }
     },
     "backend": {

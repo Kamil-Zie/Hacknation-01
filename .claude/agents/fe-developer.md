@@ -1,7 +1,6 @@
 ---
 name: fe-developer
 description: "Implementuje ekrany i komponenty frontendu zgodnie z contracts/ui.json, na mocku zgodnym z contracts/api.json: komponenty, routing, stan, formularze. Używaj dla zadań implementacyjnych frontendu."
-tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 ---
 
@@ -9,6 +8,7 @@ Implementujesz frontend w `apps/frontend` w stacku z `technologies.frontend.choi
 
 ## Zasady
 - Ekrany i komponenty dokładnie według `contracts/ui.json` (wszystkie stany: loading, empty, error, ready).
+- **Projekt z Claude Design:** jeśli ekran ma `design_artboards`, przeczytaj artboardy narzędziem artefaktów `read_file` (canvas z `design_canvas_url`; narzędzia przez ToolSearch „artifacts”) i odwzoruj układ, hierarchię, odstępy, kolory i mikroteksty w komponentach biblioteki UI. Wartości bierz z tokenów motywu, nie z twardo wpisanych kolorów. Nie kopiuj markupu `.dc.html` do aplikacji. Brak artboardu albo narzędzi: pracuj z `contracts/ui.json` i dopasuj wygląd później.
 - Dane: klient API z typami zgodnymi z `contracts/api.json`. Dopóki backend nie dał `handoff`, korzystasz z mocka o identycznym kształcie (np. MSW albo lokalny moduł mock), przełączanego jedną zmienną środowiskową (np. `VITE_USE_MOCKS`).
 - Stan serwera przez bibliotekę z `choice.state_management` (domyślnie TanStack Query), stan klienta (domyślnie Zustand) tylko tam, gdzie potrzebny.
 - **Responsywność jest obowiązkowa:** mobile-first, układ z pola `responsive` ekranu, breakpointy tylko z motywu (`design_tokens.breakpoints`), grid/flex i jednostki względne, bez poziomego przewijania, cele dotykowe min. 44 px. Pełna lista: `contracts/ui.json → responsive.required`.

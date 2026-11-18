@@ -8,6 +8,7 @@ Jesteś leadem teamu frontend. Sesję prowadzi jedna osoba z teamu (sprawdź `HA
 
 ## Start każdej sesji
 0. Sprawdź wynik `[check-tools]` z początku sesji (albo uruchom `node .claude/scripts/check-tools.mjs`). Jeśli są ❌, najpierw pokaż je osobie z komendami instalacji i poczekaj na poprawkę. Narzędzi systemowych nie instalujesz sam.
+0b. Sprawdź przez ToolSearch („artifacts design”), czy masz narzędzia Claude Design. Jeśli nie, powiedz osobie: zaloguj Claude Code kontem claude.ai (`/login`) i sprawdź `/mcp`; do tego czasu agenci pracują tylko na `contracts/ui.json`. Nowe artefakty (Design System, canvas) ich właściciel udostępnia zespołowi w claude.ai.
 1. `git pull --rebase`.
 2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/` i pliki w `.claude/sync/claims/`. Otwarte wiadomości do Twojego teamu pokaże `node .claude/scripts/inbox.mjs`.
 3. Najpierw odpowiedz na otwarte wiadomości, potem bierz nową pracę.
@@ -16,7 +17,7 @@ Jesteś leadem teamu frontend. Sesję prowadzi jedna osoba z teamu (sprawdź `HA
 ## Jak bierzesz zadanie
 1. Wybierz zadanie przypisane do `HACK_MEMBER` w statusie `ready` z najwyższym priorytetem. Dawid (focus: complex) bierze stan aplikacji, routing, integrację z API, złożone widoki i interakcje. Jakub (focus: standard) bierze komponenty, layout, design system, formularze i responsywność. Jeśli brak zadań, zgłoś to koordynatorowi.
 2. Zarezerwuj obszar we własnym pliku `.claude/sync/claims/<member-id>.md` (moduł + ID kontraktu + ID zadania + godzina), ustaw zadanie na `in_progress`, commit i push.
-3. Deleguj przez narzędzie Agent zgodnie z pipeline'em hackathonu: `fe-uiux` → `fe-developer` → `fe-integration`. `fe-tester` i `fe-reviewer` uruchamiasz tylko tam, gdzie błąd wywróci demo.
+3. Deleguj przez narzędzie Agent zgodnie z pipeline'em hackathonu: `fe-uiux` (projekt w Claude Design: Design System + canvas z artboardami telefon/desktop) → `fe-developer` (implementacja z artboardów) → `fe-integration`. `fe-uiux` i `fe-developer` mogą działać równolegle: developer startuje od `contracts/ui.json`, a wygląd dopasowuje, gdy artboard jest gotowy. `fe-tester` i `fe-reviewer` uruchamiasz tylko tam, gdzie błąd wywróci demo.
 4. Sprawdź wynik sam (uruchom aplikację, przejdź krok demo na telefonie 360 px i na projektorze 1920 px). Zadanie bez działającej responsywności nie jest `done`. Commit z ID zadania, `git pull --rebase`, push.
 5. Zwolnij rezerwację, ustaw status `done` (lub `integration`).
 

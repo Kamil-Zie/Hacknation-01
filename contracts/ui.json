@@ -1,6 +1,8 @@
 {
   "owner_team": "frontend",
   "version": "0.1.0",
+  "design_system_url": null,
+  "design_canvas_url": null,
   "design_tokens": {
     "colors": {},
     "typography": {},
@@ -35,7 +37,7 @@
     "check": "Przed oddaniem zadania przejrzyj ekran w DevTools (tryb urządzenia) na każdej szerokości z target_widths, także w stanach loading, empty i error."
   },
   "_example": {
-    "note": "Wzór formatu. Nie implementuj. id: UI-C-NNN (komponent), UI-S-NNN (ekran). Każdy ekran i komponent z układem ma pole responsive.",
+    "note": "Wzór formatu. Nie implementuj. id: UI-C-NNN (komponent), UI-S-NNN (ekran). Każdy ekran i komponent z układem ma pole responsive. Ekran ma design_artboards: ścieżki artboardów na canvasie Claude Design (design_canvas_url).",
     "component": {
       "id": "UI-C-001",
       "status": "draft",
@@ -70,6 +72,10 @@
         "xs": "jedna kolumna, lista jako karty, filtr w szufladzie",
         "md": "filtr nad listą, lista jako tabela",
         "lg": "filtr w panelu bocznym, tabela na pełną szerokość"
+      },
+      "design_artboards": {
+        "phone": "project/ItemList-phone.dc.html",
+        "desktop": "project/ItemList-desktop.dc.html"
       }
     }
   },

@@ -27,6 +27,10 @@ Do czasu decyzji (`technologies.status = "decided"`) nie zakładaj żadnego fram
 
 Przy starcie każdej sesji hook uruchamia `node .claude/scripts/check-tools.mjs` i sprawdza: `HACK_MEMBER`, narzędzia wymagane przez stack Twojego teamu (np. Express/React → Node 20.19+ i npm 10+, zawsze git), `.env` z prawdziwym `MONGODB_URI` (backend, koordynator), dostępność klastra Atlas i webhooki Discord. Wymagania: `project.json → tooling`. Jeśli wynik ma ❌, najpierw powiedz o tym osobie i podaj komendę instalacji, dopiero potem bierz zadanie. Narzędzi systemowych nie instalujesz sam.
 
+## Projektowanie UI: Claude Design
+
+Frontend projektuje w Claude Design: jeden Design System i jeden canvas z ekranami demo (telefon 390 px + desktop 1440 px) na projekt. Linki w `contracts/ui.json` (`design_system_url`, `design_canvas_url`, `screens[].design_artboards`), zasady w `project.json → technologies.frontend.design`. Kod implementuje ekran z artboardów, zmiany wyglądu idą najpierw na canvas. Brak narzędzi artefaktów w sesji nie blokuje pracy: wtedy tylko `contracts/ui.json`.
+
 ## Środowisko dev: aplikacje lokalnie, baza w MongoDB Atlas
 
 Frontend i backend działają lokalnie, **bez kontenerów** (nie dodawaj Dockera do dev). Baza danych jest w chmurze: wspólny klaster MongoDB Atlas `hacknation`, baza `hacknation`, ta sama dla całego zespołu (`technologies.infrastructure.environment_config.dev`). Synology i Cloudflare są tylko dla prod (stagingu nie ma).
