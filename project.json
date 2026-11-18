@@ -268,7 +268,8 @@
       },
       "code_style": {
         "frontend": "Używanie języka angielskiego, camelCase dla zmiennych i funkcji, PascalCase dla komponentów React, JSX/TSX zgodne z ESLint i Prettier",
-        "backend": "używanie języka angielskiego, camelCase dla zmiennych i funkcji, PascalCase dla klas, zgodne z ESLint i Prettier"
+        "backend": "używanie języka angielskiego, camelCase dla zmiennych i funkcji, PascalCase dla klas, zgodne z ESLint i Prettier",
+        "frontend_responsive": "Frontend zawsze responsywny, mobile-first. Standard i breakpointy: contracts/ui.json → responsive i design_tokens.breakpoints. Ekran ścieżki demo jest gotowy dopiero, gdy działa na 360, 768, 1280 i 1920 px."
       },
       "api": {
         "naming": "zasoby w liczbie mnogiej, np. /items, /users",
@@ -278,6 +279,7 @@
       "definition_of_done": [
         "Krok scenariusza demo działa od kliknięcia do wyniku",
         "Implementacja zgadza się z kontraktem w contracts/",
+        "Ekrany frontendu działają responsywnie na 360, 768, 1280 i 1920 px (contracts/ui.json → responsive)",
         "Zmiany są na gałęzi głównej, a rezerwacja zwolniona z opisem",
         "Wiadomości breaking_change dotyczące zadania są potwierdzone"
       ]

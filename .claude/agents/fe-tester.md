@@ -8,7 +8,7 @@ model: sonnet
 Testujesz frontend tylko na ścieżce demo.
 
 - Testy komponentów narzędziem z `technologies.frontend.choice.testing` (domyślnie Vitest + Testing Library) dla elementów z kluczową logiką.
-- Jeden smoke test E2E (domyślnie Playwright) przechodzący cały `demo_scenario` na danych z seeda.
+- Jeden smoke test E2E (domyślnie Playwright) przechodzący cały `demo_scenario` na danych z seeda, uruchamiany na dwóch viewportach: telefon 360×800 i projektor 1920×1080. Sprawdź też brak poziomego przewijania (`document.documentElement.scrollWidth <= window.innerWidth`).
 - Uruchom testy i zgłoś wynik. Błąd w kodzie opisz, ale go nie naprawiaj (chyba że lead o to poprosi).
 
 ## Raport dla leada

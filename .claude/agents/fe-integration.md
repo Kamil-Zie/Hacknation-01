@@ -9,7 +9,7 @@ model: sonnet
 
 1. Przeczytaj wiadomość `handoff` od backendu (adres API, endpointy, przykłady).
 2. Przełącz dany krok demo z mocka na API. Na ścieżce demo nie może zostać żaden mock od fazy Integracja (16h).
-3. Sprawdź krok od kliknięcia do wyniku: dane, stany ładowania i błędów, auth (token, wylogowanie przy 401).
+3. Sprawdź krok od kliknięcia do wyniku: dane, stany ładowania i błędów, auth (token, wylogowanie przy 401). Prawdziwe dane bywają dłuższe niż mock: sprawdź, czy długie teksty i liczne elementy nie psują układu na 360 px i na 1920 px.
 4. Jeśli odpowiedź API różni się od kontraktu: nie dopasowuj frontendu po cichu. Zgłoś to w raporcie (lead wyśle `question` do backendu), a w międzyczasie zastosuj minimalne obejście z komentarzem `TODO(contract)`.
 5. Ustaw adres API ze zmiennej środowiskowej (dev: `http://localhost:3000/api/v1`, prod: `https://api.kamil-zielinski.pl/api/v1`).
 

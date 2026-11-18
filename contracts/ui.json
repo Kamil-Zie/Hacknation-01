@@ -5,10 +5,37 @@
     "colors": {},
     "typography": {},
     "spacing": {},
-    "breakpoints": {}
+    "breakpoints": {
+      "xs": 0,
+      "sm": 600,
+      "md": 900,
+      "lg": 1280,
+      "xl": 1920
+    }
+  },
+  "responsive": {
+    "approach": "mobile-first: style bazowe dla telefonu, większe ekrany przez min-width",
+    "target_widths": [
+      360,
+      768,
+      1280,
+      1920
+    ],
+    "required": [
+      "Każdy ekran ścieżki demo działa i dobrze wygląda na 360, 768, 1280 i 1920 px (1280–1920 to projektor na pokazie)",
+      "Brak poziomego przewijania strony na żadnej szerokości",
+      "Układ płynny: grid/flex i jednostki względne (%, rem, clamp), bez sztywnych szerokości w px dla kontenerów",
+      "Elementy dotykowe min. 44×44 px, odstęp między nimi min. 8 px",
+      "Tabele i szerokie listy na < md zamieniają się w karty albo przewijają się w swoim kontenerze",
+      "Nawigacja na < md zwinięta (menu/szuflada), formularze w jednej kolumnie",
+      "Obrazy i wykresy skalują się do kontenera (max-width: 100%, responsywne wymiary)",
+      "Tekst czytelny bez zoomu: treść min. 16 px na telefonie, na projektorze większe nagłówki",
+      "Breakpointy tylko z design_tokens.breakpoints (motyw biblioteki UI), bez własnych wartości w komponentach"
+    ],
+    "check": "Przed oddaniem zadania przejrzyj ekran w DevTools (tryb urządzenia) na każdej szerokości z target_widths, także w stanach loading, empty i error."
   },
   "_example": {
-    "note": "Wzór formatu. Nie implementuj. id: UI-C-NNN (komponent), UI-S-NNN (ekran).",
+    "note": "Wzór formatu. Nie implementuj. id: UI-C-NNN (komponent), UI-S-NNN (ekran). Każdy ekran i komponent z układem ma pole responsive.",
     "component": {
       "id": "UI-C-001",
       "status": "draft",
@@ -24,7 +51,8 @@
         "error",
         "ready"
       ],
-      "accessibility": "Lista jako <ul>, komunikat błędu z role=alert"
+      "accessibility": "Lista jako <ul>, komunikat błędu z role=alert",
+      "responsive": "Na < md karty zamiast wierszy tabeli; przyciski akcji pełnej szerokości"
     },
     "screen": {
       "id": "UI-S-001",
@@ -37,7 +65,12 @@
       ],
       "api_refs": [
         "API-001"
-      ]
+      ],
+      "responsive": {
+        "xs": "jedna kolumna, lista jako karty, filtr w szufladzie",
+        "md": "filtr nad listą, lista jako tabela",
+        "lg": "filtr w panelu bocznym, tabela na pełną szerokość"
+      }
     }
   },
   "components": [],

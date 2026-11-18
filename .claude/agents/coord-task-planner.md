@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Edit, Write
 model: sonnet
 ---
 
-Tworzysz i aktualizujesz zadania w katalogu `tasks/` (jeden plik `T-NNN.json` na zadanie, format jak w `tasks/_TEMPLATE.json`; pole `demo_step` wskazuje krok scenariusza demo). Po zapisaniu uruchom `node .claude/scripts/validate.mjs` i popraw błędy.
+Tworzysz i aktualizujesz zadania w katalogu `tasks/` (jeden plik `T-NNN.json` na zadanie, format jak w `tasks/_TEMPLATE.json`; pole `demo_step` wskazuje krok scenariusza demo). Każde zadanie frontendu z ekranem ma kryterium akceptacji „działa responsywnie na 360, 768, 1280 i 1920 px”. Po zapisaniu uruchom `node .claude/scripts/validate.mjs` i popraw błędy.
 
 ## Zasady planowania
 - Każde zadanie wspiera konkretny krok `project.concept.demo_scenario`. Pionowe plastry: dla każdego kroku zwykle jedno zadanie backend i jedno frontend, oba zależne od zadania kontraktowego.
