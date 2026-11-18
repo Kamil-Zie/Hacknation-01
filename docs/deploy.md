@@ -27,6 +27,18 @@ Typ **HTTP**, nie HTTPS: szyfrowanie robi Cloudflare (przeglądarka ↔ Cloudfla
 
 Jeśli `cloudflared` działa poza Compose (pakiet DSM albo osobny kontener bez sieci `hacknation`), zamiast nazw kontenerów użyj `http://<IP-NAS>:18080` i `http://<IP-NAS>:13000`, a w `docker-compose.yml` zmień wiązanie z `127.0.0.1:` na `<IP-NAS>:`.
 
+### Wariant faktyczny: istniejący `cloudflared` na NAS-ie (`cloudflare-synology-kamil`)
+
+Na NAS-ie działa już kontener `cloudflare-synology-kamil` (`cloudflare/cloudflared`), osobno od projektu. Używamy go zamiast trzeciego kontenera w Compose: w jego tunelu dodajemy dwa Public Hostnames. Usługa zależy od sieci tego kontenera (Container Manager → kontener → zakładka Sieć):
+
+| Sieć `cloudflare-synology-kamil` | `app` → | `api` → | Wiązanie portów w compose |
+|---|---|---|---|
+| **host** | `http://localhost:18080` | `http://localhost:13000` | `127.0.0.1:18080:80`, `127.0.0.1:13000:3000` (bez zmian) |
+| **bridge** (domyślna) | `http://<IP-NAS-w-LAN>:18080` | `http://<IP-NAS-w-LAN>:13000` | zmień `127.0.0.1:` na `<IP-NAS-w-LAN>:` |
+| podłączony do sieci `hacknation` (`docker network connect hacknation cloudflare-synology-kamil`) | `http://frontend:80` | `http://backend:3000` | dowolne |
+
+W tym wariancie usuń usługę `cloudflared` z `docker-compose.yml` poniżej. Porty 18080 i 13000 nie kolidują z innymi kontenerami na NAS-ie (vaultwarden, legalne-lowiska, node-1), o ile żaden z nich ich nie publikuje; sprawdź w Container Manager → kontener → Port.
+
 ### Ruch wychodzący z NAS-a (zapora DSM i router)
 
 | Port | Protokół | Dokąd | Po co |
