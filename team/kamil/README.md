@@ -9,7 +9,7 @@
 ## 1. Start (raz, ok. 5 minut)
 
 ```bash
-git clone <adres-repo> && cd <repo>
+git clone https://github.com/Kamil-Zie/Hacknation-01.git && cd Hacknation-01
 cp team/kamil/settings.local.json .claude/settings.local.json
 ```
 
