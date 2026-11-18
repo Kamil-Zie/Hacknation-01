@@ -69,7 +69,7 @@ services:
     networks: [hacknation]
 
   cloudflared:
-    image: cloudflare/cloudflared:2025.11.1
+    image: cloudflare/cloudflared:latest # po pierwszym działającym starcie przypnij konkretną wersję
     restart: unless-stopped
     command: tunnel --no-autoupdate run
     environment:
