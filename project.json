@@ -209,7 +209,55 @@
         "prod": {
           "mode": "remote",
           "database": "MongoDB Atlas, baza hacknation_prod",
-          "hosting": "Synology + Cloudflare Tunnel (app.kamil-zielinski.pl, api.kamil-zielinski.pl)"
+          "hosting": "Synology + Cloudflare Tunnel (app.kamil-zielinski.pl, api.kamil-zielinski.pl)",
+          "doc": "docs/deploy.md",
+          "ports": {
+            "inbound_router": "brak: ruch tylko przez Cloudflare Tunnel, bez przekierowań portów",
+            "containers": {
+              "frontend": {
+                "container": 80,
+                "host": "127.0.0.1:18080",
+                "tunnel_hostname": "app.kamil-zielinski.pl",
+                "tunnel_service": "http://frontend:80"
+              },
+              "backend": {
+                "container": 3000,
+                "host": "127.0.0.1:13000",
+                "tunnel_hostname": "api.kamil-zielinski.pl",
+                "tunnel_service": "http://backend:3000"
+              },
+              "cloudflared": {
+                "container": null,
+                "host": null,
+                "note": "tylko ruch wychodzący"
+              }
+            },
+            "outbound": [
+              "7844 TCP/UDP do Cloudflare (tunel)",
+              "443 TCP (Cloudflare, GHCR, npm)",
+              "27017 TCP do *.mongodb.net (Atlas)"
+            ],
+            "reserved_by_dsm": [
+              22,
+              80,
+              443,
+              873,
+              3306,
+              5000,
+              5001,
+              5005,
+              5006,
+              6690
+            ]
+          },
+          "env": {
+            "PORT": "3000",
+            "NODE_ENV": "production",
+            "CORS_ORIGIN": "https://app.kamil-zielinski.pl",
+            "VITE_API_URL": "https://api.kamil-zielinski.pl/api/v1",
+            "MONGODB_URI": "<hacknation_prod, tylko w .env.prod na NAS-ie>",
+            "TUNNEL_TOKEN": "<tylko w .env na NAS-ie>"
+          }
         }
       },
       "status": "default",

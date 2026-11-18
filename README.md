@@ -40,7 +40,7 @@ Sekretów (`.env`, `.claude/settings.local.json`) nie wysyłaj na Discord ani do
 | **dev** | lokalnie, `npm run dev`, bez Dockera | wspólny MongoDB Atlas: klaster `hacknation`, baza `hacknation` | front `localhost:5173`, API `localhost:3000/api/v1` |
 | **prod** | Synology (Docker) + Cloudflare Tunnel | ten sam klaster, baza `hacknation_prod` | `app.kamil-zielinski.pl`, `api.kamil-zielinski.pl` |
 
-Stagingu nie ma. Baza dev jest wspólna: **nie seedujesz jej ręcznie**. Seed puszcza tylko wykonawca zadania `T-DB`.
+Porty i konfiguracja prod (DSM, Cloudflare Tunnel): [docs/deploy.md](docs/deploy.md). Stagingu nie ma. Baza dev jest wspólna: **nie seedujesz jej ręcznie**. Seed puszcza tylko wykonawca zadania `T-DB`.
 
 ## Jak pracujemy
 
