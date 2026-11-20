@@ -1,145 +1,107 @@
-# START: jak zacząć pracę (sobota 21.11)
+# START: jak zacząć pracę
 
-Instrukcja krok po kroku dla całego zespołu. **Kroki 1–6 zrób najlepiej w piątek wieczorem, najpóźniej w sobotę do 10:45.**
-Start hackathonu: **sobota 11:00**. Kickoff zespołu: **10:45** na Discordzie.
+Zakładamy, że masz już wszystko zainstalowane i skonfigurowane (repo, `.env`, `.claude/settings.local.json`, `check-tools` bez ❌).
+Tu jest tylko to, **jak zacząć pracę i za co się zabrać**.
 
-| Osoba | ID | Główny agent | System | Twoja instrukcja |
-|---|---|---|---|---|
-| Kamil | `coord-1` | `coordinator` | Ubuntu | [team/kamil/README.md](team/kamil/README.md) |
-| Dawid | `frontend-1` | `frontend-lead` | Windows | [team/dawid/README.md](team/dawid/README.md) |
-| Jakub | `frontend-2` | `frontend-lead` | Ubuntu | [team/jakub/README.md](team/jakub/README.md) |
-| Jan | `backend-1` | `backend-lead` | Windows | [team/jan/README.md](team/jan/README.md) |
-| Nataniel | `backend-2` | `backend-lead` | Windows | [team/nataniel/README.md](team/nataniel/README.md) |
+Start hackathonu: **sobota 21.11, 11:00**.
 
-> **Windows (Dawid, Jan, Nataniel):** wszystkie komendy wpisuj w **Git Bash** (instaluje się razem z Git for Windows), nie w PowerShell ani cmd.
+| Osoba | ID | Agent | Na start bierzesz |
+|---|---|---|---|
+| Kamil | `coord-1` | `coordinator` | koncepcja, stack, kontrakty, zadania |
+| Dawid | `frontend-1` | `frontend-lead` | trudniejsze ekrany i logika frontu |
+| Jakub | `frontend-2` | `frontend-lead` | wygląd, layout, komponenty |
+| Jan | `backend-1` | `backend-lead` | trudniejsze endpointy, auth, integracje |
+| Nataniel | `backend-2` | `backend-lead` | model danych, seed, endpointy CRUD |
 
 ---
 
-## Krok 1. Narzędzia
-
-Potrzebujesz: **git 2.30+**, **Node.js 20.19+**, **npm 10+**, **Claude Code**, **VS Code**.
+## 1. Każda sesja zaczyna się tak samo
 
 ```bash
-git --version
-node --version
-npm --version          # jeśli < 10:  npm install -g npm@latest
-claude --version
-```
-
-Brakuje czegoś:
-
-| Narzędzie | Ubuntu | Windows |
-|---|---|---|
-| git | `sudo apt install git` | https://git-scm.com/download/win (z Git Bash) |
-| Node.js 22 LTS | https://nodejs.org lub `nvm install 22` | https://nodejs.org (instalator .msi) |
-| Claude Code | `curl -fsSL https://claude.ai/install.sh \| bash` | w PowerShell: `irm https://claude.ai/install.ps1 \| iex` |
-
-## Krok 2. Końcówki linii (tylko Windows, PRZED klonowaniem)
-
-```bash
-git config --global core.autocrlf false
-git config --global core.eol lf
-```
-
-Bez tego hooki gita nie ruszą (`cannot exec '.githooks/pre-commit'`). Szczegóły: [docs/team-environment.md](docs/team-environment.md).
-**Pliki przekazujemy wyłącznie przez git.** Nie kopiuj repo ani plików między komputerami (pendrive, chmura, zip).
-
-## Krok 3. Repo
-
-```bash
-git clone https://github.com/Kamil-Zie/Hacknation-01.git
 cd Hacknation-01
-```
-
-Masz już repo? Wtedy tylko `git pull --rebase`.
-
-## Krok 4. Twoja tożsamość i sekrety
-
-Sekrety (adres bazy i webhooki Discord) dostaniesz od Kamila **prywatną wiadomością**.
-
-```bash
-cp team/<twoje-imie>/settings.local.json .claude/settings.local.json   # np. team/jan/...
-cp .env.example .env
-```
-
-1. W `.claude/settings.local.json` wklej webhooki Discord (`DISCORD_WEBHOOK_*`). Plik ustawia też `HACK_MEMBER` i Twojego głównego agenta.
-2. W `.env` podmień linię `MONGODB_URI=...` na adres od Kamila.
-
-Obu plików **nigdy** nie commitujesz i nie wklejasz na Discord (hook i tak to zablokuje).
-
-## Krok 5. Sprawdzenie środowiska
-
-```bash
-node .claude/scripts/check-tools.mjs
-```
-
-Ma być **same ✅**. Skrypt sprawdza narzędzia, `HACK_MEMBER`, `.env`, połączenie z MongoDB Atlas, webhooki i **włącza hooki gita**.
-Każde ❌ napraw komendą z wyniku i uruchom skrypt jeszcze raz. Nie umiesz naprawić w 10 minut: napisz do Kamila na Discordzie.
-
-## Krok 6. Claude Code i edytor
-
-```bash
+git pull --rebase
 claude
 ```
 
-1. Za pierwszym razem zaloguj się: `/login` (konto claude.ai).
-2. Sesja startuje od razu z Twoim głównym agentem (`coordinator`, `frontend-lead` albo `backend-lead`). Jeśli nie: `claude --agent <agent>`.
-3. **Frontend (Dawid, Jakub):** w `/mcp` sprawdź, czy widać narzędzia artefaktów (Claude Design). Opcjonalne, ale preferowane.
-4. Otwórz repo w VS Code i zainstaluj polecane rozszerzenia (VS Code sam je zaproponuje). Prettier formatuje przy zapisie.
+Sesja startuje z Twoim agentem i sama uruchamia `check-tools`. Pierwsze zdanie do agenta:
 
-Test na koniec: napisz agentowi **„Pokaż status projektu i moją skrzynkę.”** Jeśli odpowie, jesteś gotowy.
+> **„Pokaż status projektu i moją skrzynkę.”**
 
----
+Agent pokaże fazę, Twoje zadania, blokery i wiadomości od innych teamów. **Najpierw odpowiadasz na wiadomości**, potem bierzesz pracę.
 
-## Krok 7. Sobota: pierwsze godziny
+## 2. 11:00–12:30: koncepcja (jeszcze bez kodu)
 
-| Kiedy | Kamil | Frontend (Dawid, Jakub) | Backend (Jan, Nataniel) |
-|---|---|---|---|
-| **10:45** | kickoff na Discordzie, sekrety rozesłane | `check-tools` = same ✅ | `check-tools` = same ✅ |
-| **11:00–12:30** Koncepcja | koncepcja, stack, kontrakty, zadania; push na `main` | po pushu Kamila: przegląd `contracts/ui.json` i `api.json`, braki zgłaszacie wiadomością | przegląd `contracts/api.json` i `data_model.json`, ryzyka integracji |
-| **12:30–14:00** Szkielet | szkielet repo i CI; potwierdza, że aplikacja startuje u wszystkich | `git pull --rebase`, `npm install`, `npm run dev` → front na `localhost:5173` | to samo → API na `localhost:3000/api/v1` |
-| **od 14:00** Budowa | review integracji co 1–2h, decyzje | zadania z `tasks/` (na mocku zgodnym z kontraktem) | zadania z `tasks/` (endpointy kroków demo) |
+O 11:00 poznajemy zadanie. Kamil z agentami ustala koncepcję, scenariusz demo, stack i kontrakty, a potem rozpisuje zadania. Pushuje je na `main` po kolei.
 
-Do czasu szkieletu (ok. 12:30) **nie ma jeszcze kodu aplikacji**, więc `npm run dev` uruchamiasz dopiero po komunikacie Kamila.
+| Kto | Co robisz |
+|---|---|
+| **Wszyscy, 11:00–11:30** | czytacie treść zadania hackathonu, wrzucacie pomysły na Discord: co pokażemy jury w 3–5 krokach |
+| **Frontend** | po pushu kontraktów: `git pull --rebase` → **„Przejrzyj contracts/ui.json i api.json pod kątem scenariusza demo i zgłoś braki koordynatorowi.”** |
+| **Backend** | po pushu kontraktów: `git pull --rebase` → **„Przejrzyj contracts/api.json i data_model.json, zgłoś braki i ryzyka koordynatorowi.”** |
 
-## Krok 8. Cykl pracy (powtarzaj przez całą dobę)
+Uwagi do kontraktu agent wysyła wiadomością do Kamila. **Nie piszecie jeszcze kodu.**
 
-Mówisz do swojego agenta:
+## 3. ok. 12:30: pierwsze zadanie
 
-1. **„Weź moje następne zadanie.”** Agent robi `git pull --rebase`, czyta wiadomości, rezerwuje obszar i zaczyna.
-2. Sprawdzasz efekt w przeglądarce albo curl-em.
-3. Część działa: **„Zrób commit i push.”**
-4. Zadanie skończone: **„Zamknij zadanie i zwolnij rezerwację.”**
-5. Co jakiś czas: **„Sprawdź skrzynkę.”** (wiadomości od innych teamów).
+Gdy Kamil ogłosi na Discordzie, że zadania i szkielet są na `main`:
 
-Stoisz ponad **20 minut**: **„Wyślij blocker do koordynatora.”** i bierzesz inną część zadania.
+```bash
+git pull --rebase
+npm install
+npm run dev        # front: localhost:5173, API: localhost:3000/api/v1
+```
 
-## Zasady, których nie łamiemy
+Potem do agenta:
 
-- Robimy **tylko kroki scenariusza demo** (`project.json → project.concept.demo_scenario`).
-- Jedna gałąź `main`, małe commity, `git pull --rebase` przed każdym `push`.
-- Agent edytuje tylko pliki Twojego teamu. Blokada hooka jest celowa, nie obchodź jej i nie używaj `--no-verify`.
-- **Nie seedujesz bazy ręcznie.** Baza dev jest wspólna, seed puszcza tylko wykonawca zadania `T-DB`.
-- Od **niedzieli 7:00** zamrożenie funkcji: tylko `fix`, `docs`, `revert`.
+> **„Weź moje następne zadanie.”**
+
+Agent sam:
+1. znajduje w `tasks/` zadanie przypisane do Ciebie (`assignee` = Twoje ID) albo pierwsze wolne Twojego teamu, które ma spełnione `depends_on`;
+2. czyta jego pełny opis: `description`, `demo_step`, `contract_refs`, `acceptance_criteria`;
+3. rezerwuje obszar w `.claude/sync/claims/<twoje-id>.md` i ustawia status `in_progress`;
+4. opowiada Ci plan i zaczyna.
+
+Chcesz konkretne zadanie: **„Weź zadanie T-003.”**
+
+## 4. Cykl pracy (powtarzasz do końca)
+
+| Moment | Mówisz do agenta |
+|---|---|
+| Start zadania | „Weź moje następne zadanie.” |
+| Część działa (sprawdzona w przeglądarce / curl-em) | „Zrób commit i push.” |
+| Kryteria akceptacji spełnione | „Zamknij zadanie i zwolnij rezerwację.” |
+| Backend skończył endpoint | „Wyślij handoff dla API-00X do frontendu.” |
+| Frontend dostał handoff | „Przełącz ekran z mocka na prawdziwe API.” |
+| Co ok. godzinę | „Sprawdź skrzynkę.” |
+| Stoisz ponad **20 minut** | „Wyślij blocker do koordynatora.” i bierzesz inną część zadania |
+| Potrzebujesz decyzji (biblioteka, zmiana zakresu) | „Wyślij decision_request do koordynatora.” |
+
+**Pilnuj agenta:** czytaj, co robi, i sprawdzaj efekt na żywo. Agent robi szybko, ale to Ty odpowiadasz za to, że krok demo działa.
+
+## 5. Jak pracujemy w parach
+
+- **Frontend nie czeka na backend.** Ekran powstaje na mocku zgodnym z kontraktem. Po handoffie przełączacie go na API.
+- **Pionowe plastry:** jeden krok demo od endpointu do ekranu, potem następny. Jan i Dawid biorą razem najtrudniejszy krok, Nataniel i Jakub resztę.
+- **Zmiana kontraktu:** tylko przez agenta i wiadomość do drugiego teamu. Gdy zmiana psuje kompatybilność (`breaking_change`), drugi team musi ją najpierw potwierdzić.
+- **Zmiana bazy:** agent tworzy zadanie `T-DB` w tym samym commicie. Seed na wspólnej bazie puszcza tylko jego wykonawca.
+
+## 6. Zasady, których nie łamiemy
+
+- Robimy **tylko kroki scenariusza demo**. Pomysł spoza niego idzie do Kamila, nie do kodu.
+- Jedna gałąź `main`, małe commity, push po każdej działającej części.
+- Blokada hooka jest celowa: nie obchodź jej i nie używaj `--no-verify`. Komunikat mówi, co poprawić.
+- **Niedziela 7:00: zamrożenie funkcji.** Potem tylko poprawki błędów na ścieżce demo.
 
 ## Najważniejsze godziny
 
 | Kiedy | Co |
 |---|---|
-| sob **11:00** | start |
-| sob **20:00** | draft w HackTribe (repo i opis gotowe) |
+| sob **11:00** | start, koncepcja |
+| sob **~12:30** | zadania i szkielet na `main`, startuje budowa |
+| sob **20:00** | draft w HackTribe |
+| nd **03:00** | cały scenariusz na prawdziwym API |
 | nd **07:00** | zamrożenie funkcji |
 | nd **11:00** | oddanie materiałów |
 | nd **15:15** | pokaz na żywo |
 
-## Gdy coś nie działa
-
-| Objaw | Co zrobić |
-|---|---|
-| `cannot exec '.githooks/...'` albo `/bin/sh^M` | CRLF: [docs/team-environment.md](docs/team-environment.md) |
-| Agent nie może edytować żadnego pliku | brak `.claude/settings.local.json` albo `HACK_MEMBER`: wróć do kroku 4 |
-| ❌ MongoDB Atlas | sprawdź `MONGODB_URI` w `.env`; Twoje IP może nie być na liście dostępu: napisz do Kamila |
-| Hook odrzuca commit | przeczytaj komunikat, mówi dokładnie, co poprawić |
-| Nic z powyższych | Discord, kanał sync, oznacz Kamila |
-
-Więcej: [README.md](README.md) (zespół, środowiska, harmonogram), [CLAUDE.md](CLAUDE.md) (zasady dla agentów), Twoja instrukcja w `team/<imie>/README.md`.
+Szczegółowy plan godzin dla Ciebie: `team/<imie>/README.md`, sekcja „Twój plan na 24h”.
