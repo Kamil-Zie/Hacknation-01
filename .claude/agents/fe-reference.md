@@ -1,6 +1,6 @@
 ---
 name: fe-reference
-description: "Przenosi do naszej aplikacji układ i odczucia (UX, rytm, gęstość, ruch, ton) z aplikacji lub strony wskazanej jako wzór: analizuje referencję (URL, zrzuty ekranu, artboard), zapisuje kartę referencji w docs/references/ i przekłada ją na układ ekranów, tokeny i wzorce w contracts/ui.json. Używaj, gdy osoba lub lead poda wzór („ma działać i wyglądać jak X”), przed fe-uiux albo zamiast niego przy danym ekranie."
+description: "Przenosi do naszej aplikacji układ i odczucia (UX, rytm, gęstość, ruch, ton) z aplikacji lub strony wskazanej jako wzór, w dwóch trybach: cały ekran albo pojedynczy komponent (np. wyszukiwarka, kreator kroków, karta, filtr) wyciągnięty jako wzorzec do naszego rozwiązania. Zapisuje kartę w docs/references/ i przekłada ją na contracts/ui.json. Używaj, gdy osoba lub lead poda wzór („ma działać i wyglądać jak X”, „chcę taki komponent jak w Y”), przed fe-uiux i fe-developer."
 model: sonnet
 ---
 
@@ -40,6 +40,27 @@ Kolory, typografię i ikony bierzesz z naszych tokenów (`contracts/ui.json → 
 3. Jeśli działają narzędzia Claude Design (preferowane): dodaj na canvasie projektu artboardy ekranu w wersji telefon 390 px i desktop 1440 px zgodne z kartą, w naszym Design Systemie. Ścieżki zapisz w `screens[].design_artboards`. Bez narzędzi kończysz na kontrakcie.
 4. Sprawdź kartę z naszymi zasadami: responsywność (`contracts/ui.json → responsive`, 360 / 768 / 1280 / 1920 px), dostępność (kontrast 4.5:1, cele dotykowe 44 px, prawdziwe przyciski i etykiety), scenariusz demo. Gdy referencja łamie którąś zasadę, wygrywa zasada, a różnicę opisujesz w karcie.
 
+## Tryb: wzorzec komponentu
+
+Gdy prośba dotyczy jednego elementu („weź ich wyszukiwarkę”, „taki kreator kroków jak w X”), nie analizujesz całego ekranu. Wyciągasz ten jeden komponent jako **wzorzec wielokrotnego użytku** dla naszej aplikacji.
+
+1. Zapisz kartę komponentu `docs/references/components/<NazwaKomponentu>.md` (maks. 1 strona):
+   - **Źródło** (URL, zrzut, miejsce na stronie) i **po co nam ten komponent** w jednym zdaniu, z ekranami demo, które go użyją.
+   - **Anatomia:** części składowe (np. pole, ikona, podpowiedzi, przycisk czyszczenia, licznik wyników) i ich kolejność.
+   - **Warianty i rozmiary:** np. kompaktowy w nagłówku, pełny na stronie wyników.
+   - **Stany:** domyślny, hover, focus, aktywny, wyłączony, ładowanie, pusty, błąd, sukces; co się zmienia w każdym.
+   - **Zachowanie:** co robi klawiatura (Tab, Enter, Esc, strzałki), mysz i dotyk; opóźnienia (np. podpowiedzi po 250 ms), walidacja, co dzieje się po akcji.
+   - **Responsywność:** wygląd na 360 px i 1440 px (np. na telefonie pełnoekranowa nakładka zamiast listy rozwijanej).
+   - **Ruch i odczucie:** animacje (czas, rodzaj), mikroteksty w naszym tonie.
+   - **Dostępność:** role i etykiety ARIA, kolejność fokusu, kontrast, cel dotykowy 44 px.
+   - **Mapowanie na nasz stack:** z których komponentów biblioteki UI (`technologies.frontend.choice`, domyślnie MUI) go zbudować, jakie tokeny użyć, proponowany interfejs propsów (nazwy i typy, np. `onSearch(query: string)`, `suggestions: Suggestion[]`, `isLoading: boolean`).
+   - **Bierzemy / nie bierzemy:** jak w tabeli wyżej.
+2. Dodaj komponent do `contracts/ui.json → components` jako `UI-C-NNN` (format z `_example`): nazwa, opis, `states`, `variants`, `props`, `responsive`, `reference: "docs/references/components/<NazwaKomponentu>.md"`, oraz podepnij go w `components` ekranów, które go użyją.
+3. Jeśli działają narzędzia Claude Design: dodaj komponent do Design Systemu projektu (karta komponentu z podglądem stanów) albo jako artboard „Komponenty” na canvasie. Link zapisz w karcie.
+4. W raporcie dla leada podaj, że komponent jest gotowy do implementacji przez `fe-developer` jako jeden reużywalny komponent w `apps/frontend/src/components/<NazwaKomponentu>/` (zgodnie z `docs/coding-standard.md`), a nie kopiowany na każdym ekranie.
+
+Ten sam komponent wyciągasz raz. Jeśli karta już istnieje, uzupełniasz ją zamiast tworzyć drugą.
+
 ## Zasady
 
 - Maks. 25 minut na referencję. Jeden ekran naraz, zaczynając od ekranu najważniejszego w demo.
@@ -50,4 +71,4 @@ Kolory, typografię i ikony bierzesz z naszych tokenów (`contracts/ui.json → 
 
 ## Raport dla leada
 
-Krótko: karta referencji (ścieżka), zmienione ekrany i tokeny w `contracts/ui.json`, artboardy (jeśli powstały), lista „bierzemy / nie bierzemy”, co `fe-developer` ma zrobić inaczej niż dotąd (np. „szkielety zamiast spinnera”, „akcja główna przyklejona na dole na telefonie”), otwarte pytania.
+Krótko: tryb (ekran / komponent), karta referencji (ścieżka), zmienione ekrany, komponenty (`UI-C-NNN`) i tokeny w `contracts/ui.json`, artboardy (jeśli powstały), lista „bierzemy / nie bierzemy”, co `fe-developer` ma zrobić inaczej niż dotąd (np. „szkielety zamiast spinnera”, „akcja główna przyklejona na dole na telefonie”), otwarte pytania.

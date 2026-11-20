@@ -123,7 +123,11 @@
             "Przenosimy wzorce: układ, hierarchię, rytm, gęstość, interakcje, ruch i ton. Nie kopiujemy logo, kolorystyki marki, grafik, ikon, fontów, tekstów ani kodu.",
             "Kolory i typografia zawsze z naszych tokenów; aplikacja wygląda jak nasz produkt, nie jak klon.",
             "Zasady responsywności i dostępności mają pierwszeństwo przed referencją."
-          ]
+          ],
+          "modes": {
+            "screen": "cały ekran: docs/references/<nazwa>.md, układ i odczucia ekranu",
+            "component": "jeden komponent wyciągnięty jako wzorzec: docs/references/components/<NazwaKomponentu>.md (anatomia, warianty, stany, zachowanie, responsywność, dostępność, mapowanie na bibliotekę UI i propsy) + UI-C-NNN w contracts/ui.json; fe-developer buduje go raz jako reużywalny komponent"
+          }
         }
       }
     },

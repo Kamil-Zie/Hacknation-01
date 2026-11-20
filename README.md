@@ -50,7 +50,7 @@ Porty i konfiguracja prod (DSM, Cloudflare Tunnel): [docs/deploy.md](docs/deploy
 - **Wiadomości między teamami** to pliki w `.claude/sync/messages/`, tworzone skryptem `new-message.mjs`. Ważne typy (`handoff`, `blocker`, `breaking_change`, `decision_request`) idą od razu na Discord.
 - **Zmiana bazy = zadanie `T-DB`** w tym samym commicie (`new-data-task.mjs`).
 - **Jeden standard kodu** dla wszystkich: [docs/coding-standard.md](docs/coding-standard.md) (struktura, nazewnictwo, warstwy, błędy), formatowanie Prettierem i `.editorconfig`.
-- **Wzór z innej aplikacji:** podaj go leadowi frontu, agent `fe-reference` przeniesie układ i odczucia (bez logo, kolorów marki i grafik).
+- **Wzór z innej aplikacji:** podaj go leadowi frontu, agent `fe-reference` przeniesie układ i odczucia całego ekranu albo wyciągnie jeden komponent jako wzorzec (bez logo, kolorów marki i grafik).
 - **UI:** projekt najlepiej w Claude Design (opcjonalny, ale preferowany: Design System i canvas z ekranami telefon i desktop), zawsze responsywnie: 360, 768, 1280 i 1920 px.
 - **Git:** jedna gałąź `main`, małe commity `typ(zakres): opis [T-xxx]`, `git pull --rebase` przed każdym `push`.
 - **Stoisz ponad 20 minut:** `blocker` do Kamila i bierzesz inną część zadania.
