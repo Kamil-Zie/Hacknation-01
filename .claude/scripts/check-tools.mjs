@@ -115,15 +115,14 @@ const wanted = [hooks.sync, teamName && hooks[teamName]].filter(Boolean);
 const missingHooks = wanted.filter((h) => !process.env[h]);
 if (missingHooks.length) warn(`Discord: brak ${missingHooks.join(', ')} w .claude/settings.local.json (powiadomienia będą pomijane).`);
 
-// --- Claude Design (mandatory for some members) -------------------------------------------------
+// --- Claude Design (required or preferred for frontend) -----------------------------------------
 const design = tech.frontend?.design || {};
-if (member && design.required && (design.required_for || []).includes(member)) {
+if (member && (design.required || design.preferred) && (design.required_for || []).includes(member)) {
   let last = null;
   try { last = JSON.parse(readFileSync(resolve(projectDir, '.claude/state/design-mcp.json'), 'utf8')).last_ok?.at; } catch {}
-  const msg = 'Claude Design jest obowiązkowy: na starcie sesji agent wywołuje list_types; dopóki się nie uda, edycja plików jest zablokowana. ' +
-    'Bez narzędzi: /login kontem claude.ai i sprawdź /mcp.';
-  if (last) ok(`Claude Design działał ostatnio ${new Date(last).toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' })}. Potwierdź w tej sesji: list_types.`);
-  else warn(msg);
+  if (last) ok(`Claude Design działał ostatnio ${new Date(last).toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' })}. Sprawdź w tej sesji: list_types.`);
+  else if (design.required) warn('Claude Design jest wymagany: na starcie sesji agent wywołuje list_types; dopóki się nie uda, edycja plików jest zablokowana. Bez narzędzi: /login kontem claude.ai i sprawdź /mcp.');
+  else out.push('ℹ️  Claude Design (opcjonalny, preferowany): jeszcze nie używany na tym komputerze. Podłącz: /login kontem claude.ai, sprawdź /mcp.');
 }
 
 // --- git hooks for everyone (core.hooksPath) -----------------------------------------------------

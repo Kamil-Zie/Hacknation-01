@@ -33,7 +33,7 @@ Wszyscy agenci piszą kod według `docs/coding-standard.md`: ta sama struktura f
 
 ## Projektowanie UI: Claude Design
 
-Frontend projektuje w Claude Design: jeden Design System i jeden canvas z ekranami demo (telefon 390 px + desktop 1440 px) na projekt. Linki w `contracts/ui.json` (`design_system_url`, `design_canvas_url`, `screens[].design_artboards`), zasady w `project.json → technologies.frontend.design`. Kod implementuje ekran z artboardów, zmiany wyglądu idą najpierw na canvas. **Dla Dawida (`frontend-1`) i Jakuba (`frontend-2`) Claude Design jest obowiązkowy:** dopóki w sesji nie zadziała narzędzie Claude Design (ToolSearch „artifacts design”, potem `list_types`), hook blokuje każdą edycję plików, a hook gita ich commity. Bez tych narzędzi nie zaczynają pracy.
+Frontend projektuje w Claude Design: jeden Design System i jeden canvas z ekranami demo (telefon 390 px + desktop 1440 px) na projekt. Linki w `contracts/ui.json` (`design_system_url`, `design_canvas_url`, `screens[].design_artboards`), zasady w `project.json → technologies.frontend.design`. Kod implementuje ekran z artboardów, zmiany wyglądu idą najpierw na canvas. **Claude Design jest opcjonalny, ale preferowany:** na starcie sesji frontend sprawdza narzędzia (ToolSearch „artifacts design”, potem `list_types`) i jeśli działają, projektuje w Claude Design. Gdy ich nie ma, praca idzie dalej na `contracts/ui.json` i `design_tokens`, bez blokady.
 
 ## Środowisko dev: aplikacje lokalnie, baza w MongoDB Atlas
 

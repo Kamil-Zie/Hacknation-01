@@ -27,7 +27,7 @@ Jeśli coś ma ❌, zainstaluj to komendą z wyniku. To samo sprawdzenie odpala 
 claude
 ```
 
-**Obowiązkowo: Claude Design.** Zaloguj Claude Code kontem claude.ai (`/login`) i sprawdź w `/mcp`, że widać narzędzia artefaktów (Claude Design). Na starcie sesji agent wywołuje `list_types`; dopóki to się nie uda, hook blokuje edycję plików i commity. Bez Claude Design nie zaczynasz pracy.
+**Zalecane: Claude Design.** Zaloguj Claude Code kontem claude.ai (`/login`) i sprawdź w `/mcp`, że widać narzędzia artefaktów (Claude Design). Na starcie sesji agent sprawdza je przez `list_types`; jeśli działają, projektujecie w Claude Design. Bez nich możesz pracować normalnie na `contracts/ui.json`.
 
 Sesja od razu startuje z agentem `frontend-lead`, bo tak ustawia Twój plik `settings.local.json`. Jeśli nie, uruchom `claude --agent frontend-lead`.
 

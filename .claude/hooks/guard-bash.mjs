@@ -94,7 +94,7 @@ const design = p.technologies?.frontend?.design || {};
 if (design.required && (design.required_for || []).includes(member) && (rels.length || inlineWrite)) {
   let ok = false;
   try { ok = !!JSON.parse(readFileSync(resolve(projectDir, '.claude/state/design-mcp.json'), 'utf8')).sessions?.[data.session_id]; } catch {}
-  if (!ok) block(`Claude Design jest obowiązkowy dla ${member}: zanim cokolwiek zapiszesz (także z terminala), wywołaj narzędzie Claude Design (ToolSearch „artifacts design”, potem list_types).`);
+  if (!ok) block(`Claude Design jest wymagany (project.json → design.required) dla ${member}: zanim cokolwiek zapiszesz (także z terminala), wywołaj narzędzie Claude Design (ToolSearch „artifacts design”, potem list_types).`);
 }
 
 if (team === 'coordinator') process.exit(0);

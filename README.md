@@ -16,7 +16,7 @@ Prototyp budowany w 24 godziny przez 5 osób i zespół 20 agentów Claude Code.
 
 ## Start (raz, ok. 10 minut)
 
-1. **Narzędzia:** git, Node.js 20.19+, npm 10+, Claude Code. Frontend dodatkowo: Claude Code zalogowany kontem claude.ai (`/login`) z działającym Claude Design (sprawdź `/mcp`).
+1. **Narzędzia:** git, Node.js 20.19+, npm 10+, Claude Code. Frontend dodatkowo (zalecane): Claude Code zalogowany kontem claude.ai (`/login`) z działającym Claude Design (sprawdź `/mcp`).
 2. **Repo i tożsamość:**
    ```bash
    git clone https://github.com/Kamil-Zie/Hacknation-01.git && cd Hacknation-01
@@ -50,7 +50,7 @@ Porty i konfiguracja prod (DSM, Cloudflare Tunnel): [docs/deploy.md](docs/deploy
 - **Wiadomości między teamami** to pliki w `.claude/sync/messages/`, tworzone skryptem `new-message.mjs`. Ważne typy (`handoff`, `blocker`, `breaking_change`, `decision_request`) idą od razu na Discord.
 - **Zmiana bazy = zadanie `T-DB`** w tym samym commicie (`new-data-task.mjs`).
 - **Jeden standard kodu** dla wszystkich: [docs/coding-standard.md](docs/coding-standard.md) (struktura, nazewnictwo, warstwy, błędy), formatowanie Prettierem i `.editorconfig`.
-- **UI:** projekt w Claude Design (Design System i canvas z ekranami telefon i desktop), obowiązkowo responsywnie: 360, 768, 1280 i 1920 px.
+- **UI:** projekt najlepiej w Claude Design (opcjonalny, ale preferowany: Design System i canvas z ekranami telefon i desktop), zawsze responsywnie: 360, 768, 1280 i 1920 px.
 - **Git:** jedna gałąź `main`, małe commity `typ(zakres): opis [T-xxx]`, `git pull --rebase` przed każdym `push`.
 - **Stoisz ponad 20 minut:** `blocker` do Kamila i bierzesz inną część zadania.
 
@@ -82,7 +82,7 @@ Przypomnienia o każdej fazie i godzinę przed każdym kamieniem milowym wysyła
 | Format commita | hook gita | `typ(zakres): opis [T-xxx]` |
 | Zamrożenie | hook gita | od 7:00 w niedzielę tylko `fix`, `docs`, `revert` |
 | Styl kodu | hook gita | Prettier i ESLint na zmienionych plikach (od szkieletu) |
-| Claude Design | hooki Claude + hook gita | Dawid i Jakub nie zaczynają pracy bez działającego Claude Design |
+| Claude Design | hook Claude + check-tools | rejestruje użycie i przypomina frontendowi; blokadę można włączyć w `project.json` (`required: true`) |
 | Narzędzia | `check-tools.mjs` na start każdej sesji | Node, npm, git, `.env`, Atlas, webhooki, hooki gita |
 
 Hook zablokował commit? Przeczytaj komunikat i popraw przyczynę. `git commit --no-verify` tylko w awarii i po uzgodnieniu z Kamilem.

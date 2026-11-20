@@ -94,7 +94,7 @@ function preCommit() {
     let at = 0;
     try { at = new Date(JSON.parse(readFileSync(resolve(projectDir, '.claude/state/design-mcp.json'), 'utf8')).last_ok?.at).getTime() || 0; } catch {}
     if (Date.now() - at > 24 * 3600 * 1000) {
-      fail(`Claude Design jest obowiązkowy dla ${member}, a w ostatnich 24h nie zadziałał w żadnej sesji Claude na tym komputerze. ` +
+      fail(`Claude Design jest wymagany (project.json → design.required) dla ${member}, a w ostatnich 24h nie zadziałał w żadnej sesji Claude na tym komputerze. ` +
         'Uruchom claude, pozwól agentowi wywołać list_types (Claude Design), potem commituj.');
     }
   }

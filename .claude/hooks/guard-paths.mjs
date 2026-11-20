@@ -49,7 +49,7 @@ if (design.required && (design.required_for || []).includes(member)) {
     ok = !!st.sessions?.[data.session_id];
   } catch {}
   if (!ok) {
-    block(`Claude Design jest obowiązkowy dla ${member}: nie zaczynasz pracy, dopóki narzędzia Claude Design nie działają w tej sesji. ` +
+    block(`Claude Design jest wymagany (project.json → design.required) dla ${member}: nie zaczynasz pracy, dopóki narzędzia Claude Design nie działają w tej sesji. ` +
       `Załaduj je przez ToolSearch („artifacts design”) i wywołaj list_types (albo list_artifacts z typem „Design System”). ` +
       `Udane wywołanie odblokuje edycję. Brak narzędzi: osoba loguje Claude Code kontem claude.ai (/login), sprawdza /mcp i uruchamia sesję ponownie.`);
   }
