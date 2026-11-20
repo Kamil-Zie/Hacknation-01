@@ -16,6 +16,8 @@ Prototyp budowany w 24 godziny przez 5 osób i zespół 21 agentów Claude Code.
 
 ## Start (raz, ok. 10 minut)
 
+> Pełna instrukcja krok po kroku, z uwagami dla Windows i planem pierwszych godzin: **[START.md](START.md)**.
+
 1. **Narzędzia:** git, Node.js 20.19+, npm 10+, Claude Code. Frontend dodatkowo (zalecane): Claude Code zalogowany kontem claude.ai (`/login`) z działającym Claude Design (sprawdź `/mcp`).
 2. **Repo i tożsamość:**
    ```bash
