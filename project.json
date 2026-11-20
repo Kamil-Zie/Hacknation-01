@@ -114,7 +114,17 @@
         "sharing": "Właściciel (osoba, która utworzyła artefakt) udostępnia Design System i canvas reszcie zespołu w claude.ai (Share). Agent nie może zmienić udostępniania; jeśli inna osoba nie widzi artefaktu, zgłasza to leadowi.",
         "fallback": "Brak narzędzi Claude Design: pracuj na contracts/ui.json i design_tokens, napisz to w raporcie dla leada. Osoba może później podłączyć Claude Design (/login kontem claude.ai, /mcp), wtedy wygląd dopracowujemy na canvasie.",
         "preferred": true,
-        "policy": "Opcjonalny, ale preferowany: frontend projektuje w Claude Design zawsze, gdy narzędzia działają. Brak narzędzi nie blokuje pracy (wtedy tylko contracts/ui.json). Twardą blokadę można przywrócić ustawieniem required: true."
+        "policy": "Opcjonalny, ale preferowany: frontend projektuje w Claude Design zawsze, gdy narzędzia działają. Brak narzędzi nie blokuje pracy (wtedy tylko contracts/ui.json). Twardą blokadę można przywrócić ustawieniem required: true.",
+        "references": {
+          "agent": "fe-reference",
+          "when": "Osoba albo lead wskazuje aplikację/stronę jako wzór układu i odczuć dla ekranu demo.",
+          "output": "docs/references/<nazwa>.md (karta referencji) + układ, responsive, tokeny odczucia i pole reference w contracts/ui.json; artboardy w Claude Design, jeśli narzędzia działają",
+          "rules": [
+            "Przenosimy wzorce: układ, hierarchię, rytm, gęstość, interakcje, ruch i ton. Nie kopiujemy logo, kolorystyki marki, grafik, ikon, fontów, tekstów ani kodu.",
+            "Kolory i typografia zawsze z naszych tokenów; aplikacja wygląda jak nasz produkt, nie jak klon.",
+            "Zasady responsywności i dostępności mają pierwszeństwo przed referencją."
+          ]
+        }
       }
     },
     "backend": {
@@ -484,6 +494,7 @@
       ],
       "agents": [
         "frontend-lead",
+        "fe-reference",
         "fe-uiux",
         "fe-developer",
         "fe-integration",
@@ -498,6 +509,7 @@
         "write": [
           "apps/frontend/**",
           "contracts/ui.json",
+          "docs/references/**",
           "tasks/**",
           ".claude/sync/**"
         ]

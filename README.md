@@ -1,6 +1,6 @@
 # HackNation
 
-Prototyp budowany w 24 godziny przez 5 osób i zespół 20 agentów Claude Code. Hackathon: **sobota 21.11, 11:00 → niedziela 22.11, 11:00**, pokaz na żywo o **15:15**.
+Prototyp budowany w 24 godziny przez 5 osób i zespół 21 agentów Claude Code. Hackathon: **sobota 21.11, 11:00 → niedziela 22.11, 11:00**, pokaz na żywo o **15:15**.
 
 > To README jest instrukcją dla zespołu. Opis projektu dla jury (draft w HackTribe o 20:00, finał o 11:00) przygotowuje `coord-docs` i trafi tutaj w miejsce tej sekcji.
 
@@ -50,6 +50,7 @@ Porty i konfiguracja prod (DSM, Cloudflare Tunnel): [docs/deploy.md](docs/deploy
 - **Wiadomości między teamami** to pliki w `.claude/sync/messages/`, tworzone skryptem `new-message.mjs`. Ważne typy (`handoff`, `blocker`, `breaking_change`, `decision_request`) idą od razu na Discord.
 - **Zmiana bazy = zadanie `T-DB`** w tym samym commicie (`new-data-task.mjs`).
 - **Jeden standard kodu** dla wszystkich: [docs/coding-standard.md](docs/coding-standard.md) (struktura, nazewnictwo, warstwy, błędy), formatowanie Prettierem i `.editorconfig`.
+- **Wzór z innej aplikacji:** podaj go leadowi frontu, agent `fe-reference` przeniesie układ i odczucia (bez logo, kolorów marki i grafik).
 - **UI:** projekt najlepiej w Claude Design (opcjonalny, ale preferowany: Design System i canvas z ekranami telefon i desktop), zawsze responsywnie: 360, 768, 1280 i 1920 px.
 - **Git:** jedna gałąź `main`, małe commity `typ(zakres): opis [T-xxx]`, `git pull --rebase` przed każdym `push`.
 - **Stoisz ponad 20 minut:** `blocker` do Kamila i bierzesz inną część zadania.
@@ -112,7 +113,7 @@ apps/backend/           backend
 database/               model danych i seed
 docs/                   standard kodu; później architektura, scenariusz demo, pitch, plan awaryjny
 team/<osoba>/           README i ustawienia sesji każdej osoby
-.claude/agents/         20 agentów: coordinator + coord-*, backend-lead + be-*, frontend-lead + fe-*
+.claude/agents/         21 agentów: coordinator + coord-*, backend-lead + be-*, frontend-lead + fe-*
 .claude/hooks/          hooki Claude: ścieżki teamu (Edit/Write i terminal), znacznik Claude Design
 .claude/scripts/        skrypty zespołu (Node, bez zależności)
 .claude/sync/           wiadomości między teamami i rezerwacje obszarów

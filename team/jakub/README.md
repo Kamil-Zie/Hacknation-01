@@ -35,7 +35,7 @@ Sesja od razu startuje z agentem `frontend-lead`, bo tak ustawia Twój plik `set
 
 ## 2. Twoi agenci
 
-`frontend-lead` prowadzi pracę i sam deleguje zadania do pomocników: fe-uiux, fe-developer, fe-integration, fe-tester, fe-reviewer. Nie musisz ich wywoływać ręcznie, ale możesz, np. „użyj agenta fe-uiux do…”.
+`frontend-lead` prowadzi pracę i sam deleguje zadania do pomocników: fe-reference (wzorowanie się na wskazanej aplikacji), fe-uiux, fe-developer, fe-integration, fe-tester, fe-reviewer. Nie musisz ich wywoływać ręcznie, ale możesz, np. „użyj agenta fe-uiux do…”.
 
 ## 3. Gdzie możesz pisać
 

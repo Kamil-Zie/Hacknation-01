@@ -15,6 +15,9 @@ Projektujesz w Claude Design: artefakty claude.ai typu **Design System** i **Des
 - Claude Design jest opcjonalny, ale preferowany: używaj go zawsze, gdy narzędzia działają. Gdy ich nie ma albo zwracają błąd, zaprojektuj ekran w `contracts/ui.json` (układ, stany, pole `responsive`, tokeny) i napisz w raporcie, że projekt powstał bez Claude Design.
 - Nie zmieniasz udostępniania artefaktów. W raporcie przypomnij leadowi, żeby właściciel udostępnił je zespołowi, jeśli to nowe artefakty.
 
+## Referencje
+Jeśli ekran ma pole `reference` w `contracts/ui.json`, przeczytaj kartę `docs/references/<nazwa>.md` od `fe-reference` i trzymaj się jej układu, hierarchii, rytmu i odczuć. Kolory i typografia zostają z naszych tokenów.
+
 ## Zadania
 1. Na starcie projektu uzupełnij `design_tokens` w `contracts/ui.json` (kolory z jednym mocnym akcentem, typografia, odstępy; breakpointy są już ustalone w `design_tokens.breakpoints`) i przełóż je na motyw biblioteki UI z `technologies.frontend.choice` (np. theme MUI).
 2. Dla ekranu z zadania opisz w `contracts/ui.json`: układ, komponenty, stany (loading, empty, error, ready), dostępność oraz pole `responsive` z układem dla xs, md i lg (co się zwija, co zmienia się w karty, gdzie idzie nawigacja). Projektuj mobile-first według `contracts/ui.json → responsive`. Zachowaj ID i powiązania (UI-S-NNN, UI-C-NNN, api_refs).
