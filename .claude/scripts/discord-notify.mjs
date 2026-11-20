@@ -106,8 +106,15 @@ const footer = test
   ? `${tpl.footer || 'HackNation'} · ${tpl.test?.footer || 'wiadomość testowa, można zignorować'}`
   : `${tpl.footer || 'HackNation'} · ${fm.id}`;
 
+// Webhook display name, e.g. "Kamil - Handoff", "Jan - Blocker" (format: template.username_format).
+const typeName = String(typeCfg.label || type).replace(/_/g, ' ');
+const username = (tpl.username_format || '{name} - {Type}')
+  .replace('{name}', firstName)
+  .replace('{Type}', typeName.charAt(0).toUpperCase() + typeName.slice(1))
+  .replace('{type}', typeName);
+
 const payload = {
-  username: firstName,
+  username: clip(username, 80),
   content: clip(content, 2000),
   allowed_mentions: { parse: [] },
   embeds: [{

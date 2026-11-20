@@ -590,7 +590,9 @@
           "prefix": "[TEST]",
           "footer": "wiadomość testowa, można zignorować"
         },
+        "username_format": "{name} - {Type}",
         "layout": [
+          "username: <Imię> - <Typ> (np. Kamil - Handoff, Jan - Blocker)",
           "content: <emoji typu> <typ> — <Imię> (<member-id>)",
           "embed.title: <typ> · <pierwsze T-xxx z refs> · <title z frontmattera>",
           "embed.description: <Imię> (<from>) → <to>, pusta linia, wstęp z treści",
