@@ -416,7 +416,8 @@
           "id": "coord-1",
           "name": "Kamil Zieliński",
           "focus": "lead",
-          "folder": "team/kamil"
+          "folder": "team/kamil",
+          "os": "ubuntu"
         }
       ],
       "agents": [
@@ -447,13 +448,15 @@
           "id": "backend-1",
           "name": "Jan Mickiewicz",
           "focus": "complex",
-          "folder": "team/jan"
+          "folder": "team/jan",
+          "os": "windows"
         },
         {
           "id": "backend-2",
           "name": "Nataniel Gadziński",
           "focus": "standard",
-          "folder": "team/nataniel"
+          "folder": "team/nataniel",
+          "os": "windows"
         }
       ],
       "agents": [
@@ -487,13 +490,15 @@
           "id": "frontend-1",
           "name": "Dawid Jurek",
           "focus": "complex",
-          "folder": "team/dawid"
+          "folder": "team/dawid",
+          "os": "windows"
         },
         {
           "id": "frontend-2",
           "name": "Jakub Grzywiński",
           "focus": "standard",
-          "folder": "team/jakub"
+          "folder": "team/jakub",
+          "os": "ubuntu"
         }
       ],
       "agents": [

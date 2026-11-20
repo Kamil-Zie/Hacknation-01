@@ -44,6 +44,8 @@ cp .env.example .env    # wklej MONGODB_URI od Kamila (sekret: tylko .env, nigdy
 npm install && npm run dev   # front :5173, API :3000/api/v1
 ```
 
+Zespół pracuje na Ubuntu i Windows (`teams.*.members[].os`). W repo zawsze LF: pliki przekazuj tylko przez git, nie kopiuj ich między systemami. Konfiguracja i naprawa CRLF: `docs/team-environment.md`.
+
 Baza dev jest wspólna, więc **nie uruchamiaj seeda ani nie zmieniaj danych ręcznie**. Seed na bazie `hacknation` puszcza tylko wykonawca zadania `T-DB`.
 
 ## Baza danych = źródło aktualnych zmian
