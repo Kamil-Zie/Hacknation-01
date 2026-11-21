@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-009", "T-011"],
   "contract_refs": ["API-004", "DM-007", "DM-008", "DM-010"],
@@ -17,7 +17,13 @@
     "Wzory opisane w komentarzach z odwołaniem do Saxton i Rawls 2006 i FAO-56"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 3 gleba."],
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 3 gleba.",
+    "WYNIK: engine/soil.ts computeSoilWater(layers, rootDepthM, p) zwraca { result: { soil (DM-007.soil), tawMm, rawMm, fieldCapacity, wiltingPoint } | null, reason }; engine/water-demand.ts computeSoilWaterBalance(series, D, kcForDate, taw, raw) zwraca { soilWater (DM-006.soilWater) | null, reason }. Parametry uprawy wstrzykiwane (T-011 jeszcze nie ma), tabela podepnie się w T-017.",
+    "Referencja ADR-007 (piasek 85/ił 5/OM 1): θ33 0.087, θ1500 0.034, TAW 53.4 mm/1 m. Testy 42/42 (cały backend).",
+    "Decyzje: TAW do min(Zr, 1 m); warstwy z null pomijane bez skalowania (TAW zaniżony, gdy brakuje części warstw), < 50% pokrycia = null. Poza III–X albo > 10% braków meteo: soilWater z depletionMm/isStressed = null (cała soilWater null tylko przy braku gleby).",
+    "Dla T-013: SOC z SoilGrids w Bronowicach 4.86% (486 dg/kg) daje OM 8% (limit) i TAW 140 mm/1.2 m; dla gruntów ornych to wysoko, warto sprawdzić skalę soc i pozycję piksela (projekcja igh)."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
