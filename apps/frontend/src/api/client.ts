@@ -50,5 +50,7 @@ export async function apiFetch<T>(
       body?.details,
     );
   }
+  // 204 No Content (e.g. API-012 DELETE member) has no body to parse
+  if (response.status === 204) return undefined as T;
   return (await response.json()) as T;
 }
