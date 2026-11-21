@@ -4,7 +4,7 @@
   "description": "Sentinel-2 z sieci hackathonu prawie zawsze daje timeout (15 s), a NDVI/NDMI są wymagane (KOWR 3.3, kategoria satelita). (A) Dostępność: Microsoft Planetary Computer (STAC https://planetarycomputer.microsoft.com/api/stac/v1, kolekcja sentinel-2-l2a, assety B04/B08/B11/SCL, podpis anonimowy przez /api/sas/v1/token/sentinel-2-l2a) jako źródło główne odczytu COG, Earth Search jako zapas; odczyt tylko okna bbox działki (najmniejszy możliwy overview przy 10/20 m), pasma równolegle, Sentinel-2 startuje od t=0 równolegle z resztą, timeout sentinel2 z budżetu ANALYSIS_BUDGET_MS. Pomiar coord-1 15:58 z sieci hackathonu: PC ok. 154 KB/s vs Earth Search ok. 50 KB/s. (B) Kody przyczyn: nowe opcjonalne pole reasonCode w SourceStatus (DM-011) i w dataGaps (DM-012): NO_SCENE (brak sceny w oknie), CLOUD_COVER (sceny są, < 60% ważnych pikseli), PARCEL_TOO_SMALL (< 4 piksele), TIMEOUT, RATE_LIMIT (HTTP 429), UPSTREAM_ERROR (5xx/sieć), NOT_CONFIGURED (np. eumetsat bez klucza). Dla wszystkich źródeł, nie tylko sentinel2. Raport nadal 201 (raport z lukami, KOWR), status partial. (C) Kod HTTP: gdy wymagane ULDK przekroczy czas → 504 UPSTREAM_TIMEOUT (zamiast 502 UPSTREAM_UNAVAILABLE), błąd ULDK bez timeoutu → 502 bez zmian; dopisać do error codes w api.json.",
   "type": "feature",
   "team": "backend",
-  "assignee": "backend-1",
+  "assignee": "backend-2",
   "status": "ready",
   "priority": "critical",
   "depends_on": ["T-028", "T-031"],
@@ -24,6 +24,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 16:02: PRZEPISANE na backend-2 (Nataniel) decyzją Kamila – backend-1 ma problemy z siecią. Handoff 20261121-1558 do Jana nieaktualny.",
     "coord-1 15:58: zlecone przez Kamila. Nataniel (autor sentinel2Indices.ts) poza sesją, pliki bez rezerwacji. Kolejność: najpierw (B)+(C) (kontrakt, ok. 30 min, front może zacząć teksty), potem (A). Jeśli PC nie da ≤ 15 s w 60 min: zostaw PC jako źródło, zgłoś blocker, demo idzie z cache 2026-05-25, a jury i tak testuje na prod (inna sieć)."
   ],
   "created_at": "2026-11-21",
