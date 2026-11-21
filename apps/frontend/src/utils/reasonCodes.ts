@@ -6,7 +6,7 @@ const REASON_TEXTS: Record<string, string> = {
   TIMEOUT: 'Źródło nie odpowiedziało na czas',
   RATE_LIMIT: 'Chwilowy limit zapytań źródła, spróbuj za kilka minut',
   UPSTREAM_ERROR: 'Źródło danych chwilowo nie działa',
-  NOT_CONFIGURED: 'To źródło nie jest jeszcze podłączone',
+  NOT_CONFIGURED: 'Źródło opcjonalne, niedostępne (nie wpływa na wynik)',
 };
 
 /** Unknown or missing code falls back to the message from the API */
