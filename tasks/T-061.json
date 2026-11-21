@@ -5,7 +5,7 @@
   "type": "docs",
   "team": "coordinator",
   "assignee": "coord-1",
-  "status": "ready",
+  "status": "in_progress",
   "priority": "high",
   "depends_on": ["T-060"],
   "contract_refs": [],
@@ -20,7 +20,10 @@
     "by": null,
     "note": ""
   },
-  "notes": ["coord-1 18:10: zgłoszenie KOWR pkt 4.1, oddanie nd 11:00."],
+  "notes": [
+    "coord-1 18:15: docs/pitch/scenariusz.md gotowy (coord-docs). Zostaje: czas pitchu do potwierdzenia, linki do zapisanych raportów (po T-063).",
+    "coord-1 18:10: zgłoszenie KOWR pkt 4.1, oddanie nd 11:00."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
