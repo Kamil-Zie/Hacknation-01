@@ -21,8 +21,16 @@ const POLAND_CENTER: LatLngTuple = [52.0, 19.4];
 const POLAND_ZOOM = 6;
 const PARCEL_STYLE = { color: '#1F6FB2', weight: 3, fillColor: '#1F6FB2', fillOpacity: 0.15 };
 
+const DEFAULT_HEIGHT: MapHeight = { xs: '50vh', md: '60vh', lg: '100%' };
+const DEFAULT_MIN_HEIGHT = 280;
+
+type MapHeight =
+  string | number | Partial<Record<'xs' | 'sm' | 'md' | 'lg' | 'xl', string | number>>;
+
 interface ParcelMapProps {
   parcel: Parcel | null;
+  /** Responsive height (MUI sx value). When given, the default 280 px min height is dropped. */
+  height?: MapHeight;
   markers?: { lat: number; lon: number; label: string }[];
   isInteractive?: boolean;
   isLoading?: boolean;
@@ -40,19 +48,29 @@ function ClickHandler({ onPick }: { onPick?: (lat: number, lon: number) => void 
 function FitToParcel({ parcel }: { parcel: Parcel | null }) {
   const map = useMap();
   useEffect(() => {
-    if (!parcel) return;
-    const [minLon, minLat, maxLon, maxLat] = parcel.bbox;
-    const bounds: LatLngBoundsExpression = [
-      [minLat, minLon],
-      [maxLat, maxLon],
-    ];
-    map.fitBounds(bounds, { padding: [32, 32], maxZoom: 18 });
+    // Recompute size and re-fit after mount and on every container resize,
+    // otherwise the parcel ends up cropped when the layout changes (e.g. 360 px)
+    const fit = () => {
+      map.invalidateSize();
+      if (!parcel) return;
+      const [minLon, minLat, maxLon, maxLat] = parcel.bbox;
+      const bounds: LatLngBoundsExpression = [
+        [minLat, minLon],
+        [maxLat, maxLon],
+      ];
+      map.fitBounds(bounds, { padding: [32, 32], maxZoom: 18 });
+    };
+    map.whenReady(fit);
+    const observer = new ResizeObserver(() => fit());
+    observer.observe(map.getContainer());
+    return () => observer.disconnect();
   }, [map, parcel]);
   return null;
 }
 
 export function ParcelMap({
   parcel,
+  height,
   markers,
   isInteractive = true,
   isLoading = false,
@@ -66,8 +84,8 @@ export function ParcelMap({
       sx={{
         position: 'relative',
         width: '100%',
-        height: { xs: '50vh', md: '60vh', lg: '100%' },
-        minHeight: 280,
+        height: height ?? DEFAULT_HEIGHT,
+        minHeight: height === undefined ? DEFAULT_MIN_HEIGHT : undefined,
         borderRadius: 2,
         overflow: 'hidden',
       }}

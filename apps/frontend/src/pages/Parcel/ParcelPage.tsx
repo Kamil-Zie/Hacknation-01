@@ -221,10 +221,14 @@ export function ParcelPage() {
           pt: { xs: 0, lg: 2 },
           minWidth: 0,
           display: 'flex',
-          '& > [role="region"]': { height: { xs: '30vh', md: '50vh', lg: '100%' } },
         }}
       >
-        <ParcelMap parcel={parcel} isInteractive={false} isLoading={isLoading} />
+        <ParcelMap
+          parcel={parcel}
+          height={{ xs: '30vh', md: '50vh', lg: '100%' }}
+          isInteractive={false}
+          isLoading={isLoading}
+        />
       </Box>
     </Box>
   );
