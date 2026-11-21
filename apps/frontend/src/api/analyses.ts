@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authHeaders } from '@/api/auth';
 import { ApiError, USE_MOCKS, apiFetch } from '@/api/client';
 import type { AnalysisRequest, Report } from '@/api/types';
+import { useSessionStore } from '@/store/session';
 
 export const REPORTS_KEY = ['reports'] as const;
 const CREATE_TIMEOUT_MS = 40_000;
@@ -57,15 +58,25 @@ export async function createAnalysis(
     }
     return report;
   }
-  return apiFetch<Report>(
-    '/analyses',
-    {
-      method: 'POST',
-      body: JSON.stringify(withAccount ? { ...body, accountId } : body),
-      ...(withAccount ? { headers: authHeaders(token as string) } : {}),
-    },
-    CREATE_TIMEOUT_MS,
-  );
+  try {
+    return await apiFetch<Report>(
+      '/analyses',
+      {
+        method: 'POST',
+        body: JSON.stringify(withAccount ? { ...body, accountId } : body),
+        ...(withAccount ? { headers: authHeaders(token as string) } : {}),
+      },
+      CREATE_TIMEOUT_MS,
+    );
+  } catch (error) {
+    // Expired/invalid token (e.g. backend restarted with a new JWT_SECRET): the demo must not
+    // fail on the account part, so log out and run the analysis anonymously once (backend-2 review)
+    if (withAccount && error instanceof ApiError && error.status === 401) {
+      useSessionStore.getState().logout();
+      return createAnalysis(body);
+    }
+    throw error;
+  }
 }
 
 export async function getReport(id: string): Promise<Report> {
