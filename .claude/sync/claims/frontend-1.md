@@ -1,3 +1,3 @@
 # Claims: frontend-1 (Dawid)
 
-- T-044 · UI-S-005, UI-S-006, UI-C-013…UI-C-015 w contracts/ui.json + mocki API-007…API-013 (kształt z contract_proposal 20261121, do potwierdzenia w T-040) · pliki: `contracts/ui.json` (nowe wpisy), `src/api/{auth,accounts}.ts`, `src/api/types.ts` (tylko nowe typy kont na końcu), `src/mocks/{auth,accounts}.mock.ts` · od 2026-11-21 16:40
+- T-045 · UI-S-005, UI-C-013 AuthForm, UI-C-015 AccountMenu, API-007…009 · pliki: `src/store/session.ts`, `src/pages/Login/**`, `src/components/{AuthForm,AccountMenu}/**`, `src/app/router.tsx` (tylko trasa /logowanie), `src/components/AppLayout/AppLayout.tsx` (tylko wstawienie AccountMenu) · od 2026-11-21 16:55
