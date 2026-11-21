@@ -2,6 +2,7 @@
 import type { Evidence } from './classify.js';
 import { getKcForDate, getStageForDate } from './crops.js';
 import type { Crop } from './crops.js';
+import { fmt } from './format.js';
 import type { WaterBalanceWindow } from './kbw.js';
 import type { VulnerabilitySoil } from './vulnerability.js';
 
@@ -126,7 +127,7 @@ function precipDeficitHeat(
       unit: '°C',
       sourceId: 'meteo',
       dataDate: period(kbw30),
-      note: `norma ${round(tmaxNorm)} °C`,
+      note: `norma ${fmt(tmaxNorm)} °C`,
     });
   }
   evidence.push({
@@ -144,15 +145,15 @@ function precipDeficitHeat(
         ? 'medium'
         : 'low';
   const normPart =
-    kbw60.precipitationNormPct !== null ? ` (${round(kbw60.precipitationNormPct, 0)}% normy)` : '';
+    kbw60.precipitationNormPct !== null ? ` (${fmt(kbw60.precipitationNormPct, 0)}% normy)` : '';
   const heatPart =
     hot && tmax !== null && tmaxNorm !== null
-      ? `, a średnia temperatura maksymalna ostatnich 30 dni wyniosła ${round(tmax)} °C przy normie ${round(tmaxNorm)} °C`
+      ? `, a średnia temperatura maksymalna ostatnich 30 dni wyniosła ${fmt(tmax)} °C przy normie ${fmt(tmaxNorm)} °C`
       : '';
   return {
     code: 'precip_deficit_heat',
     title: 'Deficyt opadów przy wysokiej temperaturze',
-    description: `W ostatnich 60 dniach spadło ${round(kbw60.precipitationMm, 0)} mm deszczu${normPart}${heatPart}. Bilans wodny jest na poziomie ${round(kbw60.percentile, 0)}. percentyla z wielolecia.`,
+    description: `W ostatnich 60 dniach spadło ${fmt(kbw60.precipitationMm, 0)} mm deszczu${normPart}${heatPart}. Bilans wodny jest na poziomie ${fmt(kbw60.percentile, 0)}. percentyla z wielolecia.`,
     severity,
     evidence,
   } satisfies Cause;
@@ -197,10 +198,10 @@ function lowSoilRetention(soil: VulnerabilitySoil | null, tawMm: number | null):
     (soil !== null && soil.sandPct >= SAND_VERY_HIGH_PCT);
   const severity: CauseSeverity = veryLow ? 'high' : 'medium';
   const parts: string[] = [];
-  if (soil) parts.push(`Gleba ma ${round(soil.sandPct, 0)}% piasku`);
+  if (soil) parts.push(`Gleba ma ${fmt(soil.sandPct, 0)}% piasku`);
   if (tawMm !== null) {
     parts.push(
-      `${parts.length ? 'i zatrzymuje' : 'Gleba zatrzymuje'} tylko ${round(tawMm, 0)} mm wody w strefie korzeni`,
+      `${parts.length ? 'i zatrzymuje' : 'Gleba zatrzymuje'} tylko ${fmt(tawMm, 0)} mm wody w strefie korzeni`,
     );
   }
   return {
@@ -251,7 +252,7 @@ function surfaceRunoff(terrain: CausesTerrain | null): Cause | null {
   return {
     code: 'surface_runoff',
     title: 'Odpływ powierzchniowy ze spadku terenu',
-    description: `Teren ma spadek ${round(terrain.slopePct)}%${aspectPart}, więc część wody z opadu spływa z pola zamiast wsiąkać.`,
+    description: `Teren ma spadek ${fmt(terrain.slopePct)}%${aspectPart}, więc część wody z opadu spływa z pola zamiast wsiąkać.`,
     severity,
     evidence,
   } satisfies Cause;
@@ -281,7 +282,7 @@ function cropWaterDemand(input: CausesInput): Cause | null {
       unit: 'mm',
       sourceId: 'engine',
       dataDate: period(kbw30),
-      note: `opad 30 dni: ${round(kbw30.precipitationMm)} mm`,
+      note: `opad 30 dni: ${fmt(kbw30.precipitationMm)} mm`,
     });
   }
   evidence.push({
@@ -299,12 +300,12 @@ function cropWaterDemand(input: CausesInput): Cause | null {
       ? `Uprawa jest w fazie krytycznej (${stage.name})`
       : 'Uprawa zużywa dużo wody';
   const balancePart = kbw30
-    ? `: w 30 dni potrzebowała ${round(kbw30.etcMm, 0)} mm, a spadło ${round(kbw30.precipitationMm, 0)} mm`
+    ? `: w 30 dni potrzebowała ${fmt(kbw30.etcMm, 0)} mm, a spadło ${fmt(kbw30.precipitationMm, 0)} mm`
     : '';
   return {
     code: 'crop_water_demand',
     title: 'Wysokie wymagania wodne uprawy',
-    description: `${phasePart}${balancePart}. Współczynnik Kc to ${kc}.`,
+    description: `${phasePart}${balancePart}. Współczynnik Kc to ${fmt(kc, 2)}.`,
     severity,
     evidence,
   } satisfies Cause;
@@ -330,7 +331,7 @@ function lowVegetationMoisture(satellite: CausesSatellite | null): Cause | null 
     },
     {
       label: 'Oczekiwany zakres NDMI',
-      value: `${expected.ndmiMin} do ${expected.ndmiMax}`,
+      value: `${fmt(expected.ndmiMin, 2)} do ${fmt(expected.ndmiMax, 2)}`,
       unit: null,
       sourceId: 'sentinel2',
       dataDate: sceneDate,
@@ -338,11 +339,11 @@ function lowVegetationMoisture(satellite: CausesSatellite | null): Cause | null 
   ];
   const severity: CauseSeverity =
     ndmi !== null && ndmi < expected.ndmiMin - NDMI_HIGH_MARGIN ? 'high' : 'medium';
-  const ndmiPart = ndmi !== null ? `NDMI wynosi ${ndmi}` : 'NDMI jest niski';
+  const ndmiPart = ndmi !== null ? `NDMI wynosi ${fmt(ndmi, 2)}` : 'NDMI jest niski';
   return {
     code: 'low_vegetation_moisture',
     title: 'Niska wilgotność roślin na zdjęciu satelitarnym',
-    description: `${ndmiPart} (scena z ${sceneDate}), poniżej oczekiwanego zakresu ${expected.ndmiMin} do ${expected.ndmiMax} dla tej uprawy i miesiąca.`,
+    description: `${ndmiPart} (scena z ${sceneDate}), poniżej oczekiwanego zakresu ${fmt(expected.ndmiMin, 2)} do ${fmt(expected.ndmiMax, 2)} dla tej uprawy i miesiąca.`,
     severity,
     evidence,
   } satisfies Cause;

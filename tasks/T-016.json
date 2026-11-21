@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-014", "T-015"],
   "contract_refs": ["API-004", "DM-009", "DM-010"],
@@ -17,7 +17,12 @@
     "Testy jednostkowe dla każdej reguły (uruchamia się / nie uruchamia)"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 4 raport+rekomendacje. Reguły jawne, bez ML/LLM."],
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 4 raport+rekomendacje. Reguły jawne, bez ML/LLM.",
+    "WYNIK: engine/recommendations.ts computeRecommendations(input) = Recommendation[] (DM-009), reguły R-LAND-01..03, R-SOIL-01..02, R-AGRO-01..04, R-IRR-01 wg ADR-007 §9, stała kolejność kategorii, order od 1. engine/format.ts fmt() z polskim przecinkiem, użyty też w causes.ts. Testy backendu 114/114.",
+    "Decyzje: priorytety opisane w komentarzu; R-AGRO-04 bez location; adnotacja o zgodzie wodnoprawnej w action R-IRR-01; brak Dr/RAW = nawadnianie niezasadne z powodem o braku danych.",
+    "Do decyzji koordynatora: dawka netto = min(Dr, RAW) wg ADR daje przy RAW 77 mm aż 103 mm brutto na jedno nawadnianie; praktyka deszczowni to 20–35 mm na zabieg. Propozycja: limit dawki na zabieg (np. 30 mm netto) i liczba zabiegów."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
