@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-019"],
   "contract_refs": ["API-004", "API-006", "DM-005", "DM-011", "DM-012", "UI-S-003", "UI-C-009"],
@@ -17,7 +17,10 @@
     "Tabela na 360 px zamienia się na układ kartowy bez poziomego scrolla; działa responsywnie na 360, 768, 1280 i 1920 px"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: fe-developer. Szacunek: 1,5h. Faza: 5 źródła/ograniczenia + druk."],
+  "notes": [
+    "Agent: fe-developer. Szacunek: 1,5h. Faza: 5 źródła/ograniczenia + druk.",
+    "frontend-2: SourcesLimitations (UI-C-009) w raporcie, domyślnie zwinięte; prop isPrint rozwija (ReportPage go jeszcze nie przekazuje, podepnie T-023). Tabela od md, karty na xs–sm, w druku tabela. Sprawdzone zrzutami /report/demo-partial na 360 i 1920 (rozwinięte): 8 źródeł, braki z wpływem, ograniczenia z raportu, bez poziomego scrolla."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

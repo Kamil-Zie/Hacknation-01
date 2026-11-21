@@ -8,9 +8,8 @@ import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ReportHeader } from '@/components/ReportHeader/ReportHeader';
 import { RecommendationList } from '@/components/RecommendationList/RecommendationList';
 import { ReportSectionNav } from '@/components/ReportSectionNav/ReportSectionNav';
+import { SourcesLimitations } from '@/components/SourcesLimitations/SourcesLimitations';
 import { VulnerabilityCauses } from '@/components/VulnerabilityCauses/VulnerabilityCauses';
-
-const PLACEHOLDERS = [{ id: 'zrodla', title: 'Źródła i ograniczenia' }];
 
 export function ReportPage() {
   const { id } = useParams<{ id: string }>();
@@ -77,22 +76,27 @@ export function ReportPage() {
         />
         <VulnerabilityCauses vulnerability={data.vulnerability} causes={data.causes} />
         <RecommendationList recommendations={data.recommendations} dataGaps={data.dataGaps} />
-        {PLACEHOLDERS.map((section) => (
-          <Card
-            key={section.id}
-            component="section"
-            id={section.id}
-            aria-labelledby={`${section.id}-title`}
-            sx={{ scrollMarginTop: 16 }}
-          >
-            <CardContent>
-              <Typography id={`${section.id}-title`} variant="h2" component="h2" gutterBottom>
-                {section.title}
+        <Card
+          component="section"
+          id="zrodla"
+          aria-labelledby="zrodla-title"
+          sx={{ scrollMarginTop: 16 }}
+        >
+          <CardContent>
+            <Stack spacing={2}>
+              <Typography id="zrodla-title" variant="h2" component="h2">
+                Źródła i ograniczenia
               </Typography>
-              <Typography color="text.secondary">Wkrótce</Typography>
-            </CardContent>
-          </Card>
-        ))}
+              <SourcesLimitations
+                sources={data.sources}
+                limitations={data.limitations}
+                dataGaps={data.dataGaps}
+                confidenceReasons={data.assessment.confidenceReasons}
+                methodologyVersion={data.methodologyVersion}
+              />
+            </Stack>
+          </CardContent>
+        </Card>
       </Stack>
     </Box>
   );
