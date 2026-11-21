@@ -207,6 +207,72 @@ export function computeCurrentWindow(
   };
 }
 
+export type KbwPoint = { date: string; kbwMm: number };
+export type KbwBandPoint = { date: string; p10: number; p50: number; p90: number };
+
+const MIN_CLIMATOLOGY_YEARS = 8;
+
+function indexByDate(series: DailyWeather[]): Map<string, DailyWeather> {
+  return new Map(series.map((day) => [day.date, day]));
+}
+
+// T-038 DM-001 charts: KBW60 ending on each day from..to (one point per day).
+// Days whose 60-day window has more than MAX_MISSING_FRACTION of days missing are skipped.
+export function kbw60DailySeries(
+  series: DailyWeather[],
+  from: string,
+  to: string,
+  kcForDate: (date: string) => number,
+): KbwPoint[] {
+  const byDate = indexByDate(series);
+  const points: KbwPoint[] = [];
+  for (let date = from; date <= to; date = addDays(date, 1)) {
+    const outcome = sumWindow(byDate, date, 60, kcForDate);
+    if (outcome.ok) points.push({ date, kbwMm: round1(outcome.sums.kbwMm) });
+  }
+  return points;
+}
+
+// Linear-interpolation percentile (the same as numpy default) of an ascending array.
+function percentile(sorted: number[], p: number): number {
+  const pos = p * (sorted.length - 1);
+  const lo = Math.floor(pos);
+  const hi = Math.ceil(pos);
+  return sorted[lo]! + (sorted[hi]! - sorted[lo]!) * (pos - lo);
+}
+
+// T-038 DM-001 charts (ADR-009): for each date (a day of the analysis year) p10/p50/p90 of the
+// KBW60 ending on the same calendar day in each of the 10 years before it (29 Feb -> 28 Feb
+// in non-leap years). Points with fewer than MIN_CLIMATOLOGY_YEARS complete years are skipped.
+export function kbw60Climatology(
+  series: DailyWeather[],
+  dates: string[],
+  kcForDate: (date: string) => number,
+): KbwBandPoint[] {
+  const byDate = indexByDate(series);
+  const points: KbwBandPoint[] = [];
+  for (const date of dates) {
+    const year = Number(date.slice(0, 4));
+    const monthDay = date.slice(5);
+    const values: number[] = [];
+    for (let k = 1; k <= REFERENCE_YEARS; k += 1) {
+      const refYear = year - k;
+      const md = monthDay === '02-29' && !isLeap(refYear) ? '02-28' : monthDay;
+      const outcome = sumWindow(byDate, `${refYear}-${md}`, 60, kcForDate);
+      if (outcome.ok) values.push(outcome.sums.kbwMm);
+    }
+    if (values.length < MIN_CLIMATOLOGY_YEARS) continue;
+    values.sort((a, b) => a - b);
+    points.push({
+      date,
+      p10: round1(percentile(values, 0.1)),
+      p50: round1(percentile(values, 0.5)),
+      p90: round1(percentile(values, 0.9)),
+    });
+  }
+  return points;
+}
+
 export function computeKbwWindows(
   series: DailyWeather[],
   analysisDate: string,

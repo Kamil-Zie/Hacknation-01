@@ -13,8 +13,20 @@ import type { ConfidenceLevel, IndicatorKey } from '@/services/engine/confidence
 import { getKcForDate, getStageForDate } from '@/services/engine/crops';
 import type { Crop } from '@/services/engine/crops';
 import { fmt } from '@/services/engine/format';
-import { addDays, computeCurrentWindow, computeKbwWindows } from '@/services/engine/kbw';
-import type { CurrentWindow, DailyWeather, WaterBalanceWindow } from '@/services/engine/kbw';
+import {
+  addDays,
+  computeCurrentWindow,
+  computeKbwWindows,
+  kbw60Climatology,
+  kbw60DailySeries,
+} from '@/services/engine/kbw';
+import type {
+  CurrentWindow,
+  DailyWeather,
+  KbwBandPoint,
+  KbwPoint,
+  WaterBalanceWindow,
+} from '@/services/engine/kbw';
 import { computeRecommendations } from '@/services/engine/recommendations';
 import type { Recommendation } from '@/services/engine/recommendations';
 import { computeSoilWater } from '@/services/engine/soil';
@@ -278,6 +290,29 @@ function composeWindow(
     etcMm: current.etcMm,
     kbwMm: current.kbwMm,
     meanTmaxC: current.meanTmaxC ?? nasa.meanTmaxC,
+  };
+}
+
+export type ChartsDto = { kbw60Series: KbwPoint[]; kbw60Climatology: KbwBandPoint[] };
+
+// T-038 DM-001 charts: KBW60 for D-89..D from the current series completed with NASA days
+// (the same merge as the bucket), plus the p10/p50/p90 band from NASA for the same dates.
+// Null without the current series; without NASA the band is [] (the nasa_power gap already exists).
+export function computeCharts(
+  crop: Crop,
+  analysisDate: string,
+  meteo: MeteoOutcome,
+): ChartsDto | null {
+  const current = meteo.current.series;
+  if (current.length === 0) return null;
+  const kc = (date: string): number => getKcForDate(crop, date);
+  const climatology = meteo.climatology?.series ?? null;
+  const merged = mergeSeries(climatology ?? [], current);
+  const kbw60Series = kbw60DailySeries(merged, addDays(analysisDate, -89), analysisDate, kc);
+  const dates = kbw60Series.map((point) => point.date);
+  return {
+    kbw60Series,
+    kbw60Climatology: climatology ? kbw60Climatology(climatology, dates, kc) : [],
   };
 }
 

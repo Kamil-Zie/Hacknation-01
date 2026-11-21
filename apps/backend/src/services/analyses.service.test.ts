@@ -198,7 +198,7 @@ test('all sources ok: complete report with the shape of the API-004 example', as
   assert.equal(report.crop.code, 'winter_wheat');
   assert.equal(report.parcel.id, BODY.parcelId);
   assert.equal(report.methodologyVersion, 'kropla-1.0');
-  assert.equal(report.charts, null);
+  assert.ok(report.charts);
   assert.equal(report.sources.length, 9);
   assert.ok(!Number.isNaN(Date.parse(report.computedAt)));
 
@@ -252,6 +252,27 @@ test('NASA POWER failing: no percentile, class unknown, data gap, report still r
   assert.ok(gapIds(report).includes('nasa_power'));
   // Current values go to evidence (the synthetic Open-Meteo fixture has 32 days, enough for 30).
   assert.ok(report.assessment.evidence.some((item) => item.label === 'KBW 30 dni'));
+});
+
+test('charts: about 90 KBW60 points and a climatology band on the same dates', async () => {
+  const report = await createAnalysis(BODY, makeDeps().deps);
+  const charts = report.charts;
+  assert.ok(charts);
+
+  assert.ok(charts.kbw60Series.length >= 85 && charts.kbw60Series.length <= 90);
+  assert.ok(charts.kbw60Climatology.length >= 80);
+  const seriesDates = new Set(charts.kbw60Series.map((point) => point.date));
+  assert.ok(charts.kbw60Climatology.every((point) => seriesDates.has(point.date)));
+  assert.equal(charts.kbw60Series.at(-1)?.date, BODY.analysisDate);
+  assert.ok(charts.kbw60Climatology.every((p) => p.p10 <= p.p50 && p.p50 <= p.p90));
+});
+
+test('charts without NASA POWER: series only, empty band, report still returned', async () => {
+  const report = await createAnalysis(BODY, makeDeps({ nasaOk: false }).deps);
+  assert.ok(report.charts);
+  assert.deepEqual(report.charts.kbw60Climatology, []);
+  // Only the 32 days of the synthetic Open-Meteo fixture: no complete 60-day window.
+  assert.equal(report.charts.kbw60Series.length, 0);
 });
 
 test('sources still in preparation count as missing (partial) with a clear message', async () => {

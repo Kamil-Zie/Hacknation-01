@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 
 import { env } from '@/config/env';
 import { ReportModel } from '@/models/Report.model';
-import { computeEngine } from '@/services/analysis/assessment';
-import type { AssessmentDto } from '@/services/analysis/assessment';
+import { computeCharts, computeEngine } from '@/services/analysis/assessment';
+import type { AssessmentDto, ChartsDto } from '@/services/analysis/assessment';
 import {
   buildDataGaps,
   buildSources,
@@ -65,7 +65,7 @@ export type ReportDto = {
   sources: SourceStatusDto[];
   limitations: string[];
   dataGaps: DataGapDto[];
-  charts: null;
+  charts: ChartsDto | null;
   methodologyVersion: string;
   computedAt: string;
   durationMs: number;
@@ -238,7 +238,7 @@ export async function createAnalysis(
     sources,
     limitations,
     dataGaps,
-    charts: null,
+    charts: computeCharts(crop, body.analysisDate, run.meteo),
     methodologyVersion: METHODOLOGY_VERSION,
     computedAt,
     durationMs: computedAt.getTime() - startedAt.getTime(),
