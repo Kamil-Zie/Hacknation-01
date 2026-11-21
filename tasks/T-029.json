@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-004", "T-017"],
   "contract_refs": ["API-004", "DM-002", "DM-005", "DM-008", "DM-011"],
@@ -17,7 +17,10 @@
     "Licencja Copernicus DEM i Open-Meteo w katalogu źródeł"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: be-api. Szacunek: 1,5h. Faza: 7 hydrologia+spadek."],
+  "notes": [
+    "Agent: be-api. Szacunek: 1,5h. Faza: 7 hydrologia+spadek.",
+    "Zrobione (backend-2): elevation.source.ts fetchElevation(parcel) → { minM, maxM, meanM, elevationDiffM, slopePct, aspect (PL, kierunek spadku), lowestPoint }, siatka 5x5 na bbox + 50 m, jedno żądanie Open-Meteo elevation (na żywo 200, fixture prawdziwy). Bronowice: 118–120 m, różnica 2 m, spadek ok. 0,36%, kierunek zachód – poniżej progu reguł spadku. Testy: płaszczyzna 5% błąd < 0,1 p.p."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
