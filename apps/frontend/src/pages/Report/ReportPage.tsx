@@ -56,7 +56,7 @@ export function ReportPage() {
         display: 'flex',
         flexDirection: 'column',
         gap: { xs: 2.5, md: 3.5 },
-        maxWidth: 1344,
+        maxWidth: 1600,
         mx: 'auto',
         width: '100%',
         // room for the fixed bottom action bar on phones

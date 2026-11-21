@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-003", "DM-013"],
@@ -24,7 +24,8 @@
   },
   "notes": [
     "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix).",
-    "frontend-2: start 21:15 (fe-developer), razem z uwagami Dawida 20261121-1751 (marka Kropelka w AppLayout, kafelki 1920)."
+    "frontend-2: start 21:15 (fe-developer), razem z uwagami Dawida 20261121-1751 (marka Kropelka w AppLayout, kafelki 1920).",
+    "frontend-2: done 21:35. Brak danych wszędzie (NO_DATA, formatWithUnit, DM-013 null), legenda KBW 18 px nad wykresem, Expandable (Collapse 220 ms, reduced-motion, druk rozwinięty), raport do 1600 px na dużych ekranach. Sprawdzone 390/1920/druk."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

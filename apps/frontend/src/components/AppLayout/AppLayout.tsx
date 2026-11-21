@@ -51,7 +51,7 @@ export function AppLayout() {
         component="main"
         maxWidth={false}
         sx={{
-          maxWidth: isWide ? 1344 : 1536,
+          maxWidth: isWide ? 1600 : 1536,
           py: { xs: 2, md: 4 },
           px: { xs: 2, md: 4 },
         }}

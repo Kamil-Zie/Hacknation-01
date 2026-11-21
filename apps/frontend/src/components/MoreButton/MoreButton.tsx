@@ -1,12 +1,18 @@
-// UI-C-012 MoreButton: "Pokaż więcej / Pokaż mniej" look inside <summary> of a native <details> (design Kropla)
+// UI-C-012 MoreButton: "Pokaż więcej / Pokaż mniej" look with rotating arrow, used inside Expandable header (design Kropla)
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Box } from '@mui/material';
 
 export interface MoreButtonProps {
   variant?: 'primary' | 'red';
   size?: 'medium' | 'large';
+  open?: boolean;
 }
 
-export function MoreButton({ variant = 'primary', size = 'medium' }: MoreButtonProps) {
+export function MoreButton({
+  variant = 'primary',
+  size = 'medium',
+  open = false,
+}: MoreButtonProps) {
   const isRed = variant === 'red';
   return (
     <Box
@@ -21,6 +27,7 @@ export function MoreButton({ variant = 'primary', size = 'medium' }: MoreButtonP
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          gap: 1,
           minHeight: size === 'large' ? 72 : 56,
           px: 2.5,
           borderRadius: '12px',
@@ -31,18 +38,23 @@ export function MoreButton({ variant = 'primary', size = 'medium' }: MoreButtonP
           fontWeight: 800,
           textAlign: 'center',
           transition: 'background-color .15s, color .15s, border-color .15s',
-          'summary:hover &, summary:focus-visible &': {
+          '[role=button]:hover &, [role=button]:focus-visible &': {
             bgcolor: hover,
             borderColor: hover,
             color: theme.palette.common.white,
           },
-          'details[open] > summary & .lbl-more': { display: 'none' },
-          'details:not([open]) > summary & .lbl-less': { display: 'none' },
         };
       }}
     >
-      <span className="lbl-more">Pokaż więcej</span>
-      <span className="lbl-less">Pokaż mniej</span>
+      <span>{open ? 'Pokaż mniej' : 'Pokaż więcej'}</span>
+      <ExpandMoreIcon
+        aria-hidden
+        sx={{
+          transform: open ? 'rotate(180deg)' : 'none',
+          transition: 'transform 220ms',
+          '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
+        }}
+      />
     </Box>
   );
 }

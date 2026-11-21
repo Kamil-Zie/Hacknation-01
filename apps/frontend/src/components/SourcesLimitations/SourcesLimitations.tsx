@@ -8,6 +8,7 @@ import { Box, Link, Typography } from '@mui/material';
 import type { ElementType, ReactNode } from 'react';
 
 import type { DataGap, SourceCategory, SourceStatus, SourceStatusValue } from '@/api/types';
+import { Expandable } from '@/components/MoreButton/Expandable';
 import { MoreButton } from '@/components/MoreButton/MoreButton';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { formatDateTime } from '@/utils/format';
@@ -47,7 +48,7 @@ const STATUS_ICON: Record<SourceStatusValue, { icon: ElementType; color: string 
 
 function period(source: SourceStatus): string {
   if (source.dataPeriod) return source.dataPeriod;
-  return source.fetchedAt ? `pobrano ${formatDateTime(source.fetchedAt)}` : '—';
+  return source.fetchedAt ? `pobrano ${formatDateTime(source.fetchedAt)}` : 'Brak danych';
 }
 
 function SourceRow({ source }: { source: SourceStatus }) {
@@ -148,8 +149,7 @@ export function SourcesLimitations({
   const withGaps = sources.filter((s) => s.status !== 'ok' && s.status !== 'cached').length;
 
   return (
-    <Box
-      component="details"
+    <Expandable
       id="zrodla"
       sx={{
         bgcolor: 'background.paper',
@@ -160,37 +160,31 @@ export function SourcesLimitations({
         scrollMarginTop: 16,
         minWidth: 0,
       }}
+      headerSx={{
+        py: { xs: 2.5, md: 2.75 },
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: 2,
+      }}
+      header={null}
+      renderHeader={(open) => (
+        <>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+            <Typography variant="h3" component="h3" sx={{ fontSize: '1.625rem', fontWeight: 800 }}>
+              Skąd mamy dane?
+            </Typography>
+            <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>
+              {sources.length} źródeł{withGaps > 0 ? ` · w ${withGaps} brakuje części danych` : ''}
+            </Typography>
+          </Box>
+          <Box sx={{ width: { xs: '100%', md: 240 }, display: 'flex' }}>
+            <MoreButton open={open} />
+          </Box>
+        </>
+      )}
     >
-      <Box
-        component="summary"
-        sx={(theme) => ({
-          py: { xs: 2.5, md: 2.75 },
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 2,
-          cursor: 'pointer',
-          listStyle: 'none',
-          '&::-webkit-details-marker': { display: 'none' },
-          '&:focus-visible': {
-            outline: `3px solid ${theme.palette.primary.main}`,
-            outlineOffset: 2,
-          },
-        })}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-          <Typography variant="h3" component="h3" sx={{ fontSize: '1.625rem', fontWeight: 800 }}>
-            Skąd mamy dane?
-          </Typography>
-          <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>
-            {sources.length} źródeł{withGaps > 0 ? ` · w ${withGaps} brakuje części danych` : ''}
-          </Typography>
-        </Box>
-        <Box sx={{ width: { xs: '100%', md: 240 }, display: 'flex' }}>
-          <MoreButton />
-        </Box>
-      </Box>
       <Box sx={{ pb: 2.75, display: 'flex', flexDirection: 'column', gap: 3 }}>
         <Box component="ul" sx={{ m: 0, p: 0 }}>
           {sources.map((s) => (
@@ -231,6 +225,6 @@ export function SourcesLimitations({
         </Block>
         <Typography variant="caption">Metodyka: {methodologyVersion}</Typography>
       </Box>
-    </Box>
+    </Expandable>
   );
 }

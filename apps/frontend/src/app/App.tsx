@@ -24,6 +24,10 @@ export function App() {
           },
           '.print-sheet .card-grid-item': { gridColumn: 'auto !important' },
           '.print-sheet .card-grid-full': { gridColumn: '1 / -1 !important' },
+          '.print-sheet .MuiCollapse-root': {
+            height: 'auto !important',
+            visibility: 'visible !important',
+          },
           '.print-sheet .more-btn, .print-sheet .no-print': { display: 'none !important' },
           '.print-sheet .report-overview > *': { order: '0 !important' },
           '.leaflet-control-zoom a': { width: 44, height: 44, lineHeight: '44px', fontSize: 22 },

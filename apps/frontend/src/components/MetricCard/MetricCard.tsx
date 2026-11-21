@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 
 import { AlertLabel } from '@/components/AlertLabel/AlertLabel';
+import { Expandable } from '@/components/MoreButton/Expandable';
 import { MoreButton } from '@/components/MoreButton/MoreButton';
 import type { AlertLevel } from '@/utils/reportState';
 
@@ -110,62 +111,59 @@ export function MetricCard(props: MetricCardProps) {
   }
 
   return (
-    <Box component="details" className="metric-card" sx={cardSx}>
-      <Box
-        component="summary"
-        sx={(theme) => ({
-          py: 2.5,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1,
-          cursor: 'pointer',
-          listStyle: 'none',
-          '&::-webkit-details-marker': { display: 'none' },
-          '&:focus-visible': {
-            outline: `3px solid ${theme.palette.primary.main}`,
-            outlineOffset: 2,
-          },
-        })}
-      >
-        <Head {...props} />
-        {note && (
-          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '1rem' }}>
-            {note}
-          </Typography>
-        )}
-        {value && (
-          <Typography
-            component="span"
-            sx={{
-              fontSize: 'clamp(1.875rem, 1.5rem + 1.2vw, 2.625rem)',
-              lineHeight: 1.05,
-              fontWeight: 800,
-              fontVariantNumeric: 'tabular-nums',
-              overflowWrap: 'anywhere',
-            }}
-          >
-            {value}
-          </Typography>
-        )}
-        {caption && (
-          <Typography component="span" color="text.secondary" sx={{ fontSize: '1.0625rem' }}>
-            {caption}
-          </Typography>
-        )}
-        {period && (
-          <Typography component="span" color="text.secondary" sx={{ fontSize: '1rem' }}>
-            {period}
-          </Typography>
-        )}
-        {alert && isAlertAboveButton && (
-          <Box sx={{ alignSelf: 'flex-end' }}>
-            <AlertLabel level={alert.level} label={alert.label} />
+    <Expandable
+      className="metric-card"
+      sx={cardSx}
+      headerSx={{
+        py: 2.5,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1,
+      }}
+      header={null}
+      renderHeader={(open) => (
+        <>
+          <Head {...props} />
+          {note && (
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '1rem' }}>
+              {note}
+            </Typography>
+          )}
+          {value && (
+            <Typography
+              component="span"
+              sx={{
+                fontSize: 'clamp(1.875rem, 1.5rem + 1.2vw, 2.625rem)',
+                lineHeight: 1.05,
+                fontWeight: 800,
+                fontVariantNumeric: 'tabular-nums',
+                overflowWrap: 'anywhere',
+              }}
+            >
+              {value}
+            </Typography>
+          )}
+          {caption && (
+            <Typography component="span" color="text.secondary" sx={{ fontSize: '1.0625rem' }}>
+              {caption}
+            </Typography>
+          )}
+          {period && (
+            <Typography component="span" color="text.secondary" sx={{ fontSize: '1rem' }}>
+              {period}
+            </Typography>
+          )}
+          {alert && isAlertAboveButton && (
+            <Box sx={{ alignSelf: 'flex-end' }}>
+              <AlertLabel level={alert.level} label={alert.label} />
+            </Box>
+          )}
+          <Box sx={{ mt: 0.75, display: 'flex' }}>
+            <MoreButton open={open} />
           </Box>
-        )}
-        <Box sx={{ mt: 0.75, display: 'flex' }}>
-          <MoreButton />
-        </Box>
-      </Box>
+        </>
+      )}
+    >
       <Box
         sx={{
           pt: 2,
@@ -179,6 +177,6 @@ export function MetricCard(props: MetricCardProps) {
       >
         {children}
       </Box>
-    </Box>
+    </Expandable>
   );
 }

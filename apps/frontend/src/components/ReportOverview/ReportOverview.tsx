@@ -13,6 +13,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 import type { Confidence, DroughtClass, Recommendation, Report } from '@/api/types';
 import { AlertLabel } from '@/components/AlertLabel/AlertLabel';
+import { Expandable } from '@/components/MoreButton/Expandable';
 import { MoreButton } from '@/components/MoreButton/MoreButton';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { formatDate, formatNumber } from '@/utils/format';
@@ -143,22 +144,12 @@ function ResultCard({ report }: ReportOverviewProps) {
           Uprawa ({crop.name}) jest poza sezonem wegetacyjnym, ocena jest orientacyjna.
         </Typography>
       )}
-      <Box component="details" sx={{ mt: 'auto', pt: 1 }}>
-        <Box
-          component="summary"
-          sx={(theme) => ({
-            display: 'flex',
-            cursor: 'pointer',
-            listStyle: 'none',
-            '&::-webkit-details-marker': { display: 'none' },
-            '&:focus-visible': {
-              outline: `3px solid ${theme.palette.primary.main}`,
-              outlineOffset: 2,
-            },
-          })}
-        >
-          <MoreButton variant="red" size="large" />
-        </Box>
+      <Expandable
+        sx={{ mt: 'auto', pt: 1 }}
+        header={null}
+        headerSx={{ display: 'flex' }}
+        renderHeader={(open) => <MoreButton variant="red" size="large" open={open} />}
+      >
         <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 1.75 }}>
           {assessment.confidenceReasons.length > 0 && (
             <Box sx={{ bgcolor: 'background.paper', borderRadius: '12px', p: 2 }}>
@@ -201,7 +192,7 @@ function ResultCard({ report }: ReportOverviewProps) {
             </Box>
           )}
         </Box>
-      </Box>
+      </Expandable>
     </Box>
   );
 }
@@ -296,9 +287,17 @@ function SoilWaterCard({ report }: ReportOverviewProps) {
         Ile wody jest w glebie?
       </Typography>
       {!soilWater || !state ? (
-        <Typography color="text.secondary">
-          Brak danych o glebie, nie policzono deficytu wody.
-        </Typography>
+        <>
+          <Typography
+            component="span"
+            sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, lineHeight: 1.1, fontWeight: 800 }}
+          >
+            Brak danych
+          </Typography>
+          <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>
+            Nie mamy danych o glebie tej działki, więc nie policzyliśmy, ile wody brakuje.
+          </Typography>
+        </>
       ) : (
         <>
           <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1.75, flexWrap: 'wrap' }}>
@@ -312,7 +311,7 @@ function SoilWaterCard({ report }: ReportOverviewProps) {
               }}
             >
               {depletion === null
-                ? 'brak'
+                ? 'Brak danych'
                 : `${hasDeficit ? '−' : ''}${formatNumber(Math.abs(depletion), 0)} mm`}
             </Typography>
             <Typography color="text.secondary" sx={{ fontSize: { xs: '1rem', md: '1.375rem' } }}>

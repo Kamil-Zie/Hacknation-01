@@ -32,6 +32,46 @@ function formatDayMonth(date: string): string {
   return `${day}.${month}`;
 }
 
+type SwatchKind = 'line' | 'dashed' | 'band' | 'zero';
+
+const LEGEND: { kind: SwatchKind; label: string }[] = [
+  { kind: 'line', label: 'Bilans wody w tym sezonie' },
+  { kind: 'dashed', label: 'Norma z 10 lat' },
+  { kind: 'band', label: 'Zwykły zakres (z 10 lat)' },
+  { kind: 'zero', label: 'Zero: wody tyle, ile ubywa' },
+];
+
+function LegendSwatch({ kind }: { kind: SwatchKind }) {
+  const theme = useTheme();
+  if (kind === 'band') {
+    return (
+      <Box
+        sx={{
+          width: 40,
+          height: 16,
+          borderRadius: '3px',
+          bgcolor: theme.palette.secondary.main,
+          opacity: 0.7,
+          border: 1,
+          borderColor: 'kropla.line',
+        }}
+      />
+    );
+  }
+  const color = kind === 'line' ? theme.palette.primary.main : theme.palette.text.primary;
+  return (
+    <Box
+      sx={{
+        width: 40,
+        height: 0,
+        borderTop: `${kind === 'line' ? 4 : 3}px ${kind === 'dashed' ? 'dashed' : 'solid'} ${
+          kind === 'dashed' ? theme.palette.text.secondary : color
+        }`,
+      }}
+    />
+  );
+}
+
 export function KbwChart({ charts }: KbwChartProps) {
   const theme = useTheme();
   const isNarrow = useMediaQuery(theme.breakpoints.down('sm'));
@@ -104,8 +144,8 @@ export function KbwChart({ charts }: KbwChartProps) {
         useFlexGap
         sx={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}
       >
-        <Typography variant="body2" color="text.secondary">
-          Klimatyczny bilans wodny (KBW), mm
+        <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>
+          Bilans wody (KBW), mm
         </Typography>
         <ToggleButtonGroup
           exclusive
@@ -125,6 +165,33 @@ export function KbwChart({ charts }: KbwChartProps) {
           </ToggleButton>
         </ToggleButtonGroup>
       </Stack>
+
+      <Box
+        component="ul"
+        aria-label="Legenda wykresu"
+        sx={{
+          listStyle: 'none',
+          m: 0,
+          p: 0,
+          display: 'grid',
+          gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
+          gap: 1,
+          columnGap: 3,
+        }}
+      >
+        {LEGEND.map((item) => (
+          <Box
+            key={item.label}
+            component="li"
+            sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minHeight: 32 }}
+          >
+            <Box aria-hidden sx={{ flex: '0 0 40px', display: 'flex', alignItems: 'center' }}>
+              <LegendSwatch kind={item.kind} />
+            </Box>
+            <Typography sx={{ fontSize: '1.125rem', lineHeight: 1.3 }}>{item.label}</Typography>
+          </Box>
+        ))}
+      </Box>
 
       <Box
         role="img"
@@ -175,7 +242,7 @@ export function KbwChart({ charts }: KbwChartProps) {
               id: 'p50',
               dataKey: 'p50',
               showMark: false,
-              label: 'Mediana normy 10 lat',
+              label: 'Norma z 10 lat',
               color: theme.palette.text.secondary,
             },
             {
@@ -183,7 +250,7 @@ export function KbwChart({ charts }: KbwChartProps) {
               dataKey: 'kbw',
               showMark: showSeriesMarks,
               connectNulls: true,
-              label: 'KBW (bieżący sezon)',
+              label: 'Bilans wody',
               color: theme.palette.primary.main,
               valueFormatter: (value: number | null) =>
                 value === null ? '' : `${formatNumber(value)} mm`,
@@ -197,30 +264,7 @@ export function KbwChart({ charts }: KbwChartProps) {
         </LineChart>
       </Box>
 
-      <Stack
-        component="ul"
-        direction="row"
-        spacing={1.5}
-        useFlexGap
-        sx={{ listStyle: 'none', m: 0, p: 0, flexWrap: 'wrap', columnGap: 2 }}
-        aria-label="Legenda wykresu"
-      >
-        {/* Short labels with line glyphs: fits ~2 lines on 360 px (frontend-2 review) */}
-        <Typography component="li" variant="caption" sx={{ whiteSpace: 'nowrap' }}>
-          <strong aria-hidden>━</strong> KBW sezonu (linia ciągła)
-        </Typography>
-        <Typography component="li" variant="caption" sx={{ whiteSpace: 'nowrap' }}>
-          <strong aria-hidden>┅</strong> mediana 10 lat (przerywana)
-        </Typography>
-        <Typography component="li" variant="caption" sx={{ whiteSpace: 'nowrap' }}>
-          <strong aria-hidden>▒</strong> pasmo p10–p90
-        </Typography>
-        <Typography component="li" variant="caption" sx={{ whiteSpace: 'nowrap' }}>
-          <strong aria-hidden>─</strong> 0 mm
-        </Typography>
-      </Stack>
-
-      <Typography variant="body2">{summary}</Typography>
+      <Typography sx={{ fontSize: '1.125rem' }}>{summary}</Typography>
     </Stack>
   );
 }

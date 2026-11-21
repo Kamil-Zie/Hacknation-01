@@ -12,6 +12,14 @@ export function formatNumber(value: number, digits = 1): string {
   }).format(value);
 }
 
+export const NO_DATA = 'Brak danych';
+
+/** Number with unit, or "Brak danych" when the value is missing (null, undefined, NaN) */
+export function formatWithUnit(value: number | null | undefined, unit: string, digits = 1): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return NO_DATA;
+  return `${formatNumber(value, digits)} ${unit}`;
+}
+
 export function formatSigned(value: number, digits = 1): string {
   const text = formatNumber(Math.abs(value), digits);
   if (value > 0) return `+${text}`;

@@ -15,7 +15,7 @@ import { CardGrid } from '@/components/CardGrid/CardGrid';
 import { KbwChart } from '@/components/KbwChart/KbwChart';
 import { MetricCard } from '@/components/MetricCard/MetricCard';
 import { SectionCard } from '@/components/SectionCard/SectionCard';
-import { formatDate, formatNumber, formatSigned } from '@/utils/format';
+import { formatDate, formatNumber, formatSigned, formatWithUnit } from '@/utils/format';
 import { reasonText } from '@/utils/reasonCodes';
 import {
   ALERT_TEXT,
@@ -120,10 +120,10 @@ function KbwCard({
           : ` – jest ${isWorse ? 'gorzej' : 'lepiej'} o ${formatNumber(Math.abs(window.anomalyMm), 0)} mm.`}
       </Line>
       <Line>Percentyl: {formatNumber(window.percentile, 0)}</Line>
-      <Line>Opad: {formatNumber(window.precipitationNormPct, 0)}% normy</Line>
+      <Line>Opad: {formatWithUnit(window.precipitationNormPct, '% normy', 0)}</Line>
       <Line>
-        Średnia temperatura maks.: {formatNumber(window.meanTmaxC, 1)} °C (norma{' '}
-        {formatNumber(window.normTmaxC, 1)} °C)
+        Średnia temperatura maks.: {formatWithUnit(window.meanTmaxC, '°C')} (norma{' '}
+        {formatWithUnit(window.normTmaxC, '°C')})
       </Line>
     </MetricCard>
   );

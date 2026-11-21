@@ -126,9 +126,9 @@ export interface WaterBalanceWindow {
   normKbwMm: number;
   anomalyMm: number;
   percentile: number;
-  precipitationNormPct: number;
-  meanTmaxC: number;
-  normTmaxC: number;
+  precipitationNormPct: number | null;
+  meanTmaxC: number | null;
+  normTmaxC: number | null;
 }
 
 // DM-014
@@ -365,4 +365,13 @@ export interface RegisterRequest {
 export interface LoginRequest {
   email: string;
   password: string;
+  rememberMe?: boolean;
+}
+
+// API-015 PATCH /auth/me (all fields optional; email or newPassword needs currentPassword)
+export interface UpdateProfileRequest {
+  name?: string;
+  email?: string;
+  currentPassword?: string;
+  newPassword?: string;
 }
