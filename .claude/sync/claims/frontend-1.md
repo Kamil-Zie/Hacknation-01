@@ -1,3 +1,4 @@
 # Claims: frontend-1 (Dawid)
 
-- T-033 · UI-C-006 (panel NDVI/NDMI, wilgotność gleby), DM-013/014/015 · pliki: `src/components/AssessmentSection/AssessmentSection.tsx` tylko po zwolnieniu przez frontend-2 (T-026) albo zmiana robi Jakub; weryfikacja na realnym raporcie po T-031 · od 2026-11-21 14:20
+- T-020 · UI-C-011 KbwChart (DM-001.charts, DM-006) · pliki: `src/components/KbwChart/**`; osadzenie w AssessmentSection robi frontend-2 albo po zwolnieniu pliku · od 2026-11-21 14:35
+- T-033 · UI-C-006 · UI gotowe (frontend-2, 19abfdf), czeka tylko weryfikacja na realnym raporcie · od 2026-11-21 14:20
