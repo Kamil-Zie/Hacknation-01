@@ -353,6 +353,7 @@ test('POST /analyses with accountId and no token: 401 UNAUTHORIZED, sources not 
 });
 
 test('POST /analyses with a foreign accountId: 403 NOT_A_MEMBER, sources not called', async () => {
+  vi.spyOn(mongoose.connection, 'readyState', 'get').mockReturnValue(1);
   const deps = makeDeps();
   const fetchParcel = vi.fn(deps.fetchParcel);
   holder.deps = { ...deps, fetchParcel };

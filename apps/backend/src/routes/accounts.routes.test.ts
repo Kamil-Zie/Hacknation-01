@@ -90,6 +90,7 @@ test('401 UNAUTHORIZED without a token', async () => {
 });
 
 test('403 NOT_A_MEMBER for a foreign account', async () => {
+  vi.spyOn(mongoose.connection, 'readyState', 'get').mockReturnValue(1);
   db.memberships.push(`${USER_ID}:${OTHER_ACCOUNT_ID}`);
   const res = await getReports(`/accounts/${ACCOUNT_ID}/reports`, signToken(USER_ID));
   assert.equal(res.status, 403);

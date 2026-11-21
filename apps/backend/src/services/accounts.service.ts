@@ -3,6 +3,7 @@ import { isValidObjectId } from 'mongoose';
 
 import { AccountModel } from '@/models/Account.model';
 import { AccountMemberModel } from '@/models/AccountMember.model';
+import { assertDbConnected } from '@/utils/db';
 
 export interface AccountDto {
   id: string;
@@ -12,11 +13,13 @@ export interface AccountDto {
 
 export async function isMember(userId: string, accountId: string): Promise<boolean> {
   if (!isValidObjectId(userId) || !isValidObjectId(accountId)) return false;
+  assertDbConnected();
   const member = await AccountMemberModel.exists({ userId, accountId, status: 'active' });
   return member !== null;
 }
 
 export async function listAccountsForUser(userId: string): Promise<AccountDto[]> {
+  assertDbConnected();
   const memberships = await AccountMemberModel.find({ userId, status: 'active' });
   const accountIds = memberships.map((member) => member.accountId);
   const [accounts, members] = await Promise.all([

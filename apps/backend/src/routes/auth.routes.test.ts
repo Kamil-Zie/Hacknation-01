@@ -4,6 +4,7 @@ import { createServer } from 'node:http';
 import type { Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 
+import mongoose from 'mongoose';
 import { afterAll, beforeAll, beforeEach, test, vi } from 'vitest';
 
 import { createApp } from '@/app';
@@ -74,6 +75,20 @@ beforeEach(() => {
   db.accounts.length = 0;
   db.members.length = 0;
   resetLoginLimiter();
+  // Fake models stand in for Mongo; report the connection as up unless a test says otherwise.
+  vi.spyOn(mongoose.connection, 'readyState', 'get').mockReturnValue(1);
+});
+
+test('without a database connection register, login and me answer 503 DB_UNAVAILABLE at once', async () => {
+  vi.spyOn(mongoose.connection, 'readyState', 'get').mockReturnValue(0);
+  const startedAt = Date.now();
+  const register = await post('/auth/register', JAN);
+  const login = await post('/auth/login', { email: 'jan@example.com', password: JAN.password });
+  for (const res of [register, login]) {
+    assert.equal(res.status, 503);
+    assert.equal(res.json.code, 'DB_UNAVAILABLE');
+  }
+  assert.ok(Date.now() - startedAt < 1000);
 });
 
 async function post(path: string, body: unknown) {

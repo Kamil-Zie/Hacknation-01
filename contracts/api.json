@@ -3098,7 +3098,8 @@
       },
       "errors": [
         "409 EMAIL_TAKEN (konto z tym e-mailem już istnieje)",
-        "422 VALIDATION_ERROR (zły e-mail, hasło krótsze niż 8 znaków, brak imienia; details.field)"
+        "422 VALIDATION_ERROR (zły e-mail, hasło krótsze niż 8 znaków, brak imienia; details.field)",
+        "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
       ],
       "data_refs": ["DM-016", "DM-017", "DM-018", "DM-019", "DM-020", "DM-021"],
       "consumers": [],
@@ -3145,7 +3146,8 @@
       "errors": [
         "401 INVALID_CREDENTIALS (zły e-mail lub hasło; jeden komunikat dla obu przypadków)",
         "429 TOO_MANY_ATTEMPTS (za dużo nieudanych prób; details.retryAfterSec)",
-        "422 VALIDATION_ERROR (zły format e-maila lub brak hasła; details.field)"
+        "422 VALIDATION_ERROR (zły format e-maila lub brak hasła; details.field)",
+        "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
       ],
       "data_refs": ["DM-016", "DM-019", "DM-020", "DM-021"],
       "consumers": [],
@@ -3189,7 +3191,10 @@
           "accounts": "Account[] (DM-021)"
         }
       },
-      "errors": ["401 UNAUTHORIZED (brak, zły lub przeterminowany token)"],
+      "errors": [
+        "401 UNAUTHORIZED (brak, zły lub przeterminowany token)",
+        "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
+      ],
       "data_refs": ["DM-020", "DM-021"],
       "consumers": [],
       "consumers_planned": ["UI-S-005", "UI-S-006"],
@@ -3372,7 +3377,8 @@
       "errors": [
         "401 UNAUTHORIZED",
         "403 NOT_A_MEMBER",
-        "422 VALIDATION_ERROR (zły format accountId lub page/pageSize)"
+        "422 VALIDATION_ERROR (zły format accountId lub page/pageSize)",
+        "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
       ],
       "data_refs": ["DM-001", "DM-023"],
       "consumers": [],

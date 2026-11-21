@@ -5,6 +5,7 @@ import { UserModel } from '@/models/User.model';
 import { listAccountsForUser } from '@/services/accounts.service';
 import type { AccountDto } from '@/services/accounts.service';
 import { AppError } from '@/utils/AppError';
+import { assertDbConnected } from '@/utils/db';
 import { signToken } from '@/utils/jwt';
 import { hashPassword, verifyPassword } from '@/utils/password';
 import type { LoginBody, RegisterBody } from '@/validation/auth.schema';
@@ -51,6 +52,7 @@ function isDuplicateKey(error: unknown): boolean {
 }
 
 export async function register(body: RegisterBody): Promise<SessionDto> {
+  assertDbConnected();
   const email = body.email.toLowerCase();
   if (await UserModel.exists({ email })) throw emailTaken();
   const passwordHash = await hashPassword(body.password);
@@ -82,6 +84,7 @@ export async function register(body: RegisterBody): Promise<SessionDto> {
 }
 
 export async function login(body: LoginBody): Promise<SessionDto> {
+  assertDbConnected();
   const email = body.email.toLowerCase();
   const now = Date.now();
   const failures = recentFailures(email, now);
@@ -109,6 +112,7 @@ export async function login(body: LoginBody): Promise<SessionDto> {
 }
 
 export async function me(userId: string): Promise<MeDto> {
+  assertDbConnected();
   const user = await UserModel.findById(userId);
   if (!user) throw new AppError('UNAUTHORIZED', 'Wymagane zalogowanie.', 401);
   return { user: toUserDto(user), accounts: await listAccountsForUser(userId) };
