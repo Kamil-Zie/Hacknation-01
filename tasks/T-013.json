@@ -1,0 +1,25 @@
+{
+  "id": "T-013",
+  "title": "Zaimplementuj źródło SoilGrids przez WCS (piasek, ił, SOC, 5 warstw)",
+  "description": "services/sources/soilgrids.source.ts: GetCoverage WCS 2.0.1 w EPSG:152160, okno ±250 m wokół centroidu po rzutowaniu proj4 (igh), 3 właściwości x 5 głębokości z limitem współbieżności 5, odczyt GeoTIFF geotiff.js, przeliczenia jednostek, pył = 100 − piasek − ił, SOC w %. Cache 365 dni (centroid zaokrąglony do 0,0025°). Krok 5.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-004", "T-002"],
+  "contract_refs": ["API-004", "DM-002", "DM-005", "DM-007", "DM-011"],
+  "demo_step": 5,
+  "acceptance_criteria": [
+    "Dla centroidu działki demo zwraca piasek, ił, pył i SOC w % dla 5 warstw (sensowne zakresy 0-100)",
+    "Wartości no-data dają status missing z komunikatem, nie zera",
+    "Timeout 8 s i niedostępność ISRIC dają status timeout/error i wpis do dataGaps, nie wyjątek",
+    "Test parsera na zapisanym GeoTIFF; cache działa po zaokrąglonym centroidzie"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 3 gleba. Źródło wysokiego ryzyka (ISRIC niestabilny), w T-002 sprawdzony format. Licencja CC BY 4.0."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

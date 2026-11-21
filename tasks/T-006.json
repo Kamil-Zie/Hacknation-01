@@ -1,0 +1,26 @@
+{
+  "id": "T-006",
+  "title": "Zbuduj layout aplikacji, routing, design tokens i warstwę API z przełącznikiem mock/real",
+  "description": "Shell aplikacji (nagłówek, kontener, trasy: start, analiza, raport/:id, druk/:id), design tokens z contracts/ui.json, klient API w api/ z hookami i przełącznikiem VITE_USE_MOCK; mock oparty na przykładach z T-003 (do czasu T-003 minimalny własny zgodny z API-004). Komponent StatusBadge (UI-C-012). Krok 1.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-001"],
+  "contract_refs": ["UI-S-001", "UI-C-012", "API-004"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Trasy /, /analiza, /raport/:id i /druk/:id renderują puste ekrany z nagłówkiem",
+    "VITE_USE_MOCK=true zwraca dane z fixture bez backendu, false woła /api/v1",
+    "StatusBadge pokazuje stany ok, cache, missing, timeout, error z kolorem i tekstem (nie tylko kolor)",
+    "Układ działa responsywnie na 360, 768, 1280 i 1920 px (bez poziomego scrolla)",
+    "Brak warningów lint, komentarz z ID kontraktu na początku plików"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: fe-developer. Szacunek: 2h. Faza: szkielet/mock. Dawid i Jakub startują równolegle od tego shellu; uzgodnijcie strukturę api/ w claimach."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

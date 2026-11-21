@@ -1,0 +1,26 @@
+{
+  "id": "T-008",
+  "title": "Zbuduj formularz uprawy i daty oraz przebieg analizy ze statusami źródeł",
+  "description": "UI-S-002: UI-C-004 AnalysisForm (lista upraw z API-003, data analizy domyślnie dziś, zakres do 10 lat wstecz, przycisk Analizuj) i UI-C-005 SourceProgressList (lista źródeł z API-006 w stanie pobierania, po odpowiedzi API-004 realne statusy z report.sources[]; ok/cache/brak danych/timeout). Stan analizy (idle, loading, success, error), obsługa przekroczenia 30 s. Na mocku. Kroki 3-4.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-003", "T-006"],
+  "contract_refs": ["API-003", "API-004", "API-006", "DM-004", "DM-005", "DM-011", "UI-S-002", "UI-C-004", "UI-C-005"],
+  "demo_step": 3,
+  "acceptance_criteria": [
+    "Lista upraw pochodzi z API-003 (mock), data poza zakresem 10 lat lub w przyszłości jest odrzucona z komunikatem",
+    "Kliknięcie Analizuj wysyła jedno żądanie API-004 (mock z opóźnieniem 3-6 s) i pokazuje listę 7 źródeł z animowanym stanem pobierania",
+    "Po odpowiedzi każde źródło pokazuje status z report.sources[] (także missing/timeout z komunikatem) i następuje przejście do raportu",
+    "Błąd API-004 pokazuje czytelny komunikat i przycisk ponów, przycisk jest zablokowany w trakcie analizy",
+    "Działa responsywnie na 360, 768, 1280 i 1920 px"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: fe-developer. Szacunek: 2h. Faza: 2 meteo/KBW (UI kroku 3)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

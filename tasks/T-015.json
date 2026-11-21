@@ -1,0 +1,25 @@
+{
+  "id": "T-015",
+  "title": "Zaimplementuj silnik przyczyn niedoboru z evidence",
+  "description": "services/engine/causes.ts (ADR-007 §8): przyczyny uruchamiane tylko gdy dane istnieją: niska retencja gleby (piasek, TAW), deficyt opadu przy wysokiej temperaturze, spadek terenu i odpływ, wysokie wymagania wodne uprawy. Każda przyczyna ma evidence[] z liczbami i jednostkami. Krok 5.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": ["T-012", "T-014"],
+  "contract_refs": ["API-004", "DM-008", "DM-010"],
+  "demo_step": 5,
+  "acceptance_criteria": [
+    "Dla fixture piaszczystej działki z deficytem opadu zwraca przyczyny z evidence zawierającym wartości (np. piasek X%, TAW Y mm)",
+    "Przyczyna zależna od brakującego wejścia (np. spadek bez elevation) nie pojawia się",
+    "Przyczyny posortowane wg wagi, struktura zgodna z DM-008",
+    "Testy jednostkowe"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 1,5h. Faza: 4 raport+rekomendacje."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

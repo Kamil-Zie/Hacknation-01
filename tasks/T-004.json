@@ -1,0 +1,25 @@
+{
+  "id": "T-004",
+  "title": "Zbuduj framework źródeł: cache source_cache, runSource z timeoutem, API-006",
+  "description": "services/sources: wspólny typ wyniku źródła (status ok/cache/missing/error/timeout, message, fetchedAt, dataDate), cache.service na DM-002 (klucz, TTL), runSource z AbortSignal.timeout i jednym ponowieniem, oraz GET /sources (API-006, stała z kodu, 7 źródeł). Podstawa wszystkich źródeł. Kroki 3 i 7.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-001", "T-DB-001"],
+  "contract_refs": ["API-006", "DM-002", "DM-005", "DM-011"],
+  "demo_step": 3,
+  "acceptance_criteria": [
+    "GET /api/v1/sources zwraca katalog 7 źródeł zgodny z API-006 (nazwa, kategoria, dostawca, licencja, rozdzielczość)",
+    "runSource zapisuje wynik w source_cache z TTL i drugi identyczny call zwraca status cache bez wywołania sieci (test z mockiem fetch)",
+    "Przekroczenie timeoutu daje status timeout, a błąd sieci status error, bez wyjątku na zewnątrz",
+    "Żadnych sekretów w logach; testy jednostkowe przechodzą"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: ULDK (krok 2). ADR-006 sekcje „Decyzja: budżet czasu” i „awaria źródła”."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

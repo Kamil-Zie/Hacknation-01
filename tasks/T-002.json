@@ -1,0 +1,27 @@
+{
+  "id": "T-002",
+  "title": "Zweryfikuj na żywo endpointy źródeł z ADR-006 (timebox 45 min)",
+  "description": "Test na żywo sekcji „Do sprawdzenia” ADR-006: ULDK GetParcelByXY oś lon,lat (np. centrum Puław), opóźnienie archiwum Open-Meteo i jednostki ET0, nazwy assetów i raster:bands/offset Sentinel-2 Earth Search, GetCoverage SoilGrids WCS (format, no-data), EUMETSAT: token, kolekcja ASCAT SSM (SOMO25 vs H122/H SAF) przed i po 07.2025, format granul (netCDF4 vs BUFR). Wynik w notatkach zadania i wiadomość do koordynatora. Krok demo 2 (ryzyko).",
+  "type": "integration",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "critical",
+  "depends_on": [],
+  "contract_refs": ["API-001", "API-002", "API-004", "API-006", "DM-005"],
+  "demo_step": 2,
+  "acceptance_criteria": [
+    "Dla każdego z 5 źródeł (ULDK, Open-Meteo, Earth Search, SoilGrids WCS, EUMETSAT) w notatkach jest: działa/nie działa, przykładowe żądanie i fragment odpowiedzi, czas odpowiedzi",
+    "Potwierdzona kolejność osi ULDK GetParcelByXY dla srid 4326 na znanym punkcie",
+    "Dla EUMETSAT ustalone: ID kolekcji dla dat przed i po 07.2025, format granul i decyzja go/no-go (bez sekretów w notatkach)",
+    "Rozbieżności z ADR-006 wypisane z proponowaną poprawką",
+    "Wiadomość (type handoff albo decision_request gdy EUMETSAT to BUFR-only) wysłana do coordinator przez new-message.mjs"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-integration. Szacunek: 0,75h (timebox 45 min). Faza: start, pierwsze zadanie backendu.",
+    "Wynik wpisz do notes zadania; ewentualne poprawki ADR-006 zgłasza koordynator."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "T-011",
+  "title": "Dodaj tabelę upraw FAO-56 (Kc, fazy, głębokość korzeni) i endpoint API-003",
+  "description": "constants/crops.ts z uprawami: pszenica ozima, kukurydza, ziemniak, rzepak, użytki zielone (Kc ini/mid/end, długości faz, krytyczne miesiące, głębokość korzeni, współczynnik p, oczekiwane NDVI/NDMI wg ADR-007 §2 i §5) oraz GET /crops (API-003). Krok 3.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": ["T-001"],
+  "contract_refs": ["API-003", "DM-004"],
+  "demo_step": 3,
+  "acceptance_criteria": [
+    "GET /api/v1/crops zwraca 5 upraw zgodnie z API-003 i DM-004",
+    "Każda uprawa ma Kc, fazy krytyczne i głębokość korzeni z komentarzem źródła (FAO-56 tab. 12/22) w kodzie",
+    "Test jednostkowy sprawdza kompletność pól dla każdej uprawy"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 1,5h. Faza: 2 (konieczne dla silnika TAW/RAW). Stała z kodu, bez bazy."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

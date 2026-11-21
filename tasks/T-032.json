@@ -1,0 +1,25 @@
+{
+  "id": "T-032",
+  "title": "Zaimplementuj opcjonalne źródło EUMETSAT ASCAT za flagą braku klucza",
+  "description": "services/sources/eumetsat.source.ts (ADR-006 „Źródło eumetsat”, ADR-007 §5a): token OAuth2 client_credentials w pamięci, wyszukiwanie granul w oknie D−3..D, pobranie zip, odczyt netCDF4 przez h5wasm (fflate), wartość z najbliższego punktu (<= 20 km), flagi jakości, assessment.soilMoistureSatellite. Brak EUMETSAT_CONSUMER_KEY/SECRET lub BUFR-only: status missing bez żądania sieciowego. Krok 4 (opcjonalnie).",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "backlog",
+  "priority": "low",
+  "depends_on": ["T-002", "T-031", "T-DB-002"],
+  "contract_refs": ["API-004", "DM-005", "DM-011", "DM-015", "DM-002"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Bez kluczy w .env źródło zwraca status missing „brak klucza EUMETSAT” natychmiast i bez żądania sieciowego; analiza nadal działa (partial)",
+    "Z kluczami zwraca wilgotność w % saturacji z czasem obserwacji, id granuli i odległością punktu lub missing z powodem w < 15 s",
+    "Sekrety nie trafiają do logów, repo ani wiadomości; wynik w cache to tylko wartości",
+    "Jeśli T-002 wykaże BUFR-only: zadanie zamknięte jako missing + decision_request do koordynatora"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 8 ASCAT (ostatnie, opcjonalne). Nowe zależności: h5wasm, fflate (drobne, dopisać do notatek)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

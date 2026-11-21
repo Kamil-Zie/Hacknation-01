@@ -1,0 +1,26 @@
+{
+  "id": "T-025",
+  "title": "Zintegruj analizę i raport z prawdziwym API-004, API-003, API-005, API-006",
+  "description": "fe-integration po handoffie backendu: formularz i przebieg analizy na realnym POST /analyses, lista upraw z API-003, ładowanie raportu po id z API-005, tabela źródeł z API-006. Obsługa trybu partial, długiego czasu (do 30 s) i błędów. Kroki 3-8.",
+  "type": "integration",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-017", "T-018", "T-008", "T-021", "T-022", "T-023", "T-024"],
+  "contract_refs": ["API-003", "API-004", "API-005", "API-006", "UI-S-002", "UI-S-003", "UI-S-004"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Pełna ścieżka na żywo: ID działki, uprawa, data, Analizuj, raport z realnymi wartościami w < 30 s, bez mocka",
+    "Raport otwiera się z linku /raport/:id oraz /druk/:id po odświeżeniu (API-005)",
+    "Raport w statusie partial pokazuje dataGaps i obniżoną pewność bez błędów w konsoli",
+    "Rozbieżności z kontraktem zgłoszone wiadomością contract_change",
+    "Działa responsywnie na 360, 768, 1280 i 1920 px na realnych danych"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: fe-integration. Szacunek: 2h. Faza: 4-5. Wymaga handoff z T-017."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

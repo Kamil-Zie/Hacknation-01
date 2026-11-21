@@ -1,0 +1,25 @@
+{
+  "id": "T-020",
+  "title": "Zbuduj wykres KBW z normą 10-letnią",
+  "description": "UI-C-011 KbwChart: seria KBW dla ostatnich 30/60 dni względem normy 10-letniej, zaznaczenie anomalii i percentyla, opis tekstowy dla czytników ekranu. Osadzony w AssessmentSection. Na mocku. Krok 4.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": ["T-019"],
+  "contract_refs": ["API-004", "DM-006", "UI-C-011", "UI-S-003"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Wykres pokazuje serię KBW i linię normy z podpisami osi i jednostkami (mm)",
+    "Przełącznik okna 30/60 dni zmienia dane, brak danych daje komunikat zamiast pustego wykresu",
+    "Ma alternatywę tekstową (podsumowanie wartości) i nie opiera się wyłącznie na kolorze",
+    "Działa responsywnie na 360, 768, 1280 i 1920 px (czytelne etykiety na 360 px)"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: fe-developer. Szacunek: 1,5h. Faza: 2 meteo/KBW. Biblioteka wykresów z technologies.frontend.choice."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

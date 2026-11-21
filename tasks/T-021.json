@@ -1,0 +1,25 @@
+{
+  "id": "T-021",
+  "title": "Zbuduj sekcje „Podatność i przyczyny” oraz „Co zrobić” (rekomendacje)",
+  "description": "UI-C-007 VulnerabilityCauses (ryzyko z 10 lat, miesiące krytyczne, lista przyczyn z evidence) i UI-C-008 RecommendationList (3 kategorie w stałej kolejności, przy każdej rozwijane „dlaczego” z danymi; użycie UI-C-002 do wskazania miejsca retencji na mapie, jeśli dane są). Na mocku. Kroki 5-6.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-019"],
+  "contract_refs": ["API-004", "DM-007", "DM-008", "DM-009", "DM-010", "UI-S-003", "UI-C-007", "UI-C-008", "UI-C-002"],
+  "demo_step": 6,
+  "acceptance_criteria": [
+    "Sekcja podatności pokazuje „w X z 10 sezonów” i krytyczne miesiące; przyczyny wyświetlają evidence z liczbami i jednostkami",
+    "Rekomendacje w kolejności: krajobrazowe, glebowe/agrotechnika, nawadnianie, każda z rozwijanym „dlaczego”",
+    "Rekomendacje nieuruchomione (brak danych) nie są pokazywane, a w ich miejsce jest informacja o braku danych",
+    "Działa responsywnie na 360, 768, 1280 i 1920 px"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: fe-developer. Szacunek: 2h. Faza: 4 raport+rekomendacje."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

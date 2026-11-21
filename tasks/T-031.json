@@ -1,0 +1,24 @@
+{
+  "id": "T-031",
+  "title": "Dopnij Sentinel-2, elevation i Overpass do orkiestratora, silnika i rekomendacji",
+  "description": "Rozszerzenie T-017: równoległe sentinel2, elevation, overpass, ich wyniki w assessment (NDVI/NDMI), przyczynach (spadek), rekomendacjach krajobrazowych (odległość do rowu, spowolnienie odpływu), dataGaps i pewności. Test całego łańcucha z 6 źródłami. Kroki 4-6.",
+  "type": "integration",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": ["T-017", "T-028", "T-029", "T-030"],
+  "contract_refs": ["API-004", "DM-001", "DM-008", "DM-009", "DM-013", "DM-014", "DM-010"],
+  "demo_step": 6,
+  "acceptance_criteria": [
+    "POST /analyses dla działki demo zwraca NDVI/NDMI, spadek, odległość do cieku i rekomendacje krajobrazowe z danymi w czasie < 25 s",
+    "Wyłączenie każdego z 3 źródeł osobno daje partial z dataGaps i brakiem zależnych reguł, bez 5xx",
+    "Kształt odpowiedzi nadal zgodny z kontraktem API-004; wiadomość contract_change/handoff do frontendu, jeśli coś się różni"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api, be-integration. Szacunek: 1,5h. Faza: 7."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

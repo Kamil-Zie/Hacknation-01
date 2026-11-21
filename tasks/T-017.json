@@ -1,0 +1,26 @@
+{
+  "id": "T-017",
+  "title": "Zbuduj orkiestrator API-004: równoległe źródła, silnik, zapis raportu",
+  "description": "POST /analyses (API-004): walidacja wejścia, geometria z cache ULDK, Promise.allSettled ze źródłami (uldk, meteo, soilgrids na start; kolejne dopinane później), twardy limit 25 s, wywołanie silnika (KBW, gleba, klasa, podatność, przyczyny, rekomendacje), dataGaps, zapis raportu DM-001 i odpowiedź 201 ze statusem complete/partial. Kroki 3-6.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-005", "T-010", "T-013", "T-016", "T-DB-002"],
+  "contract_refs": ["API-004", "DM-001", "DM-005", "DM-011", "DM-012", "DM-010"],
+  "demo_step": 6,
+  "acceptance_criteria": [
+    "POST /analyses dla działki demo i uprawy zwraca 201 z raportem zgodnym z przykładem z T-003 i czasem < 25 s",
+    "Wyłączenie jednego źródła (symulowany błąd) daje status partial, wpis w dataGaps i obniżoną pewność, bez błędu 5xx",
+    "Brak geometrii (ULDK niedostępny, brak cache) daje 502 UPSTREAM_UNAVAILABLE; błędne wejście 400",
+    "Raport zapisany w kolekcji reports i zawiera datę analizy oraz datę wygenerowania",
+    "Test integracyjny z mockami źródeł"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api, be-integration. Szacunek: 2h. Faza: 4 raport+rekomendacje. Handoff do frontendu (fe-integration) po zakończeniu."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

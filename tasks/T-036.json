@@ -1,0 +1,24 @@
+{
+  "id": "T-036",
+  "title": "Zweryfikuj wyniki silnika: testy kontrolne i opis metody weryfikacji",
+  "description": "Testy kontrolne silnika na ręcznie policzonych przypadkach (KBW, TAW z Saxton-Rawls, klasa, podatność), porównanie jednej działki z niezależnym źródłem (np. Open-Meteo vs dane IMGW w skali miesiąca) i krótki opis „Sposób weryfikacji” do README punkt 9. Krok 4-6.",
+  "type": "docs",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "backlog",
+  "priority": "medium",
+  "depends_on": ["T-016"],
+  "contract_refs": ["API-004", "DM-006", "DM-007", "DM-009"],
+  "demo_step": 6,
+  "acceptance_criteria": [
+    "Zestaw testów kontrolnych z ręcznie policzonymi wartościami przechodzi (npm test)",
+    "Opis metody weryfikacji (1/2 strony) w docs/ z odwołaniem do FAO-56, Saxton-Rawls 2006 i ADR-007",
+    "Co najmniej jedno porównanie z niezależnym źródłem zapisane z wynikiem i ograniczeniami"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-tester. Szacunek: 1,5h. Faza: 5. Wejście do README pkt 9 (T-034)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

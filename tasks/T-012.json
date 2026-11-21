@@ -1,0 +1,25 @@
+{
+  "id": "T-012",
+  "title": "Zaimplementuj silnik gleby: Saxton-Rawls, TAW/RAW i deficyt uprawy",
+  "description": "services/engine/soil.ts i water-demand.ts (ADR-007 §2 i §4): pedotransfer Saxton-Rawls (FC, WP z piasku, iłu, SOC), pojemność wodna do głębokości korzeni uprawy (średnia ważona warstw), TAW i RAW, zapotrzebowanie ETc = Kc·ET0 w oknie, deficyt względem RAW. Kroki 4-5.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-009", "T-011"],
+  "contract_refs": ["API-004", "DM-007", "DM-008", "DM-010"],
+  "demo_step": 5,
+  "acceptance_criteria": [
+    "Dla piasku, gliny i pyłu testowych FC/WP/TAW mieszczą się w zakresach z tabel Saxton-Rawls (testy z wartościami referencyjnymi)",
+    "TAW w mm skaluje się z głębokością korzeni uprawy, RAW = p·TAW",
+    "Brak danych glebowych (null) daje wynik null z powodem, bez wartości domyślnych udających pomiar",
+    "Wzory opisane w komentarzach z odwołaniem do Saxton i Rawls 2006 i FAO-56"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 3 gleba."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

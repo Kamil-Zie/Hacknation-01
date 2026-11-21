@@ -1,0 +1,25 @@
+{
+  "id": "T-022",
+  "title": "Zbuduj rozwijaną sekcję „Źródła i ograniczenia”",
+  "description": "UI-C-009 SourcesLimitations: tabela źródeł (nazwa, kategoria, data danych, licencja, status z StatusBadge), ograniczenia stałe, niepewność wyniku, jawnie oznaczone braki danych (dataGaps). Na mocku API-004/API-006. Krok 7.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": ["T-019"],
+  "contract_refs": ["API-004", "API-006", "DM-005", "DM-011", "DM-012", "UI-S-003", "UI-C-009"],
+  "demo_step": 7,
+  "acceptance_criteria": [
+    "Sekcja rozwija się i zwija, w tabeli są wszystkie 7 źródeł z licencją i datą danych",
+    "Źródła missing/timeout/error widoczne z powodem i wpływem z dataGaps",
+    "Ograniczenia (250 m SoilGrids, ERA5 9-25 km, chmury) wyświetlone z raportu, nie na sztywno",
+    "Tabela na 360 px zamienia się na układ kartowy bez poziomego scrolla; działa responsywnie na 360, 768, 1280 i 1920 px"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: fe-developer. Szacunek: 1,5h. Faza: 5 źródła/ograniczenia + druk."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "T-016",
+  "title": "Zaimplementuj reguły rekomendacji: krajobrazowe, glebowe, nawadnianie",
+  "description": "services/engine/recommendations.ts (ADR-007 §9), stała kolejność: retencja krajobrazowa (odległość do rowu/cieku, spadek, strefa buforowa), retencja glebowa i agrotechnika (międzyplony, resztki, uprawa ograniczona, materia organiczna), nawadnianie (zasadność, okno, orientacyjna dawka z deficytu). Każda rekomendacja z polem „dlaczego” i danymi. Reguły zależne od brakujących danych się nie uruchamiają. Krok 6.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-014", "T-015"],
+  "contract_refs": ["API-004", "DM-009", "DM-010"],
+  "demo_step": 6,
+  "acceptance_criteria": [
+    "Dla 3 fixture (piasek+susza, glina+norma, brak overpass) zestawy rekomendacji różnią się i mają kolejność kategorii z ADR-007",
+    "Każda rekomendacja ma why[] z konkretnymi liczbami z danych działki, bez tekstów niezależnych od danych",
+    "Nawadnianie podaje dawkę w mm z deficytu tylko gdy są dane gleby i meteo, inaczej pomija z adnotacją",
+    "Testy jednostkowe dla każdej reguły (uruchamia się / nie uruchamia)"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 4 raport+rekomendacje. Reguły jawne, bez ML/LLM."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

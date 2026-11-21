@@ -1,0 +1,24 @@
+{
+  "id": "T-026",
+  "title": "Przejdź responsywność i dostępność wszystkich ekranów (360, 768, 1280, 1920 px)",
+  "description": "Przegląd i poprawki UI-S-001..004: brak poziomego scrolla, czytelność, cele dotykowe, kontrast, focus, stany ładowania/błędu/pustych danych. Zgłoszenie błędów backendu osobno. Kroki 1-8.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": ["T-023", "T-025"],
+  "contract_refs": ["UI-S-001", "UI-S-002", "UI-S-003", "UI-S-004"],
+  "demo_step": 8,
+  "acceptance_criteria": [
+    "Każdy z 4 ekranów sprawdzony na 360, 768, 1280 i 1920 px, brak poziomego scrolla i ucinania treści",
+    "Kontrast tekstu >= 4,5:1, widoczny focus, wszystkie akcje dostępne z klawiatury",
+    "Lista poprawek w notatkach zadania, ścieżka demo przechodzi na telefonie (360 px) i desktopie"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: fe-uiux, fe-developer. Szacunek: 2h. Faza: 5. Przed zamrożeniem 07:00."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

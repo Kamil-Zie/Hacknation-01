@@ -1,0 +1,25 @@
+{
+  "id": "T-005",
+  "title": "Zaimplementuj źródło ULDK i endpointy API-001/API-002 (działka po ID i po punkcie)",
+  "description": "services/sources/uldk.source.ts: GetParcelById i GetParcelByXY, parser odpowiedzi tekstowej (status, pola rozdzielone |, SRID=4326;WKT), powierzchnia i centroid w turf, cache 30 dni (po ID i po zaokrąglonym punkcie). Endpointy GET /parcels/:id i GET /parcels/at?lat&lon z walidacją formatu i błędem z podpowiedzią formatu TERYT. Krok 2.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-004", "T-002"],
+  "contract_refs": ["API-001", "API-002", "DM-002", "DM-003"],
+  "demo_step": 2,
+  "acceptance_criteria": [
+    "GET /parcels/141201_1.0001.123 (lub realna działka demo) zwraca geometrię GeoJSON, numer, gminę, obręb, powierzchnię w ha i centroid zgodnie z API-001",
+    "GET punktu na mapie zwraca działkę zgodnie z API-002 (oś lon,lat potwierdzona w T-002)",
+    "Błędny ID daje 400/404 w formacie błędu ze standardu z czytelną podpowiedzią formatu; awaria ULDK daje 502 UPSTREAM_UNAVAILABLE",
+    "Drugie wywołanie tego samego ID jest z cache (status cache), testy parsera na prawdziwej odpowiedzi ULDK"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 1 ULDK. Wynik T-002 może zmienić format zapytania."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

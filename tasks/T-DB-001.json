@@ -33,7 +33,9 @@
     "by": null,
     "note": ""
   },
-  "notes": [],
+  "notes": [
+    "Agent: be-database. Szacunek: 1,5h. Faza: szkielet. Blokuje T-004, T-018; zależy od T-001 w kodzie modeli (kontrakt gotowy, seed po szkielecie)."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

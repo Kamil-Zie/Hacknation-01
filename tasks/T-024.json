@@ -1,0 +1,25 @@
+{
+  "id": "T-024",
+  "title": "Zintegruj ekran startowy z prawdziwym API-001/API-002",
+  "description": "fe-integration: przełączenie hooków parcels na realny backend, obsługa realnych błędów ULDK (400/404/502), wolnej odpowiedzi i działek demo. Test na min. 3 prawdziwych działkach. Krok 2.",
+  "type": "integration",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-005", "T-007"],
+  "contract_refs": ["API-001", "API-002", "DM-003", "UI-S-001"],
+  "demo_step": 2,
+  "acceptance_criteria": [
+    "Przy VITE_USE_MOCK=false wpisanie realnego ID i klik na mapie pokazują prawdziwą granicę z ULDK",
+    "Błąd 400/404/502 pokazuje właściwy komunikat z kontraktu, nie biały ekran",
+    "Sprawdzone na 3 działkach (w tym duża i mała), rozbieżności z kontraktem zgłoszone wiadomością contract_change",
+    "Działa responsywnie na 360, 768, 1280 i 1920 px po integracji"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: fe-integration. Szacunek: 1h. Faza: 1 ULDK."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

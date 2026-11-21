@@ -1,0 +1,25 @@
+{
+  "id": "T-030",
+  "title": "Zaimplementuj źródło hydrologiczne Overpass (cieki, rowy, zbiorniki, mokradła)",
+  "description": "services/sources/overpass.source.ts: zapytanie Overpass (around:1000 od centroidu) o waterway river/stream/canal/ditch/drain, natural=water, reservoir, wetland; liczba i typy obiektów, odległość od granicy działki do najbliższego rowu/cieku i zbiornika (turf), nazwa cieku. Mirror po 6 s, cache 30 dni. Krok 6.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": ["T-004", "T-017"],
+  "contract_refs": ["API-004", "DM-002", "DM-005", "DM-008", "DM-009", "DM-011"],
+  "demo_step": 6,
+  "acceptance_criteria": [
+    "Dla działki zwraca liczbę i typy obiektów w 1 km oraz odległości do najbliższego rowu/cieku i zbiornika w metrach",
+    "HTTP 429 lub brak odpowiedzi 6 s przełącza na mirror; po obu błędach status missing, nie wyjątek",
+    "Wynik w cache jest przetworzonym podsumowaniem, nie surowym JSON Overpass",
+    "Atrybucja „© OpenStreetMap contributors” (ODbL) w katalogu źródeł; test odległości na syntetycznej geometrii"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 7 hydrologia+spadek."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

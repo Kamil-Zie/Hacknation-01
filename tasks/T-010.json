@@ -1,0 +1,25 @@
+{
+  "id": "T-010",
+  "title": "Zaimplementuj źródło meteo Open-Meteo (ERA5) z dociągnięciem ostatnich dni",
+  "description": "services/sources/meteo.source.ts: archive-api (D − 10 lat − 75 dni .. D) plus forecast API z past_days dla ostatnich dni, scalanie z odcięciem do D, pola opad, temp. średnia/maks., ET0. Zapis przetworzonej serii w cache (TTL: 365 dni dla D < dziś−7, inaczej 6 h). Krok 4.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-004", "T-002"],
+  "contract_refs": ["API-004", "DM-002", "DM-005", "DM-006", "DM-011"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Dla współrzędnych działki i daty D zwraca dzienną serię od D−10 lat−75 dni do D bez dni po D",
+    "Dla D bliskiego dziś ostatnie dni pochodzą z forecast API (past_days) i są oznaczone źródłem w metadanych",
+    "Timeout 10 s i błąd sieci dają status timeout/error, nie wyjątek; drugi call jest z cache",
+    "Test na zapisanej odpowiedzi Open-Meteo sprawdza mapowanie pól i jednostki (mm, °C)"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Licencja CC BY 4.0 do DM-005."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

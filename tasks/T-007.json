@@ -1,0 +1,26 @@
+{
+  "id": "T-007",
+  "title": "Zbuduj ekran startowy: mapa Polski, wyszukiwarka działki, wybór na mapie, karta działki",
+  "description": "UI-S-001 z UI-C-001 ParcelSearch (walidacja formatu TERYT, komunikat z podpowiedzią), UI-C-002 ParcelMap (mapa Polski, klik w mapę, rysowanie granicy działki z GeoJSON) i UI-C-003 ParcelSummaryCard (numer, gmina, obręb, powierzchnia). Na mocku API-001/API-002. Kroki 1-2.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "backlog",
+  "priority": "critical",
+  "depends_on": ["T-001", "T-003", "T-006"],
+  "contract_refs": ["API-001", "API-002", "DM-002", "DM-003", "UI-S-001", "UI-C-001", "UI-C-002", "UI-C-003"],
+  "demo_step": 2,
+  "acceptance_criteria": [
+    "Wpisanie poprawnego ID pokazuje granicę działki na mapie i kartę z numerem, gminą, obrębem i powierzchnią (mock)",
+    "Klik na mapie pobiera działkę z API-002 (mock) i podświetla ją, mapa dopasowuje zoom do granicy",
+    "Błędne ID pokazuje komunikat z przykładowym formatem 141201_1.0001.123, bez crasha; stan ładowania widoczny",
+    "Przycisk przejścia do kroku uprawy jest nieaktywny bez wybranej działki",
+    "Działa responsywnie na 360, 768, 1280 i 1920 px (mapa i karta bez poziomego scrolla, cele dotykowe >= 44 px)"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: fe-developer (fe-uiux dla układu). Szacunek: 2h. Faza: 1 ULDK. Biblioteka mapy: z technologies.frontend.choice."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

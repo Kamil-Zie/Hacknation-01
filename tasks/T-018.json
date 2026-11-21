@@ -1,0 +1,25 @@
+{
+  "id": "T-018",
+  "title": "Dodaj API-005 (zapisany raport po id) oraz stałe ograniczenia i tabelę źródeł w raporcie",
+  "description": "GET /reports/:id (API-005) bez ponownego liczenia oraz moduł limitations.ts: stałe ograniczenia z ADR-007 §11 (rozdzielczość SoilGrids 250 m, ERA5 9-25 km, chmury, czynniki nieuwzględnione) i składanie sources[] z licencjami i datami danych z katalogu DM-005. Kroki 7-8.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": ["T-004", "T-DB-001"],
+  "contract_refs": ["API-005", "API-006", "DM-001", "DM-005", "DM-011", "DM-012"],
+  "demo_step": 7,
+  "acceptance_criteria": [
+    "GET /reports/:id zwraca zapisany raport identyczny z odpowiedzią POST, nieistniejący id daje 404 w formacie błędu",
+    "Raport zawiera limitations[] z ograniczeniami stałymi z ADR-007 §11 i tabelę źródeł z licencją i datą danych każdego źródła",
+    "Źródła ze statusem missing są jawnie wymienione, bez wartości zastępczych",
+    "Test integracyjny na wstawionym raporcie"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "Agent: be-api. Szacunek: 1,5h. Faza: 5 źródła/ograniczenia + druk. Moduł limitations podpina orkiestrator (T-017)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
