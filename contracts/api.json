@@ -3551,7 +3551,7 @@
       "status": "agreed",
       "method": "POST",
       "path": "/accounts/:accountId/fields",
-      "summary": "Utworzenie pola z 2–20 działek (T-077, ADR-011). Każda działka pobierana z ULDK (cache); dwie działki sąsiadują, gdy minimalna odległość ich granic ≤ 50 m (własna funkcja); zbiór musi być spójny (każda działka połączona z resztą), inaczej 422. Zapisuje kopie metadanych działek, sumę powierzchni i centroid (bez geometrii). Tylko członek konta. UWAGA: 061409_2.0009.613 w examples to przykładowy numer sąsiada (niezweryfikowany w ULDK).",
+      "summary": "Utworzenie pola z 2–20 działek (T-077, ADR-011). Każda działka pobierana z ULDK (cache); dwie działki sąsiadują, gdy minimalna odległość ich granic ≤ 50 m (własna funkcja); zbiór musi być spójny (każda działka połączona z resztą), inaczej 422. Zapisuje kopie metadanych działek, sumę powierzchni i centroid (bez geometrii). Tylko członek konta. UWAGA: 061409_2.0009.613 w examples to przykładowy numer sąsiada (niezweryfikowany w ULDK). T-092: wspólnik z ograniczonym dostępem może założyć pole tylko ze swoich działek, inaczej 403 NOT_A_MEMBER z details.parcelIds.",
       "auth": "required",
       "request": {
         "headers": {
@@ -3634,7 +3634,7 @@
       "status": "agreed",
       "method": "GET",
       "path": "/accounts/:accountId/fields",
-      "summary": "Lista pól konta, od najnowszych (createdAt malejąco). Tylko członek konta.",
+      "summary": "Lista pól konta, od najnowszych (createdAt malejąco). Tylko członek konta. T-092: wspólnik z ograniczonym dostępem (DM-018.parcelIds) widzi tylko pola, których wszystkie działki ma w dostępie.",
       "auth": "required",
       "request": {
         "headers": {
@@ -3710,7 +3710,7 @@
       "status": "agreed",
       "method": "DELETE",
       "path": "/accounts/:accountId/fields/:fieldId",
-      "summary": "Usunięcie pola (każdy członek konta). Działki i zapisane raporty zostają.",
+      "summary": "Usunięcie pola (każdy członek konta). Działki i zapisane raporty zostają. T-092: pole niewidoczne dla wspólnika → 404 FIELD_NOT_FOUND.",
       "auth": "required",
       "request": {
         "headers": {
@@ -3754,7 +3754,7 @@
       "status": "agreed",
       "method": "POST",
       "path": "/fields/:fieldId/analyses",
-      "summary": "Raport zbiorczy pola (T-078): analiza każdej działki (API-004, cache źródeł, równolegle max 3) i podsumowanie ważone powierzchnią. Raporty działek zapisane w historii konta.",
+      "summary": "Raport zbiorczy pola (T-078): analiza każdej działki (API-004, cache źródeł, równolegle max 3) i podsumowanie ważone powierzchnią. Raporty działek zapisane w historii konta. T-092: pole niewidoczne dla wspólnika → 404 FIELD_NOT_FOUND.",
       "auth": "required",
       "request": {
         "params": {

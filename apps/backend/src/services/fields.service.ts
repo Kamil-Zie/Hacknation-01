@@ -1,6 +1,6 @@
 // T-077 API-016 API-017 API-018 Fields: create from adjacent parcels (ULDK), list, delete
 import { FieldModel } from '@/models/Field.model';
-import { isMember } from '@/services/accounts.service';
+import { allowedParcelIds, canSeeField, isMember } from '@/services/accounts.service';
 import { disconnectedParcelIds, MAX_DISTANCE_M } from '@/services/fields/adjacency';
 import { getParcelById } from '@/services/parcels.service';
 import type { Parcel } from '@/services/parcels.service';
@@ -103,6 +103,12 @@ export async function createField(
   body: CreateFieldBody,
 ): Promise<FieldDto> {
   await assertMember(userId, accountId);
+  const allowed = await allowedParcelIds(userId, accountId);
+  if (!canSeeField(allowed, body.parcelIds)) {
+    throw new AppError('NOT_A_MEMBER', 'Nie masz dostępu do wszystkich wybranych działek.', 403, {
+      parcelIds: body.parcelIds.filter((id) => !allowed?.has(id)),
+    });
+  }
   const parcels = await loadParcels(body.parcelIds);
   const loose = disconnectedParcelIds(parcels.map((p) => ({ id: p.id, geometry: p.geometry })));
   if (loose.length > 0) {
@@ -143,12 +149,17 @@ export async function listFields(
 ): Promise<FieldPage> {
   await assertMember(userId, accountId);
   const { page, pageSize } = query;
+  // T-092: a partner with limited access sees only fields made entirely of their parcels
+  const allowed = await allowedParcelIds(userId, accountId);
+  const filter = allowed
+    ? { accountId, parcelIds: { $not: { $elemMatch: { $nin: [...allowed] } } } }
+    : { accountId };
   const [fields, total] = await Promise.all([
-    FieldModel.find({ accountId })
+    FieldModel.find(filter)
       .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize),
-    FieldModel.countDocuments({ accountId }),
+    FieldModel.countDocuments(filter),
   ]);
   return { items: fields.map(toFieldDto), page, pageSize, total };
 }
@@ -160,6 +171,9 @@ export async function deleteField(
 ): Promise<void> {
   await assertMember(userId, accountId);
   const field = await FieldModel.findOne({ _id: fieldId, accountId });
-  if (!field) throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono pola.', 404, { fieldId });
+  const allowed = await allowedParcelIds(userId, accountId);
+  if (!field || !canSeeField(allowed, field.parcelIds)) {
+    throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono pola.', 404, { fieldId });
+  }
   await FieldModel.deleteOne({ _id: fieldId, accountId });
 }

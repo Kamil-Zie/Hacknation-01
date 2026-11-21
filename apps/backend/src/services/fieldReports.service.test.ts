@@ -56,6 +56,7 @@ function makeDeps(
     calls,
     loadField: async (id) => (id === FIELD.id ? FIELD : null),
     isMember: async () => member,
+    allowedParcelIds: async () => null,
     analyze: async (body) => {
       calls.push(body.parcelId);
       assert.equal(body.accountId, FIELD.accountId);
@@ -157,6 +158,7 @@ test('at most 3 parcel analyses run at the same time', async () => {
   const deps: FieldReportDeps = {
     loadField: async () => field,
     isMember: async () => true,
+    allowedParcelIds: async () => null,
     analyze: async (body) => {
       running += 1;
       peak = Math.max(peak, running);

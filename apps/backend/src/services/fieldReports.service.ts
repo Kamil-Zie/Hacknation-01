@@ -1,7 +1,7 @@
 // T-078 API-019 DM-025 field report: the API-004 analysis on every parcel of a field (max 3 at once),
 // summary weighted by area, merged recommendations; a parcel that fails is "failed", the rest goes on.
 import { FieldModel } from '@/models/Field.model';
-import { isMember } from '@/services/accounts.service';
+import { allowedParcelIds, canSeeField, isMember } from '@/services/accounts.service';
 import { createAnalysis, defaultAnalysesDeps } from '@/services/analyses.service';
 import type { ReportDto } from '@/services/analyses.service';
 import type { Recommendation } from '@/services/engine/recommendations';
@@ -61,6 +61,7 @@ export type FieldReportDto = {
 export type FieldReportDeps = {
   loadField: (fieldId: string) => Promise<FieldDoc | null>;
   isMember: (userId: string, accountId: string) => Promise<boolean>;
+  allowedParcelIds: (userId: string, accountId: string) => Promise<Set<string> | null>;
   analyze: (
     body: { parcelId: string; cropCode: string; analysisDate: string; accountId: string },
     userId: string,
@@ -93,6 +94,7 @@ async function loadFieldFromDb(fieldId: string): Promise<FieldDoc | null> {
 export const defaultFieldReportDeps: FieldReportDeps = {
   loadField: loadFieldFromDb,
   isMember,
+  allowedParcelIds,
   analyze: (body, userId) =>
     createAnalysis(body as Parameters<typeof createAnalysis>[0], defaultAnalysesDeps, userId),
   now: () => Date.now(),
@@ -108,6 +110,10 @@ export async function createFieldReport(
   if (!field) throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono pola.', 404);
   if (!(await deps.isMember(userId, field.accountId))) {
     throw new AppError('NOT_A_MEMBER', 'Nie należysz do tego gospodarstwa.', 403);
+  }
+  // T-092: a partner without access to every parcel of the field does not see the field at all
+  if (!canSeeField(await deps.allowedParcelIds(userId, field.accountId), field.parcelIds)) {
+    throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono pola.', 404);
   }
 
   const startedAt = deps.now();

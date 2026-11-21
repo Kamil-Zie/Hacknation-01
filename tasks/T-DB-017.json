@@ -33,6 +33,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 01:10: wspólnicy kont demo dostają działki najmniejszego pola właściciela (widzą 1 całe pole); tryb --partners-only bez ponawiania analiz.",
     "coord-1 01:00: konta nataniel@, kuba@, kamil@test.pl (dane logowania u Kamila w pliku prywatnym). Nataniel: 6 działek Lubelszczyzna (Brodzica, Majdan Górny, Wysokie), pola Pszenica w Brodzicy i Rzepak w Majdanie Górnym. Kuba: 7 działek / 44 ha (Jaworek, Hajduki Nyskie, Grobniki, Biedrzychów), pola Kukurydza pod Nysą i Buraki w Grobnikach. Kamil: 6 działek / 19,6 ha (Jaronty, Antoniew, Pabierowice), pola Pole w Jarontach i Pszenica w Antoniewie. Każdy jest wspólnikiem dwóch pozostałych z dostępem do 2 działek. Działki znalezione przez API-002 na gruntach rolnych. Skrypt: gdy sąsiedzi z obrysu nie przylegają (wąskie pasy), pole powstaje z działki startowej i jednego sąsiada.",
     "coord-1 00:55: konta utworzone na bazie dev (hacknationS) skryptem npm run demo-accounts -- [apiUrl] --account email:hasło:imię (hasła tylko w argumentach, nie w repo). Dawid: 7 działek / 171 ha (Środa Wlkp., Kruszwica, Sulechów, Cerekwica + sąsiedzi z ULDK), pola „Pole pod Środą” (3 dz.) i „Buraki w Kruszwicy” (2 dz.) z raportami. Jan: 7 działek / 8,6 ha (Bronowice 612/613/373/2, Nowy Dwór Gdański, Głogówek + sąsiedzi), pola „Pole za stodołą” i „Kukurydza w Głogówku” z raportami. Każdy jest wspólnikiem drugiego z dostępem do 2 działek. Analizy na 2026-06-10. Na prod: ten sam skrypt z adresem API po wdrożeniu (T-065)."
   ],

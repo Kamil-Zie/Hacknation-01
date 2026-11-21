@@ -1,4 +1,4 @@
-// T-041 API-007..009 Accounts of a user (AccountDto with memberCount) and membership check (used by T-042/T-043); T-056 API-014 rename
+// T-041 API-007..009 (T-092 parcel access) Accounts of a user (AccountDto with memberCount) and membership check (used by T-042/T-043); T-056 API-014 rename
 import { isValidObjectId } from 'mongoose';
 
 import { AccountModel } from '@/models/Account.model';
@@ -17,6 +17,21 @@ export async function isMember(userId: string, accountId: string): Promise<boole
   assertDbConnected();
   const member = await AccountMemberModel.exists({ userId, accountId, status: 'active' });
   return member !== null;
+}
+
+// T-092 Parcels the member may see: null = every parcel of the account (no restriction)
+export async function allowedParcelIds(
+  userId: string,
+  accountId: string,
+): Promise<Set<string> | null> {
+  if (!isValidObjectId(userId) || !isValidObjectId(accountId)) return null;
+  const member = await AccountMemberModel.findOne({ userId, accountId, status: 'active' });
+  return member?.parcelIds && member.parcelIds.length > 0 ? new Set(member.parcelIds) : null;
+}
+
+// A field is visible only when the member sees every parcel in it (the field report shows each parcel)
+export function canSeeField(allowed: Set<string> | null, parcelIds: string[]): boolean {
+  return allowed === null || parcelIds.every((id) => allowed.has(id));
 }
 
 export async function renameAccount(

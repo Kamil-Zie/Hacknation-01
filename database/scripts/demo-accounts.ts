@@ -1,5 +1,5 @@
 // T-DB-017 Demo accounts for the team through the public API (API-007/008, API-004, API-002, API-016, API-019, API-011, API-021)
-// Usage: npm run demo-accounts -- [apiUrl] --account dawid@test.pl:<password>:Dawid --account jan@test.pl:<password>:Jan
+// Usage: npm run demo-accounts -- [apiUrl] [--partners-only] --account dawid@test.pl:<password>:Dawid --account jan@test.pl:<password>:Jan
 // Passwords come only from the command line, never from the repo. Re-running is safe: existing users log in,
 // existing fields are kept, analyses are re-used from the cache.
 
@@ -197,6 +197,8 @@ async function main(): Promise<void> {
       const [email = '', password = '', name = ''] = spec.split(':');
       return { email, password, name, key: email.split('@')[0] ?? '' };
     });
+  // --partners-only: skip analyses and fields, only (re)set partner access
+  const partnersOnly = args.includes('--partners-only');
   if (accounts.length === 0) throw new Error('Give at least one --account email:password:name');
 
   const sessions: Record<
@@ -212,6 +214,15 @@ async function main(): Promise<void> {
       `${acc.email}: ${s.created ? 'created' : 'logged in'}, account ${plan.accountName}`,
     );
     const parcelIds = plan.parcels.map((p) => p.id);
+    if (partnersOnly) {
+      sessions[acc.key] = {
+        token: s.token,
+        accountId: s.accountId,
+        email: acc.email,
+        parcels: parcelIds,
+      };
+      continue;
+    }
 
     for (const p of plan.parcels)
       console.log('  analysis', await analyse(api, s.token, s.accountId, p.id, p.crop));
@@ -268,7 +279,8 @@ async function main(): Promise<void> {
     };
   }
 
-  // Partners: each demo user is a partner in the other's farm with access to two parcels (Wspólnicy, API-011/021)
+  // Partners: each demo user is a partner in the other farms with access to the parcels of the owner's smallest
+  // field, so the partner sees one whole field (T-092: fields are shown only when every parcel is accessible)
   const keys = Object.keys(sessions);
   for (const owner of keys) {
     for (const partner of keys.filter((k) => k !== owner)) {
@@ -285,14 +297,19 @@ async function main(): Promise<void> {
         (m) => m.email === p.email,
       );
       if (!member) continue;
+      const fields = await call(api, `/accounts/${o.accountId}/fields?pageSize=50`, {}, o.token);
+      const smallest = ((fields.body.items as { parcelIds: string[] }[]) ?? []).sort(
+        (a, b) => a.parcelIds.length - b.parcelIds.length,
+      )[0];
+      const access = smallest ? smallest.parcelIds : o.parcels.slice(0, 2);
       const limited = await call(
         api,
         `/accounts/${o.accountId}/members/${member.id}`,
-        { method: 'PATCH', body: JSON.stringify({ parcelIds: o.parcels.slice(0, 2) }) },
+        { method: 'PATCH', body: JSON.stringify({ parcelIds: access }) },
         o.token,
       );
       console.log(
-        `${p.email} in ${o.email}'s farm: add HTTP ${added.status}, access to 2 parcels HTTP ${limited.status}`,
+        `${p.email} in ${o.email}'s farm: add HTTP ${added.status}, access to ${access.length} parcels HTTP ${limited.status}`,
       );
     }
   }
