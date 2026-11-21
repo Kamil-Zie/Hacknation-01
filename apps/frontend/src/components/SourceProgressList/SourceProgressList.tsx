@@ -58,7 +58,12 @@ export function SourceProgressList({
           p: 0,
           display: 'grid',
           gap: 1.5,
-          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
+          // lg sits in the 480 px side panel of UI-S-002, so one column there
+          gridTemplateColumns: {
+            xs: 'minmax(0, 1fr)',
+            md: 'repeat(2, minmax(0, 1fr))',
+            lg: 'minmax(0, 1fr)',
+          },
         }}
       >
         {sources.map((source) => {
