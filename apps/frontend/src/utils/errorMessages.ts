@@ -8,9 +8,16 @@ const ERROR_MESSAGES: Record<string, string> = {
   TIMEOUT: 'Serwis odpowiada zbyt długo. Spróbuj ponownie.',
   NETWORK_ERROR: 'Brak połączenia z serwerem. Sprawdź internet i spróbuj ponownie.',
   NOT_A_MEMBER: 'Nie masz dostępu do tego gospodarstwa.',
+  DB_UNAVAILABLE: 'Baza danych chwilowo niedostępna. Spróbuj ponownie za chwilę.',
 };
 
-const RETRYABLE = new Set(['UPSTREAM_TIMEOUT', 'UPSTREAM_UNAVAILABLE', 'TIMEOUT', 'NETWORK_ERROR']);
+const RETRYABLE = new Set([
+  'UPSTREAM_TIMEOUT',
+  'UPSTREAM_UNAVAILABLE',
+  'TIMEOUT',
+  'NETWORK_ERROR',
+  'DB_UNAVAILABLE',
+]);
 
 export function errorMessage(error: unknown): { message: string; canRetry: boolean } {
   if (!(error instanceof ApiError)) {
@@ -26,6 +33,9 @@ export function errorMessage(error: unknown): { message: string; canRetry: boole
       canRetry: false,
     };
   }
+  // Known codes first (e.g. 503 DB_UNAVAILABLE must not read as a GUGiK outage); 502/503 is only a fallback
+  const known = ERROR_MESSAGES[error.code];
+  if (known) return { message: known, canRetry: RETRYABLE.has(error.code) };
   if (error.status === 502 || error.status === 503) {
     return { message: ERROR_MESSAGES.UPSTREAM_UNAVAILABLE ?? error.message, canRetry: true };
   }
