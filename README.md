@@ -100,7 +100,7 @@ Hook zablokował commit? Przeczytaj komunikat i popraw przyczynę. `git commit -
 | `node .claude/scripts/new-data-task.mjs --title "..."` | obowiązkowe zadanie update danych przy zmianie bazy |
 | `node .claude/scripts/status.mjs` | faza, zadania wszystkich, blokery, rezerwacje, wiadomości bez ack |
 | `node .claude/scripts/validate.mjs` | spójność zadań, kontraktów i wiadomości |
-| `node .claude/scripts/git-checks.mjs scan --history` | sekrety w całej historii (przed upublicznieniem repo) |
+| `node .claude/scripts/git-checks.mjs scan --history` | sekrety w całej historii (przed udostępnieniem repo jury; repo zostaje prywatne) |
 | `node .claude/scripts/milestone-reminder.mjs --list` | harmonogram przypomnień na Discord |
 
 ## Mapa repo

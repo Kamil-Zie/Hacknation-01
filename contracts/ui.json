@@ -4,9 +4,49 @@
   "design_system_url": null,
   "design_canvas_url": null,
   "design_tokens": {
-    "colors": {},
-    "typography": {},
-    "spacing": {},
+    "_note": "Bazowe tokeny od architekta; fe-uiux może je dopracować w Design Systemie. Kolory klas suszy zawsze z ikoną i tekstem (nie tylko kolor).",
+    "colors": {
+      "primary": "#2E6B3F",
+      "primaryContrast": "#FFFFFF",
+      "accent": "#1F6FB2",
+      "background": "#F6F7F3",
+      "surface": "#FFFFFF",
+      "textPrimary": "#1B1F1A",
+      "textSecondary": "#4A5248",
+      "divider": "#DDE1D8",
+      "droughtNone": "#2E7D32",
+      "droughtModerate": "#B26A00",
+      "droughtSevere": "#C62828",
+      "unknown": "#6B7280",
+      "confidenceHigh": "#2E7D32",
+      "confidenceMedium": "#B26A00",
+      "confidenceLow": "#C62828",
+      "parcelStroke": "#1F6FB2",
+      "parcelFill": "rgba(31,111,178,0.15)",
+      "water": "#2A9FD6"
+    },
+    "typography": {
+      "fontFamily": "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      "baseSizePx": 16,
+      "h1": "clamp(1.75rem, 1.2rem + 2vw, 2.75rem) / 700",
+      "h2": "clamp(1.375rem, 1.1rem + 1vw, 2rem) / 700",
+      "h3": "1.25rem / 600",
+      "body": "1rem / 400, line-height 1.5",
+      "caption": "0.875rem / 400",
+      "metric": "clamp(1.5rem, 1.2rem + 1vw, 2.25rem) / 700, tabular-nums"
+    },
+    "spacing": {
+      "unitPx": 8,
+      "radiusPx": 12,
+      "sectionGap": 4,
+      "cardPadding": 2
+    },
+    "print": {
+      "pageSize": "A4 portrait",
+      "marginMm": 12,
+      "fontSizePt": 10.5,
+      "rules": "@media print: ukryj nawigację i przyciski (.no-print), sekcje bez cieni i kolorowych teł, page-break-inside: avoid dla kart rekomendacji, mapa o stałej wysokości 90 mm"
+    },
     "breakpoints": {
       "xs": 0,
       "sm": 600,
@@ -79,6 +119,246 @@
       }
     }
   },
-  "components": [],
-  "screens": []
+  "components": [
+    {
+      "id": "UI-C-001",
+      "status": "proposed",
+      "name": "ParcelSearch",
+      "description": "Pole na ID działki TERYT z podpowiedzią formatu i przyciskiem „Szukaj”; walidacja Zod tym samym regexem co API-001",
+      "props": {
+        "defaultValue": "string | undefined",
+        "isLoading": "boolean",
+        "error": "{ code: 'VALIDATION_ERROR' | 'PARCEL_NOT_FOUND' | 'UPSTREAM_UNAVAILABLE', message: string } | null",
+        "onSearch": "(parcelId: string) => void"
+      },
+      "states": ["idle", "loading", "error", "ready"],
+      "accessibility": "Label „Numer działki (TERYT)”, helperText z przykładem 141201_1.0001.123, błąd w aria-describedby z role=alert; Enter wysyła",
+      "responsive": "xs: pole i przycisk pełnej szerokości jeden pod drugim; md+: w jednym wierszu"
+    },
+    {
+      "id": "UI-C-002",
+      "status": "proposed",
+      "name": "ParcelMap",
+      "description": "Mapa Leaflet (OSM, opcjonalnie ortofoto Geoportal WMS) z granicą działki; kliknięcie wywołuje API-002; opcjonalnie markery rekomendacji (location) i cieki",
+      "props": {
+        "parcel": "Parcel | null",
+        "markers": "{ lat: number, lon: number, label: string }[] | undefined",
+        "isInteractive": "boolean (false w widoku druku)",
+        "isLoading": "boolean",
+        "onPick": "((lat: number, lon: number) => void) | undefined"
+      },
+      "states": ["loading", "empty", "error", "ready"],
+      "accessibility": "Mapa jako region z aria-label; alternatywa tekstowa: ParcelSummaryCard; kliknięcie nie jest jedyną drogą (jest pole ID)",
+      "responsive": "xs: wysokość 50vh; md: 60vh; lg: panel z mapą obok formularza, wysokość calc(100vh − header); druk: 90 mm, fitBounds do działki"
+    },
+    {
+      "id": "UI-C-003",
+      "status": "proposed",
+      "name": "ParcelSummaryCard",
+      "description": "Numer działki, obręb, gmina, powiat, województwo, powierzchnia w ha, źródło ULDK",
+      "props": {
+        "parcel": "Parcel"
+      },
+      "states": ["ready"],
+      "accessibility": "Lista definicji <dl>",
+      "responsive": "xs: karta pełnej szerokości pod mapą; lg: w panelu bocznym"
+    },
+    {
+      "id": "UI-C-004",
+      "status": "proposed",
+      "name": "AnalysisForm",
+      "description": "Wybór uprawy (Select z API-003) i daty analizy (input type=date, domyślnie dziś, min dziś−10 lat, max dziś), przycisk „Analizuj”; RHF + Zod",
+      "props": {
+        "crops": "Crop[]",
+        "defaultDate": "string YYYY-MM-DD",
+        "isSubmitting": "boolean",
+        "onSubmit": "(values: { cropCode: string, analysisDate: string }) => void"
+      },
+      "states": ["loading", "error", "ready"],
+      "accessibility": "Natywny input date (działa we wszystkich przeglądarkach i na telefonie), etykiety pól, przycisk min. 44 px",
+      "responsive": "Jedna kolumna na wszystkich szerokościach; przycisk pełnej szerokości na < md"
+    },
+    {
+      "id": "UI-C-005",
+      "status": "proposed",
+      "name": "SourceProgressList",
+      "description": "Lista źródeł z API-006 (Działka, Pogoda, Satelita, Gleba, Teren, Woda w okolicy) ze stanem: pobieranie (spinner) → ok / z cache / brak danych / przekroczony czas po odpowiedzi API-004; pasek postępu orientacyjny (czas do 30 s)",
+      "props": {
+        "sources": "DataSource[]",
+        "statuses": "SourceStatus[] | null (null = trwa pobieranie)",
+        "elapsedMs": "number"
+      },
+      "states": ["loading", "ready", "error"],
+      "accessibility": "Kontener aria-live=polite, każdy status ikoną i tekstem",
+      "responsive": "xs: lista pionowa; md+: siatka 2–3 kolumny"
+    },
+    {
+      "id": "UI-C-006",
+      "status": "proposed",
+      "name": "AssessmentSection",
+      "description": "Krok 4: klasa suszy (DroughtBadge), pewność, zdanie podsumowania, metryki KBW 30/60 dni (wartość, norma, anomalia, percentyl), deficyt glebowy, NDVI/NDMI z datą sceny i oceną dla uprawy, faza uprawy",
+      "props": {
+        "assessment": "Assessment",
+        "cropName": "string",
+        "analysisDate": "string"
+      },
+      "states": ["ready"],
+      "accessibility": "Nagłówek h2 „Stan wody na dzień …”; null w metryce wyświetla „brak danych”, nie 0",
+      "responsive": "xs: metryki w jednej kolumnie kart; md: 2 kolumny; lg: 4 kolumny"
+    },
+    {
+      "id": "UI-C-007",
+      "status": "proposed",
+      "name": "VulnerabilityCauses",
+      "description": "Krok 5: podatność wieloletnia (klasa, „deficyt w X z 10 sezonów”, miesiące krytyczne jako pasek IV–IX), gleba (piasek/pył/ił/SOC, kategoria), lista przyczyn z liczbami",
+      "props": {
+        "vulnerability": "Vulnerability",
+        "causes": "Cause[]"
+      },
+      "states": ["ready", "empty"],
+      "accessibility": "Pasek miesięcy z tekstową alternatywą (criticalMonthsLabel); przyczyny jako lista",
+      "responsive": "xs: jedna kolumna; lg: podatność i przyczyny obok siebie"
+    },
+    {
+      "id": "UI-C-008",
+      "status": "proposed",
+      "name": "RecommendationList",
+      "description": "Krok 6: rekomendacje pogrupowane w kolejności Retencja w krajobrazie → Retencja w glebie → Agrotechnika → Nawadnianie; karta: tytuł, co/gdzie/kiedy, priorytet, rozwijane „Dlaczego?” z evidence (wartość, jednostka, źródło, data); karta nawadniania pokazuje zasadność i dawkę mm oraz m³/ha",
+      "props": {
+        "recommendations": "Recommendation[]",
+        "isPrint": "boolean (w druku „Dlaczego?” zawsze rozwinięte)"
+      },
+      "states": ["ready", "empty"],
+      "accessibility": "Accordion MUI z aria-expanded; pusta lista: komunikat „Za mało danych, by bezpiecznie doradzić” z listą braków",
+      "responsive": "xs: karty pełnej szerokości; lg: 2 kolumny kart w grupie"
+    },
+    {
+      "id": "UI-C-009",
+      "status": "proposed",
+      "name": "SourcesLimitations",
+      "description": "Krok 7: tabela źródeł (nazwa, kategoria, okres/data danych, status, licencja, link), lista ograniczeń, lista braków danych (dataGaps) z wpływem, powody poziomu pewności",
+      "props": {
+        "sources": "SourceStatus[]",
+        "limitations": "string[]",
+        "dataGaps": "DataGap[]",
+        "confidenceReasons": "string[]",
+        "methodologyVersion": "string"
+      },
+      "states": ["ready"],
+      "accessibility": "Tabela z <th scope>; status ikoną i tekstem",
+      "responsive": "xs–sm: tabela jako karty; md+: tabela; sekcja domyślnie zwinięta na ekranie, rozwinięta w druku"
+    },
+    {
+      "id": "UI-C-010",
+      "status": "proposed",
+      "name": "ReportActions",
+      "description": "Przyciski „Pobierz PDF” i „Drukuj” (oba otwierają /report/:id/print i wywołują window.print(); „Pobierz PDF” z podpowiedzią „wybierz Zapisz jako PDF”), „Kopiuj link”, „Nowa analiza”",
+      "props": {
+        "reportId": "string"
+      },
+      "states": ["ready"],
+      "accessibility": "Przyciski z tekstem i ikoną, min. 44 px",
+      "responsive": "xs: przyklejony dolny pasek z 2 głównymi przyciskami; md+: w nagłówku raportu; ukryte w druku (.no-print)"
+    },
+    {
+      "id": "UI-C-011",
+      "status": "proposed",
+      "name": "KbwChart",
+      "description": "Should: wykres KBW 60 dni sezonu do daty analizy na tle 10 lat (pasmo p10–p90, linia mediany), MUI X Charts; ukryty, gdy charts = null",
+      "props": {
+        "charts": "Report['charts']"
+      },
+      "states": ["ready", "empty"],
+      "accessibility": "aria-label z opisem trendu; wartości także w AssessmentSection",
+      "responsive": "Szerokość 100% kontenera, wysokość 220 px (xs) / 300 px (md+)"
+    },
+    {
+      "id": "UI-C-012",
+      "status": "proposed",
+      "name": "StatusBadge",
+      "description": "Wspólna plakietka: klasa suszy (none|moderate|severe|unknown), podatność (low|medium|high|unknown), pewność (high|medium|low), status źródła (ok|cached|missing|error|timeout); kolor z tokenów + ikona + tekst",
+      "props": {
+        "kind": "'drought' | 'vulnerability' | 'confidence' | 'source'",
+        "value": "string",
+        "label": "string"
+      },
+      "states": ["ready"],
+      "accessibility": "Znaczenie nie tylko kolorem: ikona i tekst; kontrast min. 4.5:1",
+      "responsive": "Rozmiar large w nagłówku sekcji, small w tabelach"
+    }
+  ],
+  "screens": [
+    {
+      "id": "UI-S-001",
+      "status": "proposed",
+      "name": "Start i wybór działki",
+      "route": "/",
+      "description": "Kroki 1–2: nagłówek „Sprawdź wodę na swojej działce”, krótkie objaśnienie (3 kroki), ParcelSearch, mapa Polski; po znalezieniu działki granica na mapie, ParcelSummaryCard i przycisk „Dalej” do /parcel/:parcelId. Ostatnie działki z localStorage (should).",
+      "components": ["UI-C-001", "UI-C-002", "UI-C-003"],
+      "api_refs": ["API-001", "API-002"],
+      "responsive": {
+        "xs": "jedna kolumna: nagłówek, ParcelSearch, mapa 50vh, karta działki",
+        "md": "jak xs, mapa 60vh",
+        "lg": "panel lewy 400–480 px (nagłówek, wyszukiwanie, karta działki), mapa na resztę ekranu"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-002",
+      "status": "proposed",
+      "name": "Uprawa, data i analiza",
+      "route": "/parcel/:parcelId",
+      "description": "Krok 3: działka na mapie (API-001 z cache), AnalysisForm; po „Analizuj” SourceProgressList w miejscu formularza; po 201 przejście na /report/:id. Błąd 404/502/422 z czytelnym komunikatem i „Spróbuj ponownie”.",
+      "components": ["UI-C-002", "UI-C-003", "UI-C-004", "UI-C-005"],
+      "api_refs": ["API-001", "API-003", "API-004", "API-006"],
+      "responsive": {
+        "xs": "karta działki, formularz, mapa zwinięta do 30vh pod formularzem",
+        "md": "formularz nad mapą 50vh",
+        "lg": "panel lewy z kartą działki, formularzem i postępem, mapa po prawej"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-003",
+      "status": "proposed",
+      "name": "Raport",
+      "route": "/report/:id",
+      "description": "Kroki 4–7: nagłówek (działka, uprawa, data analizy, data wygenerowania, status complete/partial), ReportActions, sekcje w kolejności: Stan wody (AssessmentSection + KbwChart), Podatność i przyczyny, Co zrobić (RecommendationList), Źródła i ograniczenia (zwinięte). Dane z cache TanStack Query po API-004, przy wejściu z linku z API-005.",
+      "components": ["UI-C-002", "UI-C-006", "UI-C-007", "UI-C-008", "UI-C-009", "UI-C-010", "UI-C-011", "UI-C-012"],
+      "api_refs": ["API-005", "API-006"],
+      "responsive": {
+        "xs": "jedna kolumna, sekcje jako karty, spis sekcji jako poziome chipy przewijane w swoim kontenerze, ReportActions jako dolny pasek",
+        "md": "jedna kolumna max 900 px, mapa działki u góry 40vh",
+        "lg": "lewa kolumna: mapa przyklejona (sticky) i spis sekcji; prawa: sekcje raportu; na 1920 większe nagłówki i metryki (projektor)"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-004",
+      "status": "proposed",
+      "name": "Widok druku / PDF",
+      "route": "/report/:id/print",
+      "description": "Krok 8: ten sam raport (API-005) w układzie A4: nagłówek z nazwą aplikacji, działką, uprawą, datą analizy i datą wygenerowania; mapa statyczna (nieinteraktywna), wszystkie sekcje rozwinięte, stopka z linkiem do raportu i zastrzeżeniem o niepewności. Po załadowaniu kafli mapy automatycznie window.print(); przycisk „Drukuj ponownie” (.no-print).",
+      "components": ["UI-C-002", "UI-C-006", "UI-C-007", "UI-C-008", "UI-C-009", "UI-C-012"],
+      "api_refs": ["API-005"],
+      "responsive": {
+        "xs": "podgląd na ekranie: jedna kolumna jak w druku",
+        "md": "podgląd kartki A4 wyśrodkowany",
+        "lg": "podgląd kartki A4 wyśrodkowany; @media print: tokens.print"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    }
+  ]
 }

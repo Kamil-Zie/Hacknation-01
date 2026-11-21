@@ -30,7 +30,7 @@ Nie wszystko naraz. Uruchamiaj agenta wtedy, gdy faza go potrzebuje:
 - Gdy ktoś stoi ponad 20 minut, przesuń zadanie albo uprość krok demo.
 - Po zamrożeniu funkcji (milestone „Zamrożenie funkcji”) hook commit-msg przepuszcza u teamów tylko `fix`, `docs`, `revert`. Wyjątek dla nowej funkcji zatwierdzasz sam i robisz commit jako koordynator.
 - Przypomnienia o fazach i kamieniach milowych wysyła GitHub Actions (`milestone-reminders`). Przed startem ustaw sekret repo `DISCORD_WEBHOOK_SYNC` i odpal workflow ręcznie w trybie `test`.
-- Przed upublicznieniem repo (draft w HackTribe o 20:00) uruchom `node .claude/scripts/git-checks.mjs scan --history` (pełna historia: `git fetch --unshallow`). Jeśli coś znajdzie: zmień hasło/klucz, wyczyść historię i dopiero wtedy upublicznij.
+- Repo zostaje PRYWATNE do końca wydarzenia (wymóg KOWR). Przed udostępnieniem go jury (draft w HackTribe o 20:00) uruchom `node .claude/scripts/git-checks.mjs scan --history` (pełna historia: `git fetch --unshallow`). Jeśli coś znajdzie: zmień hasło/klucz, wyczyść historię i dopiero wtedy udostępnij.
 
 ## Delegowanie oszczędne w tokeny
 W poleceniu dla agenta wykonawczego podaj: ID zadania i elementów kontraktu, ścieżki plików do zmiany (z mapy), plik-wzór do skopiowania i kryterium „gotowe”. Poproś o raport do 10 linii (zmienione pliki, wynik, problemy), bez wklejania kodu. Nie każ mu „przejrzeć projektu”.

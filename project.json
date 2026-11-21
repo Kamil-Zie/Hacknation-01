@@ -56,49 +56,49 @@
           "step": 1,
           "user_action": "Rolnik otwiera aplikację w przeglądarce (telefon albo desktop) bez instalacji i logowania.",
           "result": "Ekran startowy z jednym polem na numer działki, mapą Polski i krótkim objaśnieniem „Sprawdź wodę na swojej działce”.",
-          "contract_refs": []
+          "contract_refs": ["UI-S-001", "UI-C-001", "UI-C-002"]
         },
         {
           "step": 2,
           "user_action": "Wpisuje ID działki TERYT (np. 141201_1.0001.123) albo klika swoją działkę na mapie.",
           "result": "Granica działki z ULDK na mapie, numer, gmina, obręb i powierzchnia; przy błędnym ID czytelny komunikat z podpowiedzią formatu.",
-          "contract_refs": []
+          "contract_refs": ["API-001", "API-002", "DM-003", "DM-002", "UI-S-001", "UI-C-001", "UI-C-002", "UI-C-003"]
         },
         {
           "step": 3,
           "user_action": "Wybiera uprawę z listy (np. pszenica ozima, kukurydza, ziemniak, rzepak, użytki zielone) i datę analizy (domyślnie dziś, kalendarz do 10 lat wstecz), klika „Analizuj”.",
           "result": "Pasek postępu z listą źródeł pobieranych na żywo (meteo, satelita, gleba, teren, hydrologia) i statusem każdego (ok / brak danych / z cache).",
-          "contract_refs": []
+          "contract_refs": ["API-003", "API-006", "API-004", "DM-004", "DM-005", "DM-011", "UI-S-002", "UI-C-004", "UI-C-005"]
         },
         {
           "step": 4,
           "user_action": "Czeka na wynik (≤ 30 s).",
           "result": "Ocena bieżąca na datę analizy: KBW z ostatnich 30/60 dni względem normy z 10 lat (anomalia, percentyl), NDVI/NDMI z ostatniej bezchmurnej sceny z datą i oceną dla wybranej uprawy, klasa suszy (brak/umiarkowana/silna) z poziomem pewności.",
-          "contract_refs": []
+          "contract_refs": ["API-004", "DM-001", "DM-006", "DM-013", "DM-014", "DM-010", "UI-S-003", "UI-C-006", "UI-C-011", "UI-C-012"]
         },
         {
           "step": 5,
           "user_action": "Przewija do sekcji „Podatność wieloletnia i przyczyny”.",
           "result": "Ryzyko z 10 lat (w ilu sezonach był deficyt, najbardziej krytyczne miesiące, np. maj–lipiec) oraz lista przyczyn z liczbami: niska retencja gleby (piasek X%, pojemność wodna Y mm), deficyt opadu przy wysokiej temperaturze, spadek terenu Z% → odpływ, wymagania wodne uprawy.",
-          "contract_refs": []
+          "contract_refs": ["API-004", "DM-007", "DM-008", "DM-010", "UI-S-003", "UI-C-007"]
         },
         {
           "step": 6,
           "user_action": "Przechodzi do „Co zrobić”.",
           "result": "Rekomendacje policzone dla tej działki w kolejności: retencja krajobrazowa (np. odległość do rowu/cieku, spowolnienie odpływu, strefa buforowa), retencja glebowa i agrotechnika (międzyplony, resztki pożniwne, ograniczona uprawa, materia organiczna), nawadnianie (zasadność, okno terminu, orientacyjna dawka z deficytu); przy każdej „dlaczego” z danymi.",
-          "contract_refs": []
+          "contract_refs": ["API-004", "DM-009", "DM-010", "UI-S-003", "UI-C-008", "UI-C-002"]
         },
         {
           "step": 7,
           "user_action": "Rozwija „Źródła i ograniczenia”.",
           "result": "Tabela źródeł z datą danych i licencją, ograniczenia (rozdzielczość 250 m SoilGrids, ERA5 ok. 9–25 km, chmury), niepewność wyniku i jawnie oznaczone braki danych bez wymyślonych wartości.",
-          "contract_refs": []
+          "contract_refs": ["API-004", "API-006", "DM-011", "DM-012", "DM-005", "UI-S-003", "UI-C-009"]
         },
         {
           "step": 8,
           "user_action": "Klika „Pobierz PDF” albo „Drukuj”.",
           "result": "Plik PDF z pełnym raportem (mapa działki, ocena, przyczyny, rekomendacje, źródła, data analizy i data wygenerowania) albo podgląd wydruku.",
-          "contract_refs": []
+          "contract_refs": ["API-005", "DM-001", "UI-S-004", "UI-C-010", "UI-C-002"]
         }
       ],
       "risks": [
@@ -126,8 +126,10 @@
     }
   },
   "technologies": {
-    "status": "pending",
+    "status": "decided",
+    "decided_at": "2026-11-21",
     "decided_by": "coord-architect",
+    "decision_adr": "docs/adr/ADR-005-stack.md (stack), docs/adr/ADR-006-data-sources.md (źródła danych), docs/adr/ADR-007-methodology.md (metodyka obliczeń)",
     "decide_in_phase": "Koncepcja i kontrakt (do 1,5h)",
     "selection_rules": [
       "Stack dobieramy do projektu dopiero po uzupełnieniu project.concept.",
@@ -147,13 +149,18 @@
     "frontend": {
       "directory": "apps/frontend",
       "choice": {
-        "language": null,
-        "framework": null,
-        "ui_library": null,
-        "styling": null,
-        "state_management": null,
-        "testing": null,
-        "package_manager": null
+        "language": "TypeScript",
+        "framework": "React 18 + Vite",
+        "ui_library": "MUI (@mui/material, @mui/icons-material)",
+        "styling": "MUI theme + sx, @media print CSS dla widoku druku (bez Tailwind)",
+        "state_management": "Zustand (stan klienta: wybrana działka, uprawa, data) + TanStack Query (dane z API)",
+        "forms": "React Hook Form + Zod",
+        "routing": "react-router-dom",
+        "map": "Leaflet + react-leaflet; podkład OSM tiles, opcjonalnie WMS ortofotomapa Geoportal (L.tileLayer.wms)",
+        "charts": "MUI X Charts (@mui/x-charts) dla wykresu KBW (should)",
+        "pdf": "Widok druku /report/:id/print + window.print() z CSS print (zapis do PDF z okna druku przeglądarki); bez biblioteki PDF",
+        "testing": "Vitest + React Testing Library (tylko krytyczne komponenty raportu)",
+        "package_manager": "npm workspaces"
       },
       "candidates": {
         "language": "TypeScript, JavaScript, HTML, CSS, JSX/TSX",
@@ -222,12 +229,15 @@
     "backend": {
       "directory": "apps/backend",
       "choice": {
-        "language": null,
-        "framework": null,
-        "api_style": null,
-        "auth": null,
-        "validation": null,
-        "testing": null
+        "language": "TypeScript",
+        "framework": "Node.js 20+ + Express",
+        "api_style": "REST JSON (/api/v1)",
+        "auth": "brak (bez logowania i kont; raporty dostępne po losowym id)",
+        "validation": "Zod",
+        "http_client": "wbudowany fetch (Node 20) + AbortSignal.timeout per źródło",
+        "geo": "@turf/turf (powierzchnia, centroid, bbox, odległość do cieku), proj4 (EPSG:4326 ↔ EPSG:2180 i UTM 326xx), wellknown (WKT → GeoJSON)",
+        "raster": "geotiff (geotiff.js): odczyt okna bbox z COG Sentinel-2 przez HTTP range",
+        "testing": "Vitest (silnik obliczeń: KBW, percentyle, Saxton-Rawls, reguły rekomendacji)"
       },
       "candidates": {
         "language": "JavaScript, TypeScript",
@@ -241,6 +251,7 @@
         "install": "npm install",
         "dev": "npm run dev",
         "lint": "npm run lint",
+        "typecheck": "npm run typecheck",
         "test": "npm run test",
         "build": "npm run build"
       }
@@ -248,9 +259,9 @@
     "database": {
       "directory": "database",
       "choice": {
-        "engine": null,
-        "orm": null,
-        "migrations_tool": null
+        "engine": "MongoDB Atlas (M0, baza hacknation / hacknation_prod)",
+        "orm": "Mongoose",
+        "migrations_tool": "brak migracji: seed skryptem (npm run seed) + indeksy w schematach Mongoose (TTL dla cache)"
       },
       "candidates": {
         "engine": "MongoDB",
@@ -434,6 +445,33 @@
           "context": "Temat hackathonu nie jest jeszcze znany.",
           "decision": "coord-architect wybiera technologie po uzupełnieniu project.concept, według technologies.selection_rules.",
           "consequences": "Szkielet aplikacji powstaje w fazie Szkielet, nie wcześniej."
+        },
+        {
+          "id": "ADR-005",
+          "title": "Stack Kropli: domyślny + mapa, wykres, PDF przez druk, geometria w backendzie",
+          "status": "accepted",
+          "date": "2026-11-21",
+          "context": "Demo wymaga mapy działki, wykresu bilansu wodnego, PDF i obliczeń na geometrii; brak logowania.",
+          "decision": "recommended_default bez JWT; Leaflet + react-leaflet (OSM), @mui/x-charts, PDF przez /report/:id/print + window.print(); backend: turf, proj4, wellknown, geotiff.js. Szczegóły: docs/adr/ADR-005-stack.md.",
+          "consequences": "Bez nowych narzędzi systemowych, tylko node i npm."
+        },
+        {
+          "id": "ADR-006",
+          "title": "Źródła danych, budżet 30 s i cache",
+          "status": "accepted",
+          "date": "2026-11-21",
+          "context": "5 kategorii danych, dowolna działka w Polsce i data z 10 lat, wynik w ≤ 30 s.",
+          "decision": "Backend pobiera równolegle (Promise.allSettled) z timeoutem per źródło i cache w MongoDB (source_cache z TTL). Źródła i plany B: docs/adr/ADR-006-data-sources.md.",
+          "consequences": "Awaria jednego źródła daje jawne „brak danych” i niższą pewność, nie błąd raportu."
+        },
+        {
+          "id": "ADR-007",
+          "title": "Metodyka: KBW z FAO-56, percentyl 10 lat, Saxton-Rawls, reguły rekomendacji z evidence",
+          "status": "accepted",
+          "date": "2026-11-21",
+          "context": "Jury ocenia zgodność z nauką, dopasowanie do działki, uzasadnienie danymi i niepewność.",
+          "decision": "ETc = ET0·Kc (FAO-56), KBW 30/60 dni z percentylem względem 10 lat, TAW/RAW z uziarnienia (Saxton-Rawls), reguły R-LAND/SOIL/AGRO/IRR, każda rekomendacja z evidence[]. Szczegóły: docs/adr/ADR-007-methodology.md.",
+          "consequences": "Raport jest w pełni liczony przez aplikację i da się go wytłumaczyć jury krok po kroku."
         }
       ]
     },
