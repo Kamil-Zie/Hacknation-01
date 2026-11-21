@@ -5,7 +5,7 @@
   "type": "docs",
   "team": "coordinator",
   "assignee": "coord-1",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": "critical",
   "depends_on": ["T-001"],
   "contract_refs": ["API-006", "DM-005"],
@@ -17,8 +17,13 @@
     "Wykaz bibliotek i narzędzi AI (w tym Claude jako narzędzie dev, bez udziału w liczeniu) oraz warunek licencyjny EUMETSAT oznaczony jako do potwierdzenia",
     "Draft gotowy do 20:00 dziś"
   ],
-  "review": { "status": "pending", "by": null, "note": "" },
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
   "notes": [
+    "coord-1 17:00: README draft (coord-docs) na main; stary README przeniesiony do docs/hacknation-workflow.md (linki poprawione). Otwarte TODO: licencje zależności + licencja kodu (sekcja 7), koszty skalowania (8), porównanie z IUNG/EDO (9). Kryterium 'czysty klon' do sprawdzenia.",
     "Agent: coord-docs. Szacunek: 2h. Faza: draft 20:00. Punkt 9 uzupełnić po T-036; finalizacja po zamrożeniu."
   ],
   "created_at": "2026-11-21",
