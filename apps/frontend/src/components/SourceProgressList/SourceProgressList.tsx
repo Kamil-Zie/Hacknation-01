@@ -94,11 +94,14 @@ export function SourceProgressList({
               </Box>
               {status ? (
                 <StatusBadge kind="source" value={status.status} size="small" />
+              ) : !isFetching ? (
+                // Source absent from report.sources: show it as missing, not as still loading
+                <StatusBadge kind="source" value="missing" size="small" />
               ) : (
                 <Stack direction="row" spacing={1} alignItems="center">
                   <CircularProgress size={18} aria-hidden />
                   <Typography variant="caption" color="text.secondary">
-                    {isFetching ? 'Pobieranie…' : 'Brak statusu'}
+                    Pobieranie…
                   </Typography>
                 </Stack>
               )}
