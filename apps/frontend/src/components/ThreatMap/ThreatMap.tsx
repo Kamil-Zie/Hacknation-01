@@ -1,7 +1,15 @@
 // UI-C-017 ThreatMap: Leaflet map of account parcels colored by drought class, fit to at-risk parcels, legend and text list below
 import { Box, Link, Skeleton, Stack, Typography, useTheme } from '@mui/material';
-import { useEffect } from 'react';
-import { GeoJSON, MapContainer, TileLayer, Tooltip, useMap } from 'react-leaflet';
+import { useEffect, useState } from 'react';
+import {
+  CircleMarker,
+  GeoJSON,
+  MapContainer,
+  TileLayer,
+  Tooltip,
+  useMap,
+  useMapEvents,
+} from 'react-leaflet';
 import type { LatLngBoundsExpression } from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 
@@ -21,6 +29,15 @@ export const DROUGHT_WORDS: Record<DroughtClass, string> = {
   none: 'Brak suszy',
   unknown: 'Brak danych',
 };
+
+// Below this zoom a parcel outline is a few pixels, so a dot in its colour marks it
+const DOT_MAX_ZOOM = 12;
+
+function ZoomWatcher({ onZoom }: { onZoom: (zoom: number) => void }) {
+  const map = useMapEvents({ zoomend: () => onZoom(map.getZoom()) });
+  useEffect(() => onZoom(map.getZoom()), [map, onZoom]);
+  return null;
+}
 
 const classOf = (item: ParcelOverview): DroughtClass => item.lastReport?.droughtClass ?? 'unknown';
 
@@ -53,6 +70,7 @@ function FitToItems({ items }: { items: ParcelOverview[] }) {
 
 export function ThreatMap({ items, isLoading = false, onSelect }: ThreatMapProps) {
   const { palette } = useTheme();
+  const [zoom, setZoom] = useState(6);
 
   if (isLoading) {
     return <Skeleton variant="rounded" height={420} aria-label="Ładowanie mapy" />;
@@ -95,12 +113,32 @@ export function ThreatMap({ items, isLoading = false, onSelect }: ThreatMapProps
                 }}
                 eventHandlers={{ click: () => item.lastReport && onSelect(item) }}
               >
-                <Tooltip permanent direction="center">
-                  {`${item.parcel.parcelNumber} · ${DROUGHT_WORDS[droughtClass]}`}
-                </Tooltip>
+                {zoom >= DOT_MAX_ZOOM && (
+                  <Tooltip permanent direction="center">
+                    {`${item.parcel.parcelNumber} · ${DROUGHT_WORDS[droughtClass]}`}
+                  </Tooltip>
+                )}
               </GeoJSON>
             ) : null;
           })}
+          {zoom < DOT_MAX_ZOOM &&
+            items.map((item) => {
+              const color = palette.drought[classOf(item)];
+              return (
+                <CircleMarker
+                  key={`dot-${item.parcel.id}`}
+                  center={[item.parcel.centroid.lat, item.parcel.centroid.lon]}
+                  radius={10}
+                  pathOptions={{ color: '#ffffff', weight: 3, fillColor: color, fillOpacity: 1 }}
+                  eventHandlers={{ click: () => item.lastReport && onSelect(item) }}
+                >
+                  <Tooltip permanent direction="top" offset={[0, -10]}>
+                    {`${item.parcel.parcelNumber} · ${DROUGHT_WORDS[classOf(item)]}`}
+                  </Tooltip>
+                </CircleMarker>
+              );
+            })}
+          <ZoomWatcher onZoom={setZoom} />
           <FitToItems items={fitted} />
         </MapContainer>
       </Box>

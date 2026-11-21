@@ -4,8 +4,8 @@
   "description": "UI-S-009 na /konto (przepisz AccountPage). Kafelek 1, największy: ThreatMap UI-C-017, fitBounds na wszystkie działki atRisk z API-020, obrysy w kolorze klasy + legenda słowna + lista zagrożonych działek tekstem pod mapą, klik → /report/:lastReport.id. Pozostałe kafelki według UI-S-009: Twoje działki, Stan suszy, Najważniejsze teraz, Ostatnie raporty (API-013), Skąd dane (API-006), przycisk „Sprawdź nową działkę”. Nazwa i przełączanie gospodarstwa zostają w nagłówku pulpitu. MemberList przenosi się do /wspolnicy (T-090), FieldList do /pola (T-089): usuń je z pulpitu, gdy te strony są na main.\n\nPliki: src/pages/Account/AccountPage.tsx, src/components/ThreatMap/ThreatMap.tsx (nowy, wzór: FieldMap), src/components/DashboardTile/* (nowe)\n\nUX dla wieku 18–99: tekst ≥ 18 px w rem, przyciski ≥ 48 px, kontrast AA (też w trybie Wysoki kontrast i przy największym A), proste słowa, ikony z podpisem. Stany loading/error/empty/ready, 390 i 1440 px. Na mocku od razu: hook useAccountParcelsQuery w src/api/accountParcels.ts (mock z MOCK_PARCELS), prawdziwe API po handoffie coord-1 (VITE_MOCK_ACCOUNT_PARCELS=false). Termin: na main do 6:00 (zamrożenie 7:00).",
   "type": "feature",
   "team": "frontend",
-  "assignee": "backend-1",
-  "status": "integration",
+  "assignee": "coord-1",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-009", "UI-C-017", "API-020", "API-013", "API-006"],
@@ -21,6 +21,7 @@
     "note": "00:30 kontrola wizualna na prawdziwym API-020 (6 działek z całej Polski): działa, mapa dominuje, lista zagrożonych pod mapą, axe-friendly struktura (1 h1), 390 px bez przewijania w poziomie, panel boczny jako Menu."
   },
   "notes": [
+    "coord-1 00:40: przejęte od Jana (decyzja Kamila: Jan nie ma Claude in Chrome do kontroli wizualnej). Zrobione 3 poprawki z przeglądu: (1) kropki w kolorze klasy z podpisem nad nimi przy zoomie < 12, obrysy z podpisem przy przybliżeniu; (2) przełącznik Aktywne gospodarstwo przeniesiony pod kafelki, na 390 px mapa zaczyna się 420 px od góry i mieści na pierwszym ekranie; (3) Twoje działki i Stan suszy w jednej kolumnie bez pustego miejsca. axe 0, 390 px bez poziomego przewijania.",
     "coord-1 00:30: 3 poprawki przed 6:00 (nie blokują): (1) przy działkach w całej Polsce obrysy są niewidoczne na zoomie kraju, widać tylko podpisy – dodaj CircleMarker w centroidzie w kolorze klasy, gdy zoom < 12; (2) na 390 px mapa jest dopiero pod Zmień nazwę / Aktywne gospodarstwo / Sprawdź nową działkę – przenieś kafelek mapy zaraz pod h1, przełącznik gospodarstwa niżej; (3) na 1440 px kafelek Twoje działki rozciąga się do wysokości mapy z pustym miejscem – Twoje działki i Stan suszy w jednej kolumnie bez stretch albo alignSelf: start.",
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu.",
     "backend-1 ecb9df0: pulpit 6 kafelków + ThreatMap + DashboardTile na main; typecheck, eslint, build OK. Do zrobienia: kontrola wizualna 390/1440 px i axe; usunąć MemberList/FieldList z pulpitu po T-089/T-090 (teraz stuby).",

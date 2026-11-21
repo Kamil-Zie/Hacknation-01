@@ -142,21 +142,6 @@ export function AccountPage() {
             )}
           </Stack>
         )}
-        {accounts.length > 1 && (
-          <TextField
-            select
-            label="Aktywne gospodarstwo"
-            value={activeAccountId ?? ''}
-            onChange={(event) => setActiveAccount(event.target.value)}
-            sx={{ mt: 2, minWidth: 260 }}
-          >
-            {accounts.map((account) => (
-              <MenuItem key={account.id} value={account.id} sx={{ minHeight: 48 }}>
-                {account.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        )}
       </Box>
       <Button
         variant="contained"
@@ -198,41 +183,43 @@ export function AccountPage() {
             </Stack>
           )}
         </DashboardTile>
-        <DashboardTile
-          id="twoje-dzialki"
-          title="Twoje działki"
-          isLoading={parcels.isPending}
-          isError={parcels.isError}
-          onRetry={retryParcels}
-          isEmpty={items.length === 0}
-          emptyText="Nie masz jeszcze działek."
-        >
-          <Stack spacing={0.5}>
-            <Typography sx={bigText}>Liczba działek: {items.length}</Typography>
-            <Typography sx={bigText}>
-              Razem: {totalHa.toLocaleString('pl-PL', { maximumFractionDigits: 2 })} ha
-            </Typography>
-            <Typography sx={bigText}>Zagrożone: {atRisk.length}</Typography>
-          </Stack>
-        </DashboardTile>
-        <DashboardTile
-          id="stan-suszy"
-          title="Stan suszy"
-          isLoading={parcels.isPending}
-          isError={parcels.isError}
-          onRetry={retryParcels}
-          isEmpty={items.length === 0}
-          emptyText="Brak działek do oceny."
-        >
-          <Stack spacing={1}>
-            {DROUGHT_ORDER.map((value) => (
-              <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
-                <Typography sx={bigText}>{countByClass(value)}</Typography>
-              </Stack>
-            ))}
-          </Stack>
-        </DashboardTile>
+        <Stack spacing={3} sx={{ gridRow: { lg: 'span 2' }, minWidth: 0, alignSelf: 'start' }}>
+          <DashboardTile
+            id="twoje-dzialki"
+            title="Twoje działki"
+            isLoading={parcels.isPending}
+            isError={parcels.isError}
+            onRetry={retryParcels}
+            isEmpty={items.length === 0}
+            emptyText="Nie masz jeszcze działek."
+          >
+            <Stack spacing={0.5}>
+              <Typography sx={bigText}>Liczba działek: {items.length}</Typography>
+              <Typography sx={bigText}>
+                Razem: {totalHa.toLocaleString('pl-PL', { maximumFractionDigits: 2 })} ha
+              </Typography>
+              <Typography sx={bigText}>Zagrożone: {atRisk.length}</Typography>
+            </Stack>
+          </DashboardTile>
+          <DashboardTile
+            id="stan-suszy"
+            title="Stan suszy"
+            isLoading={parcels.isPending}
+            isError={parcels.isError}
+            onRetry={retryParcels}
+            isEmpty={items.length === 0}
+            emptyText="Brak działek do oceny."
+          >
+            <Stack spacing={1}>
+              {DROUGHT_ORDER.map((value) => (
+                <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                  <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
+                  <Typography sx={bigText}>{countByClass(value)}</Typography>
+                </Stack>
+              ))}
+            </Stack>
+          </DashboardTile>
+        </Stack>
         <DashboardTile
           id="najwazniejsze-teraz"
           title="Najważniejsze teraz"
@@ -296,6 +283,21 @@ export function AccountPage() {
           </Box>
         </DashboardTile>
       </Box>
+      {accounts.length > 1 && (
+        <TextField
+          select
+          label="Aktywne gospodarstwo"
+          value={activeAccountId ?? ''}
+          onChange={(event) => setActiveAccount(event.target.value)}
+          sx={{ minWidth: 260, alignSelf: 'flex-start' }}
+        >
+          {accounts.map((account) => (
+            <MenuItem key={account.id} value={account.id} sx={{ minHeight: 48 }}>
+              {account.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      )}
     </Stack>
   );
 }
