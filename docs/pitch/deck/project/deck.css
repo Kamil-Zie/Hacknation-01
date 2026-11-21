@@ -1,0 +1,42 @@
+:root{--ink:#0B2545;--body:#3D4A5C;--paper:#F5F8FC;--tint:#E3EDF9;--blue:#1A5FB4;--sky:#A8CDF8;--line:#C9D6E6;--warn:#B26A00;--ok:#2E7D32;--bad:#B3261E}
+section{padding:128px;background:var(--paper);color:var(--ink);font-family:'Inter',Arial,sans-serif;font-size:32px;line-height:1.35;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:'Rubik',Arial,sans-serif;margin:0;color:var(--ink)}
+h1{font-size:120px;font-weight:700;line-height:1.02}
+h2{font-size:72px;font-weight:700;line-height:1.08}
+h3{font-size:44px;font-weight:600;line-height:1.15}
+p{margin:0;font-size:32px;color:var(--body)}
+.eyebrow{font-size:24px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+.lead{font-size:44px;color:var(--ink);line-height:1.25}
+.small{font-size:24px;color:var(--body)}
+.dark{background:var(--ink);color:#EEF4FB}
+.dark h1,.dark h2,.dark h3{color:#F5F8FC}
+.dark p{color:#BFD3EA}
+.dark .eyebrow{color:var(--sky)}
+.blue{background:var(--blue)}
+.blue h2,.blue h3{color:#F5F8FC}
+.blue p{color:#E3EDF9}
+.blue .eyebrow{color:#D4E7FC}
+.row{display:flex;gap:32px}
+.grow{flex:1}
+.card{flex:1;background:#FFFFFF;border:2px solid var(--line);border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:16px}
+.card .num{font-family:'Rubik',Arial,sans-serif;font-size:72px;font-weight:700;color:var(--blue);line-height:1}
+.card .num.warn{color:var(--warn)}
+.card .num.ok{color:var(--ok)}
+.card .num.bad{color:var(--bad)}
+.tint{background:var(--tint);border-color:var(--tint)}
+.step{font-family:'Rubik',Arial,sans-serif;font-size:72px;font-weight:700;color:var(--sky);line-height:1}
+.dark .card{background:#13335C;border-color:#13335C}
+.dark .card p{color:#D6E4F5}
+.dark .card h3{color:#F5F8FC}
+.chain{display:flex;gap:24px;align-items:stretch}
+.chain .card{gap:12px}
+.chain .arrow{align-self:center;font-family:'Rubik',Arial,sans-serif;font-size:56px;color:var(--blue)}
+table{border-collapse:collapse;width:100%}
+th,td{font-size:28px;text-align:left;padding:16px 20px;border-bottom:2px solid var(--line)}
+th{font-family:'Rubik',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:24px;text-transform:uppercase;letter-spacing:.06em}
+td{color:var(--ink)}
+.footer{position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:var(--body)}
+.dark .footer{color:#8FAAC9}
+.rise{animation:rise .6s ease-out both}
+.d1{animation-delay:.15s}.d2{animation-delay:.3s}.d3{animation-delay:.45s}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}}
