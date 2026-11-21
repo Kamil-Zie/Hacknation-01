@@ -12,9 +12,21 @@ import { useSelectionStore } from '@/store/selection';
 
 const STEPS = ['Wskaż działkę', 'Wybierz uprawę i datę', 'Zobacz raport o wodzie'];
 
+// T-024: user-facing texts for API-001/API-002 error codes from contracts/api.json
+const ERROR_MESSAGES: Record<string, string> = {
+  PARCEL_NOT_FOUND: 'Nie znaleziono działki. Sprawdź numer albo kliknij działkę na mapie.',
+  UPSTREAM_UNAVAILABLE: 'Serwis działek GUGiK chwilowo nie odpowiada. Spróbuj ponownie za chwilę.',
+  TIMEOUT: 'Serwis działek odpowiada zbyt długo. Spróbuj ponownie.',
+  NETWORK_ERROR: 'Brak połączenia z serwerem. Sprawdź internet i spróbuj ponownie.',
+};
+
 function toError(error: unknown): { code: string; message: string } | null {
   if (!error) return null;
-  if (error instanceof ApiError) return { code: error.code, message: error.message };
+  if (error instanceof ApiError) {
+    const hint = typeof error.details?.hint === 'string' ? ` ${error.details.hint}` : '';
+    const message = ERROR_MESSAGES[error.code] ?? `${error.message}.${hint}`;
+    return { code: error.code, message };
+  }
   return {
     code: 'UPSTREAM_UNAVAILABLE',
     message: 'Nie udało się pobrać działki. Spróbuj ponownie.',

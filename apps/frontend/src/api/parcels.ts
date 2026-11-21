@@ -7,16 +7,24 @@ import { mockGetParcelById, mockGetParcelByPoint } from '@/mocks/parcels.mock';
 
 export const PARCEL_ID_REGEX = /^\d{6}_\d\.\d{4}\..+$/;
 
-const shouldUseMocks = import.meta.env.VITE_USE_MOCKS === 'true' || !import.meta.env.VITE_API_URL;
+// T-024: parcels are live on the backend before the rest, so VITE_MOCK_PARCELS=false
+// switches only this resource to the real API (defaults to VITE_USE_MOCKS).
+const shouldUseMocks =
+  (import.meta.env.VITE_MOCK_PARCELS ?? import.meta.env.VITE_USE_MOCKS) === 'true' ||
+  !import.meta.env.VITE_API_URL;
+
+// Backend waits up to 10 s for ULDK (+1 retry on cold start), so leave headroom
+const PARCEL_TIMEOUT_MS = 25_000;
 
 export function getParcelById(parcelId: string): Promise<Parcel> {
   if (shouldUseMocks) return mockGetParcelById(parcelId);
-  return apiFetch<Parcel>(`/parcels/${encodeURIComponent(parcelId)}`);
+  return apiFetch<Parcel>(`/parcels/${encodeURIComponent(parcelId)}`, undefined, PARCEL_TIMEOUT_MS);
 }
 
 export function getParcelByPoint(lat: number, lon: number): Promise<Parcel> {
   if (shouldUseMocks) return mockGetParcelByPoint(lat, lon);
-  return apiFetch<Parcel>(`/parcels/by-point?lat=${lat}&lon=${lon}`);
+  const query = `lat=${lat.toFixed(6)}&lon=${lon.toFixed(6)}`;
+  return apiFetch<Parcel>(`/parcels/by-point?${query}`, undefined, PARCEL_TIMEOUT_MS);
 }
 
 export function useParcelQuery(parcelId: string | null) {
