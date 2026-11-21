@@ -91,7 +91,8 @@ export function ParcelMap({
         position: 'relative',
         width: '100%',
         height: height ?? DEFAULT_HEIGHT,
-        minHeight: height === undefined ? DEFAULT_MIN_HEIGHT : undefined,
+        // Explicit height may be a % of a parent that only has minHeight; keep a floor so it never collapses
+        minHeight: height === undefined ? DEFAULT_MIN_HEIGHT : 200,
         borderRadius: 2,
         overflow: 'hidden',
       }}
