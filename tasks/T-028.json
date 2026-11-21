@@ -4,7 +4,7 @@
   "description": "services/sources/sentinel2.source.ts część 2 i engine/satellite.ts (ADR-007 §5): odczyt geotiff.js fromUrl w oknie bbox działki (proj4 do UTM sceny), skala/offset, maska SCL (klasy 4 i 5), piksele ze środkiem w poligonie, średnie NDVI (10 m) i NDMI (20 m), wymóg >= 60% ważnych pikseli, ocena względem oczekiwań dla uprawy i fazy. Cache statystyk. Krok 4.",
   "type": "feature",
   "team": "backend",
-  "assignee": "backend-1",
+  "assignee": "backend-2",
   "status": "backlog",
   "priority": "high",
   "depends_on": ["T-027", "T-011"],
@@ -17,8 +17,15 @@
     "Plan B: przy przekroczeniu budżetu czasu tylko NDVI z adnotacją",
     "Testy na małym zapisanym fragmencie COG"
   ],
-  "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 6 Sentinel-2. Licencja Copernicus + katalog CC0."],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 13:35: przeniesione z backend-1 na backend-2 (Jan robi T-017 i T-031, Sentinel-2 był najdłuższą ścieżką). Źródło budujesz niezależnie od orkiestratora, jak pozostałe (runSource), Jan podpina je w T-031.",
+    "Agent: be-api. Szacunek: 2h. Faza: 6 Sentinel-2. Licencja Copernicus + katalog CC0."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
