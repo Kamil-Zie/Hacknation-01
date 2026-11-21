@@ -1,0 +1,28 @@
+{
+  "id": "T-054",
+  "title": "Porównanie klas suszy Kropelki z Monitoringiem Suszy IUNG-PIB (README sekcja 9)",
+  "description": "Weryfikacja wyników (KOWR 4.2 pkt 9, kryterium 25% wiarygodność). Dla 3–5 działek z różnych regionów i gleb (np. Bronowice 061409_2.0009.612, Żuławy, Sulechów, Kruszwica, Głogówek z testu 14:25) i 1–2 okresów raportowych IUNG z lat 2018–2025 (susza.iung.pulawy.pl, archiwum: okresy 60-dniowe, KBW i susza per gmina i uprawa) porównaj: klasa suszy Kropelki (POST /analyses z datą = koniec okresu IUNG, ta sama uprawa) vs wynik IUNG dla gminy działki (susza tak/nie, kategoria gleby). Dodatkowo, jeśli szybkie: kategoria podatności gleb z mapy IUNG vs nasza podatność wieloletnia. Wynik jako tabela markdown w wiadomości info do coord-1 (koordynator wklei do README sekcja 9) + 2–3 zdania wniosków, w tym rozbieżności i ich możliwe przyczyny (gmina vs działka, siatka 50 km NASA, KBW IUNG z interpolacji stacji).",
+  "type": "docs",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-031"],
+  "contract_refs": ["API-004"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Tabela: działka, gmina, uprawa, okres IUNG, wynik IUNG, klasa Kropelki (percentyl KBW60), zgodność tak/nie – min. 5 wierszy",
+    "Wnioski bez pozornej precyzji: liczba zgodnych / wszystkich, rozbieżności opisane",
+    "Źródło IUNG podane z datą dostępu; jeśli strona IUNG nie działa z naszej sieci, zgłoś po 20 min i weź EDO (CDI) jako zastępstwo"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 17:50: zlecone przez Kamila. Na sieci hackathonu Open-Meteo 429 → analizy z zapasu NASA; zaznacz źródło w tabeli (ERA5 albo NASA). Termin: przed 11:00 jutro, najlepiej dziś. README i docs/ są poza Twoimi paths.write: wynik oddaj w wiadomości info (tabela markdown), koordynator wklei go do README."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
