@@ -13,7 +13,7 @@ Aplikacja webowa dla rolnika (zadanie KOWR „Zatrzymaj wodę, chroń plony”).
 Wymagania: Node.js 20.19+, npm 10+, git, własny klaster MongoDB Atlas (darmowy M0 wystarczy). Bez Dockera, bez instalowania dodatkowych narzędzi systemowych, bez kluczy API do źródeł danych.
 
 ```bash
-git clone <adres repozytorium przekazany jury> kropla && cd kropla
+git clone <adres repozytorium przekazany jury> kropelka && cd kropelka
 cp .env.example .env     # uzupełnij MONGODB_URI (własny klaster MongoDB Atlas)
 npm install
 npm run dev              # front http://localhost:5173, API http://localhost:3000/api/v1
@@ -43,7 +43,9 @@ Aplikacja działa w przeglądarkach Chrome, Firefox, Edge, Safari i Opera bez in
 5. **Przyczyny niedoboru** z dowodami w liczbach (deficyt opadów i upał, niska retencja gleby, spływ powierzchniowy, zapotrzebowanie uprawy, niska wilgotność roślinności).
 6. **Rekomendacje w stałej kolejności:** retencja krajobrazowa, retencja glebowa, agrotechnika, nawadnianie (zasadność, termin, dawka). Każda z uzasadnieniem w danych.
 7. **Raport:** data i źródła, poziom pewności z jego powodami, jawne braki danych, ograniczenia. Zapis w systemie (link do raportu), wydruk lub PDF (`/report/:id/print`, w oknie druku „Zapisz jako PDF”).
-8. **Konto gospodarstwa (opcjonalne, ADR-010):** e-mail i hasło, wielu członków konta, historia zapisanych raportów. Analiza bez logowania działa w całości.
+8. **Konto gospodarstwa (opcjonalne, ADR-010):** e-mail i hasło, własna nazwa gospodarstwa (podana przy rejestracji, do zmiany na ekranie konta), wielu członków konta, historia zapisanych raportów. Analiza bez logowania działa w całości.
+9. **Podgląd działki przed analizą:** przycisk „Podgląd tej działki” przybliża mapę do granicy z ULDK, żeby rolnik upewnił się, że to jego działka.
+10. **Nawigacja:** w nagłówku „Panel” (konto gospodarstwa), „Szukaj działki” (powrót z zachowaną działką) i „Dodaj działkę” (nowa analiza od zera), na ekranach kroków przycisk „Wstecz”.
 
 ## 3. Skrócony opis architektury
 
@@ -143,8 +145,8 @@ Cache działki demo (061409_2.0009.612, pszenica, 2026-05-25) rozgrzany 2026-11-
 ### Koszty i usługi płatne
 
 - **Dziś (prototyp): koszt zbliżony do zera.** ULDK, NASA POWER, SoilGrids, Microsoft Planetary Computer i OpenStreetMap są bezpłatne (limity uczciwego użycia, bez kluczy). Hosting produkcyjny: Synology + Cloudflare Tunnel (poza prądem i sprzętem ok. 0 zł).
-- **Open-Meteo:** bezpłatne użycie niekomercyjne, 10 000 wywołań dziennie na adres IP; jedna analiza to ok. 6 wywołań (ADR-009), czyli ok. 1600 analiz dziennie z jednego IP. Użycie komercyjne wymaga planu płatnego; Standard nie ma Historical API, potrzebny Professional (cena do potwierdzenia na open-meteo.com/en/pricing).
-- **MongoDB Atlas:** w dev klaster współdzielony (darmowy). Przy wzroście ruchu i rozmiaru cache produkcja wymaga płatnego tieru (koszt do potwierdzenia na mongodb.com/pricing).
+- **Open-Meteo:** bezpłatne użycie niekomercyjne, 10 000 wywołań dziennie na adres IP; jedna analiza to ok. 6 wywołań (ADR-009), czyli ok. 1600 analiz dziennie z jednego IP. Użycie komercyjne wymaga planu płatnego; Standard (ok. 29 USD/mies., 1 mln wywołań) nie ma Historical API, potrzebny Professional: ok. 99 USD/mies., 5 mln wywołań (ok. 800 tys. analiz miesięcznie). Ceny z ogłoszenia Open-Meteo, sprawdzone 2026-11-21; wiążący jest cennik open-meteo.com/en/pricing.
+- **MongoDB Atlas:** w dev klaster współdzielony (darmowy). Przy wzroście ruchu i rozmiaru cache produkcja wymaga płatnego tieru: Flex do ok. 30 USD/mies. (start), dedykowany M10 od ok. 0,08 USD/h, czyli ok. 57 USD/mies. (AWS, zależnie od regionu). Ceny z mongodb.com/pricing, sprawdzone 2026-11-21. Szacunek na start w skali kraju: ok. 130–160 USD/mies. (Open-Meteo Professional + Atlas M10), hosting na własnym sprzęcie.
 - **Alternatywy bez opłat licencyjnych:** własny mirror ERA5 z Copernicus CDS (bezpłatny, kosztem dysku i utrzymania), dane IMGW-PIB dla stacji w Polsce, własny ekstrakt OSM (Geofabrik) zamiast API.
 
 ### Skalowalność
