@@ -47,12 +47,19 @@ export async function apiFetch<T>(
     clearTimeout(timer);
   }
   if (!response.ok) {
-    if (response.status === 401 && !AUTH_ENTRY_PATHS.includes(path)) unauthorizedHandler?.();
     const body = (await response.json().catch(() => null)) as {
       code?: string;
       message?: string;
       details?: Record<string, unknown>;
     } | null;
+    // Wrong current password (API-015) is a form error, not an expired session
+    if (
+      response.status === 401 &&
+      !AUTH_ENTRY_PATHS.includes(path) &&
+      body?.code !== 'INVALID_CREDENTIALS'
+    ) {
+      unauthorizedHandler?.();
+    }
     throw new ApiError(
       body?.code ?? 'UNKNOWN',
       body?.message ?? 'Błąd serwera',

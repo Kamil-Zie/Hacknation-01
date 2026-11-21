@@ -1,0 +1,29 @@
+{
+  "id": "T-083",
+  "title": "Poprawki z testu UI koordynatora 22:10 (frontend)",
+  "description": "Test przycisków po T-071…T-081 (lokalnie, Chrome 1440 px).\n(1) NAPRAWIONE przez coord (fix(coord) w api/client.ts): złe 'Obecne hasło' w Mój profil (API-015 401 INVALID_CREDENTIALS) wylogowywało użytkownika – globalny handler 401 brał to za wygasłą sesję.\n(2) KbwChart: przełącznik '30 dni' tylko przycina wykres 60-dniowy – linia kończy się na −106 mm i podpis 'Ostatnia wartość KBW: −106,2 mm', a KBW 30 dni to −72,5 mm. Albo seria 30-dniowa, albo podpis 'bilans narastająco od 27.03'.\n(3) 'Wyślij link': gdy navigator.clipboard.writeText wisi (brak zgody przeglądarki), nie ma żadnej informacji. Timeout ok. 1,5 s → pokaż pole z linkiem do ręcznego skopiowania.\n(4) Menu konta: pozycje mają 39 px wysokości (cel 48 px dla 18–99).\n(5) Krok 2: 'Pszenica ozima' jest domyślnie zaznaczona, więc nowy alert 'Wybierz, co rośnie na działce' nigdy się nie pojawi. Decyzja: bez domyślnej uprawy (alert działa) – zgodnie z prośbą Kamila.\n(6) 'Nie ma takiej uprawy. Sprawdź pisownię.' – mały szary tekst; większy (≥ 18 px).",
+  "type": "bugfix",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-002", "UI-S-003", "UI-S-006", "API-015"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "30 dni: linia i podpis zgodne z KBW 30 dni z raportu",
+    "Wyślij link zawsze daje informację w ≤ 2 s",
+    "Menu konta ≥ 48 px",
+    "Krok 2 bez domyślnej uprawy; 'Pokaż raport' bez uprawy pokazuje alert"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 22:10: punkty 2, 3, 4 – Kuba (raport, konto); punkty 5, 6 – Dawid (AnalysisForm), uzgodnijcie. Typ fix, dozwolony też po 7:00."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
