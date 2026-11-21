@@ -51,7 +51,11 @@ function FitToParcel({ parcel }: { parcel: Parcel | null }) {
     // otherwise the parcel ends up cropped when the layout changes (e.g. 360 px)
     const fit = () => {
       map.invalidateSize();
-      if (!parcel) return;
+      // No parcel yet: keep Poland centred (the container is resized after mount, e.g. 1920 px layout)
+      if (!parcel) {
+        map.setView(POLAND_CENTER, POLAND_ZOOM);
+        return;
+      }
       const [minLon, minLat, maxLon, maxLat] = parcel.bbox;
       const bounds: LatLngBoundsExpression = [
         [minLat, minLon],
