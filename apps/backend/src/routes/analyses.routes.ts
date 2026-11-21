@@ -3,8 +3,12 @@ import { Router } from 'express';
 
 import { createAnalysis, getAnalysisById } from '@/controllers/analyses.controller';
 import { optionalAuth } from '@/middleware/auth';
+import { rateLimit } from '@/middleware/rateLimit';
 
 export const analysesRouter = Router();
 
-analysesRouter.post('/analyses', optionalAuth, createAnalysis);
-analysesRouter.get('/analyses/:id', getAnalysisById);
+// T-066: 10 analyses per minute per IP
+const analysesLimit = rateLimit({ windowMs: 60_000, max: 10, name: 'analyses' });
+
+analysesRouter.post('/analyses', analysesLimit, optionalAuth, createAnalysis);
+analysesRouter.get('/analyses/:id', optionalAuth, getAnalysisById);

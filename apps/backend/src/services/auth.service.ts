@@ -26,7 +26,7 @@ export interface SessionDto extends MeDto {
 }
 
 const DEFAULT_ACCOUNT_NAME = 'Moje gospodarstwo';
-// T-041: 10 failed logins per e-mail within 15 minutes.
+// T-041: 10 failed logins per IP + e-mail within 15 minutes (T-066: IP is part of the key).
 export const MAX_FAILED_LOGINS = 10;
 const FAILED_LOGIN_WINDOW_MS = 15 * 60 * 1000;
 
@@ -37,9 +37,15 @@ export function resetLoginLimiter(): void {
   failedLogins.clear();
 }
 
-function recentFailures(email: string, now: number): number[] {
-  const recent = (failedLogins.get(email) ?? []).filter((at) => now - at < FAILED_LOGIN_WINDOW_MS);
-  failedLogins.set(email, recent);
+// Drops expired entries on every call, so the map cannot grow without bound.
+function recentFailures(key: string, now: number): number[] {
+  for (const [entryKey, times] of failedLogins) {
+    const live = times.filter((at) => now - at < FAILED_LOGIN_WINDOW_MS);
+    if (live.length === 0) failedLogins.delete(entryKey);
+    else failedLogins.set(entryKey, live);
+  }
+  const recent = failedLogins.get(key) ?? [];
+  failedLogins.set(key, recent);
   return recent;
 }
 
@@ -91,11 +97,12 @@ export async function register(body: RegisterBody): Promise<SessionDto> {
   };
 }
 
-export async function login(body: LoginBody): Promise<SessionDto> {
+export async function login(body: LoginBody, ip: string): Promise<SessionDto> {
   assertDbConnected();
   const email = body.email.toLowerCase();
   const now = Date.now();
-  const failures = recentFailures(email, now);
+  const key = `${ip}|${email}`;
+  const failures = recentFailures(key, now);
   if (failures.length >= MAX_FAILED_LOGINS) {
     const retryAfterSec = Math.ceil(((failures[0] ?? now) + FAILED_LOGIN_WINDOW_MS - now) / 1000);
     throw new AppError(
@@ -111,7 +118,7 @@ export async function login(body: LoginBody): Promise<SessionDto> {
     failures.push(now);
     throw new AppError('INVALID_CREDENTIALS', 'Nieprawidłowy e-mail lub hasło.', 401);
   }
-  failedLogins.delete(email);
+  failedLogins.delete(key);
   return {
     token: signToken(String(user._id)),
     user: toUserDto(user),

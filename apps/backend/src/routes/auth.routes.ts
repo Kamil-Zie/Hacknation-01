@@ -3,10 +3,14 @@ import { Router } from 'express';
 
 import { login, me, register } from '@/controllers/auth.controller';
 import { requireAuth } from '@/middleware/auth';
+import { rateLimit } from '@/middleware/rateLimit';
 import { validate } from '@/middleware/validate';
 import { loginBodySchema, registerBodySchema } from '@/validation/auth.schema';
 
 export const authRouter = Router();
+
+// T-066: 20 requests per minute per IP on all /auth/*
+authRouter.use('/auth', rateLimit({ windowMs: 60_000, max: 20, name: 'auth' }));
 
 authRouter.post('/auth/register', validate('body', registerBodySchema), register);
 authRouter.post('/auth/login', validate('body', loginBodySchema), login);

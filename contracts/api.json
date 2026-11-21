@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "base_url": "/api/v1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. Wymieniaj tylko błędy, które endpoint naprawdę zwraca w demo.",
@@ -28,7 +28,7 @@
       "consumers": ["UI-S-001"]
     }
   },
-  "_note": "Kropelka: analiza działki działa bez logowania (auth: none). Od 0.4.0 (ADR-010) opcjonalne konta gospodarstwa: uwierzytelnianie Bearer JWT (HS256, 7 dni) w nagłówku Authorization; auth: required tylko dla API-009..API-013, auth: optional dla API-004 (token + accountId zapisują raport w historii konta). Listy kont w standardzie { items, page, pageSize, total }. Format błędu: { code, message, details }. Daty jako YYYY-MM-DD (strefa Europe/Warsaw), znaczniki czasu ISO 8601 UTC. Źródła i metodyka: docs/adr/ADR-006-data-sources.md, docs/adr/ADR-007-methodology.md.",
+  "_note": "Kropelka: analiza działki działa bez logowania (auth: none). Od 0.4.0 (ADR-010) opcjonalne konta gospodarstwa: uwierzytelnianie Bearer JWT (HS256, 7 dni) w nagłówku Authorization; auth: required tylko dla API-009..API-013, auth: optional dla API-004 (token + accountId zapisują raport w historii konta). Listy kont w standardzie { items, page, pageSize, total }. Format błędu: { code, message, details }. Od 0.4.2 (T-066) wspólnie: 429 RATE_LIMITED (limit zapytań na IP: POST /analyses 10/min, /auth/* 20/min; details.retryAfterSec, nagłówek Retry-After) i 413 PAYLOAD_TOO_LARGE (body JSON > 20 KB). Daty jako YYYY-MM-DD (strefa Europe/Warsaw), znaczniki czasu ISO 8601 UTC. Źródła i metodyka: docs/adr/ADR-006-data-sources.md, docs/adr/ADR-007-methodology.md.",
   "endpoints": [
     {
       "id": "API-001",
@@ -1031,6 +1031,7 @@
         "201": "Report (DM-001)"
       },
       "errors": [
+        "429 RATE_LIMITED (więcej niż 10 analiz na minutę z jednego IP; details.retryAfterSec)",
         "422 VALIDATION_ERROR (zły format ID, nieznana uprawa, data spoza zakresu, zły format accountId; details.field)",
         "401 UNAUTHORIZED (podano accountId bez ważnego tokenu Bearer)",
         "403 NOT_A_MEMBER (zalogowany użytkownik nie jest członkiem konta accountId)",
@@ -2933,8 +2934,8 @@
       "status": "agreed",
       "method": "GET",
       "path": "/analyses/:id",
-      "summary": "Zapisany raport po id (link do ponownego otwarcia i widok druku), bez ponownego liczenia",
-      "auth": "none",
+      "summary": "Zapisany raport po id (link do ponownego otwarcia i widok druku), bez ponownego liczenia. Pole accountId jest zwracane tylko, gdy w nagłówku Authorization: Bearer jest członek tego konta; w każdym innym przypadku (anonim, nie-członek) accountId = null. Nieważny token przy obecnym nagłówku: 401 UNAUTHORIZED.",
+      "auth": "optional",
       "request": {
         "params": {
           "id": "string, id raportu (ObjectId, 24 znaki hex)"
@@ -2945,6 +2946,7 @@
       },
       "errors": [
         "422 VALIDATION_ERROR (niepoprawny format id)",
+        "401 UNAUTHORIZED (nagłówek Authorization z nieważnym tokenem)",
         "404 REPORT_NOT_FOUND",
         "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast, bez czekania)"
       ],
@@ -3098,6 +3100,7 @@
         "201": "Session (DM-019)"
       },
       "errors": [
+        "429 RATE_LIMITED (więcej niż 20 żądań /auth/* na minutę z jednego IP; details.retryAfterSec)",
         "409 EMAIL_TAKEN (konto z tym e-mailem już istnieje)",
         "422 VALIDATION_ERROR (zły e-mail, hasło krótsze niż 8 znaków, brak imienia; details.field)",
         "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
@@ -3148,7 +3151,8 @@
       },
       "errors": [
         "401 INVALID_CREDENTIALS (zły e-mail lub hasło; jeden komunikat dla obu przypadków)",
-        "429 TOO_MANY_ATTEMPTS (za dużo nieudanych prób; details.retryAfterSec)",
+        "429 TOO_MANY_ATTEMPTS (10 nieudanych prób z tego samego IP dla tego e-maila; details.retryAfterSec)",
+        "429 RATE_LIMITED (więcej niż 20 żądań /auth/* na minutę z jednego IP; details.retryAfterSec)",
         "422 VALIDATION_ERROR (zły format e-maila lub brak hasła; details.field)",
         "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
       ],

@@ -9,7 +9,7 @@ export const register = asyncHandler(async (req, res) => {
 });
 
 export const login = asyncHandler(async (req, res) => {
-  res.json(await authService.login(req.body as LoginBody));
+  res.json(await authService.login(req.body as LoginBody, req.ip ?? 'unknown'));
 });
 
 export const me = asyncHandler(async (req, res) => {

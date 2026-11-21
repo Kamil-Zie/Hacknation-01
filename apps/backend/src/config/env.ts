@@ -27,7 +27,17 @@ const envSchema = z.object({
   JWT_SECRET: z.string().optional(),
 });
 
+// T-066: production must not run with an empty or localhost CORS origin.
+export function assertProductionCors(nodeEnv: string, corsOrigin: string | undefined): void {
+  if (nodeEnv !== 'production') return;
+  const origin = (corsOrigin ?? '').trim();
+  if (!origin || origin.toLowerCase().includes('localhost')) {
+    throw new Error('CORS_ORIGIN must be set to the real app origin (not localhost) in production');
+  }
+}
+
 const parsed = envSchema.parse(process.env);
+assertProductionCors(parsed.NODE_ENV, process.env.CORS_ORIGIN);
 let jwtSecret = parsed.JWT_SECRET;
 if (!jwtSecret) {
   if (parsed.NODE_ENV === 'production') throw new Error('JWT_SECRET is required in production');

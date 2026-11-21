@@ -278,7 +278,8 @@ export async function createAnalysis(
 // toJSON maps _id to string id; res.json serializes Date fields to ISO strings.
 export type SavedReportDto = Record<string, unknown> & { id: string };
 
-export async function getReportById(id: string): Promise<SavedReportDto> {
+// T-066: accountId is shown only to an active member of that account, everyone else gets null.
+export async function getReportById(id: string, userId?: string): Promise<SavedReportDto> {
   // Without a connection Mongoose would buffer the query for 10 s; fail fast instead.
   if (mongoose.connection.readyState !== 1) {
     throw new AppError('DB_UNAVAILABLE', 'Baza danych jest niedostępna', 503);
@@ -287,7 +288,10 @@ export async function getReportById(id: string): Promise<SavedReportDto> {
   if (!report) {
     throw new AppError('REPORT_NOT_FOUND', 'Nie znaleziono raportu', 404);
   }
-  return report.toJSON() as unknown as SavedReportDto;
+  const dto = report.toJSON() as unknown as SavedReportDto;
+  const accountId = dto.accountId ? String(dto.accountId) : null;
+  dto.accountId = accountId && userId && (await isMember(userId, accountId)) ? accountId : null;
+  return dto;
 }
 
 // T-043 API-013: account history (DM-023 ReportSummary), newest first, projection only.

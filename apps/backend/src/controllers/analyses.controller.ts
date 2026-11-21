@@ -60,5 +60,5 @@ export const getAnalysisById = asyncHandler(async (req, res) => {
       hint: ANALYSIS_ID_HINT,
     });
   }
-  res.json(await analysesService.getReportById(parsed.data.id));
+  res.json(await analysesService.getReportById(parsed.data.id, req.userId));
 });

@@ -28,6 +28,14 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     });
     return;
   }
+  if ((err as { type?: string } | null)?.type === 'entity.too.large') {
+    res.status(413).json({
+      code: 'PAYLOAD_TOO_LARGE',
+      message: 'Treść żądania jest zbyt duża (maks. 20 KB).',
+      details: null,
+    });
+    return;
+  }
   logger.error(err instanceof Error ? (err.stack ?? err.message) : String(err));
   res.status(500).json({ code: 'INTERNAL_ERROR', message: 'Błąd serwera', details: null });
 };

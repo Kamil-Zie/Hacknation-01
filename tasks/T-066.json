@@ -5,7 +5,7 @@
   "type": "bugfix",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-056"],
   "contract_refs": ["API-004", "API-005", "API-008"],
@@ -23,7 +23,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 18:22: przed zamrożeniem 7:00 i przed wdrożeniem prod (T-065). CORS_ORIGIN prod = https://app.kamil-zielinski.pl (z raportu; Kamil potwierdzi domenę)."
+    "coord-1 18:22: przed zamrożeniem 7:00 i przed wdrożeniem prod (T-065). CORS_ORIGIN prod = https://app.kamil-zielinski.pl (z raportu; Kamil potwierdzi domenę).",
+    "Zrobione (backend-2), bez nowych zależności (helmet/express-rate-limit zastąpione ręcznie, lockfile bez zmian): (1) env.ts: production bez CORS_ORIGIN albo z localhost → błąd startu; (2) GET /analyses/:id z optionalAuth: accountId tylko dla członka, anonim i obcy → null (curl OK); (3) middleware/security.ts: bez X-Powered-By, nosniff, X-Frame-Options DENY, Referrer-Policy no-referrer, CORP same-site, HSTS w prod; trust proxy 1 poza development; (4) middleware/rateLimit.ts: POST /analyses 10/min/IP, /auth/* 20/min/IP → 429 RATE_LIMITED + Retry-After (w testach wyłączony domyślnie, setRateLimitEnabled); (5) limit logowań kluczem IP|e-mail + czyszczenie wygasłych; (6) express.json 20 KB → 413 PAYLOAD_TOO_LARGE. Kontrakt 0.4.2. Testy 301/301. Za Cloudflare Tunnel IP z X-Forwarded-For."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
