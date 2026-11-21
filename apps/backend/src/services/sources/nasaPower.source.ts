@@ -100,7 +100,8 @@ export async function fetchNasaPowerDaily(
 
   return runSource<NasaPowerDay[]>({
     sourceId: 'nasa_power',
-    key: `nasa_power:${latR}:${lonR}:${startCompact}:${endCompact}`,
+    // v2: request has RH2M, WS2M, ALLSKY_SFC_SW_DWN, PS for Penman-Monteith (v1 entries lack them)
+    key: `nasa_power:v2:${latR}:${lonR}:${startCompact}:${endCompact}`,
     ttlMs: isFresh ? SHORT_TTL_MS.nasa_power : SOURCE_TTL_MS.nasa_power,
     signal,
     cache: deps.cache,

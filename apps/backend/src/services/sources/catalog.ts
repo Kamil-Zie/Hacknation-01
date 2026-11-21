@@ -72,7 +72,7 @@ export const SOURCES: DataSource[] = [
     url: 'https://power.larc.nasa.gov/',
     license: 'Dane NASA, otwarte; wymagane przypisanie NASA LaRC POWER',
     resolution: 'siatka ok. 50 km (0,5° × 0,625°), dane dobowe; 10 lat do percentyla i podatności',
-    timeoutMs: 10000,
+    timeoutMs: 20000, // 10 years x 11 parameters in one request; 1.6-1.9 s typical, slow first byte seen at venue
     attribution:
       'These data were obtained from the NASA Langley Research Center (LaRC) POWER Project funded through the NASA Earth Science/Applied Science Program.',
   },

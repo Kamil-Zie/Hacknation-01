@@ -14,8 +14,8 @@
 ## Decyzja
 
 1. **Okno bieżące = D − 90 dni … D, z Open-Meteo** (`meteo` i `era5land`, jedno zapytanie): opad, temperatury, ET0 FAO-56 i wilgotność gleby ERA5-Land. To są **wartości bezwzględne pokazywane w raporcie**: KBW 30/60 dni w mm, ETc uprawy, bilans wiadra, wilgotność w m³/m³ i % pojemności. Około 6 „wywołań” Open-Meteo na analizę zamiast setek.
-2. **Klimatologia = D − 10 lat − 75 dni … D, z NASA POWER** (`nasa_power`, jedno zapytanie, parametry `PRECTOTCORR`, `T2M`, `T2M_MAX`, `T2M_MIN`, `GWETTOP`, `GWETROOT`): rozkład odniesienia, percentyle, anomalie i podatność wieloletnia (sezony z deficytem, krytyczne miesiące).
-3. **Spójność (najważniejsze):** percentyl i anomalię liczymy **w całości w jednym źródle**: wartość okna bieżącego z NASA POWER porównana z rozkładem z NASA POWER (ET0 Hargreaves-Samani po obu stronach). Nie porównujemy wartości ERA5 z rozkładem NASA, bo różne źródła mają różne obciążenia. Raport pokazuje:
+2. **Klimatologia = D − 10 lat − 75 dni … D, z NASA POWER** (`nasa_power`, jedno zapytanie, parametry `PRECTOTCORR`, `T2M`, `T2M_MAX`, `T2M_MIN`, `GWETTOP`, `GWETROOT`, od 14:00 także `RH2M`, `WS2M`, `ALLSKY_SFC_SW_DWN`, `PS`): rozkład odniesienia, percentyle, anomalie i podatność wieloletnia (sezony z deficytem, krytyczne miesiące).
+3. **Spójność (najważniejsze):** percentyl i anomalię liczymy **w całości w jednym źródle**: wartość okna bieżącego z NASA POWER porównana z rozkładem z NASA POWER (ET0 FAO-56 Penman-Monteith po obu stronach, patrz aktualizacja 14:00). Nie porównujemy wartości ERA5 z rozkładem NASA, bo różne źródła mają różne obciążenia. Raport pokazuje:
    - stan bieżący w mm i % z ERA5 / ERA5-Land (ok. 9 km, europejskie),
    - „jak to wypada na tle 10 lat” (percentyl, anomalia, klasa) z NASA POWER (ok. 50 km),
    - w `sources[]` oba źródła z rolą (`role: current | climatology | fallback` w nocie DM-011), a w `limitations` zdanie o tym podziale.
@@ -27,7 +27,7 @@
 
 - Aktualność bez zmian (Open-Meteo ma dane do dziś), zużycie limitu Open-Meteo spada mniej więcej 50 razy, czas analizy krótszy (NASA ok. 2 s równolegle).
 - Zgodność z KOWR 3.2 / 3.3 pkt 4 i testami jury na daty historyczne zachowana.
-- Ograniczenie do opisania w raporcie i README: tło wieloletnie ma siatkę ok. 50 km i ET0 metodą Hargreavesa (nie Penman-Monteith), więc percentyl opisuje region, a nie samą działkę.
+- Ograniczenie do opisania w raporcie i README: tło wieloletnie ma siatkę ok. 50 km (ET0 od 14:00 metodą Penman-Monteith), więc percentyl opisuje region, a nie samą działkę.
 
 ## Aktualizacja 2026-11-21 14:00: ET0 w NASA POWER metodą Penman-Monteith
 
