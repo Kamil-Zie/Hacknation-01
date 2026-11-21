@@ -1,5 +1,4 @@
 // UI-C-010 ReportActions
-import AddIcon from '@mui/icons-material/Add';
 import LinkIcon from '@mui/icons-material/Link';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import PrintIcon from '@mui/icons-material/Print';
@@ -15,6 +14,7 @@ import {
   Snackbar,
   TextField,
 } from '@mui/material';
+import type { Theme } from '@mui/material/styles';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,8 +41,21 @@ export function ReportActions({ reportId }: ReportActionsProps) {
     }
   };
 
-  const buttonSx = { minHeight: 44 };
-  const secondarySx = { ...buttonSx, display: { xs: 'none', md: 'inline-flex' } };
+  // Desktop: three outlined buttons (hover = filled primary); phone: bottom bar with PDF + print + menu
+  const outlinedSx = (theme: Theme) => ({
+    minHeight: { xs: 56, md: 54 },
+    borderRadius: '12px',
+    borderColor: theme.palette.kropla.iconMuted,
+    bgcolor: 'background.paper',
+    color: 'text.primary',
+    fontSize: '1.0625rem',
+    '&:hover': {
+      bgcolor: 'primary.main',
+      borderColor: 'primary.main',
+      color: theme.palette.common.white,
+    },
+  });
+  const desktopOnlySx = { display: { xs: 'none', md: 'inline-flex' } };
 
   return (
     <>
@@ -54,16 +67,17 @@ export function ReportActions({ reportId }: ReportActionsProps) {
         className="no-print"
         sx={{
           display: 'flex',
-          gap: 1,
+          gap: 1.25,
           flexWrap: 'wrap',
+          justifyContent: { md: 'flex-end' },
           position: { xs: 'fixed', md: 'static' },
           left: 0,
           right: 0,
           bottom: 0,
           zIndex: (theme) => theme.zIndex.appBar,
           px: { xs: 2, md: 0 },
-          pt: { xs: 1, md: 0 },
-          pb: { xs: 'calc(8px + env(safe-area-inset-bottom))', md: 0 },
+          pt: { xs: 1.25, md: 0 },
+          pb: { xs: 'calc(10px + env(safe-area-inset-bottom))', md: 0 },
           borderTop: { xs: 1, md: 0 },
           borderColor: 'divider',
           bgcolor: { xs: 'background.paper', md: 'transparent' },
@@ -79,7 +93,15 @@ export function ReportActions({ reportId }: ReportActionsProps) {
           variant="contained"
           startIcon={<PictureAsPdfIcon />}
           onClick={() => navigate(`${printPath}?pdf=1`)}
-          sx={buttonSx}
+          sx={{ minHeight: 56, borderRadius: '12px', display: { md: 'none' } }}
+        >
+          Pobierz PDF
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<PictureAsPdfIcon />}
+          onClick={() => navigate(`${printPath}?pdf=1`)}
+          sx={[outlinedSx, desktopOnlySx]}
         >
           Pobierz PDF
         </Button>
@@ -87,26 +109,23 @@ export function ReportActions({ reportId }: ReportActionsProps) {
           variant="outlined"
           startIcon={<PrintIcon />}
           onClick={() => navigate(printPath)}
-          sx={buttonSx}
+          sx={outlinedSx}
         >
           Drukuj
         </Button>
-        <Button variant="outlined" startIcon={<LinkIcon />} onClick={copyLink} sx={secondarySx}>
-          Kopiuj link
-        </Button>
         <Button
           variant="outlined"
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/')}
-          sx={secondarySx}
+          startIcon={<LinkIcon />}
+          onClick={copyLink}
+          sx={[outlinedSx, desktopOnlySx]}
         >
-          Nowa analiza
+          Wyślij link
         </Button>
         <IconButton
           aria-label="Więcej akcji"
           aria-haspopup="menu"
           onClick={(e) => setMenuAnchor(e.currentTarget)}
-          sx={{ display: { xs: 'inline-flex', md: 'none' }, width: 44, height: 44, flexShrink: 0 }}
+          sx={{ display: { xs: 'inline-flex', md: 'none' }, width: 56, height: 56, flexShrink: 0 }}
         >
           <MoreVertIcon />
         </IconButton>
@@ -119,7 +138,7 @@ export function ReportActions({ reportId }: ReportActionsProps) {
             void copyLink();
           }}
         >
-          Kopiuj link
+          Wyślij link
         </MenuItem>
         <MenuItem
           sx={{ minHeight: 44 }}
@@ -128,7 +147,7 @@ export function ReportActions({ reportId }: ReportActionsProps) {
             navigate('/');
           }}
         >
-          Nowa analiza
+          Sprawdź inną działkę
         </MenuItem>
       </Menu>
       <Snackbar

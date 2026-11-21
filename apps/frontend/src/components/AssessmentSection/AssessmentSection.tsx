@@ -1,6 +1,5 @@
-// UI-C-006 AssessmentSection
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import { Box, Card, CardContent, Stack, Typography } from '@mui/material';
+// UI-C-006 AssessmentSection: "Liczby w skrócie" (metric cards) and the KBW chart
+import { Box, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 
 import type {
@@ -12,10 +11,20 @@ import type {
   SourceId,
   WaterBalanceWindow,
 } from '@/api/types';
+import { CardGrid } from '@/components/CardGrid/CardGrid';
 import { KbwChart } from '@/components/KbwChart/KbwChart';
-import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
+import { MetricCard } from '@/components/MetricCard/MetricCard';
+import { SectionCard } from '@/components/SectionCard/SectionCard';
 import { formatDate, formatNumber, formatSigned } from '@/utils/format';
 import { reasonText } from '@/utils/reasonCodes';
+import {
+  ALERT_TEXT,
+  indexAlert,
+  kbwAlert,
+  soilMoistureAlert,
+  soilWaterState,
+} from '@/utils/reportState';
+import type { AlertLevel } from '@/utils/reportState';
 
 function gapReason(gap: DataGap | undefined): string | undefined {
   return gap ? reasonText(gap.reasonCode, gap.impact) : undefined;
@@ -37,11 +46,25 @@ const INDEX_LABEL: Record<IndexAssessment, string> = {
   unknown: 'ocena niemożliwa',
 };
 
+const INDEX_ALERT_TEXT: Record<IndexAssessment, string> = {
+  below: 'Poniżej normy',
+  normal: 'W normie',
+  above: 'Powyżej normy',
+  unknown: 'Brak oceny',
+};
+
 const SM_ASSESSMENT_LABEL = {
   dry: 'sucho',
   normal: 'w normie',
   wet: 'mokro',
   unknown: 'brak oceny',
+} as const;
+
+const SM_ALERT_TEXT = {
+  dry: 'Sucho',
+  normal: 'W normie',
+  wet: 'Mokro',
+  unknown: 'Brak oceny',
 } as const;
 
 const AGREEMENT_LABEL = {
@@ -50,73 +73,19 @@ const AGREEMENT_LABEL = {
   neutral: 'neutralna',
 } as const;
 
-interface TileProps {
-  title: string;
-  children?: ReactNode;
-  missing?: { reason: string; calm?: boolean };
-}
-
-function MetricTile({ title, children, missing }: TileProps) {
-  return (
-    <Card
-      variant="outlined"
-      component="article"
-      sx={(theme) => ({
-        height: '100%',
-        ...(missing && {
-          borderStyle: 'dashed',
-          borderColor: theme.palette.drought.unknown,
-          bgcolor: 'background.default',
-          gridColumn: { lg: 'span 2' },
-        }),
-      })}
-    >
-      <CardContent>
-        <Typography variant="h3" component="h3" sx={{ fontSize: '1rem', mb: 1 }}>
-          {title}
-        </Typography>
-        {missing ? (
-          <Stack direction="row" spacing={1.5} alignItems="flex-start">
-            <RemoveCircleOutlineIcon sx={{ color: 'drought.unknown' }} aria-hidden />
-            <Stack spacing={0.5}>
-              <Typography sx={{ fontWeight: 600 }} color="text.secondary">
-                Brak danych
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {missing.reason}
-              </Typography>
-            </Stack>
-          </Stack>
-        ) : (
-          <Stack spacing={0.5}>{children}</Stack>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function Metric({ value, unit }: { value: string; unit?: string }) {
-  return (
-    <Typography variant="metric" component="p" sx={{ m: 0, minWidth: 0, overflowWrap: 'anywhere' }}>
-      {value}
-      {unit && (
-        <Typography component="span" color="text.secondary" sx={{ ml: 0.5, fontSize: '1rem' }}>
-          {unit}
-        </Typography>
-      )}
-    </Typography>
-  );
-}
-
 function Line({ children }: { children: ReactNode }) {
   return (
-    <Typography variant="caption" color="text.secondary" component="p" sx={{ m: 0 }}>
+    <Typography component="p" sx={{ m: 0, fontSize: '1.0625rem', lineHeight: 1.45 }}>
       {children}
     </Typography>
   );
 }
 
-function KbwTile({
+function alertOf(level: AlertLevel, label: string) {
+  return { level, label };
+}
+
+function KbwCard({
   title,
   window,
   gap,
@@ -127,27 +96,40 @@ function KbwTile({
 }) {
   if (!window) {
     return (
-      <MetricTile
+      <MetricCard
         title={title}
-        missing={{ reason: gapReason(gap) ?? 'Brak danych pogodowych dla tego okresu.' }}
+        missingReason={gapReason(gap) ?? 'Brak danych pogodowych dla tego okresu.'}
       />
     );
   }
+  const level = kbwAlert(window.percentile);
+  const isWorse = window.anomalyMm < 0;
   return (
-    <MetricTile title={title}>
-      <Metric value={formatNumber(window.kbwMm, 0)} unit="mm" />
-      <Line>Norma: {formatNumber(window.normKbwMm, 0)} mm</Line>
-      <Line>Odchylenie od normy: {formatSigned(window.anomalyMm, 0)} mm</Line>
+    <MetricCard
+      title={title}
+      value={`${formatSigned(window.kbwMm, 0)} mm`}
+      caption={window.kbwMm < 0 ? 'tyle wody brakuje' : 'nadwyżka wody'}
+      period={`${formatDate(window.from)} – ${formatDate(window.to)}`}
+      alert={alertOf(level, ALERT_TEXT[level])}
+    >
+      <Line>
+        Teraz <b>{formatSigned(window.kbwMm, 0)} mm</b>, zwykle{' '}
+        <b>{formatSigned(window.normKbwMm, 0)} mm</b>
+        {window.anomalyMm === 0
+          ? ' – tyle co zwykle.'
+          : ` – jest ${isWorse ? 'gorzej' : 'lepiej'} o ${formatNumber(Math.abs(window.anomalyMm), 0)} mm.`}
+      </Line>
       <Line>Percentyl: {formatNumber(window.percentile, 0)}</Line>
       <Line>Opad: {formatNumber(window.precipitationNormPct, 0)}% normy</Line>
       <Line>
-        Okres: {formatDate(window.from)} do {formatDate(window.to)}
+        Średnia temperatura maks.: {formatNumber(window.meanTmaxC, 1)} °C (norma{' '}
+        {formatNumber(window.normTmaxC, 1)} °C)
       </Line>
-    </MetricTile>
+    </MetricCard>
   );
 }
 
-function IndexTile({
+function IndexCard({
   title,
   satellite,
   kind,
@@ -161,15 +143,15 @@ function IndexTile({
   const value = satellite?.[kind] ?? null;
   if (!satellite || value === null) {
     return (
-      <MetricTile
+      <MetricCard
         title={title}
-        missing={{
+        missingReason={
           // Scene exists but this one index is missing: say so instead of "no clear scene".
           // Backend adds a sentinel2 data gap with the reason (e.g. plan B: NDVI only); prefer it.
-          reason: satellite
+          satellite
             ? `Wskaźnika ${kind.toUpperCase()} nie udało się policzyć dla zdjęcia z ${formatDate(satellite.sceneDate)}.${gap ? ` ${gapReason(gap)}` : ''}`
-            : (gapReason(gap) ?? 'Brak bezchmurnego zdjęcia satelitarnego z ostatnich tygodni.'),
-        }}
+            : (gapReason(gap) ?? 'Brak bezchmurnego zdjęcia satelitarnego z ostatnich tygodni.')
+        }
       />
     );
   }
@@ -177,23 +159,102 @@ function IndexTile({
   const min = kind === 'ndvi' ? satellite.expected.ndviMin : satellite.expected.ndmiMin;
   const max = kind === 'ndvi' ? satellite.expected.ndviMax : satellite.expected.ndmiMax;
   return (
-    <MetricTile title={title}>
-      <Metric value={formatNumber(value, 2)} />
-      <Line>{INDEX_LABEL[assessment]}</Line>
+    <MetricCard
+      title={title}
+      value={formatNumber(value, 2)}
+      caption={INDEX_LABEL[assessment]}
+      period={`Zdjęcie z ${formatDate(satellite.sceneDate)} (${satellite.ageDays} dni temu)`}
+      alert={alertOf(indexAlert(assessment), INDEX_ALERT_TEXT[assessment])}
+    >
       <Line>
         Oczekiwany zakres: {formatNumber(min, 2)} do {formatNumber(max, 2)}
-      </Line>
-      <Line>
-        Zdjęcie z {formatDate(satellite.sceneDate)} ({satellite.ageDays} dni temu)
       </Line>
       <Line>
         Ważne piksele: {formatNumber(satellite.validPixelFraction * 100, 0)}% (
         {formatNumber(satellite.validPixels, 0)})
       </Line>
+    </MetricCard>
+  );
+}
+
+function SoilWaterCard({ assessment, gap }: { assessment: Assessment; gap?: DataGap }) {
+  const { soilWater } = assessment;
+  if (!soilWater) {
+    return (
+      <MetricCard
+        title="Woda w glebie"
+        missingReason={gapReason(gap) ?? 'Brak danych o glebie, nie policzono deficytu.'}
+      />
+    );
+  }
+  const state = soilWaterState(soilWater.depletionMm, soilWater.tawMm, soilWater.rawMm);
+  const depletion = soilWater.depletionMm ?? 0;
+  const hasValue = soilWater.depletionMm !== null;
+  return (
+    <MetricCard
+      title="Woda w glebie"
+      value={
+        hasValue ? `${depletion > 0 ? '−' : ''}${formatNumber(Math.abs(depletion), 0)} mm` : 'brak'
+      }
+      caption="deficyt wody w glebie"
+      alert={alertOf(state.level === 'wet' ? 'ok' : state.level, state.label)}
+    >
       <Line>
-        Zawiera zmodyfikowane dane Copernicus Sentinel-2 ({satellite.sceneDate.slice(0, 4)})
+        Dostępna dla roślin: {formatNumber(soilWater.tawMm, 0)} mm, łatwo dostępna:{' '}
+        {formatNumber(soilWater.rawMm, 0)} mm
       </Line>
-    </MetricTile>
+      <Line>
+        {soilWater.isStressed === null
+          ? 'Stres wodny: nie udało się ocenić'
+          : soilWater.isStressed
+            ? 'Roślina w stresie wodnym'
+            : 'Roślina bez stresu wodnego'}
+      </Line>
+    </MetricCard>
+  );
+}
+
+function SoilMoistureCard({ assessment, gaps }: { assessment: Assessment; gaps: DataGap[] }) {
+  const sm = assessment.soilMoistureSatellite;
+  const gapFor = (sourceId: SourceId) => gaps.find((gap) => gap.sourceId === sourceId);
+  if (!sm) {
+    return (
+      <MetricCard
+        title="Wilgotność gleby"
+        missingReason={
+          gapReason(gapFor('era5land')) ??
+          gapReason(gapFor('nasa_power')) ??
+          'Ten pomiar jest dodatkowy, ocena opiera się na bilansie wodnym i glebie.'
+        }
+      />
+    );
+  }
+  const value =
+    sm.valuePct != null
+      ? `${formatNumber(sm.valuePct, 0)}%`
+      : sm.percentile != null
+        ? `percentyl ${formatNumber(sm.percentile, 0)}`
+        : SM_ASSESSMENT_LABEL[sm.assessment];
+  return (
+    <MetricCard
+      title={sm.label ?? 'Wilgotność gleby'}
+      value={value}
+      caption={`warstwa: ${sm.depthLabel}`}
+      period={`Pomiar z ${formatDate(sm.observedAt)}`}
+      alert={alertOf(soilMoistureAlert(sm.assessment), SM_ALERT_TEXT[sm.assessment])}
+    >
+      {sm.profilePct != null && <Line>Profil gleby: {formatNumber(sm.profilePct, 0)}%</Line>}
+      {sm.rootZonePct != null && <Line>Strefa korzeni: {formatNumber(sm.rootZonePct, 0)}%</Line>}
+      {sm.valuePct != null && sm.percentile != null && (
+        <Line>Percentyl 10 lat: {formatNumber(sm.percentile, 0)}</Line>
+      )}
+      <Line>
+        {sm.fallback
+          ? `Dane zapasowe NASA POWER, siatka ok. ${formatNumber(sm.resolutionKm, 0)} km`
+          : `ERA5-Land (Copernicus), siatka ok. ${formatNumber(sm.resolutionKm, 0)} km`}
+      </Line>
+      <Line>Wynik {AGREEMENT_LABEL[sm.agreement]}</Line>
+    </MetricCard>
   );
 }
 
@@ -205,190 +266,60 @@ export function AssessmentSection({
   charts,
 }: AssessmentSectionProps) {
   const gapFor = (sourceId: SourceId) => dataGaps.find((gap) => gap.sourceId === sourceId);
-  const { soilWater, soilMoistureSatellite: sm, cropStage } = assessment;
+  const { cropStage, satellite } = assessment;
 
   return (
-    <Card
-      component="section"
+    <SectionCard
       id="stan-wody"
-      aria-labelledby="stan-wody-title"
-      sx={{ scrollMarginTop: 16 }}
+      title="Liczby w skrócie"
+      subtitle={`Stan na ${formatDate(analysisDate)}`}
     >
-      <CardContent>
-        <Stack spacing={2}>
-          <Typography id="stan-wody-title" variant="h2" component="h2">
-            Stan wody na dzień {formatDate(analysisDate)}
-          </Typography>
-          <Stack direction="row" useFlexGap flexWrap="wrap" spacing={1}>
-            <StatusBadge
-              kind="drought"
-              value={assessment.droughtClass}
-              label={assessment.droughtClassLabel}
-            />
-            <StatusBadge kind="confidence" value={assessment.confidence} />
-          </Stack>
-          <Typography
-            sx={{ fontSize: { xs: '1.125rem', lg: '1.5rem' }, fontWeight: 500, maxWidth: '75ch' }}
-          >
-            {assessment.summary}
-          </Typography>
-          {assessment.isOutOfSeason && (
-            <Typography variant="caption" color="text.secondary">
-              Uprawa ({cropName}) jest poza sezonem wegetacyjnym, ocena jest orientacyjna.
-            </Typography>
-          )}
-          {assessment.confidenceReasons.length > 0 && (
-            <Box component="details">
-              <Typography component="summary" sx={{ cursor: 'pointer', minHeight: 44, py: 1 }}>
-                Dlaczego taka pewność oceny
-              </Typography>
-              <Box component="ul" sx={{ mt: 0, pl: 3, maxWidth: '75ch' }}>
-                {assessment.confidenceReasons.map((reason) => (
-                  <Typography key={reason} component="li" variant="caption">
-                    {reason}
-                  </Typography>
-                ))}
-              </Box>
-            </Box>
-          )}
-
-          <Box
-            className="metric-grid"
-            sx={{
-              display: 'grid',
-              gap: 2,
-              // lg (1280) has the 360 px map column beside it: 3 columns; 4 only on the projector (xl).
-              gridTemplateColumns: {
-                xs: 'minmax(0, 1fr)',
-                sm: 'repeat(2, minmax(0, 1fr))',
-                lg: 'repeat(3, minmax(0, 1fr))',
-                xl: 'repeat(4, minmax(0, 1fr))',
-              },
-            }}
-          >
-            <KbwTile title="Bilans wodny, 30 dni" window={assessment.kbw30} gap={gapFor('meteo')} />
-            <KbwTile title="Bilans wodny, 60 dni" window={assessment.kbw60} gap={gapFor('meteo')} />
-
-            {soilWater ? (
-              <MetricTile title="Woda w glebie">
-                <Metric
-                  value={
-                    soilWater.depletionMm === null ? 'brak' : formatNumber(soilWater.depletionMm, 0)
-                  }
-                  unit={soilWater.depletionMm === null ? undefined : 'mm'}
-                />
-                <Line>Deficyt wody w glebie</Line>
-                <Line>
-                  Dostępna dla roślin: {formatNumber(soilWater.tawMm, 0)} mm, łatwo dostępna:{' '}
-                  {formatNumber(soilWater.rawMm, 0)} mm
-                </Line>
-                <Line>
-                  {soilWater.isStressed === null
-                    ? 'Stres wodny: nie udało się ocenić'
-                    : soilWater.isStressed
-                      ? 'Roślina w stresie wodnym'
-                      : 'Roślina bez stresu wodnego'}
-                </Line>
-              </MetricTile>
-            ) : (
-              <MetricTile
-                title="Woda w glebie"
-                missing={{
-                  reason:
-                    gapReason(gapFor('soilgrids')) ??
-                    'Brak danych o glebie, nie policzono deficytu.',
-                }}
-              />
-            )}
-
-            <IndexTile
-              title="Kondycja roślin (NDVI)"
-              satellite={assessment.satellite}
-              kind="ndvi"
-              gap={gapFor('sentinel2')}
-            />
-            <IndexTile
-              title="Wilgotność roślin (NDMI)"
-              satellite={assessment.satellite}
-              kind="ndmi"
-              gap={gapFor('sentinel2')}
-            />
-
-            {sm ? (
-              <MetricTile title={sm.label ?? 'Wilgotność gleby'}>
-                {sm.valuePct != null ? (
-                  <Metric value={formatNumber(sm.valuePct, 0)} unit="%" />
-                ) : sm.percentile != null ? (
-                  <Metric value={`percentyl ${formatNumber(sm.percentile, 0)}`} />
-                ) : (
-                  <Metric value={SM_ASSESSMENT_LABEL[sm.assessment]} />
-                )}
-                <Line>Warstwa: {sm.depthLabel}</Line>
-                {sm.profilePct != null && (
-                  <Line>Profil gleby: {formatNumber(sm.profilePct, 0)}%</Line>
-                )}
-                {sm.rootZonePct != null && (
-                  <Line>Strefa korzeni: {formatNumber(sm.rootZonePct, 0)}%</Line>
-                )}
-                {sm.valuePct != null && sm.percentile != null && (
-                  <Line>Percentyl 10 lat: {formatNumber(sm.percentile, 0)}</Line>
-                )}
-                <Line>Pomiar z {formatDate(sm.observedAt)}</Line>
-                <Line>
-                  {sm.fallback
-                    ? `Dane zapasowe NASA POWER, siatka ok. ${formatNumber(sm.resolutionKm, 0)} km`
-                    : `ERA5-Land (Copernicus), siatka ok. ${formatNumber(sm.resolutionKm, 0)} km`}
-                </Line>
-                <Line>Wynik {AGREEMENT_LABEL[sm.agreement]}</Line>
-              </MetricTile>
-            ) : (
-              <MetricTile
-                title="Wilgotność gleby"
-                missing={{
-                  calm: true,
-                  reason:
-                    gapReason(gapFor('era5land')) ??
-                    gapReason(gapFor('nasa_power')) ??
-                    'Ten pomiar jest dodatkowy, ocena opiera się na bilansie wodnym i glebie.',
-                }}
-              />
-            )}
-
-            <MetricTile title="Faza uprawy">
-              <Typography variant="h3" component="p" sx={{ m: 0 }}>
-                {cropStage.name}
-              </Typography>
-              <Line>Współczynnik uprawy Kc: {formatNumber(cropStage.kc, 2)}</Line>
-              {cropStage.isCritical && <Line>Okres krytyczny dla wody</Line>}
-            </MetricTile>
-          </Box>
-
-          <KbwChart charts={charts} />
-
-          {assessment.evidence.length > 0 && (
-            <Box component="details">
-              <Typography component="summary" sx={{ cursor: 'pointer', minHeight: 44, py: 1 }}>
-                Na czym opieramy ocenę
-              </Typography>
-              <Box component="ul" sx={{ mt: 0, pl: 3 }}>
-                {assessment.evidence.map((item) => (
-                  <Typography
-                    key={`${item.label}-${item.dataDate}`}
-                    component="li"
-                    variant="caption"
-                  >
-                    {item.label}:{' '}
-                    {typeof item.value === 'number'
-                      ? formatNumber(item.value, 1)
-                      : (item.value ?? 'brak')}
-                    {item.unit ? ` ${item.unit}` : ''} (dane z {formatDate(item.dataDate)})
-                  </Typography>
-                ))}
-              </Box>
-            </Box>
-          )}
-        </Stack>
-      </CardContent>
-    </Card>
+      <CardGrid
+        footer={
+          <MetricCard
+            title="Faza uprawy"
+            value={cropStage.name}
+            caption={`${cropName} · współczynnik uprawy Kc: ${formatNumber(cropStage.kc, 2)}`}
+            alert={cropStage.isCritical ? alertOf('low', 'Okres krytyczny dla wody') : undefined}
+          />
+        }
+      >
+        <KbwCard title="Ostatnie 30 dni" window={assessment.kbw30} gap={gapFor('meteo')} />
+        <KbwCard title="Ostatnie 60 dni" window={assessment.kbw60} gap={gapFor('meteo')} />
+        <SoilWaterCard assessment={assessment} gap={gapFor('soilgrids')} />
+        <IndexCard
+          title="Kondycja roślin (NDVI)"
+          satellite={satellite}
+          kind="ndvi"
+          gap={gapFor('sentinel2')}
+        />
+        <IndexCard
+          title="Wilgotność roślin (NDMI)"
+          satellite={satellite}
+          kind="ndmi"
+          gap={gapFor('sentinel2')}
+        />
+        <SoilMoistureCard assessment={assessment} gaps={dataGaps} />
+      </CardGrid>
+      {satellite && (
+        <Typography variant="caption" color="text.secondary">
+          Zawiera zmodyfikowane dane Copernicus Sentinel-2 ({satellite.sceneDate.slice(0, 4)}).
+        </Typography>
+      )}
+      <Box
+        sx={{
+          border: 1,
+          borderColor: 'kropla.line',
+          borderRadius: '16px',
+          p: { xs: 2, md: 2.5 },
+          minWidth: 0,
+        }}
+      >
+        <Typography component="h4" sx={{ fontSize: '1.1875rem', fontWeight: 700, mb: 1.5 }}>
+          Bilans wody na wykresie
+        </Typography>
+        <KbwChart charts={charts} />
+      </Box>
+    </SectionCard>
   );
 }

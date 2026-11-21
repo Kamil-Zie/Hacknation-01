@@ -7,12 +7,8 @@ import { Link as RouterLink, useParams, useSearchParams } from 'react-router-dom
 
 import { useReportQuery } from '@/api/analyses';
 import { ApiError } from '@/api/client';
-import { AssessmentSection } from '@/components/AssessmentSection/AssessmentSection';
-import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
-import { RecommendationList } from '@/components/RecommendationList/RecommendationList';
+import { ReportBody } from '@/components/ReportBody/ReportBody';
 import { ReportHeader } from '@/components/ReportHeader/ReportHeader';
-import { SourcesLimitations } from '@/components/SourcesLimitations/SourcesLimitations';
-import { VulnerabilityCauses } from '@/components/VulnerabilityCauses/VulnerabilityCauses';
 import { formatDateTime } from '@/utils/format';
 
 const AUTO_PRINT_DELAY_MS = 1500;
@@ -81,44 +77,8 @@ export function ReportPrintPage() {
     content = (
       <Stack spacing={2.5}>
         {isError && <Alert severity="warning">Nie udało się odświeżyć raportu.</Alert>}
-        <Typography variant="overline" color="text.secondary">
-          Kropelka – raport wody
-        </Typography>
-        <ReportHeader report={data} />
-        <ParcelMap
-          parcel={data.parcel}
-          isInteractive={false}
-          markers={data.recommendations.flatMap((r) =>
-            r.location ? [{ lat: r.location.lat, lon: r.location.lon, label: r.title }] : [],
-          )}
-          height="90mm"
-        />
-        <AssessmentSection
-          assessment={data.assessment}
-          cropName={data.crop.name}
-          analysisDate={data.analysisDate}
-          dataGaps={data.dataGaps}
-          charts={data.charts ?? null}
-        />
-        <VulnerabilityCauses vulnerability={data.vulnerability} causes={data.causes} />
-        <RecommendationList
-          recommendations={data.recommendations}
-          dataGaps={data.dataGaps}
-          isPrint
-        />
-        <Stack spacing={1}>
-          <Typography variant="h2" component="h2">
-            Źródła i ograniczenia
-          </Typography>
-          <SourcesLimitations
-            sources={data.sources}
-            limitations={data.limitations}
-            dataGaps={data.dataGaps}
-            confidenceReasons={data.assessment.confidenceReasons}
-            methodologyVersion={data.methodologyVersion}
-            isPrint
-          />
-        </Stack>
+        <ReportHeader report={data} kicker="Kropelka – raport wody" />
+        <ReportBody report={data} />
         <Stack component="footer" spacing={0.5} className="print-footer">
           <Typography variant="body2">
             Raport opiera się na danych modelowych i satelitarnych z ograniczoną rozdzielczością.

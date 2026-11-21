@@ -16,10 +16,16 @@ export function App() {
         styles={(t) => ({
           // Static map on the print sheet: no zoom buttons (ParcelMap keeps them even when not interactive).
           '.print-sheet .leaflet-control-zoom': { display: 'none' },
-          // The A4 sheet is ~210 mm wide whatever the screen: metric tiles always in 2 columns there.
-          '.print-sheet .metric-grid': {
+          // The A4 sheet is ~210 mm wide whatever the screen: overview in one column, cards in 2 columns,
+          // no "Pokaż więcej" buttons (all <details> are open).
+          '.print-sheet .report-overview': { gridTemplateColumns: 'minmax(0, 1fr) !important' },
+          '.print-sheet .card-grid': {
             gridTemplateColumns: 'repeat(2, minmax(0, 1fr)) !important',
           },
+          '.print-sheet .card-grid-item': { gridColumn: 'auto !important' },
+          '.print-sheet .card-grid-full': { gridColumn: '1 / -1 !important' },
+          '.print-sheet .more-btn, .print-sheet .no-print': { display: 'none !important' },
+          '.print-sheet .report-overview > *': { order: '0 !important' },
           '.leaflet-control-zoom a': { width: 44, height: 44, lineHeight: '44px', fontSize: 22 },
           '@media print': {
             '.leaflet-control-zoom': { display: 'none !important' },

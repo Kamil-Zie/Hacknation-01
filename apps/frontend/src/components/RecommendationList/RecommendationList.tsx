@@ -1,26 +1,16 @@
-// UI-C-008 RecommendationList
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Card,
-  CardContent,
-  Chip,
-  Stack,
-  Typography,
-} from '@mui/material';
+// UI-C-008 RecommendationList: "Co zrobić później?" - recommendation cards grouped by category
+import { Box, Typography } from '@mui/material';
 
 import type { DataGap, Recommendation, RecommendationCategory, Severity } from '@/api/types';
+import { CardGrid } from '@/components/CardGrid/CardGrid';
+import { MetricCard } from '@/components/MetricCard/MetricCard';
+import { SectionCard } from '@/components/SectionCard/SectionCard';
 import { formatNumber } from '@/utils/format';
 import { formatEvidence } from '@/utils/sourceLabels';
 
 interface RecommendationListProps {
   recommendations: Recommendation[];
   dataGaps: DataGap[];
-  isPrint?: boolean;
 }
 
 const GROUPS: { category: RecommendationCategory; title: string }[] = [
@@ -31,18 +21,20 @@ const GROUPS: { category: RecommendationCategory; title: string }[] = [
 ];
 
 const PRIORITY_LABEL: Record<Severity, string> = {
-  high: 'Priorytet wysoki',
-  medium: 'Priorytet średni',
-  low: 'Priorytet niski',
+  high: 'Bardzo ważne',
+  medium: 'Średnio ważne',
+  low: 'Mało ważne',
 };
 
 function Field({ label, children }: { label: string; children: string }) {
   return (
     <Box>
-      <Typography variant="caption" sx={{ fontWeight: 700 }} component="p">
+      <Typography component="p" sx={{ m: 0, fontSize: '1rem', fontWeight: 700 }}>
         {label}
       </Typography>
-      <Typography sx={{ m: 0, maxWidth: '75ch' }}>{children}</Typography>
+      <Typography sx={{ m: 0, maxWidth: '75ch', fontSize: '1.125rem', lineHeight: 1.45 }}>
+        {children}
+      </Typography>
     </Box>
   );
 }
@@ -52,7 +44,7 @@ function IrrigationBlock({ item }: { item: NonNullable<Recommendation['irrigatio
     return <Typography sx={{ fontWeight: 600 }}>Nawadnianie teraz nie jest potrzebne</Typography>;
   }
   return (
-    <Stack spacing={0.5}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
       <Typography sx={{ fontWeight: 700 }}>Nawadnianie jest uzasadnione</Typography>
       {item.netDoseMm !== null && item.grossDoseMm !== null && (
         <Typography variant="metric" component="p" sx={{ m: 0 }}>
@@ -69,147 +61,80 @@ function IrrigationBlock({ item }: { item: NonNullable<Recommendation['irrigatio
       {item.nextCheckInDays !== null && (
         <Typography variant="caption">Sprawdź ponownie za {item.nextCheckInDays} dni</Typography>
       )}
-    </Stack>
+    </Box>
   );
 }
 
-function RecommendationCard({ item, isPrint }: { item: Recommendation; isPrint: boolean }) {
-  const isHigh = item.priority === 'high';
+function RecommendationCard({ item }: { item: Recommendation }) {
   return (
-    <Card
-      component="li"
-      sx={(theme) => ({
-        listStyle: 'none',
-        height: '100%',
-        ...(isHigh && {
-          bgcolor: theme.palette.secondary.main,
-          color: theme.palette.secondary.contrastText,
-        }),
-      })}
+    <MetricCard
+      title={item.title}
+      note={item.where ?? undefined}
+      alert={{ level: item.priority, label: PRIORITY_LABEL[item.priority] }}
+      isAlertAboveButton
     >
-      <CardContent>
-        <Stack spacing={1.5}>
-          <Typography variant="h4" component="h4" sx={{ fontSize: '1.125rem', fontWeight: 600 }}>
-            {item.title}
-          </Typography>
-          <Box>
-            <Chip
-              variant="outlined"
-              size="small"
-              icon={<PriorityHighIcon />}
-              label={PRIORITY_LABEL[item.priority]}
-              sx={{ fontWeight: 600, color: 'inherit', borderColor: 'inherit', minHeight: 32 }}
-            />
-          </Box>
-          {item.irrigation && <IrrigationBlock item={item.irrigation} />}
-          <Field label="Co zrobić">{item.action}</Field>
-          {item.where && <Field label="Gdzie">{item.where}</Field>}
-          {item.when && <Field label="Kiedy">{item.when}</Field>}
-          <Accordion
-            disableGutters
-            variant="outlined"
-            expanded={isPrint ? true : undefined}
-            defaultExpanded={false}
-            sx={{ bgcolor: 'background.paper', color: 'text.primary' }}
-          >
-            <AccordionSummary
-              expandIcon={isPrint ? null : <ExpandMoreIcon />}
-              sx={{ minHeight: 44 }}
-            >
-              <Typography sx={{ fontWeight: 600 }}>Dlaczego?</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Stack spacing={1}>
-                <Typography sx={{ maxWidth: '75ch' }}>{item.why}</Typography>
-                {item.evidence.length > 0 && (
-                  <Box component="ul" sx={{ m: 0, pl: 3 }}>
-                    {item.evidence.map((e) => (
-                      <Typography key={`${e.label}-${e.dataDate}`} component="li" variant="caption">
-                        {formatEvidence(e)}
-                      </Typography>
-                    ))}
-                  </Box>
-                )}
-              </Stack>
-            </AccordionDetails>
-          </Accordion>
-        </Stack>
-      </CardContent>
-    </Card>
+      {item.irrigation && <IrrigationBlock item={item.irrigation} />}
+      <Field label="Co zrobić">{item.action}</Field>
+      {item.when && <Field label="Kiedy">{item.when}</Field>}
+      <Field label="Dlaczego?">{item.why}</Field>
+      {item.evidence.length > 0 && (
+        <Box component="ul" sx={{ m: 0, pl: 3 }}>
+          {item.evidence.map((e) => (
+            <Typography key={`${e.label}-${e.dataDate}`} component="li" variant="caption">
+              {formatEvidence(e)}
+            </Typography>
+          ))}
+        </Box>
+      )}
+    </MetricCard>
   );
 }
 
-export function RecommendationList({
-  recommendations,
-  dataGaps,
-  isPrint = false,
-}: RecommendationListProps) {
+export function RecommendationList({ recommendations, dataGaps }: RecommendationListProps) {
   return (
-    <Card
-      component="section"
+    <SectionCard
       id="co-zrobic"
-      aria-labelledby="co-zrobic-title"
-      sx={{ scrollMarginTop: 16 }}
+      title="Co zrobić później?"
+      subtitle={
+        recommendations.length > 0 ? `Porady dla tej działki: ${recommendations.length}` : undefined
+      }
     >
-      <CardContent>
-        <Stack spacing={2}>
-          <Typography id="co-zrobic-title" variant="h2" component="h2">
-            Co zrobić
-          </Typography>
-          {recommendations.length === 0 ? (
-            <Stack spacing={1}>
-              <Typography color="text.secondary">
-                Za mało danych, by bezpiecznie doradzić.
-              </Typography>
-              {dataGaps.length > 0 && (
-                <Box component="ul" sx={{ m: 0, pl: 3 }}>
-                  {dataGaps.map((gap) => (
-                    <Typography key={`${gap.sourceId}-${gap.what}`} component="li">
-                      {gap.what} – {gap.impact}
-                    </Typography>
-                  ))}
-                </Box>
-              )}
-            </Stack>
-          ) : (
-            GROUPS.map(({ category, title }) => {
-              const items = recommendations
-                .filter((r) => r.category === category)
-                .sort((a, b) => a.order - b.order);
-              return (
-                <Stack key={category} spacing={1.5}>
-                  <Typography variant="h3" component="h3">
-                    {title}
-                  </Typography>
-                  {items.length === 0 ? (
-                    <Typography color="text.secondary">
-                      Brak rekomendacji: za mało danych.
-                    </Typography>
-                  ) : (
-                    <Box
-                      component="ul"
-                      sx={{
-                        m: 0,
-                        p: 0,
-                        display: 'grid',
-                        gap: 2,
-                        gridTemplateColumns: {
-                          xs: 'minmax(0, 1fr)',
-                          lg: 'repeat(2, minmax(0, 1fr))',
-                        },
-                      }}
-                    >
-                      {items.map((item) => (
-                        <RecommendationCard key={item.ruleId} item={item} isPrint={isPrint} />
-                      ))}
-                    </Box>
-                  )}
-                </Stack>
-              );
-            })
+      {recommendations.length === 0 ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography color="text.secondary">Za mało danych, by bezpiecznie doradzić.</Typography>
+          {dataGaps.length > 0 && (
+            <Box component="ul" sx={{ m: 0, pl: 3 }}>
+              {dataGaps.map((gap) => (
+                <Typography key={`${gap.sourceId}-${gap.what}`} component="li">
+                  {gap.what} – {gap.impact}
+                </Typography>
+              ))}
+            </Box>
           )}
-        </Stack>
-      </CardContent>
-    </Card>
+        </Box>
+      ) : (
+        GROUPS.map(({ category, title }) => {
+          const items = recommendations
+            .filter((r) => r.category === category)
+            .sort((a, b) => a.order - b.order);
+          return (
+            <Box key={category} sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Typography component="h4" sx={{ fontSize: '1.375rem', fontWeight: 800 }}>
+                {title}
+              </Typography>
+              {items.length === 0 ? (
+                <Typography color="text.secondary">Brak rekomendacji: za mało danych.</Typography>
+              ) : (
+                <CardGrid>
+                  {items.map((item) => (
+                    <RecommendationCard key={item.ruleId} item={item} />
+                  ))}
+                </CardGrid>
+              )}
+            </Box>
+          );
+        })
+      )}
+    </SectionCard>
   );
 }
