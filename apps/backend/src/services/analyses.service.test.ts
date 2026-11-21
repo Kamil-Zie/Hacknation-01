@@ -7,6 +7,7 @@ import { test } from 'vitest';
 
 import { createAnalysis, defaultAnalysesDeps } from '@/services/analyses.service';
 import type { AnalysesDeps, ReportDto } from '@/services/analyses.service';
+import type { SatelliteObservation } from '@/services/engine/satellite';
 import type { SoilLayer } from '@/services/engine/soil';
 import type { CachedEntry, SourceCacheStore } from '@/services/sources/cache.service';
 import type { ElevationData } from '@/services/sources/elevation.source';
@@ -111,6 +112,20 @@ function stubFetch(archiveStatus: number, nasaOk: boolean): typeof fetch {
   }) as unknown as typeof fetch;
 }
 
+const SATELLITE: SatelliteObservation = {
+  sceneId: 'S2B_34UDD_20250714_0_L2A',
+  sceneDate: '2025-07-14',
+  ageDays: 1,
+  validPixelFraction: 0.97,
+  validPixels: 120,
+  ndvi: 0.62,
+  ndmi: 0.08,
+  thumbnailUrl: null,
+  ndviAssessment: 'normal',
+  ndmiAssessment: 'normal',
+  expected: { ndviMin: 0.5, ndviMax: 0.8, ndmiMin: 0.15, ndmiMax: 0.4 },
+};
+
 function okSource(sourceId: SourceId, data: unknown = null) {
   return async (): Promise<SourceResult<unknown>> => ({
     sourceId,
@@ -145,7 +160,7 @@ function makeDeps(
     fetchParcel: async () => parcelResult(options.parcel ?? 'ok'),
     fetchMeteo: (lat, lon, date, signal) => fetchMeteo(lat, lon, date, signal, { cache, fetchFn }),
     fetchers: {
-      sentinel2: okSource('sentinel2'),
+      sentinel2: okSource('sentinel2', SATELLITE),
       soilgrids: okSource('soilgrids', SOIL_LAYERS),
       elevation: okSource('elevation', ELEVATION),
       overpass: okSource('overpass', HYDRO),
@@ -295,12 +310,47 @@ test('SoilGrids error: no soilWater, no soil in vulnerability, data gap soilgrid
   assert.ok(gapIds(report).includes('soilgrids'));
 });
 
-test('default deps register SoilGrids, elevation and overpass fetchers only', () => {
+test('default deps register Sentinel-2, SoilGrids, elevation and overpass fetchers only', () => {
   assert.deepEqual(Object.keys(defaultAnalysesDeps.fetchers).sort(), [
     'elevation',
     'overpass',
+    'sentinel2',
     'soilgrids',
   ]);
+});
+
+test('Sentinel-2 ok: assessment.satellite filled, NDMI below feeds causes, report complete', async () => {
+  const report = await createAnalysis(BODY, makeDeps().deps);
+  assert.equal(report.status, 'complete');
+  assert.deepEqual(report.assessment.satellite, SATELLITE);
+  assert.ok(!gapIds(report).includes('sentinel2'));
+
+  const { deps } = makeDeps();
+  const dry = { ...SATELLITE, ndmiAssessment: 'below' as const };
+  deps.fetchers = { ...deps.fetchers, sentinel2: okSource('sentinel2', dry) };
+  const withDryVegetation = await createAnalysis(BODY, deps);
+  assert.ok(withDryVegetation.causes.some((cause) => cause.code === 'low_vegetation_moisture'));
+});
+
+test('Sentinel-2 missing (cirrus): satellite null, data gap with the source message, partial', async () => {
+  const { deps } = makeDeps();
+  deps.fetchers = {
+    ...deps.fetchers,
+    sentinel2: async () => ({
+      sourceId: 'sentinel2',
+      status: 'missing',
+      data: null,
+      message: 'Brak sceny z co najmniej 60% ważnych pikseli (cirrus)',
+      fetchedAt: null,
+      dataPeriod: null,
+      durationMs: 9,
+    }),
+  };
+  const report = await createAnalysis(BODY, deps);
+  assert.equal(report.status, 'partial');
+  assert.equal(report.assessment.satellite, null);
+  const gap = report.dataGaps.find((item) => item.sourceId === 'sentinel2');
+  assert.ok(gap?.what.includes('cirrus'));
 });
 
 test('hydrology feeds R-LAND-01 for a ditch within 300 m when vulnerability is at least medium', async () => {

@@ -16,6 +16,7 @@ import type { Cause } from '@/services/engine/causes';
 import { getCrop } from '@/services/engine/crops';
 import type { SoilLayer } from '@/services/engine/soil';
 import { fmt } from '@/services/engine/format';
+import type { SatelliteObservation } from '@/services/engine/satellite';
 import type { Recommendation } from '@/services/engine/recommendations';
 import type { VulnerabilityResult } from '@/services/engine/vulnerability';
 import { fetchElevation } from '@/services/sources/elevation.source';
@@ -24,6 +25,8 @@ import { fetchHydrology } from '@/services/sources/overpass.source';
 import type { HydroData } from '@/services/sources/overpass.source';
 import { fetchMeteo } from '@/services/sources/meteo.source';
 import type { MeteoOutcome } from '@/services/sources/meteo.source';
+import type { Sentinel2Parcel } from '@/services/sources/sentinel2.source';
+import { fetchSatellite } from '@/services/sources/sentinel2Indices';
 import { fetchSoilGrids } from '@/services/sources/soilgrids.source';
 import type { SourceResult } from '@/services/sources/types';
 import { fetchParcelById } from '@/services/sources/uldk.source';
@@ -94,6 +97,9 @@ export const defaultAnalysesDeps: AnalysesDeps = {
   fetchParcel: (parcelId, signal) => fetchParcelById(parcelId, signal),
   fetchMeteo: (lat, lon, analysisDate, signal) => fetchMeteo(lat, lon, analysisDate, signal),
   fetchers: {
+    sentinel2: ({ parcel, analysisDate, cropCode, signal }) =>
+      // ULDK returns parcel polygons; the type is the wider GeoJSON Geometry.
+      fetchSatellite(parcel as Sentinel2Parcel, analysisDate, cropCode, signal),
     soilgrids: ({ parcel, signal }) =>
       fetchSoilGrids(parcel.centroid.lat, parcel.centroid.lon, signal),
     elevation: ({ parcel, signal }) => fetchElevation(parcel, signal),
@@ -141,6 +147,11 @@ function hydroFrom(result: SourceResult<unknown>): HydroData | null {
   return isUsable(result) && data && typeof data.hasReservoirWithin1km === 'boolean' ? data : null;
 }
 
+function satelliteFrom(result: SourceResult<unknown>): SatelliteObservation | null {
+  const data = result.data as SatelliteObservation | null;
+  return isUsable(result) && data && typeof data.ndmiAssessment === 'string' ? data : null;
+}
+
 export async function createAnalysis(
   body: CreateAnalysisBody,
   deps: AnalysesDeps = defaultAnalysesDeps,
@@ -159,7 +170,12 @@ export async function createAnalysis(
 
   // 2. Sources in parallel under the 25 s budget.
   const { lat, lon } = parcel.centroid;
-  const context = { parcel, analysisDate: body.analysisDate, signal: budget };
+  const context = {
+    parcel,
+    analysisDate: body.analysisDate,
+    cropCode: crop.code,
+    signal: budget,
+  };
   const run = await runSources(
     context,
     (signal) => deps.fetchMeteo(lat, lon, body.analysisDate, signal),
@@ -168,6 +184,7 @@ export async function createAnalysis(
 
   // 3-5. Engine.
   const hydro = hydroFrom(run.extras.overpass);
+  const satellite = satelliteFrom(run.extras.sentinel2);
   const engine = computeEngine({
     crop,
     analysisDate: body.analysisDate,
@@ -176,8 +193,9 @@ export async function createAnalysis(
     soilLayers: soilLayersFrom(run.extras.soilgrids),
     terrain: terrainFrom(run.extras.elevation),
     hydro,
+    satellite,
     available: {
-      sentinel2: run.extras.sentinel2.status === 'ok' || run.extras.sentinel2.status === 'cached',
+      sentinel2: satellite !== null,
       hydrology: hydro !== null,
     },
   });
@@ -194,7 +212,7 @@ export async function createAnalysis(
       : []),
     ...run.meteo.limitations,
     ...LIMITATIONS_AFTER_SPLIT,
-    'Tło wieloletnie liczy parowanie metodą Hargreavesa z danych NASA POWER, która zwykle daje wyższe wartości niż metoda Penmana-Monteitha, więc podatność może być nieco zawyżona.',
+    'Tło wieloletnie liczy parowanie metodą Penmana-Monteitha (FAO-56) z danych NASA POWER o siatce ok. 50 km, więc percentyl i podatność opisują okolicę działki, a nie samą działkę.',
   ];
 
   const computedAt = deps.now();

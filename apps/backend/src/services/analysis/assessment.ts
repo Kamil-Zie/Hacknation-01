@@ -23,6 +23,7 @@ import { computeVulnerability } from '@/services/engine/vulnerability';
 import type { VulnerabilityResult } from '@/services/engine/vulnerability';
 import { computeSoilWaterBalance } from '@/services/engine/water-demand';
 import type { SoilWaterBalance } from '@/services/engine/water-demand';
+import type { SatelliteObservation } from '@/services/engine/satellite';
 import { computeEra5LandSoilMoisture } from '@/services/sources/era5land';
 import type { Era5LandSoilMoisture } from '@/services/sources/era5land';
 import type { ElevationData } from '@/services/sources/elevation.source';
@@ -57,7 +58,7 @@ export type AssessmentDto = {
   kbw60: WaterBalanceWindow | null;
   soilWater: SoilWaterBalance | null;
   cropStage: { code: string; name: string; kc: number; isCritical: boolean };
-  satellite: null;
+  satellite: SatelliteObservation | null;
   soilMoistureSatellite: SoilMoistureDto | null;
   evidence: Evidence[];
 };
@@ -72,6 +73,7 @@ export type EngineInput = {
   available: Pick<Record<IndicatorKey, boolean>, 'sentinel2' | 'hydrology'>;
   terrain: ElevationData | null;
   hydro: HydroData | null;
+  satellite: SatelliteObservation | null;
 };
 
 export type EngineFlags = {
@@ -148,8 +150,8 @@ export function computeEngine(input: EngineInput): EngineOutput {
       soilMoisture: soilMoisture !== null,
       parcel: true,
     },
-    sceneAgeDays: null,
-    ndmiAssessment: null,
+    sceneAgeDays: input.satellite?.ageDays ?? null,
+    ndmiAssessment: input.satellite?.ndmiAssessment ?? null,
     soilMoistureAgreement: soilMoisture ? agreement : null,
     droughtClass: classified.droughtClass,
     areaHa: parcel.areaHa,
@@ -184,7 +186,7 @@ export function computeEngine(input: EngineInput): EngineOutput {
     soil: capacity?.soil ?? null,
     tawMm: capacity?.tawMm ?? null,
     terrain,
-    satellite: null,
+    satellite: input.satellite,
   });
   const recommendations = computeRecommendations({
     analysisDate,
@@ -222,7 +224,7 @@ export function computeEngine(input: EngineInput): EngineOutput {
       kbw60,
       soilWater,
       cropStage,
-      satellite: null,
+      satellite: input.satellite,
       soilMoistureSatellite: soilMoisture,
       evidence,
     },

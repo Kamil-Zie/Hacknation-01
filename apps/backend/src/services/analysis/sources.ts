@@ -4,7 +4,12 @@ import type { MeteoOutcome } from '@/services/sources/meteo.source';
 import type { ParcelData } from '@/services/sources/uldk.source';
 import type { SourceId, SourceResult, SourceRole } from '@/services/sources/types';
 
-export type SourceContext = { parcel: ParcelData; analysisDate: string; signal: AbortSignal };
+export type SourceContext = {
+  parcel: ParcelData;
+  analysisDate: string;
+  cropCode: string;
+  signal: AbortSignal;
+};
 
 // Add a source by registering one function here (see AnalysesDeps.fetchers); until then it is "in preparation".
 export type SourceFetcher = (context: SourceContext) => Promise<SourceResult<unknown>>;
