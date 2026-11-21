@@ -1,9 +1,9 @@
-// T-018 API-005 GET /analyses/:id route
+// T-017 T-018 API-004 API-005 POST /analyses and GET /analyses/:id routes
 import { Router } from 'express';
 
-import { getAnalysisById } from '@/controllers/analyses.controller';
+import { createAnalysis, getAnalysisById } from '@/controllers/analyses.controller';
 
 export const analysesRouter = Router();
 
-// POST /analyses (API-004) will be added here by T-017.
+analysesRouter.post('/analyses', createAnalysis);
 analysesRouter.get('/analyses/:id', getAnalysisById);

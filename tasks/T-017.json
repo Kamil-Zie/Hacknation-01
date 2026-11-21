@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-005", "T-010", "T-013", "T-016", "T-DB-002"],
   "contract_refs": ["API-004", "DM-001", "DM-005", "DM-011", "DM-012", "DM-010"],
@@ -24,7 +24,11 @@
   },
   "notes": [
     "coord-1 13:05 (ADR-009): orkiestrator woła silnik dwa razy: seria NASA POWER 10 lat → percentyl, anomalia, klasa KBW, podatność; seria Open-Meteo D−90…D → wartości bieżące (KBW mm, ETc, bilans wiadra, wilgotność ERA5-Land). Nie porównywać wartości ERA5 z rozkładem NASA. Gdy NASA brak: percentyl/podatność null + dataGap.",
-    "Agent: be-api, be-integration. Szacunek: 2h. Faza: 4 raport+rekomendacje. Handoff do frontendu (fe-integration) po zakończeniu."
+    "Agent: be-api, be-integration. Szacunek: 2h. Faza: 4 raport+rekomendacje. Handoff do frontendu (fe-integration) po zakończeniu.",
+    "WYNIK: POST /api/v1/analyses działa. Test na żywo 061409_2.0009.612 / winter_wheat / 2026-06-10: 201 w 3,9 s, zapis w reports, status partial, klasa moderate (percentyl 13), pewność low 0,45, podatność high (9/10), 2 przyczyny, 4 rekomendacje. Open-Meteo dało 429, zapas NASA POWER zadziałał (nasa_power role fallback).",
+    "Pliki: validation/analyses.schema.ts, controllers/analyses.controller.ts, routes/analyses.routes.ts, services/analyses.service.ts, services/analysis/{assessment,sources}.ts, engine/kbw.ts (computeCurrentWindow). Testy backendu 124/124 (w tym integracyjny z mockami źródeł: complete, partial przy błędzie, brak NASA, brak geometrii, timeout, eumetsat, brak bazy).",
+    "Kolejne źródło dopinasz jedną funkcją w deps.fetchers[sourceId] (soilgrids zwraca SoilLayer[]). Do czasu T-013/T-027/T-029/T-030 status zawsze partial, satellite/terrain/hydro null, wilgotność ERA5 bez % (brak θfc/θwp bez gleby).",
+    "Brak bazy (readyState != 1): raport zwracany bez zapisu z nowym ObjectId (decyzja koordynatora). Kara z fetchMeteo nie dublowana (usedMeteoFallback w computeConfidence)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

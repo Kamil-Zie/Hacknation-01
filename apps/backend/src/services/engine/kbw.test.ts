@@ -1,7 +1,7 @@
 // T-009 DM-013 KBW engine tests: hand-computed fixtures
 import { describe, expect, it } from 'vitest';
 
-import { addDays, computeKbwWindows, type DailyWeather } from './kbw.js';
+import { addDays, computeCurrentWindow, computeKbwWindows, type DailyWeather } from './kbw.js';
 
 const kc1 = () => 1;
 
@@ -20,6 +20,27 @@ function buildSeries(
 
 // Prior years P = 2 mm/day, year of D P = 1 mm/day; ET0 = 3, Kc = 1.
 const dryYear = (year: string) => (date: string) => (date.startsWith(year) ? 1 : 2);
+
+describe('computeCurrentWindow', () => {
+  it('sums the current window without norm or percentile', () => {
+    const series = buildSeries('2024-04-01', '2024-07-15');
+    expect(computeCurrentWindow(series, '2024-07-15', 30, kc1)).toEqual({
+      days: 30,
+      from: '2024-06-16',
+      to: '2024-07-15',
+      precipitationMm: 60,
+      et0Mm: 90,
+      etcMm: 90,
+      kbwMm: -30,
+      meanTmaxC: 20,
+    });
+  });
+
+  it('returns null when more than 10% of the days are missing', () => {
+    const series = buildSeries('2024-04-01', '2024-07-15', (d) => (d > '2024-07-05' ? null : 2));
+    expect(computeCurrentWindow(series, '2024-07-15', 30, kc1)).toBeNull();
+  });
+});
 
 describe('computeKbwWindows', () => {
   it('computes KBW, norm, anomaly and percentile for a hand-computed fixture', () => {

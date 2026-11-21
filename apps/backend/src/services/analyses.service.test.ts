@@ -1,0 +1,245 @@
+// T-017 API-004 analyses.service tests: mocked sources and storage (no network, no Atlas)
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+import { test } from 'vitest';
+
+import { createAnalysis, defaultAnalysesDeps } from '@/services/analyses.service';
+import type { AnalysesDeps, ReportDto } from '@/services/analyses.service';
+import type { SoilLayer } from '@/services/engine/soil';
+import type { CachedEntry, SourceCacheStore } from '@/services/sources/cache.service';
+import { fetchMeteo, parseOpenMeteoResponse } from '@/services/sources/meteo.source';
+import type { parsePowerResponse } from '@/services/sources/nasaPower.source';
+import type { SourceId, SourceResult } from '@/services/sources/types';
+import { parseUldkResponse } from '@/services/sources/uldk.source';
+import type { ParcelData } from '@/services/sources/uldk.source';
+import { AppError } from '@/utils/AppError';
+
+const FIXTURES = resolve(process.cwd(), 'src/services/sources/__fixtures__');
+const OPEN_METEO = JSON.parse(
+  readFileSync(resolve(FIXTURES, 'open-meteo-synthetic-51.44-21.93.json'), 'utf8'),
+) as Parameters<typeof parseOpenMeteoResponse>[0];
+const NASA = JSON.parse(
+  readFileSync(resolve(FIXTURES, 'nasa-power-51.44-21.93.json'), 'utf8'),
+) as Parameters<typeof parsePowerResponse>[0];
+const PARCEL = parseUldkResponse(
+  readFileSync(resolve(FIXTURES, 'uldk-061409_2.0009.612.txt'), 'utf8'),
+) as ParcelData;
+
+const BODY = {
+  parcelId: '061409_2.0009.612',
+  cropCode: 'winter_wheat',
+  analysisDate: '2026-06-10',
+} as const;
+const SAVED_ID = '6740a1f3c2e4b5a1d8f90a11';
+const SOIL_LAYERS: SoilLayer[] = [
+  { topCm: 0, bottomCm: 30, sandPct: 60, clayPct: 13, socPct: 1.1 },
+  { topCm: 30, bottomCm: 100, sandPct: 60, clayPct: 13, socPct: 0.8 },
+];
+const EXAMPLE_KEYS = [
+  'analysisDate',
+  'assessment',
+  'causes',
+  'charts',
+  'computedAt',
+  'createdAt',
+  'crop',
+  'dataGaps',
+  'durationMs',
+  'id',
+  'limitations',
+  'methodologyVersion',
+  'parcel',
+  'recommendations',
+  'sources',
+  'status',
+  'vulnerability',
+];
+
+function memoryCache(): SourceCacheStore {
+  const store = new Map<string, CachedEntry>();
+  return {
+    get: async (key) => store.get(key) ?? null,
+    set: async (key, _sourceId, payload, _ttlMs, dataPeriod) => {
+      store.set(key, { payload, dataPeriod, fetchedAt: new Date() });
+    },
+  };
+}
+
+// Stub of Open-Meteo archive and NASA POWER HTTP APIs, backed by the fixtures.
+function stubFetch(archiveStatus: number, nasaOk: boolean): typeof fetch {
+  return (async (url: string) => {
+    if (url.includes('power.larc.nasa.gov')) {
+      return nasaOk
+        ? { ok: true, status: 200, json: async () => NASA }
+        : { ok: false, status: 503 };
+    }
+    if (archiveStatus !== 200) return { ok: false, status: archiveStatus };
+    return { ok: true, status: 200, json: async () => OPEN_METEO };
+  }) as unknown as typeof fetch;
+}
+
+function okSource(sourceId: SourceId, data: unknown = null) {
+  return async (): Promise<SourceResult<unknown>> => ({
+    sourceId,
+    status: 'ok',
+    data,
+    message: null,
+    fetchedAt: new Date(),
+    dataPeriod: null,
+    durationMs: 5,
+  });
+}
+
+function parcelResult(status: 'ok' | 'missing' | 'error'): SourceResult<ParcelData> {
+  return {
+    sourceId: 'uldk',
+    status,
+    data: status === 'ok' ? PARCEL : null,
+    message: null,
+    fetchedAt: new Date(),
+    dataPeriod: null,
+    durationMs: 3,
+  };
+}
+
+function makeDeps(
+  options: { archiveStatus?: number; nasaOk?: boolean; parcel?: 'ok' | 'missing' | 'error' } = {},
+) {
+  const saved: unknown[] = [];
+  const fetchFn = stubFetch(options.archiveStatus ?? 200, options.nasaOk ?? true);
+  const cache = memoryCache();
+  const deps: AnalysesDeps = {
+    fetchParcel: async () => parcelResult(options.parcel ?? 'ok'),
+    fetchMeteo: (lat, lon, date, signal) => fetchMeteo(lat, lon, date, signal, { cache, fetchFn }),
+    fetchers: {
+      sentinel2: okSource('sentinel2'),
+      soilgrids: okSource('soilgrids', SOIL_LAYERS),
+      elevation: okSource('elevation'),
+      overpass: okSource('overpass'),
+    },
+    saveReport: async (report) => {
+      saved.push(report);
+      return SAVED_ID;
+    },
+    now: () => new Date(),
+    budgetMs: 25000,
+  };
+  return { deps, saved };
+}
+
+async function expectAppError(promise: Promise<unknown>, code: string, status: number) {
+  await assert.rejects(promise, (error: unknown) => {
+    assert.ok(error instanceof AppError);
+    assert.equal(error.code, code);
+    assert.equal(error.status, status);
+    return true;
+  });
+}
+
+function gapIds(report: ReportDto): string[] {
+  return report.dataGaps.map((gap) => gap.sourceId);
+}
+
+test('all sources ok: complete report with the shape of the API-004 example', async () => {
+  const { deps, saved } = makeDeps();
+  const report = await createAnalysis(BODY, deps);
+
+  assert.deepEqual(Object.keys(report).sort(), EXAMPLE_KEYS);
+  assert.equal(report.id, SAVED_ID);
+  assert.equal(report.status, 'complete');
+  assert.equal(report.crop.code, 'winter_wheat');
+  assert.equal(report.parcel.id, BODY.parcelId);
+  assert.equal(report.methodologyVersion, 'kropla-1.0');
+  assert.equal(report.charts, null);
+  assert.equal(report.sources.length, 9);
+  assert.ok(!Number.isNaN(Date.parse(report.computedAt)));
+
+  const { assessment } = report;
+  assert.ok(['none', 'moderate', 'severe'].includes(assessment.droughtClass));
+  assert.ok(['high', 'medium', 'low'].includes(assessment.confidence));
+  assert.ok(assessment.kbw60 && typeof assessment.kbw60.percentile === 'number');
+  assert.ok(assessment.kbw30 && typeof assessment.kbw30.normKbwMm === 'number');
+  assert.ok(assessment.soilWater && assessment.soilWater.tawMm > 0);
+  assert.equal(assessment.soilMoistureSatellite?.fallback, false);
+  assert.ok(assessment.summary.includes('percentyl'));
+  assert.ok(report.vulnerability.yearsAnalyzed >= 8); // fixture starts in 2016-03
+  assert.ok(report.recommendations.length > 0);
+  assert.ok(report.limitations.some((text) => text.includes('NASA POWER')));
+  assert.equal(saved.length, 1);
+});
+
+test('eumetsat is always missing but does not make the report partial', async () => {
+  const { deps } = makeDeps();
+  const report = await createAnalysis(BODY, deps);
+  const eumetsat = report.sources.find((source) => source.sourceId === 'eumetsat');
+  assert.equal(eumetsat?.status, 'missing');
+  assert.equal(report.status, 'complete');
+  assert.deepEqual(gapIds(report), ['eumetsat']);
+});
+
+test('required source failing (Open-Meteo 503) gives partial, a data gap and lower confidence', async () => {
+  const complete = await createAnalysis(BODY, makeDeps().deps);
+  const { deps, saved } = makeDeps({ archiveStatus: 503 });
+  const report = await createAnalysis(BODY, deps);
+
+  assert.equal(report.status, 'partial');
+  assert.ok(gapIds(report).includes('meteo'));
+  assert.equal(report.sources.find((s) => s.sourceId === 'meteo')?.status, 'error');
+  assert.equal(report.sources.find((s) => s.sourceId === 'nasa_power')?.role, 'fallback');
+  assert.equal(report.assessment.soilMoistureSatellite?.fallback, true);
+  assert.ok(report.assessment.confidenceScore < complete.assessment.confidenceScore);
+  assert.ok(report.assessment.kbw60);
+  assert.equal(saved.length, 1);
+});
+
+test('NASA POWER failing: no percentile, class unknown, data gap, report still returned', async () => {
+  const { deps } = makeDeps({ nasaOk: false });
+  const report = await createAnalysis(BODY, deps);
+
+  assert.equal(report.status, 'partial');
+  assert.equal(report.assessment.kbw60, null);
+  assert.equal(report.vulnerability.vulnerabilityClass, 'unknown');
+  assert.ok(gapIds(report).includes('nasa_power'));
+  // Current values go to evidence (the synthetic Open-Meteo fixture has 32 days, enough for 30).
+  assert.ok(report.assessment.evidence.some((item) => item.label === 'KBW 30 dni'));
+});
+
+test('sources still in preparation count as missing (partial) with a clear message', async () => {
+  const { deps } = makeDeps();
+  deps.fetchers = {};
+  const report = await createAnalysis(BODY, deps);
+  const soilgrids = report.sources.find((source) => source.sourceId === 'soilgrids');
+  assert.equal(report.status, 'partial');
+  assert.equal(soilgrids?.status, 'missing');
+  assert.equal(soilgrids?.message, 'Źródło w przygotowaniu');
+  assert.ok(gapIds(report).includes('soilgrids'));
+});
+
+test('no parcel geometry gives 502 UPSTREAM_UNAVAILABLE, unknown parcel gives 404', async () => {
+  await expectAppError(
+    createAnalysis(BODY, makeDeps({ parcel: 'error' }).deps),
+    'UPSTREAM_UNAVAILABLE',
+    502,
+  );
+  await expectAppError(
+    createAnalysis(BODY, makeDeps({ parcel: 'missing' }).deps),
+    'PARCEL_NOT_FOUND',
+    404,
+  );
+});
+
+test('a source that hangs past the budget ends as timeout instead of blocking the analysis', async () => {
+  const { deps } = makeDeps();
+  deps.budgetMs = 200;
+  deps.fetchers = { ...deps.fetchers, overpass: () => new Promise(() => {}) };
+  const report = await createAnalysis(BODY, deps);
+  assert.equal(report.sources.find((s) => s.sourceId === 'overpass')?.status, 'timeout');
+  assert.equal(report.status, 'partial');
+});
+
+test('without a database connection the report is returned unsaved with a new ObjectId', async () => {
+  const id = await defaultAnalysesDeps.saveReport({} as Parameters<AnalysesDeps['saveReport']>[0]);
+  assert.match(id, /^[0-9a-f]{24}$/);
+});

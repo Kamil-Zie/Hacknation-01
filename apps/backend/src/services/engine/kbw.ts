@@ -169,6 +169,44 @@ function computeWindow(
   };
 }
 
+export type CurrentWindow = {
+  days: number;
+  from: string;
+  to: string;
+  precipitationMm: number;
+  et0Mm: number;
+  etcMm: number;
+  kbwMm: number;
+  meanTmaxC: number | null;
+};
+
+// ADR-009: current-window values only (no 10-year norm), from the current series (Open-Meteo D-90..D).
+// Returns null when more than MAX_MISSING_FRACTION of the days are missing.
+export function computeCurrentWindow(
+  series: DailyWeather[],
+  analysisDate: string,
+  days: number,
+  kcForDate: (date: string) => number,
+): CurrentWindow | null {
+  const byDate = new Map<string, DailyWeather>();
+  for (const day of series) {
+    if (day.date <= analysisDate) byDate.set(day.date, day);
+  }
+  const outcome = sumWindow(byDate, analysisDate, days, kcForDate);
+  if (!outcome.ok) return null;
+  const { sums } = outcome;
+  return {
+    days,
+    from: addDays(analysisDate, -(days - 1)),
+    to: analysisDate,
+    precipitationMm: round1(sums.precipitationMm),
+    et0Mm: round1(sums.et0Mm),
+    etcMm: round1(sums.etcMm),
+    kbwMm: round1(sums.kbwMm),
+    meanTmaxC: sums.meanTmaxC === null ? null : round1(sums.meanTmaxC),
+  };
+}
+
 export function computeKbwWindows(
   series: DailyWeather[],
   analysisDate: string,
