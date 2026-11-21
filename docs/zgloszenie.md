@@ -47,3 +47,16 @@ Korzyści dla rolnika:
 - działa na telefonie w polu, bez instalacji, logowania i opłat;
 - raport do zapisania w PDF, wydruku albo udostępnienia linkiem, np. doradcy;
 - opcjonalne konto gospodarstwa: wspólna historia raportów dla rodziny albo wspólników.
+
+## Co było przed wydarzeniem i co robimy w trakcie (do wklejenia)
+
+**Przed wydarzeniem (16–20.11.2026)** przygotowaliśmy tylko warsztat pracy zespołu, bez kodu aplikacji i bez znajomości zadania KOWR: szablon repozytorium z zasadami pracy, kontraktami API i UI do wypełnienia, systemem zadań i wiadomości między podzespołami, powiadomieniami na Discord i hookami git (format commitów, wykrywanie sekretów), konfigurację środowiska dev (wspólny klaster MongoDB Atlas, Node, bez Dockera w dev) oraz plan godzin hackathonu.
+
+**W trakcie wydarzenia (od 21.11, godz. 11:00) powstało całe rozwiązanie:**
+- analiza zadania KOWR i podstaw naukowych, koncepcja, scenariusz demo i decyzje architektoniczne (ADR);
+- backend: pobieranie danych z 9 źródeł (ULDK, Open-Meteo ERA5 i ERA5-Land, NASA POWER, Sentinel-2, SoilGrids, Copernicus DEM, OpenStreetMap), silnik bilansu wodnego FAO-56 z ET0 Penmana-Monteitha i KBW IUNG-PIB, podatność z 10 lat, przyczyny i reguły rekomendacji, cache źródeł, konta gospodarstw; ok. 290 testów automatycznych;
+- frontend: wyszukiwanie działki i mapa, wybór uprawy i daty, raport z wykresami, wydruk i PDF, konto gospodarstwa, wersja na telefon, test w przeglądarkach;
+- weryfikacja: porównanie wyników z Monitoringiem Suszy IUNG-PIB (12 porównań) i poprawka metodyki;
+- dokumentacja README według wymagań KOWR, prezentacja i scenariusz pokazu.
+
+**Do końca wydarzenia planujemy:** wdrożenie produkcyjne z publicznym linkiem dla jury, poprawki bezpieczeństwa przed produkcją (limity zapytań, nagłówki, CORS), od 7:00 zamrożenie funkcji i tylko poprawki błędów, rozgrzanie cache i pomiar czasu na produkcji, raporty PDF z przykładowych działek, film do 3 minut i próbę pokazu na żywo.
