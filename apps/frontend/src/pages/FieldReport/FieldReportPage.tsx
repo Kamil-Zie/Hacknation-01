@@ -12,6 +12,7 @@ import { Link as RouterLink, useParams } from 'react-router-dom';
 import { useCrops } from '@/api/crops';
 import {
   FIELD_REPORTS_KEY,
+  fieldReportErrorMessage,
   useCreateFieldReportMutation,
   useParcelOutlines,
 } from '@/api/fieldReports';
@@ -42,6 +43,11 @@ const PRIORITY_WORD = { high: 'Bardzo ważne', medium: 'Średnio ważne', low: '
 /** "061409_2.0009.612" -> "612" */
 function parcelNumber(parcelId: string): string {
   return parcelId.split('.').pop() ?? parcelId;
+}
+
+/** Prefers parcelNumber from the API (DM-025); parses the id only as a fallback */
+function numberOfParcel(parcel: FieldReportParcel): string {
+  return parcel.parcelNumber || parcelNumber(parcel.parcelId);
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -148,7 +154,7 @@ function ParcelCard({ parcel }: { parcel: FieldReportParcel }) {
       }}
     >
       <Typography variant="h3" component="h3" sx={{ fontSize: '1.5rem', fontWeight: 800 }}>
-        Działka {parcelNumber(parcel.parcelId)}
+        Działka {numberOfParcel(parcel)}
       </Typography>
       <Typography sx={{ fontSize: '1.125rem' }}>
         <b>{formatNumber(parcel.areaHa, 2)} ha</b>
@@ -219,7 +225,7 @@ function FieldResult({ report, onNew }: { report: FieldReport; onNew: () => void
     () =>
       report.parcels.map((parcel, index) => ({
         id: parcel.parcelId,
-        label: `${parcelNumber(parcel.parcelId)} · ${
+        label: `${numberOfParcel(parcel)} · ${
           parcel.status === 'failed' ? 'Nie policzono' : CLASS_WORD[parcel.droughtClass]
         }`,
         droughtClass: parcel.status === 'failed' ? 'unknown' : parcel.droughtClass,
@@ -231,7 +237,10 @@ function FieldResult({ report, onNew }: { report: FieldReport; onNew: () => void
   );
   const isOutlineMissing = outlines.some((query) => query.isError);
   const failedCount = report.parcels.filter((parcel) => parcel.status === 'failed').length;
-  const numberOf = (id: string) => parcelNumber(id);
+  const numberOf = (id: string) => {
+    const found = report.parcels.find((parcel) => parcel.parcelId === id);
+    return found ? numberOfParcel(found) : parcelNumber(id);
+  };
 
   return (
     <Box
@@ -465,7 +474,7 @@ export function FieldReportPage() {
       </Box>
       {mutation.isError && (
         <Alert severity="error" role="alert" sx={{ fontSize: '1.125rem' }}>
-          {mutation.error.message || 'Nie udało się policzyć raportu pola.'} Spróbuj ponownie.
+          {fieldReportErrorMessage(mutation.error)}
         </Alert>
       )}
       {crops.isLoading && (

@@ -388,6 +388,8 @@ export interface FieldReportRequest {
 
 export interface FieldReportParcel {
   parcelId: string;
+  /** Short number from the backend (DM-025); the page falls back to parsing parcelId */
+  parcelNumber?: string;
   /** null when the parcel could not be computed (status failed) */
   reportId: string | null;
   areaHa: number;
@@ -395,7 +397,7 @@ export interface FieldReportParcel {
   rootZonePct: number | null;
   deficitMm: number | null;
   status: FieldParcelStatus;
-  /** Optional reason for a failed parcel (not in DM-025 yet; shown when the backend sends it) */
+  /** Optional reason for a failed parcel (DM-025, only with status failed) */
   errorMessage?: string | null;
 }
 

@@ -54,6 +54,7 @@ export function buildMockFieldReport(fieldId: string, body: FieldReportRequest):
     parcels: [
       {
         parcelId: ids[0] as string,
+        parcelNumber: (ids[0] as string).split('.').pop() ?? '',
         reportId: 'demo',
         areaHa: 2.41,
         droughtClass: 'severe',
@@ -63,6 +64,7 @@ export function buildMockFieldReport(fieldId: string, body: FieldReportRequest):
       },
       {
         parcelId: ids[1] as string,
+        parcelNumber: (ids[1] as string).split('.').pop() ?? '',
         reportId: 'demo-partial',
         areaHa: 1.87,
         droughtClass: 'moderate',
@@ -72,6 +74,7 @@ export function buildMockFieldReport(fieldId: string, body: FieldReportRequest):
       },
       {
         parcelId: ids[2] as string,
+        parcelNumber: (ids[2] as string).split('.').pop() ?? '',
         reportId: null,
         areaHa: 3.62,
         droughtClass: 'unknown',
