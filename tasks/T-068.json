@@ -5,7 +5,7 @@
   "type": "bugfix",
   "team": "frontend",
   "assignee": "frontend-1",
-  "status": "ready",
+  "status": "done",
   "priority": "medium",
   "depends_on": ["T-057"],
   "contract_refs": ["UI-C-015", "UI-S-003"],
