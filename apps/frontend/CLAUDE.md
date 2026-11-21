@@ -18,6 +18,7 @@ Każdy plik zaczyna się komentarzem z ID kontraktu, np. `// UI-S-001 Lista zgł
 
 - Zmienne z głównego `.env` widzi Vite tylko z `envDir: '../..'` w `vite.config.ts`.
 - Mocki włącza `VITE_USE_MOCKS=true`; przełączenie na prawdziwe API robi `fe-integration` po handoffie.
+- Zasób gotowy wcześniej niż reszta przełączaj osobno: `VITE_MOCK_<ZASÓB>=false` nadpisuje `VITE_USE_MOCKS` (np. `VITE_MOCK_PARCELS=false` w `api/parcels.ts`).
 - Responsywność 360/768/1280/1920 px i cztery stany ekranu (loading, error, empty, ready) są obowiązkowe.
 
 Lead aktualizuje ten plik w tym samym commicie, w którym zmienia strukturę lub wzorce (maks. 60 linii).
