@@ -2,8 +2,9 @@
 import { Router } from 'express';
 
 import { createAnalysis, getAnalysisById } from '@/controllers/analyses.controller';
+import { optionalAuth } from '@/middleware/auth';
 
 export const analysesRouter = Router();
 
-analysesRouter.post('/analyses', createAnalysis);
+analysesRouter.post('/analyses', optionalAuth, createAnalysis);
 analysesRouter.get('/analyses/:id', getAnalysisById);

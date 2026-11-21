@@ -23,17 +23,33 @@ import type { parsePowerResponse } from '@/services/sources/nasaPower.source';
 import type { SourceId, SourceResult } from '@/services/sources/types';
 import { parseUldkResponse } from '@/services/sources/uldk.source';
 import type { ParcelData } from '@/services/sources/uldk.source';
+import { signToken } from '@/utils/jwt';
 
 // The controller calls the service with default deps; the mock injects per-test deps (real service logic stays).
-const holder = vi.hoisted(() => ({ deps: null as unknown }));
+const holder = vi.hoisted(() => ({
+  deps: null as unknown,
+  memberships: [] as string[], // "userId:accountId" pairs with an active membership
+  saved: [] as Record<string, unknown>[],
+}));
 vi.mock('@/services/analyses.service', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/services/analyses.service')>();
   return {
     ...actual,
-    createAnalysis: (body: Parameters<typeof actual.createAnalysis>[0]) =>
-      actual.createAnalysis(body, (holder.deps as AnalysesDeps | null) ?? undefined),
+    createAnalysis: (
+      body: Parameters<typeof actual.createAnalysis>[0],
+      _deps: unknown,
+      userId?: string,
+    ) => actual.createAnalysis(body, (holder.deps as AnalysesDeps | null) ?? undefined, userId),
   };
 });
+vi.mock('@/models/AccountMember.model', () => ({
+  AccountMemberModel: {
+    exists: (q: { userId: string; accountId: string }) =>
+      Promise.resolve(
+        holder.memberships.includes(`${q.userId}:${q.accountId}`) ? { _id: 'x' } : null,
+      ),
+  },
+}));
 
 const FIXTURES = resolve(process.cwd(), 'src/services/sources/__fixtures__');
 const OPEN_METEO = JSON.parse(
@@ -164,7 +180,8 @@ function makeDeps(
       overpass: okSource('overpass', HYDRO),
     },
     // Same contract as the default saveReport: without a connection return an id and do not save.
-    saveReport: async () => {
+    saveReport: async (report) => {
+      holder.saved.push(report as unknown as Record<string, unknown>);
       if (mongoose.connection.readyState !== 1) return new mongoose.Types.ObjectId().toString();
       return SAVED_ID;
     },
@@ -191,6 +208,8 @@ afterAll(async () => {
 
 afterEach(() => {
   holder.deps = null;
+  holder.memberships.length = 0;
+  holder.saved.length = 0;
   vi.restoreAllMocks();
 });
 
@@ -207,10 +226,13 @@ type Json = {
 };
 type Result = { status: number; json: Json };
 
-async function post(body?: unknown): Promise<Result> {
+async function post(body?: unknown, token?: string): Promise<Result> {
   const response = await fetch(`${baseUrl}/analyses`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   return { status: response.status, json: (await response.json()) as Json };
@@ -315,6 +337,62 @@ test(
     assert.match(created.json.id, /^[0-9a-f]{24}$/);
 
     assertError(await get(created.json.id), 503, 'DB_UNAVAILABLE');
+  },
+  SLOW_MS,
+);
+
+const USER_ID = '665f0c0ffee0000000000aaa';
+const ACCOUNT_ID = '665f0c0ffee0000000000bbb';
+
+test('POST /analyses with accountId and no token: 401 UNAUTHORIZED, sources not called', async () => {
+  const deps = makeDeps();
+  const fetchParcel = vi.fn(deps.fetchParcel);
+  holder.deps = { ...deps, fetchParcel };
+  assertError(await post({ ...BODY, accountId: ACCOUNT_ID }), 401, 'UNAUTHORIZED');
+  assert.equal(fetchParcel.mock.calls.length, 0);
+});
+
+test('POST /analyses with a foreign accountId: 403 NOT_A_MEMBER, sources not called', async () => {
+  const deps = makeDeps();
+  const fetchParcel = vi.fn(deps.fetchParcel);
+  holder.deps = { ...deps, fetchParcel };
+  const result = await post({ ...BODY, accountId: ACCOUNT_ID }, signToken(USER_ID));
+  assertError(result, 403, 'NOT_A_MEMBER');
+  assert.equal(fetchParcel.mock.calls.length, 0);
+});
+
+test('POST /analyses with a malformed accountId: 422 with field accountId', async () => {
+  holder.deps = makeDeps();
+  const result = await post({ ...BODY, accountId: 'xyz' }, signToken(USER_ID));
+  assertError(result, 422, 'VALIDATION_ERROR', 'accountId');
+});
+
+test(
+  'POST /analyses by a member: report saved and returned with accountId',
+  async () => {
+    holder.deps = makeDeps();
+    holder.memberships.push(`${USER_ID}:${ACCOUNT_ID}`);
+    vi.spyOn(mongoose.connection, 'readyState', 'get').mockReturnValue(1);
+    const result = await post({ ...BODY, accountId: ACCOUNT_ID }, signToken(USER_ID));
+    assert.equal(result.status, 201);
+    assert.equal(result.json.accountId, ACCOUNT_ID);
+    assert.equal(holder.saved[0]?.accountId, ACCOUNT_ID);
+  },
+  SLOW_MS,
+);
+
+test(
+  'POST /analyses anonymous and logged in without accountId: 201 with accountId null (regression)',
+  async () => {
+    holder.deps = makeDeps();
+    vi.spyOn(mongoose.connection, 'readyState', 'get').mockReturnValue(1);
+    const anonymous = await post(BODY);
+    assert.equal(anonymous.status, 201);
+    assert.equal(anonymous.json.accountId, null);
+    const loggedIn = await post(BODY, signToken(USER_ID));
+    assert.equal(loggedIn.status, 201);
+    assert.equal(loggedIn.json.accountId, null);
+    assert.equal(holder.saved[0]?.accountId, null);
   },
   SLOW_MS,
 );

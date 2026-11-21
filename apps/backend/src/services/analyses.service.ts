@@ -1,8 +1,9 @@
-// T-017 T-018 API-004 API-005 POST /analyses (geometry, sources, engine per ADR-009, save DM-001) and GET /analyses/:id
+// T-017 T-018 T-043 API-004 API-005 API-013 POST /analyses (geometry, sources, engine per ADR-009, save DM-001) and GET /analyses/:id
 import mongoose from 'mongoose';
 
 import { env } from '@/config/env';
 import { ReportModel } from '@/models/Report.model';
+import { isMember } from '@/services/accounts.service';
 import { computeCharts, computeEngine } from '@/services/analysis/assessment';
 import type { AssessmentDto, ChartsDto } from '@/services/analysis/assessment';
 import {
@@ -33,7 +34,7 @@ import { fetchParcelById } from '@/services/sources/uldk.source';
 import type { ParcelData } from '@/services/sources/uldk.source';
 import { AppError } from '@/utils/AppError';
 import { logger } from '@/utils/logger';
-import type { CreateAnalysisBody } from '@/validation/analyses.schema';
+import type { AccountReportsQuery, CreateAnalysisBody } from '@/validation/analyses.schema';
 
 const METHODOLOGY_VERSION = 'kropla-1.0';
 const CONNECTED = 1; // mongoose.connection.readyState
@@ -54,6 +55,7 @@ const LIMITATIONS_AFTER_SPLIT = [
 
 export type ReportDto = {
   id: string;
+  accountId: string | null;
   parcel: ParcelData & { fetchedAt: string };
   crop: { code: string; name: string };
   analysisDate: string;
@@ -158,7 +160,17 @@ function satelliteFrom(result: SourceResult<unknown>): SatelliteObservation | nu
 export async function createAnalysis(
   body: CreateAnalysisBody,
   deps: AnalysesDeps = defaultAnalysesDeps,
+  userId?: string,
 ): Promise<ReportDto> {
+  // Access check first, so a rejected request does not spend the sources budget.
+  if (body.accountId) {
+    if (!userId) {
+      throw new AppError('UNAUTHORIZED', 'Wymagane zalogowanie.', 401);
+    }
+    if (!(await isMember(userId, body.accountId))) {
+      throw new AppError('NOT_A_MEMBER', 'Nie należysz do tego gospodarstwa.', 403);
+    }
+  }
   const startedAt = deps.now();
   const budget = AbortSignal.timeout(deps.budgetMs);
 
@@ -230,6 +242,7 @@ export async function createAnalysis(
 
   const computedAt = deps.now();
   const report: ReportInput = {
+    accountId: body.accountId ?? null,
     parcel,
     crop: { code: crop.code, name: crop.name },
     analysisDate: body.analysisDate,
@@ -272,4 +285,74 @@ export async function getReportById(id: string): Promise<SavedReportDto> {
     throw new AppError('REPORT_NOT_FOUND', 'Nie znaleziono raportu', 404);
   }
   return report.toJSON() as unknown as SavedReportDto;
+}
+
+// T-043 API-013: account history (DM-023 ReportSummary), newest first, projection only.
+export type ReportSummaryDto = {
+  id: string;
+  parcel: { id: string; parcelNumber: string; region: string; commune: string };
+  crop: { code: string; name: string };
+  analysisDate: string;
+  status: 'complete' | 'partial';
+  droughtClass: 'none' | 'moderate' | 'severe' | 'unknown';
+  createdAt: string;
+};
+
+const SUMMARY_PROJECTION = {
+  'parcel.id': 1,
+  'parcel.parcelNumber': 1,
+  'parcel.region': 1,
+  'parcel.commune': 1,
+  crop: 1,
+  analysisDate: 1,
+  status: 1,
+  'assessment.droughtClass': 1,
+  createdAt: 1,
+};
+
+type SummaryRow = {
+  _id: unknown;
+  parcel: ReportSummaryDto['parcel'];
+  crop: ReportSummaryDto['crop'];
+  analysisDate: string;
+  status: ReportSummaryDto['status'];
+  assessment?: { droughtClass?: ReportSummaryDto['droughtClass'] };
+  createdAt: Date;
+};
+
+export async function listAccountReports(
+  userId: string,
+  accountId: string,
+  query: AccountReportsQuery,
+): Promise<{ items: ReportSummaryDto[]; page: number; pageSize: number; total: number }> {
+  if (!(await isMember(userId, accountId))) {
+    throw new AppError('NOT_A_MEMBER', 'Nie należysz do tego gospodarstwa.', 403);
+  }
+  if (mongoose.connection.readyState !== CONNECTED) {
+    throw new AppError('DB_UNAVAILABLE', 'Baza danych jest niedostępna', 503);
+  }
+  const { page, pageSize } = query;
+  const [rows, total] = await Promise.all([
+    ReportModel.find({ accountId }, SUMMARY_PROJECTION)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .lean<SummaryRow[]>(),
+    ReportModel.countDocuments({ accountId }),
+  ]);
+  const items = rows.map((row) => ({
+    id: String(row._id),
+    parcel: {
+      id: row.parcel.id,
+      parcelNumber: row.parcel.parcelNumber,
+      region: row.parcel.region,
+      commune: row.parcel.commune,
+    },
+    crop: { code: row.crop.code, name: row.crop.name },
+    analysisDate: row.analysisDate,
+    status: row.status,
+    droughtClass: row.assessment?.droughtClass ?? 'unknown',
+    createdAt: row.createdAt.toISOString(),
+  }));
+  return { items, page, pageSize, total };
 }

@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "medium",
   "depends_on": ["T-041", "T-039"],
   "contract_refs": ["API-004", "DM-001"],
@@ -20,7 +20,11 @@
     "by": null,
     "note": ""
   },
-  "notes": ["coord-1 16:35: po T-041 (T-039 zrobione).", "coord-1 16:10: Nataniel po T-039."],
+  "notes": [
+    "coord-1 16:35: po T-041 (T-039 zrobione).",
+    "coord-1 16:10: Nataniel po T-039.",
+    "Zrobione (backend-2): POST /analyses z optionalAuth: accountId bez tokenu 401, obce konto 403 NOT_A_MEMBER (sprawdzane przed ULDK i źródłami), członek → raport z accountId; bez accountId jak dotąd (accountId null). GET /accounts/:accountId/reports (requireAuth, członkostwo, {items,page,pageSize,total}, pageSize maks. 100 wg API-013, projekcja ReportSummary, najnowsze pierwsze, 503 DB_UNAVAILABLE bez bazy). routes/accounts.routes.ts utworzone tylko z trasą reports – T-042 dopisuje members. curl OK, testy 273/273."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

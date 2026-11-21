@@ -4,6 +4,7 @@ import express from 'express';
 
 import { env } from '@/config/env';
 import { errorHandler, notFoundHandler } from '@/middleware/errorHandler';
+import { accountsRouter } from '@/routes/accounts.routes';
 import { analysesRouter } from '@/routes/analyses.routes';
 import { authRouter } from '@/routes/auth.routes';
 import { cropsRouter } from '@/routes/crops.routes';
@@ -21,6 +22,7 @@ export function createApp() {
   app.use('/api/v1', cropsRouter);
   app.use('/api/v1', analysesRouter);
   app.use('/api/v1', authRouter);
+  app.use('/api/v1', accountsRouter);
   app.use(notFoundHandler);
   app.use(errorHandler);
   return app;

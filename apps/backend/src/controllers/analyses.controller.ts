@@ -1,9 +1,12 @@
-// T-017 T-018 API-004 API-005 POST /analyses and GET /analyses/:id controllers
+// T-017 T-018 T-043 API-004 API-005 API-013 POST /analyses and GET /analyses/:id controllers
 import * as analysesService from '@/services/analyses.service';
 import { AppError } from '@/utils/AppError';
 import { asyncHandler } from '@/utils/asyncHandler';
 import {
+  ACCOUNT_ID_HINT,
   ANALYSIS_ID_HINT,
+  accountReportsParamsSchema,
+  accountReportsQuerySchema,
   analysisIdParamsSchema,
   createAnalysisBodySchema,
 } from '@/validation/analyses.schema';
@@ -25,7 +28,28 @@ export const createAnalysis = asyncHandler(async (req, res) => {
       hint: FIELD_HINTS[field],
     });
   }
-  res.status(201).json(await analysesService.createAnalysis(parsed.data));
+  res.status(201).json(await analysesService.createAnalysis(parsed.data, undefined, req.userId));
+});
+
+export const listAccountReports = asyncHandler(async (req, res) => {
+  const params = accountReportsParamsSchema.safeParse(req.params);
+  if (!params.success) {
+    throw new AppError('VALIDATION_ERROR', 'Nieprawidłowy identyfikator konta', 422, {
+      field: 'accountId',
+      hint: ACCOUNT_ID_HINT,
+    });
+  }
+  const query = accountReportsQuerySchema.safeParse(req.query);
+  if (!query.success) {
+    const field = String(query.error.issues[0]?.path[0] ?? 'query');
+    throw new AppError('VALIDATION_ERROR', `Nieprawidłowe pole ${field}`, 422, { field });
+  }
+  const result = await analysesService.listAccountReports(
+    req.userId as string,
+    params.data.accountId,
+    query.data,
+  );
+  res.json(result);
 });
 
 export const getAnalysisById = asyncHandler(async (req, res) => {

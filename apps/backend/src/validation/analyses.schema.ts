@@ -1,4 +1,4 @@
-// T-017 T-018 API-004 API-005 Zod schemas: POST /analyses body and GET /analyses/:id params
+// T-017 T-018 T-043 API-004 API-005 API-013 Zod schemas: POST /analyses body and GET /analyses/:id params
 import { z } from 'zod';
 
 export const ANALYSIS_ID_HINT = 'Format: 24 znaki szesnastkowe, np. 665f0c0ffee0000000000001';
@@ -49,6 +49,24 @@ export const createAnalysisBodySchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .refine(isRealDate)
     .refine(isInRange),
+  accountId: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/)
+    .optional(),
 });
 
 export type CreateAnalysisBody = z.infer<typeof createAnalysisBodySchema>;
+
+// T-043 API-013 GET /accounts/:accountId/reports: params and pagination query
+export const ACCOUNT_ID_HINT = 'Format: 24 znaki szesnastkowe, np. 665f0c0ffee0000000000001';
+
+export const accountReportsParamsSchema = z.object({
+  accountId: z.string().regex(/^[0-9a-fA-F]{24}$/),
+});
+
+export const accountReportsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(20),
+});
+
+export type AccountReportsQuery = z.infer<typeof accountReportsQuerySchema>;
