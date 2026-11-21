@@ -9,6 +9,7 @@ import type { LoginRequest, RegisterRequest, Session } from '@/api/types';
 import { AuthForm } from '@/components/AuthForm/AuthForm';
 import type { AuthMode } from '@/components/AuthForm/AuthForm';
 import { useSessionStore } from '@/store/session';
+import { errorMessage } from '@/utils/errorMessages';
 
 function safeNext(next: string | null): string {
   return next && next.startsWith('/') && !next.startsWith('//') ? next : '/';
@@ -28,7 +29,7 @@ export function LoginPage() {
 
   const error =
     mutation.error instanceof ApiError
-      ? { code: mutation.error.code, message: mutation.error.message }
+      ? { code: mutation.error.code, message: errorMessage(mutation.error).message }
       : mutation.error
         ? { code: 'NETWORK_ERROR', message: 'Nie udało się połączyć. Spróbuj ponownie.' }
         : null;

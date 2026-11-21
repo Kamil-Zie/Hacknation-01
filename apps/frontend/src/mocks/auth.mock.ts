@@ -225,6 +225,10 @@ export async function mockRegister(body: RegisterRequest): Promise<Session> {
 
 export async function mockLogin(body: LoginRequest): Promise<Session> {
   await mockDelay();
+  // T-051 test hook: this password forces 429 TOO_MANY_ATTEMPTS
+  if (body.password === 'za-duzo-prob') {
+    throw new ApiError('TOO_MANY_ATTEMPTS', 'Za dużo prób logowania', 429, { retryAfterSec: 30 });
+  }
   const user = getStore().users.find((item) => item.email === normalizeEmail(body.email));
   if (!user || user.password !== body.password) {
     throw new ApiError('INVALID_CREDENTIALS', 'Nieprawidłowy e-mail lub hasło', 401);

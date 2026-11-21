@@ -104,6 +104,10 @@ function isPointInRing(lon: number, lat: number, ring: number[][]): boolean {
 
 export async function mockGetParcelById(parcelId: string): Promise<Parcel> {
   await delay();
+  // T-051 test hook: an ID ending with .504 forces UPSTREAM_TIMEOUT
+  if (parcelId.endsWith('.504')) {
+    throw new ApiError('UPSTREAM_TIMEOUT', 'ULDK nie odpowiedział w czasie', 504);
+  }
   const parcel = MOCK_PARCELS.find((item) => item.id === parcelId);
   if (!parcel) throw notFound();
   return parcel;
