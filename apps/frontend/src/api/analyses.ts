@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { ApiError, USE_MOCKS, apiFetch } from '@/api/client';
 import type { AnalysisRequest, Report } from '@/api/types';
-import { buildMockReport, demoReport } from '@/mocks/analyses.mock';
 
 export const REPORTS_KEY = ['reports'] as const;
 const CREATE_TIMEOUT_MS = 40_000;
@@ -17,6 +16,7 @@ function delay(ms: number): Promise<void> {
 export async function createAnalysis(body: AnalysisRequest): Promise<Report> {
   if (USE_MOCKS) {
     await delay(MOCK_CREATE_DELAY_MS);
+    const { buildMockReport } = await import('@/mocks/analyses.mock');
     return buildMockReport(body);
   }
   return apiFetch<Report>(
@@ -29,8 +29,10 @@ export async function createAnalysis(body: AnalysisRequest): Promise<Report> {
 export async function getReport(id: string): Promise<Report> {
   if (USE_MOCKS) {
     await delay(MOCK_GET_DELAY_MS);
-    if (id !== demoReport.id) throw new ApiError('NOT_FOUND', 'Nie znaleziono raportu', 404);
-    return demoReport;
+    const { findMockReport } = await import('@/mocks/analyses.mock');
+    const report = findMockReport(id);
+    if (!report) throw new ApiError('NOT_FOUND', 'Nie znaleziono raportu', 404);
+    return report;
   }
   return apiFetch<Report>(`/analyses/${encodeURIComponent(id)}`);
 }

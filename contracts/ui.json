@@ -2,7 +2,7 @@
   "owner_team": "frontend",
   "version": "0.1.0",
   "design_system_url": "https://claude.ai/artifact/8XZKAvWk7ELr9hQ4S54hDv",
-  "design_canvas_url": null,
+  "design_canvas_url": "https://claude.ai/artifact/GjGCNQGGGD9Fcm5RoRgDXQ",
   "design_tokens": {
     "_note": "Bazowe tokeny od architekta; fe-uiux może je dopracować w Design Systemie. Kolory klas suszy zawsze z ikoną i tekstem (nie tylko kolor).",
     "colors": {
@@ -186,7 +186,8 @@
       "props": {
         "assessment": "Assessment",
         "cropName": "string",
-        "analysisDate": "string"
+        "analysisDate": "string",
+        "dataGaps": "DataGap[] (powód braku przy polach null, dopasowany po sourceId: meteo→KBW, soilgrids→deficyt glebowy, sentinel2→NDVI/NDMI, eumetsat→wilgotność satelitarna)"
       },
       "states": ["ready"],
       "accessibility": "Nagłówek h2 „Stan wody na dzień …”; null w metryce wyświetla „brak danych”, nie 0",
@@ -333,8 +334,8 @@
         "lg": "lewa kolumna: mapa przyklejona (sticky) i spis sekcji; prawa: sekcje raportu; na 1920 większe nagłówki i metryki (projektor)"
       },
       "design_artboards": {
-        "phone": null,
-        "desktop": null
+        "phone": "project/Main.dc.html",
+        "desktop": "project/Desktop.dc.html"
       }
     },
     {

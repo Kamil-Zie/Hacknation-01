@@ -84,7 +84,7 @@ export function StatusBadge({ kind, value, label, size = 'medium' }: StatusBadge
       sx={{
         '& .MuiChip-icon': { color },
         borderColor: color,
-        borderWidth: 2,
+        borderWidth: 3,
         color: 'text.primary',
         fontWeight: 600,
         bgcolor: 'background.paper',
