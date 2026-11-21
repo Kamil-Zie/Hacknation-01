@@ -15,6 +15,24 @@ interface ConfidencePalette {
   low: string;
 }
 
+// Design „Kropla” (design/kropla/KROPLA-WDROZENIE.md): gradients and status fills.
+interface KroplaPalette {
+  headerGradient: string;
+  ctaGradient: string;
+  ctaText: string;
+  line: string;
+  iconMuted: string;
+  tint: string;
+  alertHigh: string;
+  alertMedium: string;
+  alertLow: string;
+  severeBg: string;
+  sliderGradient: string;
+  waterDark: string;
+  waterLight: string;
+  crop: Record<'wheat' | 'maize' | 'rapeseed' | 'potato' | 'beet' | 'grass', string>;
+}
+
 interface ParcelPalette {
   stroke: string;
   fill: string;
@@ -26,12 +44,14 @@ declare module '@mui/material/styles' {
     confidence: ConfidencePalette;
     parcel: ParcelPalette;
     water: string;
+    kropla: KroplaPalette;
   }
   interface PaletteOptions {
     drought?: DroughtPalette;
     confidence?: ConfidencePalette;
     parcel?: ParcelPalette;
     water?: string;
+    kropla?: KroplaPalette;
   }
   interface TypographyVariants {
     metric: CSSProperties;
@@ -50,9 +70,11 @@ declare module '@mui/material/Typography' {
 const baseTheme = createTheme({
   breakpoints: { values: { xs: 0, sm: 600, md: 900, lg: 1280, xl: 1920 } },
   palette: {
-    primary: { main: '#357A1F', contrastText: '#FFFFFF' },
-    // Light accent: backgrounds and highlights only, always with dark text (11.7:1), never as text or lines.
-    secondary: { main: '#C4D9FF', contrastText: '#1B1F1A' },
+    primary: { main: '#1A5FB4', dark: '#154E96', contrastText: '#FFFFFF' },
+    // Light accent: backgrounds and highlights only, always with dark text, never as text or lines.
+    secondary: { main: '#A8CDF8', light: '#D4E7FC', contrastText: '#0B2545' },
+    error: { main: '#C62828' },
+    warning: { main: '#F28C28', contrastText: '#1B1F1A' },
     background: { default: '#FFFFFF', paper: '#FFFFFF' },
     text: { primary: '#1B1F1A', secondary: '#4A5248' },
     divider: '#DDE1D8',
@@ -60,6 +82,30 @@ const baseTheme = createTheme({
     confidence: { high: '#2E7D32', medium: '#B26A00', low: '#C62828' },
     parcel: { stroke: '#293698', fill: 'rgba(41,54,152,0.15)' },
     water: '#2A9FD6',
+    kropla: {
+      headerGradient: 'linear-gradient(180deg, #1a5fb4 0%, #2a6cc0 100%)',
+      ctaGradient: 'linear-gradient(180deg, #a8cdf8 0%, #d4e7fc 100%)',
+      ctaText: '#0B2545',
+      line: '#DDE1D8',
+      iconMuted: '#7FB2EE',
+      tint: '#E9EEF5',
+      alertHigh: '#C62828',
+      alertMedium: '#F28C28',
+      alertLow: '#F2CF63',
+      severeBg: '#FDEEEC',
+      sliderGradient:
+        'linear-gradient(90deg, #f09a9a 0%, #fbc995 20%, #fbe9ad 35%, #7cc47f 50%, #fbe9ad 65%, #fbc995 80%, #f09a9a 100%)',
+      waterDark: '#154E96',
+      waterLight: '#9CD3F5',
+      crop: {
+        wheat: '#C9952B',
+        maize: '#E0A800',
+        rapeseed: '#D4B800',
+        potato: '#8B5E3C',
+        beet: '#9B1D4A',
+        grass: '#3F8F3A',
+      },
+    },
   },
   typography: {
     fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
