@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "ready",
+  "status": "done",
   "priority": "medium",
   "depends_on": ["T-044", "T-045"],
   "contract_refs": ["UI-S-001"],
@@ -20,7 +20,10 @@
     "by": null,
     "note": ""
   },
-  "notes": ["coord-1 16:10: Jakub po nowym UI."],
+  "notes": [
+    "coord-1 16:10: Jakub po nowym UI.",
+    "frontend-2 18:50: /konto (pages/Account/AccountPage.tsx) + MemberList (UI-C-014): członkowie, dodawanie po e-mailu (Zod, ALREADY_MEMBER), usuwanie z potwierdzeniem w wierszu, LAST_MEMBER (blokada dla ostatniego aktywnego członka + komunikat), przełącznik aktywnego konta, AccountReportHistory Dawida pod/obok członków; bez logowania przekierowanie na /logowanie. API sprawdzone curl-em na lokalnym backendzie (register, members, add pending, DELETE → 409 LAST_MEMBER). ReportAccountBadge osadzony w ReportPage (e3d11b8). UI zalogowanego nie sprawdzone zrzutem."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

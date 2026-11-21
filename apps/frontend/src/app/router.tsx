@@ -2,6 +2,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import { AppLayout } from '@/components/AppLayout/AppLayout';
+import { AccountPage } from '@/pages/Account/AccountPage';
 import { LoginPage } from '@/pages/Login/LoginPage';
 import { NotFoundPage } from '@/pages/NotFound/NotFoundPage';
 import { ParcelPage } from '@/pages/Parcel/ParcelPage';
@@ -17,6 +18,7 @@ export const router = createBrowserRouter([
       { path: '/parcel/:parcelId', element: <ParcelPage /> },
       { path: '/report/:id', element: <ReportPage /> },
       { path: '/logowanie', element: <LoginPage /> },
+      { path: '/konto', element: <AccountPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
