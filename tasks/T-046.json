@@ -1,0 +1,26 @@
+{
+  "id": "T-046",
+  "title": "Ekran 'Moje gospodarstwo': członkowie i dodawanie po e-mailu (UI-S-006, UI-C-014)",
+  "description": "Strona /konto: lista członków (aktywni, oczekujący z etykietą 'czeka na rejestrację'), formularz dodania po e-mailu, usuwanie z potwierdzeniem w UI (bez window.confirm), komunikat dla LAST_MEMBER, przełącznik aktywnego konta gdy użytkownik należy do kilku. Wg docs/adr/ADR-010-shared-accounts.md.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": ["T-044", "T-045"],
+  "contract_refs": ["UI-S-001"],
+  "demo_step": 9,
+  "acceptance_criteria": [
+    "Dodanie istniejącego e-maila pokazuje członka aktywnego, nowego – oczekującego",
+    "Usunięcie ostatniego członka pokazuje komunikat, nie usuwa",
+    "Działa na mockach i na prawdziwym API po T-042"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": ["coord-1 16:10: Jakub po nowym UI."],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

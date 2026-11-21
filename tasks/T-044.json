@@ -1,0 +1,28 @@
+{
+  "id": "T-044",
+  "title": "Kontrakt UI kont: UI-S-005 logowanie/rejestracja, UI-S-006 konto, komponenty i mocki",
+  "description": "Dopisz do contracts/ui.json: UI-S-005 Logowanie i rejestracja (jedna strona z przełącznikiem), UI-S-006 Moje gospodarstwo (członkowie z dodawaniem po e-mailu i statusem 'oczekuje', historia raportów konta), UI-C-013 AuthForm, UI-C-014 MemberList z AddMemberForm, UI-C-015 AccountMenu w nagłówku (Zaloguj / nazwa konta, przełącznik kont, Wyloguj). Mocki zgodne z examples API-007…API-013. Teksty po polsku dla wszystkich kodów błędów. Wg docs/adr/ADR-010-shared-accounts.md.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-040"],
+  "contract_refs": ["UI-S-001"],
+  "demo_step": 9,
+  "acceptance_criteria": [
+    "ui.json ma UI-S-005, UI-S-006, UI-C-013…UI-C-015 ze stanami (pusty, ładowanie, błąd, pending), status proposed",
+    "Mocki dla API-007…API-013 działają z VITE_USE_MOCKS=true",
+    "Ekran startowy i raport bez logowania wyglądają jak dotąd"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 16:10: Dawid (wolny). Można zacząć od razu na ADR-010, kontrakt API dojdzie z T-040."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

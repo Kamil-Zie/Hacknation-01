@@ -1,0 +1,26 @@
+{
+  "id": "T-047",
+  "title": "Raporty w koncie: zapis analizy do aktywnego konta i historia raportów (UI-S-006, API-004, API-013)",
+  "description": "Gdy zalogowany: formularz analizy wysyła accountId aktywnego konta, raport ma znacznik 'Zapisano w: <konto>'; na /konto sekcja Historia (lista z API-013, link do raportu). Niezalogowany: bez zmian, pod raportem dyskretny link 'Zaloguj się, aby zapisać raport w gospodarstwie'. Wg docs/adr/ADR-010-shared-accounts.md.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": ["T-045"],
+  "contract_refs": ["UI-S-003", "API-004"],
+  "demo_step": 9,
+  "acceptance_criteria": [
+    "Zalogowany: nowa analiza pojawia się w historii konta u drugiego członka (test na dwóch kontach)",
+    "Ścieżka anonimowa (krok 1–8 demo bez logowania) działa bez zmian",
+    "Link do raportu działa bez logowania"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": ["coord-1 16:10: Dawid po T-045."],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

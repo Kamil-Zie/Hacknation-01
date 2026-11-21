@@ -1,0 +1,27 @@
+{
+  "id": "T-045",
+  "title": "Logowanie, rejestracja i sesja we frontendzie (UI-S-005, UI-C-013, UI-C-015)",
+  "description": "Strona /logowanie z AuthForm (RHF + Zod), store sesji w Zustand (token, user, accounts, activeAccountId) z persist, hooki api/ dla API-007…API-009, nagłówek Authorization w kliencie API, AccountMenu w AppLayout, 401 → wylogowanie i powrót na /logowanie tylko na ekranach konta. Wg docs/adr/ADR-010-shared-accounts.md.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-044"],
+  "contract_refs": ["UI-S-001"],
+  "demo_step": 9,
+  "acceptance_criteria": [
+    "Rejestracja → zalogowany, w menu nazwa 'Moje gospodarstwo'; wylogowanie czyści sesję",
+    "Błędy EMAIL_TAKEN, INVALID_CREDENTIALS pokazują komunikat przy polu",
+    "Telefon 390 px i desktop 1440 px",
+    "Ścieżka anonimowa (krok 1–8 demo bez logowania) działa bez zmian"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": ["coord-1 16:10: Wzorzec: page → hooki api/ → komponenty (apps/frontend/CLAUDE.md)."],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

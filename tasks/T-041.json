@@ -1,0 +1,30 @@
+{
+  "id": "T-041",
+  "title": "Rejestracja, logowanie i /me (API-007, API-008, API-009) z automatycznym kontem gospodarstwa",
+  "description": "Modele User, Account, AccountMember (Mongoose), hasło crypto.scrypt z solą, JWT HS256 przez jose (JWT_SECRET w env.ts i .env.example, 7 dni), middleware requireAuth i optionalAuth (Bearer). Rejestracja tworzy konto 'Moje gospodarstwo' i członkostwo active oraz zamienia oczekujące zaproszenia na ten e-mail w członkostwa. Limit 10 nieudanych logowań / 15 min na e-mail (w pamięci). Wg docs/adr/ADR-010-shared-accounts.md.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-040"],
+  "contract_refs": ["API-004", "DM-001"],
+  "demo_step": 9,
+  "acceptance_criteria": [
+    "POST /auth/register → 201 {token,user,accounts:[{id,name}]}; drugi raz ten sam e-mail → 409 EMAIL_TAKEN",
+    "POST /auth/login złe hasło → 401 INVALID_CREDENTIALS; GET /me bez tokenu → 401 UNAUTHORIZED",
+    "Zaproszenie pending na e-mail staje się członkostwem active po rejestracji (test)",
+    "Hash nigdy nie wychodzi w odpowiedzi ani w logach; testy route→service zielone",
+    "Ścieżka anonimowa (krok 1–8 demo bez logowania) działa bez zmian"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 16:10: Wzorzec warstw z apps/backend/CLAUDE.md (validation → model → service → controller → route). Nowa biblioteka jose: zatwierdzona przez coord-1 (ADR-010)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

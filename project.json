@@ -41,7 +41,8 @@
           "Wykres KBW sezonu na tle 10 lat (mediana, zakres) i miniatura NDVI/NDMI działki.",
           "Mapa z warstwami: cieki i zbiorniki w otoczeniu, kierunek spadku, wskazanie miejsc na retencję.",
           "Wiele działek gospodarstwa w jednej sesji (lista w localStorage).",
-          "Tło z IUNG-PIB (kategoria podatności gleb) i EDO (CDI) jako porównanie z naszym wynikiem."
+          "Tło z IUNG-PIB (kategoria podatności gleb) i EDO (CDI) jako porównanie z naszym wynikiem.",
+          "Konto gospodarstwa (ADR-010): jeden typ konta, do którego dodaje się kolejnych członków po e-mailu (zaproszenie oczekujące do rejestracji), historia raportów konta; logowanie opcjonalne, ścieżka anonimowa bez zmian. Zadania T-040…T-048."
         ],
         "wont": [
           "Logowanie, konta użytkowników i dane osobowe.",
@@ -139,6 +140,12 @@
           "user_action": "Klika „Pobierz PDF” albo „Drukuj”.",
           "result": "Plik PDF z pełnym raportem (mapa działki, ocena, przyczyny, rekomendacje, źródła, data analizy i data wygenerowania) albo podgląd wydruku.",
           "contract_refs": ["API-005", "DM-001", "UI-S-004", "UI-C-010", "UI-C-002"]
+        },
+        {
+          "step": 9,
+          "user_action": "Rolnik zakłada konto (e-mail i hasło), dostaje swoje „Moje gospodarstwo” i dodaje po e-mailu członka rodziny albo doradcę ODR; kolejna analiza zapisuje się w koncie.",
+          "result": "Jedno konto dla jednej osoby i dla wspólnej pracy: lista członków (aktywni i oczekujący), historia raportów widoczna dla wszystkich członków; analiza bez logowania działa jak dotąd.",
+          "contract_refs": ["API-004", "DM-001", "UI-S-001"]
         }
       ],
       "risks": [
@@ -515,6 +522,15 @@
           "context": "Zespół chce aktualnych danych bez pobierania 10 lat z Open-Meteo (limit na IP), a KOWR wymaga oceny na tle 10 lat i testuje daty historyczne.",
           "decision": "Open-Meteo tylko okno D−90…D (wartości bieżące ERA5 / ERA5-Land), NASA POWER 10 lat (percentyl, anomalia, podatność) liczone w całości w jednym źródle; orkiestrator woła silnik dwa razy. Szczegóły: docs/adr/ADR-009-current-vs-climatology-sources.md.",
           "consequences": "Zużycie limitu Open-Meteo spada ok. 50 razy, aktualność bez zmian, zgodność z KOWR zachowana; tło wieloletnie ma siatkę ok. 50 km i ET0 Hargreavesa (opisane w ograniczeniach)."
+        },
+        {
+          "id": "ADR-010",
+          "title": "Jedno konto gospodarstwa z członkami (bez typów kont), e-mail + hasło, JWT, logowanie opcjonalne",
+          "status": "accepted",
+          "date": "2026-11-21",
+          "context": "Rolnik pracuje sam albo dzieli działki z rodziną lub doradcą; nie chcemy osobnych typów kont ani migracji.",
+          "decision": "Jeden typ konta Gospodarstwo tworzony przy rejestracji; członkowie równi, dodawani po e-mailu (pending do rejestracji); e-mail + hasło (scrypt), JWT HS256 (jose); analiza bez logowania bez zmian, z tokenem raport trafia do historii konta. docs/adr/ADR-010-shared-accounts.md",
+          "consequences": "DM-016…DM-018 i accountId w DM-001 (T-DB), API-007…API-013, UI-S-005/006; zadania T-040…T-048; ścieżka anonimowa musi zostać nienaruszona."
         }
       ]
     },
