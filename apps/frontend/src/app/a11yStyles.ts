@@ -71,6 +71,9 @@ export const a11yStyles: Interpolation<Theme> = {
       backgroundColor: `${HC_BG} !important`,
       color: `${HC_TEXT} !important`,
     },
+  // Chips: the label's black box covered the rounded border; colour the chip, keep the label transparent.
+  'html.high-contrast #root .MuiChip-root': { backgroundColor: `${HC_BG} !important` },
+  'html.high-contrast #root .MuiChip-label': { backgroundColor: 'transparent !important' },
   // Outline frame sits on top of the field text: border only, no background.
   'html.high-contrast #root .MuiOutlinedInput-notchedOutline, html.high-contrast #root .MuiOutlinedInput-notchedOutline *':
     {
