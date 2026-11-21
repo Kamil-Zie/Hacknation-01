@@ -9,7 +9,7 @@ Plik `src/services/engine/__control__/control.test.ts` (uruchomienie: `npm test 
 - **KBW** (FAO-56, Allen i in. 1998: ETc = Kc · ET0, KBW = Σ(P − ETc)): 10-dniowa seria z dwoma wartościami Kc daje −32,2 mm. Percentyl, norma i anomalia: zbiór odniesienia z 70 próbek o znanych rangach (oczekiwane: percentyl 50, norma −330 mm, anomalia 0).
 - **Gleba** (Saxton i Rawls 2006, Soil Sci. Soc. Am. J. 70:1569–1578, równania 1–2): θ33 i θ1500 dla piasku gliniastego 85/5/OM 1% (przykład z ADR-007: 0,087 i 0,034), piaszczysto-gliniastej 60/13/OM 1,5% (jak Bronowice) i gliny 30/35/OM 2%. Wynik porównany z typowymi zakresami klas teksturalnych USDA (tolerancja ±0,02 m³/m³). TAW/RAW dla pszenicy ozimej (Zr 1,2 m, ograniczone do 1 m, p = 0,55): 101,9 / 56,1 mm.
 - **Klasa suszy** (ADR-007 §6): granice percentyla 10/11 i 30/31 oraz warunek Dr > RAW (także Dr = RAW).
-- **Podatność** (ADR-007 §7): 0, 2, 3, 5 i 6 sezonów z deficytem (low/medium/high), miesiące krytyczne, próg −60 mm bez gleby, „brak danych” przy < 8 latach.
+- **Podatność** (ADR-007 §7): 0, 2, 3, 5 i 6 sezonów z deficytem (low/medium/high), miesiące krytyczne, próg sezonu z deficytem: min. KBW60 w IV–IX poniżej −2·RAW (bez gleby −120 mm, decyzja koordynatora 13:38), „brak danych” przy < 8 latach.
 - **Pewność** (ADR-007 §10, ADR-008): suma wag 1,00; progi 0,55 i 0,80; kara za zapas NASA −0,05; komplet kar (0,50) i premia za zgodność satelity (+0,05).
 
 ## 2. Porównanie z niezależnym źródłem

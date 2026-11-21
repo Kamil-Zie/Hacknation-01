@@ -228,7 +228,7 @@ describe('control: drought class (ADR-007 section 6)', () => {
 
 describe('control: multi-year vulnerability (ADR-007 section 7)', () => {
   // Years 2015..2024, whole-year constant daily balance (Kc = 1, P = 0):
-  //   deficit year: ET0 = 1.0 -> any 60-day KBW = -60 < -RAW(50) -> season with deficit;
+  //   deficit year: ET0 = 1.0 -> min 60-day KBW in IV-IX = -60 < -2*RAW(25) = -50 -> season with deficit;
   //                 monthly KBW Apr..Sep = -30..-31 < -25 -> deficit month
   //   neutral year: ET0 = 0 -> KBW = 0, no deficit
   //   near-miss year: ET0 = 0.8 -> 60-day KBW = -48 > -50, month -24..-24.8 > -25: no deficit
@@ -252,7 +252,7 @@ describe('control: multi-year vulnerability (ADR-007 section 7)', () => {
     '%i deficit seasons give class %s',
     (count, expectedClass, expectedCritical) => {
       const deficit = years.slice(0, count);
-      const result = computeVulnerability(build(deficit, [2024]), '2025-06-15', () => 1, 50, null);
+      const result = computeVulnerability(build(deficit, [2024]), '2025-06-15', () => 1, 25, null);
       expect(result.yearsAnalyzed).toBe(10);
       expect(result.seasonsWithDeficit).toBe(count);
       expect(result.deficitYears).toEqual(deficit);
@@ -261,8 +261,8 @@ describe('control: multi-year vulnerability (ADR-007 section 7)', () => {
     },
   );
 
-  it('uses the -60 mm threshold and records a gap when there is no soil (RAW null)', () => {
-    // Deficit year KBW60 = -60, not < -60 -> no season with deficit.
+  it('uses the -120 mm threshold and records a gap when there is no soil (RAW null)', () => {
+    // Deficit year KBW60 = -60, not < -120 -> no season with deficit.
     const result = computeVulnerability(
       build([2015, 2016, 2017]),
       '2025-06-15',
