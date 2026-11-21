@@ -69,7 +69,10 @@ export function ReportHeader({
         <span>
           {place} · <b style={{ fontWeight: 700 }}>{formatNumber(parcel.areaHa, 1)} ha</b>
         </span>
-        <span aria-hidden>·</span>
+        {/* separator only on one-line layouts; on phones the date wraps and a lone dot looked like a glitch */}
+        <Box component="span" aria-hidden sx={{ display: { xs: 'none', md: 'inline' } }}>
+          ·
+        </Box>
         <Box
           component="span"
           sx={{
