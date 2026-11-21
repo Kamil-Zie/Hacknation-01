@@ -327,6 +327,9 @@ export async function computeSceneIndices(
     readGrid(open, red, window, readSignal),
     readGrid(open, nir, window, readSignal),
   ]);
+  // When the SCL read fails first (e.g. Planetary Computer token timeout), ndviRead is never awaited and its
+  // later rejection would be unhandled and kill the process; mark it handled here (awaiting it still throws).
+  ndviRead.catch(() => undefined);
   const ndmiRead = options.ndviOnly
     ? null
     : Promise.all([

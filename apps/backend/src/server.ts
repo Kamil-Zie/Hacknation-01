@@ -36,6 +36,14 @@ async function warmUpUldk(): Promise<void> {
   }
 }
 
+// Safety net for the demo: a stray rejected promise (e.g. a background source read) is logged instead of
+// crashing the whole API for everyone. Request errors still go through errorHandler.
+process.on('unhandledRejection', (reason) => {
+  logger.error(
+    `unhandled rejection (process kept alive): ${reason instanceof Error ? (reason.stack ?? reason.message) : String(reason)}`,
+  );
+});
+
 createApp().listen(env.PORT, () => {
   logger.info(`API listening on :${env.PORT}/api/v1`);
 });

@@ -252,6 +252,27 @@ test('computeSceneIndices: real cloudy SCL (32% valid) stops before the heavy ba
   assert.equal(outcome.indices!.ndvi, null);
 });
 
+test('computeSceneIndices: SCL read fails first, later band failures do not leak as unhandled rejections', async () => {
+  // Blocker 20261121-1725: Planetary Computer token timeout rejected the SCL read, and the parallel
+  // red/nir Promise.all rejected afterwards with no handler, which killed the Node process.
+  let call = 0;
+  const failing: OpenTiff = () => {
+    call += 1;
+    const delayMs = call === 1 ? 5 : 30; // SCL fails first, the other bands a bit later
+    return new Promise((_resolve, reject) =>
+      setTimeout(() => reject(new TypeError('fetch failed')), delayMs),
+    );
+  };
+  await assert.rejects(
+    computeSceneIndices(sceneOf('clear', '2026-05-23'), parcel.geometry, undefined, {
+      open: failing,
+    }),
+    TypeError,
+  );
+  // Give the later rejections time to settle; Vitest fails the run on any unhandled rejection.
+  await new Promise((resolve) => setTimeout(resolve, 60));
+});
+
 test('computeSceneIndices: ndviOnly and a cut NDMI read give NDVI with a Plan B note', async () => {
   const open = opener(filesFor('clear', clear));
   const only = await computeSceneIndices(
