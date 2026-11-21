@@ -1,17 +1,18 @@
-// UI-S-006 T-081 Panel: CTA, Moje działki, miejsce na Moje pola (T-079), household account page: active account name (rename via API-014), members and report history
+// UI-S-009 T-086 Dashboard: account header, tiles with ThreatMap (UI-C-017), parcels, drought, advice, reports, sources; members and fields stay until T-089/T-090 pages are filled
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import {
   Box,
   Button,
   Card,
   CardContent,
+  Link,
   MenuItem,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import {
   useAccountReportsQuery,
@@ -20,13 +21,16 @@ import {
   useRemoveMemberMutation,
   useRenameAccountMutation,
 } from '@/api/accounts';
+import { useAccountParcelsQuery } from '@/api/accountParcels';
+import { useReportQuery } from '@/api/analyses';
 import { ApiError } from '@/api/client';
-import { AccountReportHistory } from '@/components/AccountReportHistory/AccountReportHistory';
-import { MemberList } from '@/components/MemberList/MemberList';
+import { useSources } from '@/api/sources';
+import type { DroughtClass, ParcelOverview, Recommendation } from '@/api/types';
+import { DashboardTile } from '@/components/DashboardTile/DashboardTile';
 import { FieldList } from '@/components/FieldList/FieldList';
-import { RecentParcels } from '@/components/RecentParcels/RecentParcels';
-import { SectionCard } from '@/components/SectionCard/SectionCard';
-import { useRecentParcelsStore } from '@/store/recentParcels';
+import { MemberList } from '@/components/MemberList/MemberList';
+import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
+import { DROUGHT_WORDS, ThreatMap } from '@/components/ThreatMap/ThreatMap';
 import { useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
 
@@ -36,9 +40,36 @@ function toError(error: unknown): { code: string; message: string } | null {
   return { code: 'NETWORK_ERROR', message: 'Nie udało się połączyć. Spróbuj ponownie.' };
 }
 
+// retention first, then agrotechnics, then irrigation
+const CATEGORY_ORDER: Record<Recommendation['category'], number> = {
+  retention_landscape: 0,
+  retention_soil: 0,
+  agrotechnics: 1,
+  irrigation: 2,
+};
+
+const DROUGHT_ORDER: DroughtClass[] = ['severe', 'moderate', 'none', 'unknown'];
+
+const bigText = { fontSize: '1.125rem' } as const;
+const linkSx = { ...bigText, minHeight: 48, display: 'inline-flex', alignItems: 'center' } as const;
+
+function formatDate(iso: string): string {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? iso : date.toLocaleDateString('pl-PL');
+}
+
+function mostThreatened(items: ParcelOverview[]): ParcelOverview | null {
+  const atRisk = items.filter((item) => item.atRisk && item.lastReport);
+  atRisk.sort(
+    (a, b) =>
+      DROUGHT_ORDER.indexOf(a.lastReport?.droughtClass ?? 'unknown') -
+      DROUGHT_ORDER.indexOf(b.lastReport?.droughtClass ?? 'unknown'),
+  );
+  return atRisk[0] ?? null;
+}
+
 export function AccountPage() {
   const navigate = useNavigate();
-  const recent = useRecentParcelsStore((state) => state.items);
   const { token, accounts, activeAccountId, setActiveAccount } = useSessionStore();
   const accountId = activeAccountId ?? '';
   const members = useMembersQuery(activeAccountId, token);
@@ -46,27 +77,35 @@ export function AccountPage() {
   const remove = useRemoveMemberMutation(accountId, token ?? '');
   const rename = useRenameAccountMutation(accountId, token ?? '');
   const reports = useAccountReportsQuery(activeAccountId, token);
+  const parcels = useAccountParcelsQuery(activeAccountId, token);
+  const sources = useSources();
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const renameError = rename.error ? errorMessage(rename.error) : null;
 
-  // recent picks first, then parcels from saved reports (no duplicates)
-  const parcels = [...recent];
-  for (const report of reports.data ?? []) {
-    const { id, parcelNumber, region, commune } = report.parcel;
-    if (!parcels.some((item) => item.id === id)) {
-      parcels.push({ id, label: `${parcelNumber}, ${region} (${commune})` });
-    }
-  }
-  const myParcels = parcels.slice(0, 8);
+  const items = parcels.data ?? [];
+  const atRisk = items.filter((item) => item.atRisk);
+  const totalHa = items.reduce((sum, item) => sum + item.parcel.areaHa, 0);
+  const countByClass = (value: DroughtClass) =>
+    items.filter((item) => (item.lastReport?.droughtClass ?? 'unknown') === value).length;
+  const top = mostThreatened(items);
+  const topReport = useReportQuery(top?.lastReport?.id);
+  const advice = [...(topReport.data?.recommendations ?? [])].sort(
+    (a, b) => CATEGORY_ORDER[a.category] - CATEGORY_ORDER[b.category] || a.order - b.order,
+  )[0];
+
+  const openReport = (item: ParcelOverview) => {
+    if (item.lastReport) navigate(`/report/${item.lastReport.id}`);
+  };
+  const retryParcels = () => void parcels.refetch();
 
   const active = accounts.find((account) => account.id === activeAccountId);
 
   return (
-    <Stack spacing={3} sx={{ maxWidth: 1200, mx: 'auto' }}>
+    <Stack spacing={3} sx={{ maxWidth: 1600, mx: 'auto' }}>
       <Box>
         <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-          Panel gospodarstwa
+          Pulpit gospodarstwa
         </Typography>
         {isEditing && active ? (
           <Stack
@@ -140,7 +179,7 @@ export function AccountPage() {
             sx={{ mt: 2, minWidth: 260 }}
           >
             {accounts.map((account) => (
-              <MenuItem key={account.id} value={account.id} sx={{ minHeight: 44 }}>
+              <MenuItem key={account.id} value={account.id} sx={{ minHeight: 48 }}>
                 {account.name}
               </MenuItem>
             ))}
@@ -160,33 +199,137 @@ export function AccountPage() {
         sx={{
           display: 'grid',
           gap: 3,
-          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
-          alignItems: 'start',
+          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(3, minmax(0, 1fr))' },
         }}
       >
-        <SectionCard id="moje-dzialki" title="Moje działki" headingLevel="h2">
-          {myParcels.length === 0 ? (
-            <Typography>Nie sprawdzano jeszcze żadnej działki.</Typography>
+        <DashboardTile
+          id="zagrozone-dzialki"
+          title="Zagrożone działki"
+          isLoading={parcels.isPending}
+          isError={parcels.isError}
+          onRetry={retryParcels}
+          errorText="Nie udało się pobrać działek."
+          sx={{ gridColumn: { lg: 'span 2' }, gridRow: { lg: 'span 2' } }}
+        >
+          {items.length === 0 ? (
+            <Typography sx={bigText}>
+              Nie masz jeszcze działek. Sprawdź pierwszą działkę.
+            </Typography>
           ) : (
-            <RecentParcels
-              items={myParcels}
-              currentId={null}
-              onSelect={(id) => navigate(`/parcel/${encodeURIComponent(id)}`)}
-            />
+            <Stack spacing={2}>
+              {atRisk.length === 0 && (
+                <Typography sx={{ ...bigText, fontWeight: 700 }}>
+                  Żadna działka nie jest zagrożona
+                </Typography>
+              )}
+              <ThreatMap items={items} onSelect={openReport} />
+            </Stack>
           )}
-        </SectionCard>
-        {/* T-079 Moje pola (Dawid's FieldList has its own heading and actions) */}
-        <Card component="section" id="moje-pola">
-          <CardContent>
-            <FieldList />
-          </CardContent>
-        </Card>
+        </DashboardTile>
+        <DashboardTile
+          id="twoje-dzialki"
+          title="Twoje działki"
+          isLoading={parcels.isPending}
+          isError={parcels.isError}
+          onRetry={retryParcels}
+          isEmpty={items.length === 0}
+          emptyText="Nie masz jeszcze działek."
+        >
+          <Stack spacing={0.5}>
+            <Typography sx={bigText}>Liczba działek: {items.length}</Typography>
+            <Typography sx={bigText}>
+              Razem: {totalHa.toLocaleString('pl-PL', { maximumFractionDigits: 2 })} ha
+            </Typography>
+            <Typography sx={bigText}>Zagrożone: {atRisk.length}</Typography>
+          </Stack>
+        </DashboardTile>
+        <DashboardTile
+          id="stan-suszy"
+          title="Stan suszy"
+          isLoading={parcels.isPending}
+          isError={parcels.isError}
+          onRetry={retryParcels}
+          isEmpty={items.length === 0}
+          emptyText="Brak działek do oceny."
+        >
+          <Stack spacing={1}>
+            {DROUGHT_ORDER.map((value) => (
+              <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
+                <Typography sx={bigText}>{countByClass(value)}</Typography>
+              </Stack>
+            ))}
+          </Stack>
+        </DashboardTile>
+        <DashboardTile
+          id="najwazniejsze-teraz"
+          title="Najważniejsze teraz"
+          isLoading={parcels.isPending || (top !== null && topReport.isPending)}
+          isError={parcels.isError || topReport.isError}
+          onRetry={() => {
+            retryParcels();
+            void topReport.refetch();
+          }}
+          isEmpty={top === null || !advice}
+          emptyText="Na razie nic pilnego. Gdy działka będzie zagrożona, podpowiemy, co zrobić."
+        >
+          {top && advice && (
+            <Stack spacing={1}>
+              <Typography sx={{ ...bigText, fontWeight: 700 }}>{advice.title}</Typography>
+              <Typography sx={bigText}>{advice.action}</Typography>
+              <Link component={RouterLink} to={`/report/${top.lastReport?.id ?? ''}`} sx={linkSx}>
+                {`Działka ${top.parcel.parcelNumber}, ${top.parcel.region} – zobacz raport`}
+              </Link>
+            </Stack>
+          )}
+        </DashboardTile>
+        <DashboardTile
+          id="ostatnie-raporty"
+          title="Ostatnie raporty"
+          isLoading={reports.isPending}
+          isError={reports.isError}
+          onRetry={() => void reports.refetch()}
+          errorText="Nie udało się pobrać historii raportów."
+          isEmpty={(reports.data ?? []).length === 0}
+          emptyText="Brak zapisanych raportów."
+        >
+          <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'none' }}>
+            {(reports.data ?? []).slice(0, 3).map((report) => (
+              <Box component="li" key={report.id} sx={{ py: 0.5 }}>
+                <Link component={RouterLink} to={`/report/${report.id}`} sx={linkSx}>
+                  {`${report.parcel.parcelNumber}, ${report.parcel.region} – ${formatDate(report.createdAt)}`}
+                </Link>
+                <Typography component="span" sx={bigText}>
+                  {` · ${DROUGHT_WORDS[report.droughtClass]}`}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </DashboardTile>
+        <DashboardTile
+          id="skad-dane"
+          title="Skąd dane"
+          isLoading={sources.isPending}
+          isError={sources.isError}
+          onRetry={() => void sources.refetch()}
+          isEmpty={(sources.data?.items ?? []).length === 0}
+          emptyText="Brak informacji o źródłach."
+        >
+          <Box component="ul" sx={{ m: 0, pl: 3 }}>
+            {(sources.data?.items ?? []).map((source) => (
+              <Typography component="li" key={source.id} sx={bigText}>
+                {`${source.name} (${source.provider})`}
+              </Typography>
+            ))}
+          </Box>
+        </DashboardTile>
       </Box>
+      {/* Until /wspolnicy (T-090) and /pola (T-089) are filled in, members and fields stay here */}
       <Box
         sx={{
           display: 'grid',
           gap: 3,
-          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: '400px minmax(0, 1fr)' },
+          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
           alignItems: 'start',
         }}
       >
@@ -211,9 +354,12 @@ export function AccountPage() {
             </Stack>
           </CardContent>
         </Card>
-        <Box sx={{ minWidth: 0 }}>
-          <AccountReportHistory />
-        </Box>
+        {/* T-079 Moje pola (FieldList has its own heading and actions) */}
+        <Card component="section" id="moje-pola">
+          <CardContent>
+            <FieldList />
+          </CardContent>
+        </Card>
       </Box>
     </Stack>
   );
