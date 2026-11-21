@@ -56,8 +56,8 @@
       "demo_scenario": [
         {
           "step": 1,
-          "user_action": "Rolnik otwiera aplikację w przeglądarce (telefon albo desktop) bez instalacji i logowania.",
-          "result": "Ekran startowy z jednym polem na numer działki, mapą Polski i krótkim objaśnieniem „Sprawdź wodę na swojej działce”.",
+          "user_action": "Rolnik otwiera aplikację w przeglądarce (telefon albo desktop) bez instalacji, loguje się albo zakłada konto w jednym kroku.",
+          "result": "Ekran logowania „Sprawdź wodę na swojej działce”, po zalogowaniu Panel z przyciskiem „Sprawdź nową działkę”, a dalej pole na numer działki i mapa Polski (ADR-010 aktualizacja 21:20).",
           "contract_refs": ["UI-S-001", "UI-C-001", "UI-C-002"]
         },
         {

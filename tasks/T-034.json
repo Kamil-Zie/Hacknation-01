@@ -23,6 +23,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 21:20: po T-081 zaktualizować instrukcję dla jury (README, docs/zgloszenie.md, slajdy, scenariusz): start od logowania + konto demonstracyjne na prod.",
     "coord-1 20:00: draft w HackTribe zgłoszony przez Kamila. README zostaje do aktualizacji (link prod) do oddania nd 11:00.",
     "coord-1 18:25: ceny Open-Meteo (Standard ok. 29, Professional ok. 99 USD/mies.) i Atlas (Flex do 30, M10 ok. 57 USD/mies.) z datą sprawdzenia; §2 nowe funkcje (nazwa gospodarstwa, podgląd działki, nawigacja); test czystego klonu OK: npm install 7 s, typecheck, build, test 290/290. Zostaje: link prod (T-065), tabela IUNG na ERA5 (T-055).",
     "coord-1 18:15: Robi coord-1 (decyzja Kamila 18:17, przekazanie cofnięte). Zostało: (1) ceny do potwierdzenia w §8: Open-Meteo plan komercyjny z Historical API (open-meteo.com/en/pricing) i MongoDB Atlas najmniejszy płatny tier – podać kwotę/mies. i datę sprawdzenia; (2) test 'czysty klon': git clone do /tmp, kroki z README §1 dosłownie, popraw instrukcję, jeśli coś nie działa; (3) README §2 opisz nowe: Podgląd tej działki, nawigacja Panel/Szukaj/Dodaj działkę, nazwa gospodarstwa (T-056..T-059); (4) później: link prod (T-065) i tabela IUNG na ERA5 (Jan, T-055).",

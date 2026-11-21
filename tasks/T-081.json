@@ -1,0 +1,30 @@
+{
+  "id": "T-081",
+  "title": "Logowanie jako ekran startowy: bez sesji / → logowanie, po zalogowaniu Panel (działki, pola, historia)",
+  "description": "Decyzja Kamila 21:20 (ADR-010 aktualizacja). Plik: app/router.tsx (+ komponent RequireAuth w components/), pages/Login, pages/Account.\n(1) Trasy '/', '/parcel/:parcelId', '/konto' (i przyszłe pola) wymagają sesji: bez tokenu przekierowanie na /logowanie z zapamiętaniem docelowego adresu (state.from), po zalogowaniu powrót tam albo na Panel.\n(2) Po zalogowaniu/rejestracji domyślnie Panel (/konto): u góry duży przycisk 'Sprawdź nową działkę' (→ wyszukiwanie), 'Moje działki' (ostatnie i z historii raportów), 'Moje pola' (miejsce na T-079), historia raportów.\n(3) Ekran logowania jako strona startowa: logo Kropelka, jedno zdanie 'Sprawdź wodę na swojej działce', zakładki 'Zaloguj się' / 'Załóż konto' (rejestracja w jednym kroku), duże pola.\n(4) Publiczne zostają: /report/:id i /report/:id/print (linki do udostępniania, ADR-010 pkt 5).\n(5) Wylogowanie → /logowanie. Wygasły token (401) → /logowanie z komunikatem 'Zaloguj się ponownie'.\n\nUX dla wieku 18–99: tekst ≥ 18 px, przyciski ≥ 48 px, kontrast AA, proste słowa.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-005", "UI-S-006", "UI-S-001", "API-008", "API-009"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Nowa przeglądarka bez sesji: / i /parcel/... → /logowanie; /report/:id otwiera się bez logowania",
+    "Po zalogowaniu Panel z 'Sprawdź nową działkę'; po wejściu z linku powrót na docelowy adres",
+    "Rejestracja → od razu Panel",
+    "Token wygasły → /logowanie z komunikatem",
+    "UX 18–99 sprawdzony na 390 px i 1440 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:20: zmienia krok 1 scenariusza demo – priorytet przed T-073. Backend bez zmian (POST /analyses dalej działa bez konta)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

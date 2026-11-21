@@ -28,3 +28,9 @@ Rolnik pracuje sam albo dzieli działki z rodziną, wspólnikiem czy doradcą OD
 ## Aktualizacja 2026-11-21 16:45
 
 - Zamiast `jose` JWT HS256 na `crypto.createHmac` (backend-2): zero nowych zależności. Kontrakt 0.4.0 (T-040) według propozycji frontend-1 20261121-1632, listy w standardzie `{ items, page, pageSize, total }`.
+
+## Aktualizacja 2026-11-21 21:20 (decyzja Kamila)
+
+- **Logowanie jest ekranem startowym.** Bez sesji aplikacja otwiera `/logowanie` (zakładki „Zaloguj się” / „Załóż konto”), po zalogowaniu domyślnie Panel (`/konto`: działki, pola, historia, „Sprawdź nową działkę”). Wyszukiwanie działki i krok uprawy wymagają sesji (T-081).
+- **Publiczne zostają linki do raportów** `/report/:id` i `/report/:id/print` (pkt 5). Backend bez zmian: `POST /analyses` dalej przyjmuje żądania bez tokenu.
+- Konsekwencja dla jury: README i instrukcja w zgłoszeniu muszą podać konto demonstracyjne albo krok „Załóż konto” (T-034).
