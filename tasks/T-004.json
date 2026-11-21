@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-001", "T-DB-001"],
   "contract_refs": ["API-006", "DM-002", "DM-005", "DM-011"],
@@ -18,7 +18,8 @@
   ],
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
-    "Agent: be-api. Szacunek: 2h. Faza: ULDK (krok 2). ADR-006 sekcje „Decyzja: budżet czasu” i „awaria źródła”."
+    "Agent: be-api. Szacunek: 2h. Faza: ULDK (krok 2). ADR-006 sekcje „Decyzja: budżet czasu” i „awaria źródła”.",
+    "Zrobione (backend-2): services/sources/{types,catalog,cache.service,runSource}.ts + GET /api/v1/sources (curl: 7 źródeł). runSource<T>({ sourceId, key, fetcher(signal), timeoutMs?, ttlMs?, retries=1, signal?, cache? }) nigdy nie rzuca; status wg DM-011 (ok|cached|missing|error|timeout). Fetcher przy HTTP != 2xx rzuca HttpStatusError (eksport z runSource.ts): 4xx bez ponowienia, 5xx/sieć 1 ponowienie; timeout obejmuje wszystkie próby. Testy: npm test -w @kropla/backend (node:test, 5/5). Uwaga: ADR-006 ma dla ULDK 8 s w tabeli i 10 s w notatkach z weryfikacji; katalog = 8000 jak kontrakt, T-005 poda timeoutMs 10000."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
