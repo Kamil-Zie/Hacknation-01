@@ -210,14 +210,16 @@ test('eumetsat is always missing but does not make the report partial', async ()
   assert.deepEqual(gapIds(report), ['eumetsat']);
 });
 
-test('required source failing (Open-Meteo 503) gives partial, a data gap and lower confidence', async () => {
+test('Open-Meteo 503 with working NASA fallback: not partial, data gap, replaced message, lower confidence', async () => {
   const complete = await createAnalysis(BODY, makeDeps().deps);
   const { deps, saved } = makeDeps({ archiveStatus: 503 });
   const report = await createAnalysis(BODY, deps);
 
-  assert.equal(report.status, 'partial');
+  // Coordinator decision 13:42: nasa_power (role fallback, ok) covers meteo and era5land.
+  assert.equal(report.status, complete.status);
   assert.ok(gapIds(report).includes('meteo'));
   assert.equal(report.sources.find((s) => s.sourceId === 'meteo')?.status, 'error');
+  assert.match(report.sources.find((s) => s.sourceId === 'meteo')?.message ?? '', /nasa_power/);
   assert.equal(report.sources.find((s) => s.sourceId === 'nasa_power')?.role, 'fallback');
   assert.equal(report.assessment.soilMoistureSatellite?.fallback, true);
   assert.ok(report.assessment.confidenceScore < complete.assessment.confidenceScore);

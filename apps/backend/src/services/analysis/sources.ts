@@ -189,8 +189,14 @@ export function buildSources(
   run: SourceRun,
   isSoilMoistureFromEra5: boolean,
 ): SourceStatusDto[] {
+  const nasaFallbackOk = isNasaFallbackOk(resultFor('nasa_power', uldk, run, false));
   return SOURCES.map((source) => {
     const result = resultFor(source.id, uldk, run, isSoilMoistureFromEra5);
+    const replaced =
+      nasaFallbackOk &&
+      COVERED_BY_NASA_FALLBACK.includes(source.id) &&
+      result.status !== 'ok' &&
+      result.status !== 'cached';
     return {
       sourceId: source.id,
       name: source.name,
@@ -203,19 +209,35 @@ export function buildSources(
       dataPeriod: result.dataPeriod?.replace('/', '–') ?? null,
       fetchedAt: result.fetchedAt?.toISOString() ?? null,
       durationMs: result.durationMs,
-      message: result.message,
+      message: replaced ? MSG_REPLACED_BY_NASA : result.message,
       role: result.role ?? null,
     };
   });
 }
 
-function isAvailable(source: SourceStatusDto): boolean {
+function isAvailable(source: { status: string }): boolean {
   return source.status === 'ok' || source.status === 'cached';
 }
 
-// DM-001: partial when any required source failed; EUMETSAT is optional and ignored.
+// Sources that nasa_power (role fallback, ok/cached) replaces when Open-Meteo fails
+// (ADR-008, ADR-009, coordinator decision 13:42; same rule as reportStatus in services/report/sources.ts).
+const COVERED_BY_NASA_FALLBACK: SourceId[] = ['meteo', 'era5land'];
+const MSG_REPLACED_BY_NASA = 'Zastąpione przez nasa_power (dane zapasowe NASA POWER)';
+
+function isNasaFallbackOk(source: { status: string; role?: string | null }): boolean {
+  return source.role === 'fallback' && isAvailable(source);
+}
+
+// DM-001: partial when any required source failed; EUMETSAT is optional and ignored;
+// meteo and era5land count as covered when nasa_power works as their fallback.
 export function hasMissingRequired(sources: SourceStatusDto[]): boolean {
-  return sources.some((source) => source.sourceId !== 'eumetsat' && !isAvailable(source));
+  const nasaFallbackOk = sources.some((s) => s.sourceId === 'nasa_power' && isNasaFallbackOk(s));
+  return sources.some(
+    (source) =>
+      source.sourceId !== 'eumetsat' &&
+      !isAvailable(source) &&
+      !(nasaFallbackOk && COVERED_BY_NASA_FALLBACK.includes(source.sourceId)),
+  );
 }
 
 function impactFor(sourceId: SourceId, context: GapContext): string {
