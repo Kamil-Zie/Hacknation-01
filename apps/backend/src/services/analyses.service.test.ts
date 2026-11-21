@@ -9,6 +9,7 @@ import { createAnalysis, defaultAnalysesDeps } from '@/services/analyses.service
 import type { AnalysesDeps, ReportDto } from '@/services/analyses.service';
 import type { SoilLayer } from '@/services/engine/soil';
 import type { CachedEntry, SourceCacheStore } from '@/services/sources/cache.service';
+import type { ElevationData } from '@/services/sources/elevation.source';
 import { fetchMeteo, parseOpenMeteoResponse } from '@/services/sources/meteo.source';
 import type { parsePowerResponse } from '@/services/sources/nasaPower.source';
 import type { SourceId, SourceResult } from '@/services/sources/types';
@@ -37,6 +38,15 @@ const SOIL_LAYERS: SoilLayer[] = [
   { topCm: 0, bottomCm: 30, sandPct: 60, clayPct: 13, socPct: 1.1 },
   { topCm: 30, bottomCm: 100, sandPct: 60, clayPct: 13, socPct: 0.8 },
 ];
+const ELEVATION: ElevationData = {
+  minM: 180,
+  maxM: 186,
+  meanM: 183,
+  elevationDiffM: 6,
+  slopePct: 4,
+  aspect: 'południe',
+  lowestPoint: { lat: 51.43, lon: 21.92 },
+};
 const EXAMPLE_KEYS = [
   'analysisDate',
   'assessment',
@@ -116,7 +126,7 @@ function makeDeps(
     fetchers: {
       sentinel2: okSource('sentinel2'),
       soilgrids: okSource('soilgrids', SOIL_LAYERS),
-      elevation: okSource('elevation'),
+      elevation: okSource('elevation', ELEVATION),
       overpass: okSource('overpass'),
     },
     saveReport: async (report) => {
@@ -215,6 +225,55 @@ test('sources still in preparation count as missing (partial) with a clear messa
   assert.equal(soilgrids?.status, 'missing');
   assert.equal(soilgrids?.message, 'Źródło w przygotowaniu');
   assert.ok(gapIds(report).includes('soilgrids'));
+});
+
+test('soil and terrain feed the report: soilWater, vulnerability.soil, terrain rules and causes', async () => {
+  const report = await createAnalysis(BODY, makeDeps().deps);
+  assert.ok(report.assessment.soilWater && report.assessment.soilWater.tawMm > 0);
+  assert.ok(report.vulnerability.soil && report.vulnerability.soil.sandPct === 60);
+  assert.ok(report.assessment.soilMoistureSatellite?.rootZonePct !== null);
+  assert.ok(report.causes.some((cause) => cause.code === 'surface_runoff'));
+  const buffer = report.recommendations.find((rec) => rec.ruleId === 'R-LAND-02');
+  assert.equal(buffer?.where, 'wzdłuż południowej granicy działki (w dół spadku)');
+  assert.deepEqual(buffer?.location, ELEVATION.lowestPoint);
+  assert.ok(report.recommendations.some((rec) => rec.ruleId === 'R-AGRO-03'));
+  assert.ok(!report.limitations.some((text) => text.includes('ograniczono')));
+});
+
+test('SoilGrids organic matter above 4% is capped and reported in evidence and limitations', async () => {
+  const { deps } = makeDeps();
+  const rich: SoilLayer[] = SOIL_LAYERS.map((layer) => ({ ...layer, socPct: 4.86 }));
+  deps.fetchers = { ...deps.fetchers, soilgrids: okSource('soilgrids', rich) };
+  const report = await createAnalysis(BODY, deps);
+  assert.ok(report.limitations.some((text) => text.includes('ograniczono do 4%')));
+  assert.ok(
+    report.vulnerability.evidence.some((item) => item.label.includes('Materia organiczna')),
+  );
+});
+
+test('SoilGrids error: no soilWater, no soil in vulnerability, data gap soilgrids, partial', async () => {
+  const { deps } = makeDeps();
+  deps.fetchers = {
+    ...deps.fetchers,
+    soilgrids: async () => ({
+      sourceId: 'soilgrids',
+      status: 'error',
+      data: null,
+      message: 'Źródło zwróciło błąd',
+      fetchedAt: null,
+      dataPeriod: null,
+      durationMs: 1,
+    }),
+  };
+  const report = await createAnalysis(BODY, deps);
+  assert.equal(report.status, 'partial');
+  assert.equal(report.assessment.soilWater, null);
+  assert.equal(report.vulnerability.soil, null);
+  assert.ok(gapIds(report).includes('soilgrids'));
+});
+
+test('default deps register SoilGrids and elevation fetchers only', () => {
+  assert.deepEqual(Object.keys(defaultAnalysesDeps.fetchers).sort(), ['elevation', 'soilgrids']);
 });
 
 test('no parcel geometry gives 502 UPSTREAM_UNAVAILABLE, unknown parcel gives 404', async () => {

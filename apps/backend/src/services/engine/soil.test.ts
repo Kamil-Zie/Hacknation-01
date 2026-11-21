@@ -74,6 +74,14 @@ describe('computeSoilWater', () => {
     });
   });
 
+  it('caps OM at 4% and reports it (SOC 4.86% = OM 8.4%)', () => {
+    const { result } = computeSoilWater(uniformLayers(40, 20, 4.86), 1.0, 0.5);
+    expect(result!.omClipped).toEqual({ originalPct: 8.4, usedPct: 4 });
+    const capped = computeSoilWater(uniformLayers(40, 20, 2.32), 1.0, 0.5).result!;
+    expect(result!.tawMm).toBeCloseTo(capped.tawMm, 5);
+    expect(computeSoilWater(uniformLayers(85, 5, 0.58), 1.0, 0.5).result!.omClipped).toBeNull();
+  });
+
   it('scales TAW with root depth and caps it at 1 m', () => {
     const layers = uniformLayers(30, 30, 1.5);
     const half = computeSoilWater(layers, 0.5, 0.55).result!;

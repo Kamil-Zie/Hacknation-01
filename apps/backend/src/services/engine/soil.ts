@@ -19,7 +19,11 @@ export type SoilProfile = {
   categoryLabel: string;
 };
 
+// Set when organic matter (SOC x 1.724) was capped at MAX_OM_PCT; depth-weighted means.
+export type OmClipped = { originalPct: number; usedPct: number };
+
 export type SoilWaterCapacity = {
+  omClipped: OmClipped | null;
   soil: SoilProfile;
   tawMm: number;
   rawMm: number;
@@ -32,7 +36,9 @@ export type SoilWaterOutcome = { result: SoilWaterCapacity | null; reason: strin
 export const MAX_ROOT_DEPTH_M = 1.0;
 export const MIN_COVERAGE_FRACTION = 0.5;
 const SOC_TO_OM = 1.724;
-const MAX_OM_PCT = 8;
+// Coordinator decision (ack 20261121-1328): arable soils in Poland have 1-3% OM, SoilGrids
+// SOC 0-5 cm can be overestimated, so OM is capped at 4%.
+export const MAX_OM_PCT = 4;
 
 function round1(value: number): number {
   return Math.round(value * 10) / 10;
@@ -92,6 +98,9 @@ export function computeSoilWater(
   let soc = 0;
   let fc = 0;
   let wp = 0;
+  let omOriginal = 0;
+  let omUsed = 0;
+  let isClipped = false;
   for (const layer of layers) {
     if (layer.sandPct === null || layer.clayPct === null || layer.socPct === null) continue;
     const top = Math.min(layer.topCm / 100, depthM);
@@ -100,6 +109,9 @@ export function computeSoilWater(
     if (thickness <= 0) continue;
     const om = layer.socPct * SOC_TO_OM;
     const theta = saxtonRawls(layer.sandPct / 100, layer.clayPct / 100, om);
+    if (om > MAX_OM_PCT) isClipped = true;
+    omOriginal += om * thickness;
+    omUsed += Math.min(om, MAX_OM_PCT) * thickness;
     covered += thickness;
     tawMm += 1000 * (theta.fieldCapacity - theta.wiltingPoint) * thickness;
     sand += layer.sandPct * thickness;
@@ -119,6 +131,9 @@ export function computeSoilWater(
   const category = soilCategory(sandPct);
   return {
     result: {
+      omClipped: isClipped
+        ? { originalPct: round1(omOriginal / covered), usedPct: round1(omUsed / covered) }
+        : null,
       soil: {
         sandPct: round1(sandPct),
         siltPct: round1(100 - sandPct - clayPct),

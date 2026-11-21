@@ -15,10 +15,14 @@ import type { DataGapDto, SourceFetchers, SourceStatusDto } from '@/services/ana
 import type { Cause } from '@/services/engine/causes';
 import { getCrop } from '@/services/engine/crops';
 import type { SoilLayer } from '@/services/engine/soil';
+import { fmt } from '@/services/engine/format';
 import type { Recommendation } from '@/services/engine/recommendations';
 import type { VulnerabilityResult } from '@/services/engine/vulnerability';
+import { fetchElevation } from '@/services/sources/elevation.source';
+import type { ElevationData } from '@/services/sources/elevation.source';
 import { fetchMeteo } from '@/services/sources/meteo.source';
 import type { MeteoOutcome } from '@/services/sources/meteo.source';
+import { fetchSoilGrids } from '@/services/sources/soilgrids.source';
 import type { SourceResult } from '@/services/sources/types';
 import { fetchParcelById } from '@/services/sources/uldk.source';
 import type { ParcelData } from '@/services/sources/uldk.source';
@@ -87,7 +91,11 @@ export type AnalysesDeps = {
 export const defaultAnalysesDeps: AnalysesDeps = {
   fetchParcel: (parcelId, signal) => fetchParcelById(parcelId, signal),
   fetchMeteo: (lat, lon, analysisDate, signal) => fetchMeteo(lat, lon, analysisDate, signal),
-  fetchers: {},
+  fetchers: {
+    soilgrids: ({ parcel, signal }) =>
+      fetchSoilGrids(parcel.centroid.lat, parcel.centroid.lon, signal),
+    elevation: ({ parcel, signal }) => fetchElevation(parcel, signal),
+  },
   saveReport: async (report) => {
     // No database connection: return the report without saving (no waiting for mongoose buffering).
     if (mongoose.connection.readyState !== CONNECTED) {
@@ -111,10 +119,18 @@ function requireParcel(result: SourceResult<ParcelData>): ParcelData & { fetched
   return { ...result.data, fetchedAt: (result.fetchedAt ?? new Date()).toISOString() };
 }
 
-// Future SoilGrids fetcher returns SoilLayer[] as data.
+function isUsable(result: SourceResult<unknown>): boolean {
+  return result.status === 'ok' || result.status === 'cached';
+}
+
+// The SoilGrids fetcher returns SoilGridsLayer[] (SoilLayer + siltPct) as data.
 function soilLayersFrom(result: SourceResult<unknown>): SoilLayer[] | null {
-  const isUsable = result.status === 'ok' || result.status === 'cached';
-  return isUsable && Array.isArray(result.data) ? (result.data as SoilLayer[]) : null;
+  return isUsable(result) && Array.isArray(result.data) ? (result.data as SoilLayer[]) : null;
+}
+
+function terrainFrom(result: SourceResult<unknown>): ElevationData | null {
+  const data = result.data as ElevationData | null;
+  return isUsable(result) && data && typeof data.slopePct === 'number' ? data : null;
 }
 
 export async function createAnalysis(
@@ -149,9 +165,9 @@ export async function createAnalysis(
     parcel,
     meteo: run.meteo,
     soilLayers: soilLayersFrom(run.extras.soilgrids),
+    terrain: terrainFrom(run.extras.elevation),
     available: {
       sentinel2: run.extras.sentinel2.status === 'ok' || run.extras.sentinel2.status === 'cached',
-      terrain: run.extras.elevation.status === 'ok' || run.extras.elevation.status === 'cached',
       hydrology: run.extras.overpass.status === 'ok' || run.extras.overpass.status === 'cached',
     },
   });
@@ -161,6 +177,11 @@ export async function createAnalysis(
   const dataGaps = buildDataGaps(sources, engine.flags);
   const limitations = [
     ...LIMITATIONS_BEFORE_SPLIT,
+    ...(engine.flags.omClipped
+      ? [
+          `Zawartość materii organicznej z SoilGrids ${fmt(engine.flags.omClipped.originalPct)}% ograniczono do ${fmt(engine.flags.omClipped.usedPct)}%, typowej dla gleb ornych.`,
+        ]
+      : []),
     ...run.meteo.limitations,
     ...LIMITATIONS_AFTER_SPLIT,
   ];

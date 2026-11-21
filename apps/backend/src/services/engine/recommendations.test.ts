@@ -89,11 +89,11 @@ describe('computeRecommendations', () => {
     const irr = recs.find((r) => r.ruleId === 'R-IRR-01');
     expect(irr?.irrigation).toEqual({
       isJustified: true,
-      netDoseMm: 52,
-      grossDoseMm: 69.3,
-      doseM3PerHa: 693,
+      netDoseMm: 30,
+      grossDoseMm: 40,
+      doseM3PerHa: 400,
       window: 'najbliższe 3–5 dni, rano lub wieczorem',
-      nextCheckInDays: 10,
+      nextCheckInDays: 6,
     });
     expect(irr?.action).toContain('5 m³/dobę');
     expect(recs.find((r) => r.ruleId === 'R-LAND-02')?.where).toBe(
@@ -160,12 +160,34 @@ describe('computeRecommendations', () => {
     ).toEqual([]);
   });
 
-  it('computes the irrigation dose from Dr 60 and RAW 52', () => {
+  it('caps the net dose at 30 mm per application (Dr 60, RAW 52: deficit 52, 2 applications)', () => {
     const irr = computeRecommendations(sandy).find((r) => r.ruleId === 'R-IRR-01');
-    expect(irr?.irrigation?.netDoseMm).toBe(52);
-    expect(irr?.irrigation?.grossDoseMm).toBe(69.3);
-    expect(irr?.irrigation?.doseM3PerHa).toBe(693);
+    expect(irr?.irrigation?.netDoseMm).toBe(30);
+    expect(irr?.irrigation?.grossDoseMm).toBe(40);
+    expect(irr?.irrigation?.doseM3PerHa).toBe(400);
     expect(irr?.why).toContain('60 mm');
+    expect(irr?.why).toContain('52 mm');
+    expect(irr?.why).toContain('2 zabiegi');
+    expect(irr?.why).toContain('co ok. 6 dni');
+  });
+
+  it('uses a single application when the deficit is within the cap', () => {
+    const irr = computeRecommendations({ ...sandy, depletionMm: 25, rawMm: 20 }).find(
+      (r) => r.ruleId === 'R-IRR-01',
+    );
+    expect(irr?.irrigation?.isJustified).toBe(true);
+    expect(irr?.irrigation?.netDoseMm).toBe(20);
+    expect(irr?.why).toContain('1 zabieg');
+  });
+
+  it('accepts elevation source aspect names', () => {
+    const recs = computeRecommendations({
+      ...sandy,
+      terrain: { ...sandy.terrain!, aspect: 'południowy wschód' },
+    });
+    expect(recs.find((r) => r.ruleId === 'R-LAND-02')?.where).toBe(
+      'wzdłuż południowo-wschodniej granicy działki (w dół spadku)',
+    );
   });
 
   it('marks irrigation unjustified when Dr is below RAW', () => {

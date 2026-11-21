@@ -79,6 +79,8 @@ const IRRIGATION_FIRST_MONTH = 4;
 const IRRIGATION_LAST_MONTH = 9;
 const IRRIGATION_EFFICIENCY = 0.75;
 const M3_PER_HA_PER_MM = 10;
+// Coordinator decision (ack 20261121-1328): net dose per application capped at 30 mm.
+const MAX_NET_DOSE_PER_APPLICATION_MM = 30;
 const WATER_PERMIT_NOTE = 'Pobór wody powyżej 5 m³/dobę wymaga zgody wodnoprawnej (Prawo wodne).';
 const IRRIGATION_WINDOW = 'najbliższe 3–5 dni, rano lub wieczorem';
 const SUMMER_HARVEST_CROPS: CropCode[] = [
@@ -118,6 +120,15 @@ const ASPECT_ADJECTIVE: Record<string, string> = {
   SW: 'południowo-zachodniej',
   W: 'zachodniej',
   NW: 'północno-zachodniej',
+  // Names produced by the elevation source (direction the terrain falls towards).
+  północ: 'północnej',
+  'północny wschód': 'północno-wschodniej',
+  wschód: 'wschodniej',
+  'południowy wschód': 'południowo-wschodniej',
+  południe: 'południowej',
+  'południowy zachód': 'południowo-zachodniej',
+  zachód: 'zachodniej',
+  'północny zachód': 'północno-zachodniej',
 };
 
 function round(value: number, digits = 1): number {
@@ -173,7 +184,9 @@ function vulnerabilityText(input: RecommendationsInput): string {
 }
 
 function aspectWhere(aspect: string | null): string {
-  const adjective = aspect ? ASPECT_ADJECTIVE[aspect.toUpperCase()] : undefined;
+  const adjective = aspect
+    ? (ASPECT_ADJECTIVE[aspect.toLowerCase()] ?? ASPECT_ADJECTIVE[aspect.toUpperCase()])
+    : undefined;
   return adjective
     ? `wzdłuż ${adjective} granicy działki (w dół spadku)`
     : 'w dolnej części działki (w dół spadku)';
@@ -555,22 +568,31 @@ function irrigationRule(input: RecommendationsInput): Draft {
     };
   }
 
-  const netDose = Math.min(depletionMm, rawMm);
+  const deficit = Math.min(depletionMm, rawMm);
+  const netDose = Math.min(deficit, MAX_NET_DOSE_PER_APPLICATION_MM);
   const grossDose = round(netDose / IRRIGATION_EFFICIENCY);
   const doseM3PerHa = Math.round(grossDose * M3_PER_HA_PER_MM);
-  const nextCheckInDays =
-    etc7DayMeanMm !== null && etc7DayMeanMm > 0 ? Math.round(rawMm / etc7DayMeanMm) : null;
-  const nextCheckText =
-    nextCheckInDays !== null
-      ? ` Kolejna kontrola za ok. ${nextCheckInDays} dni (RAW ${fmt(rawMm)} mm przy średnim ETc ${fmt(etc7DayMeanMm ?? 0)} mm/dobę).`
+  const applications = Math.ceil(deficit / MAX_NET_DOSE_PER_APPLICATION_MM);
+  const intervalDays =
+    etc7DayMeanMm !== null && etc7DayMeanMm > 0
+      ? Math.round(MAX_NET_DOSE_PER_APPLICATION_MM / etc7DayMeanMm)
+      : null;
+  const nextCheckInDays = intervalDays;
+  const applicationsText =
+    applications > 1
+      ? ` Deficyt do uzupełnienia (mniejsza z wartości Dr i RAW) to ${fmt(deficit)} mm, czyli ${applications} zabiegi po maks. ${MAX_NET_DOSE_PER_APPLICATION_MM} mm netto${intervalDays !== null ? `, co ok. ${intervalDays} dni (przy średnim ETc ${fmt(etc7DayMeanMm ?? 0)} mm/dobę)` : ''}.`
+      : ` Deficyt do uzupełnienia (mniejsza z wartości Dr i RAW) to ${fmt(deficit)} mm, wystarczy 1 zabieg.`;
+  const applicationsAction =
+    applications > 1
+      ? ` Powtórz zabieg ${applications} razy${intervalDays !== null ? `, co ok. ${intervalDays} dni` : ''}.`
       : '';
   return {
     ...base,
     priority: input.droughtClass === 'severe' ? 'high' : 'medium',
     title: 'Nawadnianie uzupełniające: zasadne',
-    action: `Podaj ok. ${fmt(netDose)} mm netto (${fmt(grossDose)} mm brutto, ${fmt(doseM3PerHa, 0)} m³/ha) deszczownią. ${WATER_PERMIT_NOTE}`,
+    action: `Podaj ok. ${fmt(netDose)} mm netto na zabieg (${fmt(grossDose)} mm brutto, ${fmt(doseM3PerHa, 0)} m³/ha) deszczownią.${applicationsAction} ${WATER_PERMIT_NOTE}`,
     when: IRRIGATION_WINDOW,
-    why: `Deficyt wody w glebie (${fmt(depletionMm)} mm) przekracza próg ${fmt(rawMm)} mm, uprawa jest w fazie krytycznej, a klasa suszy to ${DROUGHT_LABEL[input.droughtClass]}. Dawka netto to mniejsza z wartości Dr i RAW, brutto uwzględnia sprawność ${IRRIGATION_EFFICIENCY * 100}%.${nextCheckText}`,
+    why: `Deficyt wody w glebie (${fmt(depletionMm)} mm) przekracza próg ${fmt(rawMm)} mm, uprawa jest w fazie krytycznej, a klasa suszy to ${DROUGHT_LABEL[input.droughtClass]}. Dawka netto na zabieg nie przekracza ${MAX_NET_DOSE_PER_APPLICATION_MM} mm, brutto uwzględnia sprawność ${IRRIGATION_EFFICIENCY * 100}%.${applicationsText}`,
     irrigation: {
       isJustified: true,
       netDoseMm: round(netDose),

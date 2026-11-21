@@ -18,13 +18,14 @@ import type { CurrentWindow, DailyWeather, WaterBalanceWindow } from '@/services
 import { computeRecommendations } from '@/services/engine/recommendations';
 import type { Recommendation } from '@/services/engine/recommendations';
 import { computeSoilWater } from '@/services/engine/soil';
-import type { SoilLayer, SoilWaterCapacity } from '@/services/engine/soil';
+import type { OmClipped, SoilLayer, SoilWaterCapacity } from '@/services/engine/soil';
 import { computeVulnerability } from '@/services/engine/vulnerability';
 import type { VulnerabilityResult } from '@/services/engine/vulnerability';
 import { computeSoilWaterBalance } from '@/services/engine/water-demand';
 import type { SoilWaterBalance } from '@/services/engine/water-demand';
 import { computeEra5LandSoilMoisture } from '@/services/sources/era5land';
 import type { Era5LandSoilMoisture } from '@/services/sources/era5land';
+import type { ElevationData } from '@/services/sources/elevation.source';
 import type { MeteoDay, MeteoOutcome } from '@/services/sources/meteo.source';
 import { computeSoilMoisture, round1 } from '@/services/sources/nasaPower.source';
 import type { SoilMoisture } from '@/services/sources/nasaPower.source';
@@ -67,7 +68,8 @@ export type EngineInput = {
   meteo: MeteoOutcome;
   soilLayers: SoilLayer[] | null;
   // Indicators decided by the source statuses (the rest is derived from the engine results).
-  available: Pick<Record<IndicatorKey, boolean>, 'sentinel2' | 'terrain' | 'hydrology'>;
+  available: Pick<Record<IndicatorKey, boolean>, 'sentinel2' | 'hydrology'>;
+  terrain: ElevationData | null;
 };
 
 export type EngineFlags = {
@@ -77,6 +79,7 @@ export type EngineFlags = {
   usedMeteoFallback: boolean;
   hasSoilMoisture: boolean;
   isSoilMoistureFromEra5: boolean;
+  omClipped: OmClipped | null; // organic matter capped by the soil engine (goes to limitations)
 };
 
 export type EngineOutput = {
@@ -88,7 +91,7 @@ export type EngineOutput = {
 };
 
 export function computeEngine(input: EngineInput): EngineOutput {
-  const { crop, analysisDate, parcel, meteo } = input;
+  const { crop, analysisDate, parcel, meteo, terrain } = input;
   const kc = (date: string): number => getKcForDate(crop, date);
   const current = meteo.current;
   const isFallback = current.source === 'nasa_power';
@@ -137,6 +140,7 @@ export function computeEngine(input: EngineInput): EngineOutput {
   const confidence = computeConfidence({
     available: {
       ...input.available,
+      terrain: input.terrain !== null,
       meteo: current.source !== null,
       soil: capacity !== null,
       soilMoisture: soilMoisture !== null,
@@ -177,7 +181,7 @@ export function computeEngine(input: EngineInput): EngineOutput {
     kbw60,
     soil: capacity?.soil ?? null,
     tawMm: capacity?.tawMm ?? null,
-    terrain: null,
+    terrain,
     satellite: null,
   });
   const recommendations = computeRecommendations({
@@ -191,7 +195,7 @@ export function computeEngine(input: EngineInput): EngineOutput {
     tawMm: capacity?.tawMm ?? null,
     rawMm: capacity?.rawMm ?? null,
     depletionMm: soilWater?.depletionMm ?? null,
-    terrain: null,
+    terrain,
     hydro: null,
     etc7DayMeanMm: etcMean(current.series, analysisDate, kc),
   });
@@ -199,6 +203,7 @@ export function computeEngine(input: EngineInput): EngineOutput {
   // DM-007 has no `gaps` field (internal engine diagnostics).
   const vulnerabilityDto: Omit<VulnerabilityResult, 'gaps'> & { gaps?: string[] } = {
     ...vulnerability,
+    evidence: [...vulnerability.evidence, ...omEvidence(capacity?.omClipped ?? null)],
   };
   delete vulnerabilityDto.gaps;
   return {
@@ -228,8 +233,23 @@ export function computeEngine(input: EngineInput): EngineOutput {
       usedMeteoFallback,
       hasSoilMoisture: soilMoisture !== null,
       isSoilMoistureFromEra5: soilMoisture !== null && !soilMoisture.fallback,
+      omClipped: capacity?.omClipped ?? null,
     },
   };
+}
+
+function omEvidence(omClipped: OmClipped | null): Evidence[] {
+  if (!omClipped) return [];
+  return [
+    {
+      label: 'Materia organiczna gleby (przycięta)',
+      value: omClipped.usedPct,
+      unit: '%',
+      sourceId: 'soilgrids',
+      dataDate: 'SoilGrids 2.0',
+      note: `SoilGrids podaje ${fmt(omClipped.originalPct)}%, ograniczono do ${fmt(omClipped.usedPct)}% (typowe gleby orne w Polsce 1–3%)`,
+    },
+  ];
 }
 
 function computeCapacity(layers: SoilLayer[] | null, crop: Crop): SoilWaterCapacity | null {
