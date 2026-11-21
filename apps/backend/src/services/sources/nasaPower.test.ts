@@ -178,7 +178,7 @@ test('one request per analysis, second call comes from cache', async () => {
   assert.equal(second.status, 'cached');
   assert.equal(calls, 1);
   assert.ok(requestedUrl.includes('latitude=51.44') && requestedUrl.includes('longitude=21.93'));
-  assert.ok(requestedUrl.includes('start=20160327') && requestedUrl.includes('end=20260610'));
+  assert.ok(requestedUrl.includes('start=20160101') && requestedUrl.includes('end=20260610'));
   assert.ok(requestedUrl.includes('GWETROOT') && requestedUrl.includes('T2M_MIN'));
   assert.ok(first.data && first.data.length > 3600);
 });

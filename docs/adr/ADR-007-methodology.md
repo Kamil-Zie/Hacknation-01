@@ -114,3 +114,10 @@ FAO-56 i KBW IUNG to metody wskazane w bibliografii zadania, a jawne progi w tab
 - Silnik i progi są w kodzie jako stałe z komentarzem źródła; zmiana progu = zmiana `methodologyVersion`.
 - Testy Vitest dla: KBW i percentyla (zbiór syntetyczny), Saxton-Rawls (przykład piasek 85%/ił 5%/OM 1% → θ33 ≈ 0,087, θ1500 ≈ 0,034, TAW ≈ 53 mm na 1 m), klasy suszy, reguł R-*.
 - README sekcja 9 (weryfikacja) opisuje porównanie z KBW IUNG i EDO dla działek demo.
+
+## Aktualizacja 2026-11-21 14:20 (coord-1, decyzje po teście 8 lokalizacji)
+
+- **§6 Klasa suszy:** `moderate` przy samym Dr > RAW tylko wtedy, gdy percentyl KBW60 ≤ 50. Przy percentylu > 50 przekroczenie RAW zostaje w `evidence[]` jako „bieżący stres wodny rośliny”, ale klasa wynika z percentyla. Powód: w lipcu Dr > RAW jest prawie zawsze, więc klasa „umiarkowana” wychodziła wszędzie (percentyl 41–49) i nie odróżniała suszy od zwykłego lata.
+- **§7 Podatność:** sezon z deficytem, gdy min. 60-dniowego KBW w IV–IX < **−3·RAW** (bez danych o glebie: **−180 mm**). Przy −2·RAW wychodziło 9/10 sezonów na glebach lekkich i średnich także po przejściu ET0 NASA na Penman-Monteith (Bronowice 2026-07-15: 9/10). Okno NASA zaczyna się najpóźniej 1 stycznia roku D − 10, więc analizujemy 10 pełnych sezonów, nie 9.
+- **§9 Nawadnianie:** dawka maks. 30 mm netto na zabieg (decyzja z 12:xx, tu tylko zapis).
+- **Data demo:** 2026-05-25 zamiast 2026-06-10 (Sentinel-2: 10 czerwca nad Bronowicami cirrus we wszystkich 3 scenach, 25 maja scena 100% ważnych pikseli). SCL 10 (cirrus) nadal nie jest pikselem ważnym.

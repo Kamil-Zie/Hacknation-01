@@ -91,6 +91,9 @@ export async function fetchNasaPowerDaily(
   const start = new Date(end);
   start.setUTCFullYear(start.getUTCFullYear() - HISTORY_YEARS);
   start.setTime(start.getTime() - EXTRA_DAYS_BEFORE * DAY_MS);
+  // Vulnerability needs complete seasons of all 10 previous years, so never start after 1 Jan of year D-10.
+  const firstSeason = Date.UTC(end.getUTCFullYear() - HISTORY_YEARS, 0, 1);
+  if (start.getTime() > firstSeason) start.setTime(firstSeason);
   const startCompact = toCompact(start);
   const endCompact = toCompact(end);
   const latR = lat.toFixed(2);
