@@ -3,7 +3,7 @@
 | Zadanie | Moduł / pliki | Kontrakt | Od |
 |---|---|---|---|
 
-Brak aktywnych rezerwacji (T-080 na mocku, czeka na T-078).
+| T-081 | app/router.tsx, components/RequireAuth (nowy), pages/Login, pages/Account (Panel), components/AuthForm, api/client.ts (401), store/session.ts | UI-S-005, UI-S-006 | 2026-11-21 21:30 |
 
 
 

@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "ready",
+  "status": "in_progress",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-005", "UI-S-006", "UI-S-001", "API-008", "API-009"],
@@ -23,7 +23,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 21:20: zmienia krok 1 scenariusza demo – priorytet przed T-073. Backend bez zmian (POST /analyses dalej działa bez konta)."
+    "coord-1 21:20: zmienia krok 1 scenariusza demo – priorytet przed T-073. Backend bez zmian (POST /analyses dalej działa bez konta).",
+    "frontend-2: start 21:30 (fe-developer)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
