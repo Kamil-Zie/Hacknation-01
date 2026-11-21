@@ -1,6 +1,6 @@
 // T-001 All routes in one place
 import { createBrowserRouter } from 'react-router-dom';
 
-import { HomePage } from '@/pages/Home/HomePage';
+import { StartPage } from '@/pages/Start/StartPage';
 
-export const router = createBrowserRouter([{ path: '/', element: <HomePage /> }]);
+export const router = createBrowserRouter([{ path: '/', element: <StartPage /> }]);
