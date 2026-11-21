@@ -1,0 +1,27 @@
+{
+  "id": "T-068",
+  "title": "Telefon 390 px: nazwa konta w nagłówku wychodzi poza ekran, małe linki 'strona źródła'",
+  "description": "Test UI koordynatora 18:55 (ramka 390×844, zalogowany). (1) AppLayout/AccountMenu: przycisk konta z nazwą gospodarstwa ma prawą krawędź 391 px przy szerokości 386 → poziome przewijanie całej strony (start i raport). Przy prawdziwych nazwach ('Gospodarstwo Jan Kowalski') będzie gorzej. Na xs: sama ikona konta (nazwa w menu) albo maxWidth + text-overflow: ellipsis. (2) Raport, sekcja źródeł: linki 'strona źródła' mają 20 px wysokości – na telefonie min. 44 px obszaru dotyku (padding).",
+  "type": "bugfix",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": ["T-057"],
+  "contract_refs": ["UI-C-015", "UI-S-003"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "390 px, zalogowany z nazwą 30+ znaków: document.documentElement.scrollWidth <= innerWidth na / i /report/:id",
+    "Linki źródeł na telefonie: obszar dotyku >= 44 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 18:55: poprawka typu fix, dozwolona też po zamrożeniu 7:00 (ścieżka demo, telefon)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
