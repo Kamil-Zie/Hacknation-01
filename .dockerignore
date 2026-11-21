@@ -1,0 +1,11 @@
+# T-065 Docker build context: no secrets, no local deps or build output
+**/node_modules
+**/dist
+.env
+.env.*
+!.env.example
+.git
+.claude
+docs
+tasks
+*.log

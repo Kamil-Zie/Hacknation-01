@@ -72,7 +72,7 @@ networks:
   hacknation:
 ```
 
-Plik i Dockerfile'e aplikacji tworzy `coord-devops` w fazie Szkielet; powyższe to docelowy układ portów, którego ma się trzymać. Bez własnego kontenera `cloudflared`: tunel zapewnia istniejący `cloudflare-synology-kamil`.
+W repo: `docker-compose.prod.yml` (budowanie obrazów na NAS-ie z kodu, bez GHCR), `apps/backend/Dockerfile`, `apps/frontend/Dockerfile` + `nginx.conf`. Powyższy blok to docelowy układ portów. Bez własnego kontenera `cloudflared`: tunel zapewnia istniejący `cloudflare-synology-kamil`.
 
 ## Zmienne prod
 
@@ -102,3 +102,33 @@ Pliki `.env*` z prawdziwymi wartościami są tylko na NAS-ie (uprawnienia 600), 
 4. Atlas: użytkownik prod z `readWrite` tylko do `hacknation_prod`; URI do `.env.prod`.
 5. Po szkielecie: `docker compose pull && docker compose up -d` w folderze projektu na NAS-ie.
 6. Sprawdź: `curl -s https://api.kamil-zielinski.pl/api/v1/health` zwraca 200, `https://app.kamil-zielinski.pl` ładuje aplikację, w konsoli przeglądarki brak błędów CORS.
+
+## Wdrożenie krok po kroku (budowanie na NAS-ie, T-065)
+
+```bash
+# 1. Kod na NAS (repo prywatne: token GitHub tylko do odczytu albo rsync z laptopa bez .env)
+ssh <user>@<nas> && sudo -i
+mkdir -p /volume1/docker/hacknation && cd /volume1/docker/hacknation
+git clone https://github.com/Kamil-Zie/Hacknation-01.git app && cd app   # potem: git pull
+
+# 2. Sekrety tylko tutaj
+cat > .env.prod <<EOT
+NODE_ENV=production
+PORT=3000
+MONGODB_URI=<URI użytkownika prod>
+MONGODB_DB=hacknation_prod
+CORS_ORIGIN=https://app.kamil-zielinski.pl
+JWT_SECRET=$(openssl rand -hex 32)
+EOT
+chmod 600 .env.prod
+
+# 3. Budowa i start
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml ps        # backend: healthy
+curl -s localhost:13000/api/v1/health && curl -sI localhost:18080 | head -1
+
+# 4. Aktualizacja po zmianach na main
+git pull && docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Adres API frontendu jest wkompilowany przy budowie (`VITE_API_URL` w `docker-compose.prod.yml`); bez niego frontend działa na mockach.
