@@ -51,7 +51,8 @@ export const theme = createTheme({
   breakpoints: { values: { xs: 0, sm: 600, md: 900, lg: 1280, xl: 1920 } },
   palette: {
     primary: { main: '#357A1F', contrastText: '#FFFFFF' },
-    secondary: { main: '#293698' },
+    // Light accent: backgrounds and highlights only, always with dark text (11.7:1), never as text or lines.
+    secondary: { main: '#C4D9FF', contrastText: '#1B1F1A' },
     background: { default: '#FFFFFF', paper: '#FFFFFF' },
     text: { primary: '#1B1F1A', secondary: '#4A5248' },
     divider: '#DDE1D8',

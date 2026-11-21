@@ -8,7 +8,8 @@
     "colors": {
       "primary": "#357A1F",
       "primaryContrast": "#FFFFFF",
-      "accent": "#293698",
+      "accent": "#C4D9FF",
+      "accentContrast": "#1B1F1A",
       "background": "#FFFFFF",
       "surface": "#FFFFFF",
       "textPrimary": "#1B1F1A",
