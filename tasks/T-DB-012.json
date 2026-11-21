@@ -29,7 +29,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 21:15: razem z T-077 (model Field). Nowa kolekcja, bez seeda; contract_change do frontendu."
+    "coord-1 21:15: razem z T-077 (model Field). Nowa kolekcja, bez seeda; contract_change do frontendu.",
+    "Postęp (backend-2, 21:12): DM-024 Field agreed (kontrakt 0.5.0), contract_change do frontendu wysłany; DM-025 zostaje proposed dla T-078 (Jan). Model Mongoose Field w toku (T-077)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

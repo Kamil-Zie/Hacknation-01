@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "base_url": "/api/v1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. Wymieniaj tylko błędy, które endpoint naprawdę zwraca w demo.",
@@ -28,7 +28,7 @@
       "consumers": ["UI-S-001"]
     }
   },
-  "_note": "Kropelka: analiza działki działa bez logowania (auth: none). Od 0.4.0 (ADR-010) opcjonalne konta gospodarstwa: uwierzytelnianie Bearer JWT (HS256, 7 dni) w nagłówku Authorization; auth: required tylko dla API-009..API-013, auth: optional dla API-004 (token + accountId zapisują raport w historii konta). Listy kont w standardzie { items, page, pageSize, total }. Format błędu: { code, message, details }. Od 0.4.2 (T-066) wspólnie: 429 RATE_LIMITED (limit zapytań na IP: POST /analyses 10/min, /auth/* 20/min; details.retryAfterSec, nagłówek Retry-After) i 413 PAYLOAD_TOO_LARGE (body JSON > 20 KB). Daty jako YYYY-MM-DD (strefa Europe/Warsaw), znaczniki czasu ISO 8601 UTC. Źródła i metodyka: docs/adr/ADR-006-data-sources.md, docs/adr/ADR-007-methodology.md.",
+  "_note": "Kropelka: analiza działki działa bez logowania (auth: none). Od 0.4.0 (ADR-010) opcjonalne konta gospodarstwa: uwierzytelnianie Bearer JWT (HS256; 30 dni po rejestracji i logowaniu z rememberMe=true, 1 dzień bez rememberMe) w nagłówku Authorization; auth: required tylko dla API-009..API-013, auth: optional dla API-004 (token + accountId zapisują raport w historii konta). Listy kont w standardzie { items, page, pageSize, total }. Format błędu: { code, message, details }. Od 0.4.2 (T-066) wspólnie: 429 RATE_LIMITED (limit zapytań na IP: POST /analyses 10/min, /auth/* 20/min; details.retryAfterSec, nagłówek Retry-After) i 413 PAYLOAD_TOO_LARGE (body JSON > 20 KB). Daty jako YYYY-MM-DD (strefa Europe/Warsaw), znaczniki czasu ISO 8601 UTC. Źródła i metodyka: docs/adr/ADR-006-data-sources.md, docs/adr/ADR-007-methodology.md. Od 0.5.0: API-015 (profil), rememberMe w API-008, pola API-016..018 (ADR-011).",
   "endpoints": [
     {
       "id": "API-001",
@@ -3086,7 +3086,7 @@
       "status": "agreed",
       "method": "POST",
       "path": "/auth/register",
-      "summary": "Rejestracja (ADR-010): tworzy użytkownika i konto gospodarstwa (nazwa z accountName, domyślnie „Gospodarstwo <name>”) z nim jako członkiem; oczekujące zaproszenia (pending) na ten e-mail zamieniają się w członkostwa. Zwraca sesję (token JWT + user + accounts).",
+      "summary": "Rejestracja (ADR-010): tworzy użytkownika i konto gospodarstwa (nazwa z accountName, domyślnie „Gospodarstwo <name>”) z nim jako członkiem; oczekujące zaproszenia (pending) na ten e-mail zamieniają się w członkostwa. Zwraca sesję (token JWT + user + accounts). Token ważny 30 dni (jak logowanie z rememberMe=true, żeby nie wylogowywać nowych użytkowników).",
       "auth": "none",
       "request": {
         "body": {
@@ -3138,12 +3138,13 @@
       "status": "agreed",
       "method": "POST",
       "path": "/auth/login",
-      "summary": "Logowanie e-mail + hasło (ADR-010). Limit prób (licznik w pamięci) zwraca 429.",
+      "summary": "Logowanie e-mail + hasło (ADR-010). Limit prób (licznik w pamięci) zwraca 429. Ważność tokenu: rememberMe=true → 30 dni, false lub brak → 1 dzień (do 0.4.x było 7 dni).",
       "auth": "none",
       "request": {
         "body": {
           "email": "string, poprawny e-mail",
-          "password": "string, niepusty"
+          "password": "string, niepusty",
+          "rememberMe": "boolean?, domyślnie false; true → token ważny 30 dni, false → 1 dzień"
         }
       },
       "response": {
@@ -3153,7 +3154,7 @@
         "401 INVALID_CREDENTIALS (zły e-mail lub hasło; jeden komunikat dla obu przypadków)",
         "429 TOO_MANY_ATTEMPTS (10 nieudanych prób z tego samego IP dla tego e-maila; details.retryAfterSec)",
         "429 RATE_LIMITED (więcej niż 20 żądań /auth/* na minutę z jednego IP; details.retryAfterSec)",
-        "422 VALIDATION_ERROR (zły format e-maila lub brak hasła; details.field)",
+        "422 VALIDATION_ERROR (zły format e-maila, brak hasła lub rememberMe nie jest boolean; details.field)",
         "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
       ],
       "data_refs": ["DM-016", "DM-019", "DM-020", "DM-021"],
@@ -3476,55 +3477,92 @@
     },
     {
       "id": "API-015",
-      "status": "proposed",
+      "status": "agreed",
       "method": "PATCH",
       "path": "/auth/me",
-      "summary": "Edycja profilu zalogowanego użytkownika: imię, e-mail, hasło (T-075). Zmiana e-maila lub hasła wymaga obecnego hasła.",
+      "summary": "Edycja profilu zalogowanego użytkownika (T-075): imię, e-mail, hasło. currentPassword jest wymagane przy zmianie e-maila lub hasła (nie przy samym imieniu). Nie wydaje nowego tokenu: obecny JWT (sub = id użytkownika) pozostaje ważny. Zwraca to samo co GET /auth/me. Zmiana hasła nie unieważnia innych wydanych tokenów (brak listy odwołań).",
       "auth": "required",
       "request": {
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
         "body": {
-          "name": "string?, 1–80 znaków po trim",
-          "email": "string?, e-mail (jak rejestracja)",
-          "currentPassword": "string?, wymagane przy zmianie email lub newPassword",
-          "newPassword": "string?, min. 8 znaków"
+          "name": "string?, 1–120 znaków po trim (jak rejestracja)",
+          "email": "string?, poprawny e-mail (zapisywany małymi literami); wymaga currentPassword",
+          "newPassword": "string?, min. 8 znaków; wymaga currentPassword",
+          "currentPassword": "string?, obecne hasło; wymagane gdy podano email (różny od obecnego) lub newPassword"
         }
       },
       "response": {
-        "200": "User (DM-020)"
+        "200": {
+          "user": "User (DM-020)",
+          "accounts": "Account[] (DM-021)"
+        }
       },
       "errors": [
-        "401 UNAUTHORIZED",
+        "401 UNAUTHORIZED (brak, zły lub przeterminowany token)",
         "401 INVALID_CREDENTIALS (złe currentPassword)",
-        "409 EMAIL_TAKEN",
-        "422 VALIDATION_ERROR (details.field)",
-        "429 TOO_MANY_REQUESTS",
-        "503 DB_UNAVAILABLE"
+        "409 EMAIL_TAKEN (e-mail należy do innego użytkownika; details.field = email)",
+        "422 VALIDATION_ERROR (puste body bez żadnego pola do zmiany, zły e-mail, newPassword krótsze niż 8 znaków, brak currentPassword przy zmianie e-maila lub hasła, za długie imię; details.field)",
+        "429 RATE_LIMITED (więcej niż 20 żądań /auth/* na minutę z jednego IP; details.retryAfterSec)",
+        "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
       ],
-      "data_refs": ["DM-016", "DM-020"],
+      "data_refs": ["DM-016", "DM-020", "DM-021"],
       "consumers": [],
       "consumers_planned": ["UI-S-006"],
       "examples": {
         "200": {
-          "id": "665f0c0ffee0000000000a01",
-          "email": "jan.kowalski@example.pl",
-          "name": "Jan Kowalski"
+          "user": {
+            "id": "665f0c0ffee0000000000a01",
+            "email": "jan.kowalski@example.pl",
+            "name": "Jan Kowalski"
+          },
+          "accounts": [
+            {
+              "id": "665f0c0ffee0000000000b01",
+              "name": "Moje gospodarstwo",
+              "memberCount": 2
+            }
+          ]
+        },
+        "401": {
+          "code": "INVALID_CREDENTIALS",
+          "message": "Nieprawidłowe obecne hasło.",
+          "details": null
+        },
+        "409": {
+          "code": "EMAIL_TAKEN",
+          "message": "Konto z tym adresem e-mail już istnieje.",
+          "details": {
+            "field": "email"
+          }
+        },
+        "422": {
+          "code": "VALIDATION_ERROR",
+          "message": "Podaj obecne hasło, aby zmienić e-mail lub hasło.",
+          "details": {
+            "field": "currentPassword"
+          }
         }
       }
     },
     {
       "id": "API-016",
-      "status": "proposed",
+      "status": "agreed",
       "method": "POST",
       "path": "/accounts/:accountId/fields",
-      "summary": "Utworzenie pola z sąsiadujących działek (T-077). Działki sprawdzane w ULDK; każda musi sąsiadować z co najmniej jedną inną z pola (odległość granic ≤ 50 m).",
+      "summary": "Utworzenie pola z 2–20 działek (T-077, ADR-011). Każda działka pobierana z ULDK (cache); dwie działki sąsiadują, gdy minimalna odległość ich granic ≤ 50 m (własna funkcja); zbiór musi być spójny (każda działka połączona z resztą), inaczej 422. Zapisuje kopie metadanych działek, sumę powierzchni i centroid (bez geometrii). Tylko członek konta. UWAGA: 061409_2.0009.613 w examples to przykładowy numer sąsiada (niezweryfikowany w ULDK).",
       "auth": "required",
       "request": {
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
         "params": {
-          "accountId": "string"
+          "accountId": "string, id konta (ObjectId)"
         },
         "body": {
-          "name": "string 1–120",
-          "parcelIds": "string[] 2–20 (TERYT)"
+          "name": "string, 1–120 znaków po trim",
+          "parcelIds": "string[], 2–20 unikalnych identyfikatorów TERYT działek"
         }
       },
       "response": {
@@ -3532,51 +3570,155 @@
       },
       "errors": [
         "401 UNAUTHORIZED",
-        "403 NOT_A_MEMBER",
-        "503 DB_UNAVAILABLE",
-        "404 PARCEL_NOT_FOUND (details.parcelId)",
-        "422 VALIDATION_ERROR",
-        "422 PARCELS_NOT_ADJACENT (details.parcelIds – działki bez sąsiada)"
+        "403 NOT_A_MEMBER (także gdy konto nie istnieje)",
+        "404 PARCEL_NOT_FOUND (ULDK nie zna działki; details.parcelId)",
+        "422 VALIDATION_ERROR (zła nazwa, mniej niż 2 lub więcej niż 20 działek, duplikaty, zły accountId; details.field)",
+        "422 PARCELS_NOT_ADJACENT (zbiór niespójny; details.parcelIds = działki niepołączone z główną grupą, details.maxDistanceM = 50)",
+        "504 UPSTREAM_TIMEOUT (ULDK nie odpowiedział w czasie i brak cache)",
+        "502 UPSTREAM_UNAVAILABLE (błąd ULDK bez timeoutu i brak cache)",
+        "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
       ],
-      "data_refs": ["DM-024"],
+      "data_refs": ["DM-017", "DM-024"],
       "consumers": [],
-      "consumers_planned": ["UI-S-006"]
+      "consumers_planned": ["UI-S-006"],
+      "examples": {
+        "201": {
+          "id": "665f0c0ffee0000000000f01",
+          "accountId": "665f0c0ffee0000000000b01",
+          "name": "Pole za stodołą",
+          "parcelIds": ["061409_2.0009.612", "061409_2.0009.613"],
+          "parcels": [
+            {
+              "id": "061409_2.0009.612",
+              "parcelNumber": "612",
+              "commune": "Bronowice",
+              "region": "0009",
+              "areaHa": 2.41
+            },
+            {
+              "id": "061409_2.0009.613",
+              "parcelNumber": "613",
+              "commune": "Bronowice",
+              "region": "0009",
+              "areaHa": 1.87
+            }
+          ],
+          "areaHa": 4.28,
+          "centroid": {
+            "lat": 51.4401,
+            "lon": 21.9308
+          },
+          "createdBy": "665f0c0ffee0000000000a01",
+          "createdAt": "2026-11-21T21:30:00.000Z",
+          "updatedAt": "2026-11-21T21:30:00.000Z"
+        },
+        "404": {
+          "code": "PARCEL_NOT_FOUND",
+          "message": "Nie znaleziono działki w ULDK.",
+          "details": {
+            "parcelId": "061409_2.0009.99999"
+          }
+        },
+        "422": {
+          "code": "PARCELS_NOT_ADJACENT",
+          "message": "Działki nie tworzą spójnego obszaru (maks. 50 m między granicami).",
+          "details": {
+            "parcelIds": ["061409_2.0001.45"],
+            "maxDistanceM": 50
+          }
+        }
+      }
     },
     {
       "id": "API-017",
-      "status": "proposed",
+      "status": "agreed",
       "method": "GET",
       "path": "/accounts/:accountId/fields",
-      "summary": "Lista pól konta, od najnowszych.",
+      "summary": "Lista pól konta, od najnowszych (createdAt malejąco). Tylko członek konta.",
       "auth": "required",
       "request": {
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
         "params": {
-          "accountId": "string"
+          "accountId": "string, id konta (ObjectId)"
         },
         "query": {
-          "page": "number",
-          "pageSize": "number"
+          "page": "number, domyślnie 1, min. 1",
+          "pageSize": "number, domyślnie 20, 1–50"
         }
       },
       "response": {
-        "200": "{ items: Field[], page, pageSize, total }"
+        "200": "{ items: Field[] (DM-024), page, pageSize, total }"
       },
-      "errors": ["401 UNAUTHORIZED", "403 NOT_A_MEMBER", "503 DB_UNAVAILABLE"],
-      "data_refs": ["DM-024"],
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER (także gdy konto nie istnieje)",
+        "422 VALIDATION_ERROR (zły accountId, page lub pageSize; details.field)",
+        "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
+      ],
+      "data_refs": ["DM-017", "DM-024"],
       "consumers": [],
-      "consumers_planned": ["UI-S-006"]
+      "consumers_planned": ["UI-S-006"],
+      "examples": {
+        "200": {
+          "items": [
+            {
+              "id": "665f0c0ffee0000000000f01",
+              "accountId": "665f0c0ffee0000000000b01",
+              "name": "Pole za stodołą",
+              "parcelIds": ["061409_2.0009.612", "061409_2.0009.613"],
+              "parcels": [
+                {
+                  "id": "061409_2.0009.612",
+                  "parcelNumber": "612",
+                  "commune": "Bronowice",
+                  "region": "0009",
+                  "areaHa": 2.41
+                },
+                {
+                  "id": "061409_2.0009.613",
+                  "parcelNumber": "613",
+                  "commune": "Bronowice",
+                  "region": "0009",
+                  "areaHa": 1.87
+                }
+              ],
+              "areaHa": 4.28,
+              "centroid": {
+                "lat": 51.4401,
+                "lon": 21.9308
+              },
+              "createdBy": "665f0c0ffee0000000000a01",
+              "createdAt": "2026-11-21T21:30:00.000Z",
+              "updatedAt": "2026-11-21T21:30:00.000Z"
+            }
+          ],
+          "page": 1,
+          "pageSize": 20,
+          "total": 1
+        },
+        "403": {
+          "code": "NOT_A_MEMBER",
+          "message": "Nie należysz do tego gospodarstwa.",
+          "details": null
+        }
+      }
     },
     {
       "id": "API-018",
-      "status": "proposed",
+      "status": "agreed",
       "method": "DELETE",
       "path": "/accounts/:accountId/fields/:fieldId",
-      "summary": "Usunięcie pola (działki i raporty zostają).",
+      "summary": "Usunięcie pola (każdy członek konta). Działki i zapisane raporty zostają.",
       "auth": "required",
       "request": {
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
         "params": {
-          "accountId": "string",
-          "fieldId": "string"
+          "accountId": "string, id konta (ObjectId)",
+          "fieldId": "string, id pola (ObjectId)"
         }
       },
       "response": {
@@ -3584,13 +3726,28 @@
       },
       "errors": [
         "401 UNAUTHORIZED",
-        "403 NOT_A_MEMBER",
-        "503 DB_UNAVAILABLE",
-        "404 FIELD_NOT_FOUND"
+        "403 NOT_A_MEMBER (także gdy konto nie istnieje)",
+        "404 FIELD_NOT_FOUND (brak pola w tym koncie)",
+        "422 VALIDATION_ERROR (zły accountId lub fieldId; details.field)",
+        "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
       ],
-      "data_refs": ["DM-024"],
+      "data_refs": ["DM-017", "DM-024"],
       "consumers": [],
-      "consumers_planned": ["UI-S-006"]
+      "consumers_planned": ["UI-S-006"],
+      "examples": {
+        "403": {
+          "code": "NOT_A_MEMBER",
+          "message": "Nie należysz do tego gospodarstwa.",
+          "details": null
+        },
+        "404": {
+          "code": "FIELD_NOT_FOUND",
+          "message": "Nie znaleziono pola.",
+          "details": {
+            "fieldId": "665f0c0ffee0000000000f99"
+          }
+        }
+      }
     },
     {
       "id": "API-019",

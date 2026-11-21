@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -1471,10 +1471,10 @@
     },
     {
       "id": "DM-024",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Field",
       "storage": "collection fields",
-      "description": "Pole: nazwany zbiór sąsiadujących działek jednego konta gospodarstwa (ADR-011). Ułatwia analizę wilgotności dla całego kawałka ziemi uprawianego razem.",
+      "description": "Pole: nazwany zbiór sąsiadujących działek jednego konta gospodarstwa (ADR-011). Ułatwia analizę wilgotności dla całego kawałka ziemi uprawianego razem. Geometria nie jest zapisywana (tylko kopie metadanych działek i centroid); sąsiedztwo liczone przy tworzeniu z granic ULDK.",
       "fields": [
         {
           "name": "_id",
