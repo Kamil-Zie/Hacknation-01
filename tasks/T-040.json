@@ -4,7 +4,7 @@
   "description": "Dopisz do contracts/data_model.json DM-016 User (email unikalny, passwordHash, name, createdAt), DM-017 Account (name, createdAt), DM-018 AccountMember (accountId, userId|null, email, status active|pending, addedBy, createdAt; unikalne accountId+email) i pole accountId (opcjonalne) w DM-001 Report. Do contracts/api.json: API-007 POST /auth/register {email,password,name} → {token,user,accounts}; API-008 POST /auth/login → {token,user,accounts}; API-009 GET /me (auth) → {user,accounts[]}; API-010 GET /accounts/:id/members (auth, członek); API-011 POST /accounts/:id/members {email} → member active|pending; API-012 DELETE /accounts/:id/members/:memberId (409 LAST_MEMBER); API-013 GET /accounts/:id/reports (paginacja {items,page,pageSize,total}); POST /analyses (API-004) z opcjonalnym accountId przy Bearer. Kody: UNAUTHORIZED 401, FORBIDDEN 403, EMAIL_TAKEN 409, INVALID_CREDENTIALS 401, LAST_MEMBER 409, examples dla każdego. Wg docs/adr/ADR-010-shared-accounts.md.",
   "type": "feature",
   "team": "backend",
-  "assignee": "backend-1",
+  "assignee": "backend-2",
   "status": "ready",
   "priority": "high",
   "depends_on": [],
@@ -22,6 +22,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 16:35: PRZEPISANE na backend-2 (Jan: problemy z siecią, nie zaczął). Bazuj na propozycji frontend-1 20261121-1632-frontend-1-contract_proposal (kształt Session/Member/ReportSummary, /auth/me, kody NOT_A_MEMBER, ALREADY_MEMBER, TOO_MANY_ATTEMPTS) – przyjęta przez coord-1; listy zgodnie ze standardem {items,page,pageSize,total}.",
     "coord-1 16:10: Jan: kontrakt można robić offline (problemy z siecią). Ok. 45 min. Pierwsze w kolejce, odblokowuje front na mockach."
   ],
   "created_at": "2026-11-21",

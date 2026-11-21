@@ -4,7 +4,7 @@
   "description": "Modele User, Account, AccountMember (Mongoose), hasło crypto.scrypt z solą, JWT HS256 przez jose (JWT_SECRET w env.ts i .env.example, 7 dni), middleware requireAuth i optionalAuth (Bearer). Rejestracja tworzy konto 'Moje gospodarstwo' i członkostwo active oraz zamienia oczekujące zaproszenia na ten e-mail w członkostwa. Limit 10 nieudanych logowań / 15 min na e-mail (w pamięci). Wg docs/adr/ADR-010-shared-accounts.md.",
   "type": "feature",
   "team": "backend",
-  "assignee": "backend-1",
+  "assignee": "backend-2",
   "status": "ready",
   "priority": "high",
   "depends_on": ["T-040"],
@@ -23,6 +23,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 16:35: PRZEPISANE na backend-2 razem z T-040.",
     "coord-1 16:10: Wzorzec warstw z apps/backend/CLAUDE.md (validation → model → service → controller → route). Nowa biblioteka jose: zatwierdzona przez coord-1 (ADR-010)."
   ],
   "created_at": "2026-11-21",
