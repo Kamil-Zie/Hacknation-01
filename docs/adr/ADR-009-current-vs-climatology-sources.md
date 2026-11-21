@@ -28,3 +28,9 @@
 - Aktualność bez zmian (Open-Meteo ma dane do dziś), zużycie limitu Open-Meteo spada mniej więcej 50 razy, czas analizy krótszy (NASA ok. 2 s równolegle).
 - Zgodność z KOWR 3.2 / 3.3 pkt 4 i testami jury na daty historyczne zachowana.
 - Ograniczenie do opisania w raporcie i README: tło wieloletnie ma siatkę ok. 50 km i ET0 metodą Hargreavesa (nie Penman-Monteith), więc percentyl opisuje region, a nie samą działkę.
+
+## Aktualizacja 2026-11-21 14:00: ET0 w NASA POWER metodą Penman-Monteith
+
+- NASA POWER ma wszystkie dane do FAO-56 Penman-Monteith (`T2M_MAX`, `T2M_MIN`, `RH2M`, `WS2M`, `ALLSKY_SFC_SW_DWN`, `PS`), więc klimatologia i zapas liczą ET0 tą samą metodą co Open-Meteo (ERA5). Hargreaves-Samani tylko dla dni bez wilgotności, wiatru albo ciśnienia.
+- Promieniowanie w NASA POWER jest publikowane z ok. 6-dniowym opóźnieniem (reszta ok. 3 dni). Dla tych dni Rs szacujemy z amplitudy temperatury (FAO-56 eq. 50), metoda `penman-monteith-rs-estimated`.
+- Sprawdzenie: Bronowice, czerwiec 2025: PM 132,8 mm, Hargreaves 146,2 mm (Hargreaves zawyżał ET0 o ok. 10%, co zawyżało deficyt i podatność). Test na FAO-56 example 18 (3,9 mm/d).
