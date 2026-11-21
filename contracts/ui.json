@@ -314,7 +314,7 @@
       "id": "UI-C-015",
       "status": "proposed",
       "name": "AccountMenu",
-      "description": "Element nagłówka AppLayout: niezalogowany widzi przycisk „Zaloguj” (link do /logowanie); zalogowany widzi nazwę aktywnego konta i menu: lista kont z zaznaczonym aktywnym (przełącznik, gdy kont > 1), link „Moje gospodarstwo” (/konto), „Wyloguj”. Analiza bez logowania działa jak dotąd",
+      "description": "Element nagłówka AppLayout: niezalogowany widzi przycisk „Zaloguj” (link do /logowanie); zalogowany widzi nazwę aktywnego konta i menu: lista kont z zaznaczonym aktywnym (przełącznik, gdy kont > 1), link do /konto z nazwą konta z API (domyślnie „Gospodarstwo <imię>”), „Wyloguj”. Analiza bez logowania działa jak dotąd",
       "props": {
         "user": "User | null",
         "accounts": "Account[]",
@@ -415,7 +415,7 @@
       "status": "proposed",
       "name": "Logowanie i rejestracja",
       "route": "/logowanie",
-      "description": "Jedna strona z AuthForm i przełącznikiem „Mam konto” / „Załóż konto” (ADR-010). Rejestracja tworzy konto „Moje gospodarstwo”; po sukcesie powrót na wcześniejszą stronę (?next=, tylko ścieżki zaczynające się od /) albo na /; zalogowany na /logowanie widzi „Jesteś zalogowany jako …” z przyciskiem powrotu. Stany: ładowanie (przycisk z postępem), błąd przy polu lub alert (EMAIL_TAKEN, INVALID_CREDENTIALS, TOO_MANY_ATTEMPTS, błąd sieci z „Spróbuj ponownie”). Zalogowany użytkownik jest przekierowany na /konto. Link „Kontynuuj bez konta” do /.json).",
+      "description": "Jedna strona z AuthForm i przełącznikiem „Mam konto” / „Załóż konto” (ADR-010). Rejestracja ma opcjonalne pole „Nazwa gospodarstwa” (accountName, max 120); bez niego konto dostaje nazwę z API (domyślnie „Gospodarstwo <imię>”); po sukcesie powrót na wcześniejszą stronę (?next=, tylko ścieżki zaczynające się od /) albo na /; zalogowany na /logowanie widzi „Jesteś zalogowany jako …” z przyciskiem powrotu. Stany: ładowanie (przycisk z postępem), błąd przy polu lub alert (EMAIL_TAKEN, INVALID_CREDENTIALS, TOO_MANY_ATTEMPTS, błąd sieci z „Spróbuj ponownie”). Zalogowany użytkownik jest przekierowany na /konto. Link „Kontynuuj bez konta” do /.json).",
       "components": ["UI-C-013"],
       "api_refs": ["API-007", "API-008", "API-009"],
       "responsive": {
@@ -431,11 +431,11 @@
     {
       "id": "UI-S-006",
       "status": "proposed",
-      "name": "Moje gospodarstwo",
+      "name": "Konto gospodarstwa",
       "route": "/konto",
-      "description": "Ekran konta (wymaga logowania, inaczej przekierowanie na /logowanie): nagłówek z nazwą aktywnego konta, sekcja „Członkowie” (MemberList z dodawaniem po e-mailu, status „oczekuje”, usuwanie z potwierdzeniem) i sekcja „Historia raportów” (lista ReportSummary: działka, uprawa, data analizy, klasa suszy przez StatusBadge, link do /report/:id). Stany: ładowanie (szkielety), pusta historia („Brak raportów. Zapisz pierwszy raport na stronie głównej”), błąd z „Spróbuj ponownie”, pending (zaproszenia).json).",
+      "description": "Ekran konta (wymaga logowania, inaczej przekierowanie na /logowanie): nagłówek z nazwą konta z API (domyślnie „Gospodarstwo <imię>”) i przyciskiem „Zmień nazwę (API-014)” (inline TextField + Zapisz/Anuluj), sekcja „Członkowie” (MemberList z dodawaniem po e-mailu, status „oczekuje”, usuwanie z potwierdzeniem) i sekcja „Historia raportów” (lista ReportSummary: działka, uprawa, data analizy, klasa suszy przez StatusBadge, link do /report/:id). Stany: ładowanie (szkielety), pusta historia („Brak raportów. Zapisz pierwszy raport na stronie głównej”), błąd z „Spróbuj ponownie”, pending (zaproszenia).json).",
       "components": ["UI-C-014", "UI-C-012", "UI-C-015"],
-      "api_refs": ["API-009", "API-010", "API-011", "API-012", "API-013"],
+      "api_refs": ["API-009", "API-010", "API-011", "API-012", "API-013", "API-014"],
       "responsive": {
         "xs": "jedna kolumna: członkowie, potem historia raportów jako karty",
         "md": "jedna kolumna, historia jako tabela",

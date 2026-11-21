@@ -1,15 +1,17 @@
-// API-010 API-011 API-012 API-013 Account members and report history fetchers and hooks (mock or real API)
+// API-010 API-011 API-012 API-013 API-014 Account members and report history fetchers and hooks (mock or real API)
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { authHeaders } from '@/api/auth';
 import { apiFetch } from '@/api/client';
-import type { Member, ReportSummary } from '@/api/types';
+import type { Account, Member, ReportSummary } from '@/api/types';
 import {
   mockAddMember,
   mockGetAccountReports,
   mockGetMembers,
   mockRemoveMember,
+  mockRenameAccount,
 } from '@/mocks/accounts.mock';
+import { useSessionStore } from '@/store/session';
 
 // VITE_MOCK_ACCOUNTS overrides VITE_USE_MOCKS for this resource only.
 const shouldUseMocks =
@@ -63,6 +65,27 @@ export async function getAccountReports(
     },
   );
   return data.items;
+}
+
+export function renameAccount(accountId: string, name: string, token: string): Promise<Account> {
+  if (shouldUseMocks) return mockRenameAccount(accountId, name, token);
+  return apiFetch<Account>(accountPath(accountId), {
+    method: 'PATCH',
+    headers: authHeaders(token),
+    body: JSON.stringify({ name }),
+  });
+}
+
+export function useRenameAccountMutation(accountId: string, token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (name: string) => renameAccount(accountId, name, token),
+    onSuccess: (updated) => {
+      const { accounts, setAccounts } = useSessionStore.getState();
+      setAccounts(accounts.map((account) => (account.id === updated.id ? updated : account)));
+      void queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+    },
+  });
 }
 
 export function useMembersQuery(accountId: string | null, token: string | null) {

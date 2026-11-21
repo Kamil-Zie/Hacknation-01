@@ -1,4 +1,4 @@
-// UI-C-015 AccountMenu: header login button or account menu (switch account, "Moje gospodarstwo", logout); verifies session via API-009
+// UI-C-015 AccountMenu: header login button or account menu (switch account, account name link to /konto, logout); verifies session via API-009
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Box, Button, Divider, ListSubheader, Menu, MenuItem, Typography } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
@@ -91,7 +91,7 @@ export function AccountMenu() {
           sx={{ minHeight: 44 }}
           onClick={() => setAnchor(null)}
         >
-          Moje gospodarstwo
+          {active ? `Panel: ${active.name}` : 'Panel gospodarstwa'}
         </MenuItem>
         <MenuItem sx={{ minHeight: 44 }} onClick={handleLogout}>
           Wyloguj

@@ -42,7 +42,7 @@ export function AuthForm({
     formState: { errors },
   } = useForm<AuthFormValues>({
     resolver: zodResolver(isRegister ? registerSchema : loginSchema),
-    defaultValues: { email: '', password: '', name: '' },
+    defaultValues: { email: '', password: '', name: '', accountName: '' },
   });
 
   useEffect(() => {
@@ -64,7 +64,12 @@ export function AuthForm({
       onSubmit={handleSubmit((values) =>
         onSubmit(
           isRegister
-            ? { email: values.email, password: values.password, name: values.name ?? '' }
+            ? {
+                email: values.email,
+                password: values.password,
+                name: values.name ?? '',
+                ...(values.accountName?.trim() ? { accountName: values.accountName.trim() } : {}),
+              }
             : { email: values.email, password: values.password },
         ),
       )}
@@ -93,7 +98,7 @@ export function AuthForm({
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Nazwa gospodarstwa lub imię"
+                label="Twoje imię"
                 fullWidth
                 required
                 autoComplete="name"
@@ -101,6 +106,25 @@ export function AuthForm({
                 error={Boolean(errors.name)}
                 helperText={errors.name?.message}
                 FormHelperTextProps={{ role: errors.name ? 'alert' : undefined }}
+              />
+            )}
+          />
+        )}
+        {isRegister && (
+          <Controller
+            name="accountName"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Nazwa gospodarstwa (opcjonalnie)"
+                placeholder="np. Gospodarstwo Kowalscy"
+                helperText={errors.accountName?.message ?? 'np. Gospodarstwo Kowalscy'}
+                fullWidth
+                disabled={isLoading}
+                error={Boolean(errors.accountName)}
+                slotProps={{ htmlInput: { maxLength: 120 } }}
+                FormHelperTextProps={{ role: errors.accountName ? 'alert' : undefined }}
               />
             )}
           />

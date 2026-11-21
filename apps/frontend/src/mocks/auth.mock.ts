@@ -14,6 +14,7 @@ const MOCK_DELAY_MS = 500;
 const STORAGE_KEY = 'kropelka.mock.accounts.v1';
 const TOKEN_PREFIX = 'mock.';
 const MIN_PASSWORD_LENGTH = 8;
+export const MAX_ACCOUNT_NAME = 120;
 
 interface StoredUser extends User {
   password: string;
@@ -211,9 +212,20 @@ export async function mockRegister(body: RegisterRequest): Promise<Session> {
       }
     }
   }
+  const accountName = body.accountName?.trim() || `Gospodarstwo ${name}`;
+  if (accountName.length > MAX_ACCOUNT_NAME) {
+    throw new ApiError(
+      'VALIDATION_ERROR',
+      'Nazwa gospodarstwa może mieć najwyżej 120 znaków',
+      422,
+      {
+        field: 'accountName',
+      },
+    );
+  }
   current.accounts.push({
     id: nextId('a'),
-    name: 'Moje gospodarstwo',
+    name: accountName,
     members: [
       { id: nextId('m'), email, name, status: 'active', addedAt: new Date().toISOString() },
     ],

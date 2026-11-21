@@ -359,6 +359,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   name: string;
+  accountName?: string;
 }
 
 export interface LoginRequest {
