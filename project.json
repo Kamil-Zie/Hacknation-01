@@ -690,7 +690,10 @@
           "contracts/data_model.json",
           "package-lock.json",
           "tasks/**",
-          ".claude/sync/**"
+          ".claude/sync/**",
+          "README.md",
+          "docs/pitch/**",
+          "docs/zgloszenie.md"
         ]
       }
     },

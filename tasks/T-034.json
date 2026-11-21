@@ -4,7 +4,7 @@
   "description": "README: 1 instrukcja uruchomienia, 2 funkcje, 3 architektura, 4 źródła i zakresy danych, 5 dane na żywo vs przetworzone (z datami), 6 biblioteki/usługi/narzędzia AI, 7 licencje, 8 ograniczenia, 9 sposób weryfikacji wyników. Źródło: docs/challenge/kowr-zadanie.md, ADR-005..007, katalog DM-005. Draft HackTribe 20:00: README + działający start.",
   "type": "docs",
   "team": "coordinator",
-  "assignee": "coord-1",
+  "assignee": "backend-2",
   "status": "in_progress",
   "priority": "critical",
   "depends_on": ["T-001"],
@@ -23,6 +23,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 18:15: Nataniel przejmuje (18:15). Zostało: (1) ceny do potwierdzenia w §8: Open-Meteo plan komercyjny z Historical API (open-meteo.com/en/pricing) i MongoDB Atlas najmniejszy płatny tier – podać kwotę/mies. i datę sprawdzenia; (2) test 'czysty klon': git clone do /tmp, kroki z README §1 dosłownie, popraw instrukcję, jeśli coś nie działa; (3) README §2 opisz nowe: Podgląd tej działki, nawigacja Panel/Szukaj/Dodaj działkę, nazwa gospodarstwa (T-056..T-059); (4) później: link prod (T-065) i tabela IUNG na ERA5 (Jan, T-055).",
     "coord-1 17:45: LICENSE (MIT, Zespół HackNation), README: koszty i skalowalność (KOWR 5.4/5.5), bezpieczeństwo i dane osobowe (5.6), podstawy naukowe z bibliografią załącznika; docs/zgloszenie.md (tekst do HackTribe, opis 1411 znaków). Zostaje: link repo w zgloszenie.md, ceny Open-Meteo/Atlas do potwierdzenia, wynik porównania z IUNG.",
     "coord-1 17:00: README draft (coord-docs) na main; stary README przeniesiony do docs/hacknation-workflow.md (linki poprawione). Otwarte TODO: licencje zależności + licencja kodu (sekcja 7), koszty skalowania (8), porównanie z IUNG/EDO (9). Kryterium 'czysty klon' do sprawdzenia.",
     "Agent: coord-docs. Szacunek: 2h. Faza: draft 20:00. Punkt 9 uzupełnić po T-036; finalizacja po zamrożeniu."
