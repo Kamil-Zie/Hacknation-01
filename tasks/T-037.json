@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "coord-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-004"],
   "contract_refs": ["API-004", "API-006", "DM-002", "DM-005", "DM-011", "DM-015"],
@@ -18,11 +18,12 @@
     "Wiadomość contract_change do frontendu (etykieta 'Wilgotność gleby' = era5land, nasa_power jako zapas, eumetsat bez etykiety wilgotności)"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "Kryteria 1, 3, 4, 5 w kodzie i kontrakcie (backend-2), kryterium 2 sprawdzone na żywo 14:25."
   },
   "notes": [
+    "coord-1 14:25 KRYTERIUM 2 OK (hotspot, inne IP niż sieć hackathonu): archive-api.open-meteo.com, Bronowice 51.44/21.93, 2026-02-24…2026-05-25 → HTTP 200 w 3,7 s. Daily: precipitation_sum, temperature_2m_mean/max/min, et0_fao_evapotranspiration, 91 dni, 0 null. Hourly: soil_moisture_0_to_7cm, _7_to_28cm, _28_to_100cm (m³/m³), 2184 h, 0 null; 25.05: 0,217 / 0,278 / 0,273. Nazwy zmiennych z kodu (meteo.source.ts) zgodne. Dla D = dziś archiwum ma dane do 2026-11-21 23:00 (ostatnie dni to dopełnienie modelem operacyjnym, nie finalne ERA5 – do limitations, jeśli zostanie czas). Sieć hackathonu nadal 429.",
     "coord-1 14:22: PRZEJĘTE przez coord-1 (Kamil), bo backend-2 wyczerpał limit sesji. Kod gotowy; zostaje tylko kryterium 2 (jedno zapytanie Open-Meteo na żywo z hotspotu / prod / po 1:00), razem z rozgrzaniem cache Bronowic na 2026-05-25 (T-035). Wpis w claims/backend-2.md zostaje do zwolnienia przez właściciela.",
     "coord-1 14:10 (w imieniu backend-2): ET0 z NASA POWER metodą FAO-56 Penman-Monteith (Hargreaves tylko przy brakach), kryterium 3 czytać jako 'ET0 Penman-Monteith'. Timeout nasa_power 10 → 20 s, klucz cache nasa_power:v2. Na żywo Bronowice 061409_2.0009.612: 2026-11-21 → 201 w 5,7 s, 2026-07-15 → 201 w 3,0 s; meteo/era5land 429, nasa_power ok (fallback), wilgotność z NASA, podatność wysoka (8/9 sezonów). Testy 205/205. Zostaje tylko kryterium 2 (Open-Meteo na żywo po resecie limitu).",
     "coord-1 13:05 ZMIANA (ADR-009): nasa_power jest teraz źródłem klimatologii 10 lat (zawsze pobierane, 1 zapytanie D−10 lat−75 dni … D) ORAZ zapasem okna bieżącego. Percentyl wilgotności liczony w całości z GWETROOT/GWETTOP NASA (wartość bieżąca NASA vs rozkład NASA); wartość bezwzględna w % z ERA5-Land. W sources[] rola: current / climatology / fallback.",
