@@ -5,7 +5,7 @@
   "type": "docs",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": "medium",
   "depends_on": ["T-016"],
   "contract_refs": ["API-004", "DM-006", "DM-007", "DM-009"],
