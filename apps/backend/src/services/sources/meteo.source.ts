@@ -1,0 +1,213 @@
+// T-010 T-037 DM-011 DM-015 meteo source: Open-Meteo archive (ERA5 daily + ERA5-Land hourly soil moisture), 2 parallel ranges, NASA POWER fallback
+import { HttpStatusError, runSource } from '@/services/sources/runSource';
+import type { SourceCacheStore } from '@/services/sources/cache.service';
+import { SHORT_TTL_MS, SOURCE_TTL_MS } from '@/services/sources/catalog';
+import { fetchNasaPowerDaily, toMeteoFallbackSeries } from '@/services/sources/nasaPower.source';
+import type { NasaPowerDay } from '@/services/sources/nasaPower.source';
+import type { SourceResult } from '@/services/sources/types';
+
+const ARCHIVE_URL = 'https://archive-api.open-meteo.com/v1/archive';
+const TIMEZONE = 'Europe/Warsaw';
+const DAILY_VARIABLES = [
+  'precipitation_sum',
+  'temperature_2m_mean',
+  'temperature_2m_max',
+  'temperature_2m_min',
+  'et0_fao_evapotranspiration',
+];
+const HOURLY_VARIABLES = [
+  'soil_moisture_0_to_7cm',
+  'soil_moisture_7_to_28cm',
+  'soil_moisture_28_to_100cm',
+];
+const DAY_MS = 24 * 60 * 60 * 1000;
+const HISTORY_YEARS = 10;
+const EXTRA_DAYS_BEFORE = 75;
+const FRESH_DATA_DAYS = 7;
+const METEO_TIMEOUT_MS = 15000; // ADR-006 update: 20 years in 2 ranges, timeout 15 s
+const FALLBACK_CONFIDENCE_PENALTY = 0.05;
+const FALLBACK_LIMITATION =
+  'Pogoda i wilgotność gleby z zapasowego źródła NASA POWER (ok. 50 km), ET0 metodą Hargreaves-Samani';
+
+export type MeteoDay = {
+  date: string; // YYYY-MM-DD
+  precipitationMm: number | null;
+  tmeanC: number | null;
+  tmaxC: number | null;
+  tminC: number | null;
+  et0Mm: number | null;
+  // ERA5-Land daily means, m3/m3; null for the fallback series.
+  sm0to7: number | null;
+  sm7to28: number | null;
+  sm28to100: number | null;
+};
+
+export type MeteoDeps = {
+  cache?: SourceCacheStore;
+  fetchFn?: typeof fetch; // used for both Open-Meteo and the NASA POWER fallback
+};
+
+export type MeteoOutcome = {
+  series: MeteoDay[]; // never contains days after D
+  source: 'open-meteo' | 'nasa_power' | null; // null when both sources failed
+  fallback: boolean;
+  confidencePenalty: number; // 0.05 when fallback, else 0
+  limitations: string[];
+  sources: SourceResult<null>[]; // meteo, plus nasa_power when the fallback was tried
+  nasaSeries: NasaPowerDay[] | null; // raw NASA series for computeSoilMoisture (fallback only)
+};
+
+type OpenMeteoResponse = {
+  daily?: { time?: string[] } & Record<string, (number | string | null)[] | undefined>;
+  hourly?: { time?: string[] } & Record<string, (number | string | null)[] | undefined>;
+};
+
+export async function fetchMeteo(
+  lat: number,
+  lon: number,
+  analysisDate: string,
+  signal?: AbortSignal,
+  deps: MeteoDeps = {},
+): Promise<MeteoOutcome> {
+  const end = new Date(`${analysisDate}T00:00:00Z`);
+  const start = new Date(end);
+  start.setUTCFullYear(start.getUTCFullYear() - HISTORY_YEARS);
+  start.setTime(start.getTime() - EXTRA_DAYS_BEFORE * DAY_MS);
+  const middle = new Date((start.getTime() + end.getTime()) / 2);
+  const latR = lat.toFixed(2);
+  const lonR = lon.toFixed(2);
+  const isFresh = end.getTime() > Date.now() - FRESH_DATA_DAYS * DAY_MS;
+  const doFetch = deps.fetchFn ?? fetch;
+
+  const requestRange = async (from: Date, to: Date, fetchSignal: AbortSignal) => {
+    const url =
+      `${ARCHIVE_URL}?latitude=${latR}&longitude=${lonR}&start_date=${toIso(from)}&end_date=${toIso(to)}` +
+      `&daily=${DAILY_VARIABLES.join(',')}&hourly=${HOURLY_VARIABLES.join(',')}&timezone=${TIMEZONE}`;
+    const response = await doFetch(url, { signal: fetchSignal });
+    if (!response.ok) throw new HttpStatusError(response.status);
+    return parseOpenMeteoResponse((await response.json()) as OpenMeteoResponse, analysisDate);
+  };
+
+  const meteo = await runSource<MeteoDay[]>({
+    sourceId: 'meteo',
+    key: `meteo:${latR}:${lonR}:${toIso(start)}:${toIso(end)}`,
+    ttlMs: isFresh ? SHORT_TTL_MS.meteo : SOURCE_TTL_MS.meteo,
+    timeoutMs: METEO_TIMEOUT_MS,
+    signal,
+    cache: deps.cache,
+    fetcher: async (fetchSignal) => {
+      const dayAfterMiddle = new Date(middle.getTime() + DAY_MS);
+      const [first, second] = await Promise.all([
+        requestRange(start, middle, fetchSignal),
+        requestRange(dayAfterMiddle, end, fetchSignal),
+      ]);
+      const series = [...first, ...second];
+      return series.length > 0
+        ? { data: series, dataPeriod: `${toIso(start)}/${toIso(end)}` }
+        : null;
+    },
+  });
+
+  if ((meteo.status === 'ok' || meteo.status === 'cached') && meteo.data) {
+    return {
+      series: meteo.data,
+      source: 'open-meteo',
+      fallback: false,
+      confidencePenalty: 0,
+      limitations: [],
+      sources: [withoutData(meteo)],
+      nasaSeries: null,
+    };
+  }
+
+  // Fallback: NASA POWER (meteo with Hargreaves-Samani ET0; soil moisture via computeSoilMoisture).
+  const nasa = await fetchNasaPowerDaily(lat, lon, analysisDate, signal, {
+    cache: deps.cache,
+    fetchFn: deps.fetchFn,
+  });
+  const nasaSeries = nasa.data ? nasa.data.filter((day) => day.date <= analysisDate) : null;
+  return {
+    series: nasaSeries ? toMeteoDays(nasaSeries, lat) : [],
+    source: nasaSeries ? 'nasa_power' : null,
+    fallback: true,
+    confidencePenalty: nasaSeries ? FALLBACK_CONFIDENCE_PENALTY : 0,
+    limitations: nasaSeries ? [FALLBACK_LIMITATION] : [],
+    sources: [withoutData(meteo), withoutData(nasa)],
+    nasaSeries,
+  };
+}
+
+// Maps one Open-Meteo response (daily + hourly) to daily rows, dropping days after D.
+export function parseOpenMeteoResponse(body: OpenMeteoResponse, analysisDate: string): MeteoDay[] {
+  const daily = body.daily;
+  const dates = daily?.time ?? [];
+  const numbers = (name: string): (number | null)[] =>
+    (daily?.[name] ?? []).map((value) => (typeof value === 'number' ? value : null));
+  const rain = numbers('precipitation_sum');
+  const tmean = numbers('temperature_2m_mean');
+  const tmax = numbers('temperature_2m_max');
+  const tmin = numbers('temperature_2m_min');
+  const et0 = numbers('et0_fao_evapotranspiration');
+  const soil = dailyMeans(body.hourly, HOURLY_VARIABLES);
+
+  const days: MeteoDay[] = [];
+  dates.forEach((date, index) => {
+    if (date > analysisDate) return;
+    days.push({
+      date,
+      precipitationMm: rain[index] ?? null,
+      tmeanC: tmean[index] ?? null,
+      tmaxC: tmax[index] ?? null,
+      tminC: tmin[index] ?? null,
+      et0Mm: et0[index] ?? null,
+      sm0to7: soil.get(`${date}|0`) ?? null,
+      sm7to28: soil.get(`${date}|1`) ?? null,
+      sm28to100: soil.get(`${date}|2`) ?? null,
+    });
+  });
+  return days;
+}
+
+// Hourly values (local time, YYYY-MM-DDTHH:MM) -> mean per local day and variable; null hours are skipped.
+function dailyMeans(hourly: OpenMeteoResponse['hourly'], variables: string[]): Map<string, number> {
+  const sums = new Map<string, { sum: number; count: number }>();
+  const times = hourly?.time ?? [];
+  variables.forEach((name, layer) => {
+    const values = hourly?.[name] ?? [];
+    times.forEach((time, index) => {
+      const value = values[index];
+      if (typeof value !== 'number') return;
+      const key = `${time.slice(0, 10)}|${layer}`;
+      const entry = sums.get(key) ?? { sum: 0, count: 0 };
+      sums.set(key, { sum: entry.sum + value, count: entry.count + 1 });
+    });
+  });
+  return new Map([...sums].map(([key, { sum, count }]) => [key, sum / count]));
+}
+
+function toMeteoDays(series: NasaPowerDay[], lat: number): MeteoDay[] {
+  const raw = new Map(series.map((day) => [day.date, day]));
+  return toMeteoFallbackSeries(series, lat).map((day) => {
+    const t2m = raw.get(day.date)?.t2m ?? null;
+    const hasRange = day.tmaxC !== null && day.tminC !== null;
+    return {
+      date: day.date,
+      precipitationMm: day.precipitationMm,
+      tmeanC: t2m ?? (hasRange ? (day.tmaxC! + day.tminC!) / 2 : null),
+      tmaxC: day.tmaxC,
+      tminC: day.tminC,
+      et0Mm: day.et0Mm,
+      sm0to7: null,
+      sm7to28: null,
+      sm28to100: null,
+    };
+  });
+}
+
+function withoutData<T>(result: SourceResult<T>): SourceResult<null> {
+  return { ...result, data: null };
+}
+
+function toIso(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}

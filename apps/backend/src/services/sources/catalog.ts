@@ -37,7 +37,7 @@ export const SOURCES: DataSource[] = [
     url: 'https://open-meteo.com/en/docs/historical-weather-api',
     license: 'CC BY 4.0',
     resolution: 'siatka 9–25 km, dane dobowe',
-    timeoutMs: 10000,
+    timeoutMs: 15000,
   },
   {
     id: 'sentinel2',

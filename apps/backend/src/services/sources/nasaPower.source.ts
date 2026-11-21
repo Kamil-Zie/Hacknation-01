@@ -255,20 +255,20 @@ function assess(percentile: number | null, rootPct: number | null): SoilMoisture
 }
 
 // Share of reference values below x (ties count half), 0-100.
-function percentileOf(values: number[], x: number): number {
+export function percentileOf(values: number[], x: number): number {
   const eps = 1e-9;
   const below = values.filter((v) => v < x - eps).length;
   const equal = values.filter((v) => Math.abs(v - x) <= eps).length;
   return Math.round(((below + equal / 2) / values.length) * 100);
 }
 
-function median(values: number[]): number {
+export function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 === 0 ? (sorted[mid - 1]! + sorted[mid]!) / 2 : sorted[mid]!;
 }
 
-function round1(value: number): number {
+export function round1(value: number): number {
   return Math.round(value * 10) / 10;
 }
 

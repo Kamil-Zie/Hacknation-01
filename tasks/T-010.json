@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-004", "T-002"],
   "contract_refs": ["API-004", "DM-002", "DM-005", "DM-006", "DM-011"],
@@ -17,7 +17,10 @@
     "Test na zapisanej odpowiedzi Open-Meteo sprawdza mapowanie pól i jednostki (mm, °C)"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Licencja CC BY 4.0 do DM-005."],
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Licencja CC BY 4.0 do DM-005.",
+    "Zrobione (backend-2): services/sources/meteo.source.ts fetchMeteo(lat, lon, D) – archive API, 2 równoległe zakresy, timeout 15 s, daily (opad, temp, ET0) + hourly ERA5-Land soil_moisture 3 warstwy w tym samym zapytaniu, odcięcie > D, cache. Przy statusie innym niż ok/cached zapas NASA POWER (fallback, confidencePenalty 0.05, limitations). Bez forecast past_days (ADR-006 Aktualizacja: archiwum ma dane do dziś). Testy na syntetycznym fixture (Open-Meteo 429, zero zapytań na żywo)."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
