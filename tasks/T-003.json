@@ -5,7 +5,7 @@
   "type": "contract",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "ready",
+  "status": "in_progress",
   "priority": "critical",
   "depends_on": [],
   "contract_refs": [
