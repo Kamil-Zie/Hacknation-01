@@ -287,7 +287,11 @@ export function AssessmentSection({
                   <Line>Percentyl 10 lat: {formatNumber(sm.percentile, 0)}</Line>
                 )}
                 <Line>Pomiar z {formatDate(sm.observedAt)}</Line>
-                <Line>Dane z siatki ok. {formatNumber(sm.resolutionKm, 0)} km</Line>
+                <Line>
+                  {sm.fallback
+                    ? `Dane zapasowe NASA POWER, siatka ok. ${formatNumber(sm.resolutionKm, 0)} km`
+                    : `ERA5-Land (Copernicus), siatka ok. ${formatNumber(sm.resolutionKm, 0)} km`}
+                </Line>
                 <Line>Wynik {AGREEMENT_LABEL[sm.agreement]}</Line>
               </MetricTile>
             ) : (
@@ -296,6 +300,7 @@ export function AssessmentSection({
                 missing={{
                   calm: true,
                   reason:
+                    gapFor('era5land')?.impact ??
                     gapFor('nasa_power')?.impact ??
                     'Ten pomiar jest dodatkowy, ocena opiera się na bilansie wodnym i glebie.',
                 }}

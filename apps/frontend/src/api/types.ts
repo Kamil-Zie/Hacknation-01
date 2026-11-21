@@ -8,6 +8,7 @@ export type SourceId =
   | 'uldk'
   | 'meteo'
   | 'sentinel2'
+  | 'era5land'
   | 'nasa_power'
   | 'eumetsat'
   | 'soilgrids'
@@ -164,6 +165,13 @@ export interface SatelliteSoilMoisture {
   resolutionKm: number;
   depthLabel: string;
   distanceKm: number | null;
+  theta0to7M3?: number | null;
+  theta7to28M3?: number | null;
+  theta28to100M3?: number | null;
+  thetaFcM3?: number | null;
+  thetaWpM3?: number | null;
+  /** true when the value comes from the NASA POWER fallback instead of ERA5-Land */
+  fallback?: boolean;
 }
 
 // DM-006
