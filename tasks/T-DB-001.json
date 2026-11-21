@@ -5,7 +5,7 @@
   "type": "data_update",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "ready",
+  "status": "in_progress",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["DM-001", "DM-002"],
