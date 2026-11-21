@@ -1,4 +1,4 @@
-// T-037 DM-015 nasa_power tests: real NASA POWER fixture (51.44, 21.93), -999 handling, percentile, Hargreaves, cache (no network)
+// T-037 DM-015 nasa_power tests: real NASA POWER fixture (51.44, 21.93), -999 handling, percentile, Penman-Monteith (FAO-56 ex. 18), Hargreaves fallback, cache (no network)
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -11,7 +11,9 @@ import {
   extraterrestrialRadiation,
   fetchNasaPowerDaily,
   hargreavesEt0,
+  nasaDayEt0,
   parsePowerResponse,
+  penmanMonteithEt0,
   toMeteoFallbackSeries,
 } from '@/services/sources/nasaPower.source';
 import type { NasaPowerDay } from '@/services/sources/nasaPower.source';
@@ -90,6 +92,59 @@ test('Hargreaves: Ra matches FAO-56 example 8 and ET0 matches hand calculation',
   assert.ok(Math.abs(extraterrestrialRadiation(-20, 246) - 32.2) < 0.1);
   // tmin 20, tmax 30, tmean 25: 0.0023 * 42.8 * sqrt(10) * 0.408 * 32.2 = 4.09 mm/d.
   assert.ok(Math.abs(hargreavesEt0(20, 30, 25, -20, 246) - 4.09) < 0.1);
+});
+
+test('Penman-Monteith matches FAO-56 example 18 (Uccle, 6 July, ET0 3.9 mm/d)', () => {
+  // FAO-56 example 18: 50°48'N, 100 m, Tmax 21.5, Tmin 12.3, RHmax 84, RHmin 63, u2 2.078 m/s,
+  // Rs 22.07 MJ m-2 d-1, P 100.1 kPa, J = 187. RHmean (73.5%) instead of RHmax/RHmin moves ea slightly.
+  const et0 = penmanMonteithEt0({
+    tmin: 12.3,
+    tmax: 21.5,
+    rhMeanPct: 73.5,
+    windMs: 2.078,
+    pressureKpa: 100.1,
+    solarMj: 22.07,
+    latDeg: 50.8,
+    dayOfYear: 187,
+    elevationM: 100,
+  });
+  assert.ok(Math.abs(et0 - 3.9) < 0.3, `ET0 ${et0}`);
+  // Without measured Rs the radiation is estimated from the temperature range: still plausible.
+  const estimated = penmanMonteithEt0({
+    tmin: 12.3,
+    tmax: 21.5,
+    rhMeanPct: 73.5,
+    windMs: 2.078,
+    pressureKpa: 100.1,
+    solarMj: null,
+    latDeg: 50.8,
+    dayOfYear: 187,
+  });
+  assert.ok(estimated > 2 && estimated < 5);
+});
+
+test('nasaDayEt0 uses Penman-Monteith with full inputs and Hargreaves without humidity or wind', () => {
+  const base: NasaPowerDay = {
+    date: '2026-07-06',
+    gwetTop: null,
+    gwetRoot: null,
+    gwetProf: null,
+    precipitationMm: 0,
+    t2m: 17,
+    tmaxC: 21.5,
+    tminC: 12.3,
+    rhPct: 73.5,
+    windMs: 2.1,
+    solarMj: 22.07,
+    pressureKpa: 100.1,
+  };
+  assert.equal(nasaDayEt0(base, 50.8)?.method, 'penman-monteith');
+  assert.equal(
+    nasaDayEt0({ ...base, solarMj: null }, 50.8)?.method,
+    'penman-monteith-rs-estimated',
+  );
+  assert.equal(nasaDayEt0({ ...base, windMs: null }, 50.8)?.method, 'hargreaves');
+  assert.equal(nasaDayEt0({ ...base, tmaxC: null }, 50.8), null);
 });
 
 test('toMeteoFallbackSeries gives precipitation, temperatures and plausible June ET0', () => {
