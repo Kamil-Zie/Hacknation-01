@@ -5,7 +5,7 @@
   "type": "integration",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-017", "T-028", "T-029", "T-030"],
   "contract_refs": ["API-004", "DM-001", "DM-008", "DM-009", "DM-013", "DM-014", "DM-010"],
@@ -16,7 +16,11 @@
     "Kształt odpowiedzi nadal zgodny z kontraktem API-004; wiadomość contract_change/handoff do frontendu, jeśli coś się różni"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: be-api, be-integration. Szacunek: 1,5h. Faza: 7."],
+  "notes": [
+    "Agent: be-api, be-integration. Szacunek: 1,5h. Faza: 7.",
+    "WYNIK: elevation (cab5f5b), hydrologia OSM (74b7823) i Sentinel-2 fetchSatellite (2d72446) podpięte do POST /analyses; reguła statusu przy zapasie NASA (d69431c). Testy backendu 225/225.",
+    "Test na żywo 8 lokalizacji, D = 2026-05-25: 6/8 complete (2 bez czystej sceny S2), 8–15,5 s, pewność 0,75–0,95; podatność low 2, medium 1, high 5; Bronowice: susza silna p13, NDVI/NDMI, pewność 0,95, nawadnianie zasadne."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
