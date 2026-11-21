@@ -1,0 +1,30 @@
+{
+  "id": "T-066",
+  "title": "Poprawki bezpieczeństwa przed prod (T-048): CORS w prod, accountId w publicznym raporcie, helmet, rate limit, limit logowań",
+  "description": "Z przeglądu coord-security 18:20 (T-048). (1) config/env.ts: w production błąd startu, gdy CORS_ORIGIN pusty lub domyślny localhost. (2) GET /analyses/:id (analyses.service.ts ok. 287, ReportDto): nie zwracaj accountId w publicznej odpowiedzi (null albo usuń; sprawdź, czy front używa – ReportAccountBadge, wtedy tylko przez optionalAuth dla członka). (3) app.ts: helmet + express-rate-limit (zgoda koordynatora na obie biblioteki): POST /analyses 10/min/IP, /auth/* 20/min/IP, app.set('trust proxy', 1) w production (Cloudflare Tunnel). (4) auth.service.ts limit logowań: klucz IP+e-mail zamiast samego e-maila + czyszczenie wygasłych wpisów. (5) express.json limit 20kb. Później (nie teraz): atrapa scrypt przy nieistniejącym użytkowniku, zod 4.6.7.",
+  "type": "bugfix",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-056"],
+  "contract_refs": ["API-004", "API-005", "API-008"],
+  "demo_step": 9,
+  "acceptance_criteria": [
+    "NODE_ENV=production bez CORS_ORIGIN nie startuje",
+    "GET /analyses/:id nie ujawnia accountId anonimowi",
+    "11. POST /analyses w minucie z jednego IP → 429 RATE_LIMITED w formacie błędów API; analiza demo dalej działa",
+    "10 złych logowań z innego IP nie blokuje właściciela konta",
+    "Testy backendu zielone; jeśli zmienia się kontrakt (429, accountId), dopisz do api.json i daj znać frontendowi"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 18:22: przed zamrożeniem 7:00 i przed wdrożeniem prod (T-065). CORS_ORIGIN prod = https://app.kamil-zielinski.pl (z raportu; Kamil potwierdzi domenę)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
