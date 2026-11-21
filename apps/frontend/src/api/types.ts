@@ -420,3 +420,30 @@ export interface FieldReport {
   recommendations: (Recommendation & { parcelIds?: string[] })[];
   createdAt: string;
 }
+
+// DM-024 API-016…018 (T-079)
+export interface FieldParcel {
+  id: string;
+  parcelNumber: string;
+  commune: string;
+  region: string;
+  areaHa: number;
+}
+
+export interface Field {
+  id: string;
+  accountId: string;
+  name: string;
+  parcelIds: string[];
+  parcels: FieldParcel[];
+  areaHa: number;
+  centroid: LatLon;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateFieldRequest {
+  name: string;
+  parcelIds: string[];
+}

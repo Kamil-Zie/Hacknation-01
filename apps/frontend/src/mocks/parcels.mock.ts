@@ -55,6 +55,19 @@ export const MOCK_PARCELS: Parcel[] = [
     2.41,
     [21.9278, 51.4388, 21.9322, 51.4412],
   ),
+  // Neighbour of 612 (T-079 field demo; example id from API-016, not verified in ULDK)
+  makeParcel(
+    {
+      id: '061409_2.0009.613',
+      parcelNumber: '613',
+      region: 'Bronowice',
+      commune: 'Puławy',
+      county: 'puławski',
+      voivodeship: 'lubelskie',
+    },
+    1.87,
+    [21.9322, 51.4388, 21.9356, 51.4406],
+  ),
   // Secondary parcel: built-up area in Puławy, tests '/' in the ID and missing soil data
   makeParcel(
     {

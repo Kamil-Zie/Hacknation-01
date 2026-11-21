@@ -433,9 +433,19 @@
       "status": "proposed",
       "name": "Konto gospodarstwa",
       "route": "/konto",
-      "description": "Ekran konta (wymaga logowania, inaczej przekierowanie na /logowanie): nagłówek z nazwą konta z API (domyślnie „Gospodarstwo <imię>”) i przyciskiem „Zmień nazwę (API-014)” (inline TextField + Zapisz/Anuluj), sekcja „Członkowie” (MemberList z dodawaniem po e-mailu, status „oczekuje”, usuwanie z potwierdzeniem) i sekcja „Historia raportów” (lista ReportSummary: działka, uprawa, data analizy, klasa suszy przez StatusBadge, link do /report/:id). Stany: ładowanie (szkielety), pusta historia („Brak raportów. Zapisz pierwszy raport na stronie głównej”), błąd z „Spróbuj ponownie”, pending (zaproszenia).json). Panel „Mój profil” (T-074): podstrona /konto/profil z menu konta („Mój profil”), sekcje „Twoje dane” (imię, e-mail; zmiana e-maila wymaga obecnego hasła) i „Zmiana hasła” (obecne + nowe ×2, przyciski „Pokaż”/„Ukryj”), błędy API-015 przy polach (INVALID_CREDENTIALS pod „Obecne hasło”, EMAIL_TAKEN pod e-mailem), komunikat sukcesu; nowe imię widać od razu w menu konta.",
+      "description": "Ekran konta (wymaga logowania, inaczej przekierowanie na /logowanie): nagłówek z nazwą konta z API (domyślnie „Gospodarstwo <imię>”) i przyciskiem „Zmień nazwę (API-014)” (inline TextField + Zapisz/Anuluj), sekcja „Członkowie” (MemberList z dodawaniem po e-mailu, status „oczekuje”, usuwanie z potwierdzeniem) i sekcja „Historia raportów” (lista ReportSummary: działka, uprawa, data analizy, klasa suszy przez StatusBadge, link do /report/:id). Stany: ładowanie (szkielety), pusta historia („Brak raportów. Zapisz pierwszy raport na stronie głównej”), błąd z „Spróbuj ponownie”, pending (zaproszenia).json). Panel „Mój profil” (T-074): podstrona /konto/profil z menu konta („Mój profil”), sekcje „Twoje dane” (imię, e-mail; zmiana e-maila wymaga obecnego hasła) i „Zmiana hasła” (obecne + nowe ×2, przyciski „Pokaż”/„Ukryj”), błędy API-015 przy polach (INVALID_CREDENTIALS pod „Obecne hasło”, EMAIL_TAKEN pod e-mailem), komunikat sukcesu; nowe imię widać od razu w menu konta. Sekcja „Moje pola” (T-079, FieldList): lista pól konta (nazwa, liczba działek, ha, „Raport pola” do /pole/:id/raport, „Usuń” z potwierdzeniem w oknie), przycisk „Utwórz pole” do /pole/nowe; stany: szkielety, błąd z ponowieniem, pusta lista.",
       "components": ["UI-C-014", "UI-C-012", "UI-C-015"],
-      "api_refs": ["API-009", "API-010", "API-011", "API-012", "API-013", "API-014", "API-015"],
+      "api_refs": [
+        "API-009",
+        "API-010",
+        "API-011",
+        "API-012",
+        "API-013",
+        "API-014",
+        "API-015",
+        "API-017",
+        "API-018"
+      ],
       "responsive": {
         "xs": "jedna kolumna: członkowie, potem historia raportów jako karty",
         "md": "jedna kolumna, historia jako tabela",
@@ -445,6 +455,21 @@
         "phone": null,
         "desktop": null
       }
+    },
+    {
+      "id": "UI-S-007",
+      "status": "proposed",
+      "name": "Utwórz pole",
+      "route": "/pole/nowe",
+      "description": "Tworzenie pola z 2–20 sąsiednich działek (T-079, API-016). Tytuł „Utwórz pole”, pole „Nazwa pola”, dodawanie działek numerem („Dodaj”) albo kliknięciem na mapie (FieldPickMap: wiele obrysów naraz, każdy z numerem), podpowiedź chipami z Ostatnich działek („Dodaj: 612, Bronowice”), lista działek (numer, obręb, ha, „Usuń z listy”), suma ha, „Zapisz pole” aktywny od 2 działek i nazwy. Błąd 422 PARCELS_NOT_ADJACENT: działki z details.parcelIds na czerwono na mapie i liście oraz Alert „Te działki nie leżą obok siebie…”. Inne błędy przez errorMessage. Po sukcesie przekierowanie na /konto. Niezalogowany: link do logowania. UX 18–99: tekst ≥ 18 px, przyciski ≥ 48 px.",
+      "components": ["UI-C-002"],
+      "api_refs": ["API-016", "API-017"],
+      "responsive": {
+        "xs": "jedna kolumna: nazwa, numer działki z „Dodaj”, lista, mapa 380 px, Zapisz pole",
+        "md": "jedna kolumna, mapa 520 px",
+        "lg": "dwie kolumny: formularz i lista 420 px po lewej, mapa po prawej"
+      },
+      "design_artboards": null
     },
     {
       "id": "UI-S-008",
