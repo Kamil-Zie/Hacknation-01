@@ -15,6 +15,9 @@ import { ParcelSummaryCard } from '@/components/ParcelSummaryCard/ParcelSummaryC
 import { SourceProgressList } from '@/components/SourceProgressList/SourceProgressList';
 import { useSelectionStore } from '@/store/selection';
 import { useSessionStore } from '@/store/session';
+import { errorMessage } from '@/utils/errorMessages';
+
+const EXAMPLE_PARCEL_ID = '061409_2.0009.612';
 
 const TICK_MS = 200;
 const RESULT_PREVIEW_MS = 1500;
@@ -34,17 +37,17 @@ function decodeId(raw: string | undefined): string | null {
   }
 }
 
-function toMessage(error: unknown): string {
+// T-051: 404/422 are specific to the analysis; everything else goes through the shared map
+function toMessage(error: unknown): { message: string; canRetry: boolean } {
   if (error instanceof ApiError) {
-    if (error.code === 'TIMEOUT') return 'Analiza trwa zbyt długo. Spróbuj ponownie za chwilę.';
-    if (error.code === 'NETWORK_ERROR') return 'Brak połączenia z serwerem. Sprawdź internet.';
-    if (error.status === 404) return 'Nie znaleziono działki lub uprawy dla tej analizy.';
-    if (error.status === 422) return `Nieprawidłowe dane analizy: ${error.message}`;
-    if (error.status === 502 || error.status === 503)
-      return 'Zewnętrzne źródła danych są chwilowo niedostępne.';
-    return error.message;
+    if (error.status === 404) {
+      return { message: 'Nie znaleziono działki lub uprawy dla tej analizy.', canRetry: false };
+    }
+    if (error.status === 422) {
+      return { message: `Nieprawidłowe dane analizy: ${error.message}`, canRetry: false };
+    }
   }
-  return 'Nie udało się wykonać analizy. Spróbuj ponownie.';
+  return errorMessage(error);
 }
 
 export function ParcelPage() {
@@ -52,6 +55,7 @@ export function ParcelPage() {
   const parcelId = decodeId(useParams().parcelId);
   const storedParcel = useSelectionStore((state) => state.parcel);
   const setParcel = useSelectionStore((state) => state.setParcel);
+  const isExample = useSelectionStore((state) => state.isExample);
   const hasStored = storedParcel !== null && storedParcel.id === parcelId;
   const parcelQuery = useParcelQuery(hasStored ? null : parcelId);
   const parcel = hasStored ? storedParcel : (parcelQuery.data ?? null);
@@ -133,8 +137,17 @@ export function ParcelPage() {
     setReport(null);
   }
 
+  // T-051: on 504 resend the analysis with the remembered values
+  function handleResend() {
+    if (!values) return handleRetry();
+    handleRetry();
+    handleSubmit(values);
+  }
+
   const parcelError = !hasStored && parcelQuery.isError ? parcelQuery.error : null;
   const analysisError = localError ?? (mutation.isError ? mutation.error : null);
+  const analysisCanRetry = analysisError !== null && toMessage(analysisError).canRetry;
+  const showExample = isExample && parcelId === EXAMPLE_PARCEL_ID;
   const isLoading =
     !parcelError && (!parcel || cropsQuery.isPending || sourcesQuery.isPending) && !analysisError;
   const showProgress = (isAnalyzing || report !== null) && !analysisError;
@@ -157,7 +170,7 @@ export function ParcelPage() {
       >
         {parcelError instanceof ApiError && parcelError.status === 404
           ? 'Nie znaleziono działki o podanym identyfikatorze.'
-          : toMessage(parcelError)}
+          : toMessage(parcelError).message}
       </Alert>
     );
   } else if (cropsQuery.isError || sourcesQuery.isError) {
@@ -197,12 +210,16 @@ export function ParcelPage() {
         severity="error"
         role="alert"
         action={
-          <Button color="inherit" sx={{ minHeight: 44 }} onClick={handleRetry}>
-            Spróbuj ponownie
+          <Button
+            color="inherit"
+            sx={{ minHeight: 44 }}
+            onClick={analysisCanRetry ? handleResend : handleRetry}
+          >
+            {analysisCanRetry ? 'Ponów' : 'Spróbuj ponownie'}
           </Button>
         }
       >
-        {toMessage(analysisError)}
+        {toMessage(analysisError).message}
       </Alert>
     );
   } else {
@@ -210,11 +227,16 @@ export function ParcelPage() {
       <Stack spacing={1}>
         <AnalysisForm
           crops={cropsQuery.data?.items ?? []}
-          defaultCropCode={values?.cropCode}
-          defaultDate={values?.analysisDate}
+          defaultCropCode={values?.cropCode ?? (showExample ? 'winter_wheat' : undefined)}
+          defaultDate={values?.analysisDate ?? (showExample ? '2026-05-25' : undefined)}
           isSubmitting={mutation.isPending}
           onSubmit={handleSubmit}
         />
+        {showExample && (
+          <Typography variant="caption" color="text.secondary">
+            Przykład: pszenica ozima, 25 maja 2026 (susza na działce w Bronowicach)
+          </Typography>
+        )}
         {token && activeAccountName && (
           <Typography variant="caption" color="text.secondary">
             Raport zapiszemy w: {activeAccountName}

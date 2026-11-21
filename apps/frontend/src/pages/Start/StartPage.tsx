@@ -1,44 +1,33 @@
 // UI-S-001 Start i wybór działki: search by TERYT ID or map click, summary card, next step button
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ApiError } from '@/api/client';
 import { useParcelByPointMutation, useParcelQuery } from '@/api/parcels';
+import { ExampleParcelButton } from '@/components/ExampleParcelButton/ExampleParcelButton';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ParcelSearch } from '@/components/ParcelSearch/ParcelSearch';
 import { ParcelSummaryCard } from '@/components/ParcelSummaryCard/ParcelSummaryCard';
 import { RecentParcels } from '@/components/RecentParcels/RecentParcels';
 import { useRecentParcelsStore } from '@/store/recentParcels';
 import { useSelectionStore } from '@/store/selection';
+import { errorMessage } from '@/utils/errorMessages';
 
 const STEPS = ['Wskaż działkę', 'Wybierz uprawę i datę', 'Zobacz raport o wodzie'];
 
-// T-024: user-facing texts for API-001/API-002 error codes from contracts/api.json
-const ERROR_MESSAGES: Record<string, string> = {
-  PARCEL_NOT_FOUND: 'Nie znaleziono działki. Sprawdź numer albo kliknij działkę na mapie.',
-  UPSTREAM_UNAVAILABLE: 'Serwis działek GUGiK chwilowo nie odpowiada. Spróbuj ponownie za chwilę.',
-  TIMEOUT: 'Serwis działek odpowiada zbyt długo. Spróbuj ponownie.',
-  NETWORK_ERROR: 'Brak połączenia z serwerem. Sprawdź internet i spróbuj ponownie.',
-};
-
-function toError(error: unknown): { code: string; message: string } | null {
+function toError(error: unknown): { code: string; message: string; canRetry: boolean } | null {
   if (!error) return null;
-  if (error instanceof ApiError) {
-    // ParcelSearch always shows the format hint, so do not append details.hint here
-    const message = ERROR_MESSAGES[error.code] ?? error.message;
-    return { code: error.code, message };
-  }
-  return {
-    code: 'UPSTREAM_UNAVAILABLE',
-    message: 'Nie udało się pobrać działki. Spróbuj ponownie.',
-  };
+  const { message, canRetry } = errorMessage(error);
+  return { code: error instanceof ApiError ? error.code : 'UNKNOWN', message, canRetry };
 }
 
 export function StartPage() {
   const navigate = useNavigate();
   const parcel = useSelectionStore((state) => state.parcel);
   const setParcel = useSelectionStore((state) => state.setParcel);
+  const setIsExample = useSelectionStore((state) => state.setIsExample);
+  const lastPoint = useRef<{ lat: number; lon: number } | null>(null);
   const [searchId, setSearchId] = useState<string | null>(null);
   const searchQuery = useParcelQuery(searchId);
   const pickMutation = useParcelByPointMutation();
@@ -54,7 +43,7 @@ export function StartPage() {
     if (parcel) addRecentParcel(parcel);
   }, [parcel, addRecentParcel]);
 
-  function handleSearch(parcelId: string) {
+  function search(parcelId: string) {
     pickMutation.reset();
     if (parcelId === searchId) {
       void searchQuery.refetch();
@@ -63,9 +52,27 @@ export function StartPage() {
     }
   }
 
+  function handleSearch(parcelId: string) {
+    setIsExample(false);
+    search(parcelId);
+  }
+
+  function handleExample(parcelId: string) {
+    setIsExample(true);
+    search(parcelId);
+  }
+
   function handlePick(lat: number, lon: number) {
+    setIsExample(false);
     setSearchId(null);
+    lastPoint.current = { lat, lon };
     pickMutation.mutate({ lat, lon }, { onSuccess: setParcel });
+  }
+
+  // T-051: repeat the last failed request (search by ID or map click)
+  function handleRetry() {
+    if (searchId !== null) search(searchId);
+    else if (lastPoint.current) pickMutation.mutate(lastPoint.current, { onSuccess: setParcel });
   }
 
   const isSearching = searchId !== null && searchQuery.isFetching;
@@ -107,6 +114,12 @@ export function StartPage() {
             error={searchId !== null ? error : null}
             onSearch={handleSearch}
           />
+          <ExampleParcelButton disabled={isLoading} onSelect={handleExample} />
+          {error?.canRetry && !isLoading && (
+            <Button variant="outlined" onClick={handleRetry} sx={{ minHeight: 44 }}>
+              Ponów
+            </Button>
+          )}
           <RecentParcels
             items={recentParcels}
             currentId={parcel?.id ?? null}
