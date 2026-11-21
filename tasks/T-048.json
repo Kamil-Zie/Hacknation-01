@@ -3,8 +3,8 @@
   "title": "Integracja i bezpieczeństwo kont: przegląd end-to-end i coord-security",
   "description": "Po T-041…T-047: coord-integration-reviewer na ścieżce rejestracja → dodanie członka → analiza w koncie → historia u drugiego członka oraz regresja ścieżki anonimowej; coord-security: hasła, JWT_SECRET, 401/403, brak wycieku passwordHash, limit logowań, CORS. Wg docs/adr/ADR-010-shared-accounts.md.",
   "type": "feature",
-  "team": "backend",
-  "assignee": "backend-2",
+  "team": "coordinator",
+  "assignee": "coord-1",
   "status": "ready",
   "priority": "medium",
   "depends_on": ["T-042", "T-043", "T-046", "T-047"],
@@ -20,6 +20,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 17:25: z powrotem u coord-1 (Kamil) – decyzja Kamila; przydział do backend-2 z 17:10 nieaktualny.",
     "coord-1 17:10: PRZEPISANE na backend-2 decyzją Kamila. Nataniel pisał T-041/T-043, więc przegląd bezpieczeństwa uruchom agentem be-reviewer/coord-security (świeże oczy), a nie sam po sobie. Ścieżka: rejestracja → dodanie członka (T-042 Jana) → analiza w koncie → historia u drugiego członka + regresja ścieżki anonimowej. Front T-046/T-047 jeszcze w toku: backend sprawdź curl-em teraz, UI po handoffie Jakuba. Wynik do coord-1; JWT_SECRET na prod ustawia Kamil przy wdrożeniu.",
     "coord-1 16:10: Przed zamrożeniem funkcji (7:00)."
   ],

@@ -3,8 +3,8 @@
   "title": "Rozgrzej cache dla działek demo i sprawdź czas analizy",
   "description": "Skrypt (apps/backend/scripts lub wywołania API-004) dla 3-5 działek demo (różne gleby, uprawy) przed finałem i demo: napełnia source_cache bez seeda. Pomiar czasu z zimnym i ciepłym cache. Krok 3-4.",
   "type": "infra",
-  "team": "backend",
-  "assignee": "backend-2",
+  "team": "coordinator",
+  "assignee": "coord-1",
   "status": "ready",
   "priority": "high",
   "depends_on": ["T-031"],
@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 17:25: z powrotem u coord-1 (Kamil) – decyzja Kamila; przydział do backend-2 z 17:10 nieaktualny.",
     "coord-1 17:10: PRZEPISANE na backend-2 decyzją Kamila. Zrobione wcześniej: dev cache Bronowice 2026-05-25 i 2026-07-15 (15:36, VPN). Do zrobienia: (1) 3–5 działek demo z uzasadnieniem (Bronowice; Żuławy – susza bieżąca silna przy niskiej podatności, z testu Jana 14:25; piasek np. Sulechów; mała działka; ID z '/'), (2) skrypt npm run warm-cache (POST /analyses po liście działek i dat na API z URL w argumencie, bez zapisu poza source_cache/reports, bez seeda), pomiar zimny/ciepły w notes, (3) uruchomienie na prod po wdrożeniu i rano przed pitchem. Open-Meteo z sieci hackathonu daje 429 – rozgrzewanie z innej sieci (VPN) albo na prod.",
     "coord-1 15:36: cache dev (baza hacknation) rozgrzany przez VPN (IP 188.212.135.194, Open-Meteo 200): 061409_2.0009.612 / pszenica / 2026-05-25 (complete, 0,6 s z cache) i 2026-07-15 (partial, Sentinel-2 Plan B). Zostaje: prod (hacknation_prod) po wdrożeniu i dzień pitchu rano.",
     "coord-1 14:20: data demo zmieniona na 2026-05-25 (Sentinel-2: 10.06 cirrus nad Bronowicami). Rozgrzać cache: 061409_2.0009.612 na 2026-05-25 i na dzień pitchu.",
