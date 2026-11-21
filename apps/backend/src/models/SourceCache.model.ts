@@ -12,6 +12,7 @@ const sourceCacheSchema = new Schema(
         'uldk',
         'meteo',
         'sentinel2',
+        'era5land',
         'nasa_power',
         'eumetsat',
         'soilgrids',

@@ -1,0 +1,36 @@
+{
+  "id": "T-DB-006",
+  "title": "[DATA] Contract 0.3.0: era5land source, DM-015 on ERA5-Land (ADR-008 v2)",
+  "description": "Obowiązkowe zadanie update danych po zmianie w bazie. Zmienione pliki: apps/backend/src/models/SourceCache.model.ts, contracts/data_model.json.",
+  "type": "data_update",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "done",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["DM-002", "DM-005", "DM-010", "DM-011", "DM-012", "DM-015"],
+  "data_change": {
+    "changed_files": ["apps/backend/src/models/SourceCache.model.ts", "contracts/data_model.json"],
+    "data_model_version": "0.3.0",
+    "breaking": false,
+    "created_by": "backend-2"
+  },
+  "acceptance_criteria": [
+    "contracts/data_model.json opisuje nowy stan i ma podbite version",
+    "Model/schemat w kodzie zgadza się z contracts/data_model.json",
+    "Seed w database/ zaktualizowany pod nowy model, idempotentny, z realistycznymi danymi demo",
+    "npm run seed przechodzi na wspólnej bazie dev w MongoDB Atlas (hacknation) bez błędów",
+    "Wysłana wiadomość contract_change (lub breaking_change) do frontendu, żeby zaktualizował mocki",
+    "Przy najbliższym wdrożeniu baza prod (hacknation_prod) odtworzona tym samym seedem (robi koordynator / coord-devops)"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "Zrobione (backend-2): kontrakt 0.3.0 wg ADR-008 v2 (era5land w enumach, DM-015 na ERA5-Land + opcjonalne theta*/fallback, API-006 z era5land), SourceCache.sourceId + era5land, examples API-004 z wilgotnością ERA5-Land (ilustracyjne, Open-Meteo 429). npm run seed na hacknation OK."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

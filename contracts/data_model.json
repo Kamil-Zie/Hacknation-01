@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -9,27 +9,15 @@
       "name": "Item",
       "description": "Element listy",
       "fields": [
-        {
-          "name": "id",
-          "type": "uuid",
-          "required": true
-        },
-        {
-          "name": "name",
-          "type": "string(120)",
-          "required": true
-        },
-        {
-          "name": "createdAt",
-          "type": "datetime",
-          "required": true
-        }
+        { "name": "id", "type": "uuid", "required": true },
+        { "name": "name", "type": "string(120)", "required": true },
+        { "name": "createdAt", "type": "datetime", "required": true }
       ],
       "relations": [],
       "indexes": []
     }
   },
-  "_note": "Kolekcje Mongo: tylko DM-001 (reports) i DM-002 (source_cache). DM-003..DM-005 to DTO i stałe z kodu (storage: dto/code), DM-006..DM-015 to obiekty osadzone w DM-001 (storage: embedded). Metodyka: docs/adr/ADR-007-methodology.md. Wersja 0.2.0: wszystkie encje agreed; źródło nasa_power (wilgotność gleby, ADR-008) w enumach sourceId, eumetsat zostaje opcjonalny i zawsze missing (ADR-006 Aktualizacja); DM-015 opisuje NASA POWER (zmiany zgodne wstecz: nowe pola opcjonalne/nullable).",
+  "_note": "Kolekcje Mongo: tylko DM-001 (reports) i DM-002 (source_cache). DM-003..DM-005 to DTO i stałe z kodu (storage: dto/code), DM-006..DM-015 to obiekty osadzone w DM-001 (storage: embedded). Metodyka: docs/adr/ADR-007-methodology.md. Wersja 0.3.0 (ADR-008 v2, zmiany zgodne wstecz): wilgotność gleby (DM-015) pochodzi z ERA5-Land (sourceId era5land, Copernicus C3S, ok. 9 km, przez Open-Meteo w tym samym zapytaniu co meteo); nasa_power (MERRA-2, ok. 50 km) tylko jako zapas przy 429/5xx/timeout Open-Meteo. eumetsat zostaje opcjonalny i zawsze missing (ADR-006 Aktualizacja). Nowe pola DM-015 są opcjonalne/nullable.",
   "entities": [
     {
       "id": "DM-001",
@@ -56,7 +44,7 @@
           "name": "status",
           "type": "enum(complete|partial)",
           "required": true,
-          "note": "partial tylko gdy choć jedno źródło OBOWIĄZKOWE (uldk, meteo, sentinel2, nasa_power, soilgrids, elevation, overpass) ma status error|timeout|missing. eumetsat jest opcjonalny i zawsze missing: nie zmienia statusu, ale zostaje wpis w dataGaps"
+          "note": "partial tylko gdy choć jedno źródło OBOWIĄZKOWE (uldk, meteo, sentinel2, era5land, soilgrids, elevation, overpass) ma status error|timeout|missing. eumetsat jest opcjonalny i zawsze missing: nie zmienia statusu, ale zostaje wpis w dataGaps. nasa_power jest zapasem: wpis w sources[] tylko gdy faktycznie użyty (wtedy meteo i era5land mają status ok z komunikatem o zapasie, pewność −0,05, wpis w limitations)"
         },
         { "name": "assessment", "type": "Ref<DM-006>", "required": true },
         { "name": "vulnerability", "type": "Ref<DM-007>", "required": true },
@@ -98,8 +86,18 @@
       ],
       "relations": [],
       "indexes": [
-        { "fields": { "parcel.id": 1, "analysisDate": 1, "crop.code": 1 } },
-        { "fields": { "createdAt": -1 } }
+        {
+          "fields": {
+            "parcel.id": 1,
+            "analysisDate": 1,
+            "crop.code": 1
+          }
+        },
+        {
+          "fields": {
+            "createdAt": -1
+          }
+        }
       ]
     },
     {
@@ -117,7 +115,7 @@
         },
         {
           "name": "sourceId",
-          "type": "enum(uldk|meteo|sentinel2|nasa_power|eumetsat|soilgrids|elevation|overpass)",
+          "type": "enum(uldk|meteo|sentinel2|era5land|nasa_power|eumetsat|soilgrids|elevation|overpass)",
           "required": true
         },
         {
@@ -132,8 +130,18 @@
       ],
       "relations": [],
       "indexes": [
-        { "fields": { "key": 1 }, "unique": true },
-        { "fields": { "expiresAt": 1 }, "expireAfterSeconds": 0 }
+        {
+          "fields": {
+            "key": 1
+          },
+          "unique": true
+        },
+        {
+          "fields": {
+            "expiresAt": 1
+          },
+          "expireAfterSeconds": 0
+        }
       ]
     },
     {
@@ -229,7 +237,7 @@
       "fields": [
         {
           "name": "id",
-          "type": "enum(uldk|meteo|sentinel2|nasa_power|eumetsat|soilgrids|elevation|overpass)",
+          "type": "enum(uldk|meteo|sentinel2|era5land|nasa_power|eumetsat|soilgrids|elevation|overpass)",
           "required": true
         },
         {
@@ -247,7 +255,7 @@
           "name": "label",
           "type": "string(40)",
           "required": true,
-          "note": "prosta etykieta dla rolnika: Działka, Pogoda, Satelita (rośliny), Wilgotność gleby (nasa_power), Satelita ASCAT (opcjonalne) (eumetsat, nie pokazywać jako wilgotność gleby), Gleba, Teren, Woda w okolicy"
+          "note": "prosta etykieta dla rolnika: Działka, Pogoda, Satelita (rośliny), Wilgotność gleby (era5land; zapas nasa_power ma tę samą etykietę), Satelita ASCAT (opcjonalne) (eumetsat, nie pokazywać jako wilgotność gleby), Gleba, Teren, Woda w okolicy"
         },
         { "name": "provider", "type": "string(80)", "required": true },
         { "name": "url", "type": "string", "required": true },
@@ -263,7 +271,7 @@
           "name": "attribution",
           "type": "string | null",
           "required": false,
-          "note": "wymagane przypisanie źródła, gdy licencja je nakłada (nasa_power: tekst NASA LaRC POWER wg ADR-008); frontend pokazuje je w tabeli źródeł i stopce raportu"
+          "note": "wymagane przypisanie źródła, gdy licencja je nakłada (era5land: „Contains modified Copernicus Climate Change Service information [rok]” + Open-Meteo CC BY 4.0; nasa_power: tekst NASA LaRC POWER wg ADR-008); frontend pokazuje je w tabeli źródeł i stopce raportu"
         }
       ],
       "relations": [],
@@ -311,7 +319,7 @@
           "name": "soilMoistureSatellite",
           "type": "Ref<DM-015> | null",
           "required": true,
-          "note": "wilgotność gleby z NASA POWER (sourceId nasa_power, ADR-008); null + wpis w dataGaps (sourceId nasa_power), gdy źródło ma status error|timeout|missing; potwierdza lub przeczy klasie suszy, wpływa na pewność, nie zmienia klasy (ADR-007 §5a). eumetsat nie jest już źródłem tego pola"
+          "note": "wilgotność gleby z ERA5-Land (sourceId era5land, ADR-008 v2); gdy Open-Meteo zawiedzie, z zapasu NASA POWER (pole product mówi, który produkt; fallback=true); null + wpis w dataGaps (sourceId era5land), gdy brak obu; potwierdza lub przeczy klasie suszy, wpływa na pewność (waga 0,10), nie zmienia klasy (ADR-007 §5a). eumetsat nie jest źródłem tego pola"
         },
         { "name": "evidence", "type": "Ref<DM-010>[]", "required": true }
       ],
@@ -449,7 +457,7 @@
         { "name": "unit", "type": "string(20) | null", "required": true },
         {
           "name": "sourceId",
-          "type": "enum(uldk|meteo|sentinel2|nasa_power|eumetsat|soilgrids|elevation|overpass|engine)",
+          "type": "enum(uldk|meteo|sentinel2|era5land|nasa_power|eumetsat|soilgrids|elevation|overpass|engine)",
           "required": true,
           "note": "engine = wartość wyliczona z kilku źródeł"
         },
@@ -473,7 +481,7 @@
       "fields": [
         {
           "name": "sourceId",
-          "type": "enum(uldk|meteo|sentinel2|nasa_power|eumetsat|soilgrids|elevation|overpass)",
+          "type": "enum(uldk|meteo|sentinel2|era5land|nasa_power|eumetsat|soilgrids|elevation|overpass)",
           "required": true
         },
         { "name": "name", "type": "string(80)", "required": true },
@@ -519,7 +527,7 @@
       "fields": [
         {
           "name": "sourceId",
-          "type": "enum(uldk|meteo|sentinel2|nasa_power|eumetsat|soilgrids|elevation|overpass)",
+          "type": "enum(uldk|meteo|sentinel2|era5land|nasa_power|eumetsat|soilgrids|elevation|overpass)",
           "required": true
         },
         {
@@ -603,7 +611,7 @@
       "status": "agreed",
       "name": "SatelliteSoilMoisture",
       "storage": "embedded in DM-006",
-      "description": "Wilgotność gleby z NASA POWER (źródło nasa_power, reanaliza MERRA-2, ADR-008) dla centroidu działki: warstwa 0–5 cm (GWETTOP), strefa korzeniowa ok. 1 m (GWETROOT) i cały profil (GWETPROF), jako wilgotność względna w % (0 = sucho, 100 = nasycenie). Wartość = średnia z 7 dni do daty analizy (gdy data to dziś albo wczoraj, ostatni ważny dzień, zwykle D−2; -999 = brak, nigdy nie trafia do obliczeń). Percentyl i anomalia dotyczą strefy korzeniowej względem okna ±15 dni wokół daty analizy z 10 poprzednich lat. Ocena: dry przy percentylu ≤ 20 lub strefie korzeniowej ≤ 30%, wet przy percentylu ≥ 80 lub ≥ 70%, inaczej normal. Rozdzielczość ok. 50 km, więc wartość opisuje region, nie samą działkę. Potwierdza lub przeczy klasie suszy, nie zmienia jej (ADR-007 §5a). W UI etykieta 'Wilgotność gleby'. Nazwa encji zostaje (zgodność wstecz).",
+      "description": "Wilgotność gleby z ERA5-Land (źródło era5land; reanaliza ECMWF, Copernicus Climate Change Service, licencja CC BY 4.0; dostęp przez Open-Meteo, ADR-008 v2) dla centroidu działki, siatka ok. 9 km, warstwy 0–7, 7–28 i 28–100 cm. Surowe wartości wolumetryczne (m3/m3) są przeliczane na wilgotność względną w % pojemności wodnej działki: (θ − θwp) / (θfc − θwp), przycięte do 0–100, gdzie θfc i θwp pochodzą z silnika gleby (SoilGrids + Saxton-Rawls, ADR-007); 0 = punkt trwałego więdnięcia, 100 = pojemność polowa. Mapowanie pól: valuePct = warstwa 0–7 cm, rootZonePct = strefa korzeniowa (7–28 i 28–100 cm, średnia ważona miąższością), profilePct = cały profil 0–100 cm (średnia ważona). Wartość = średnia z 7 dni do daty analizy D (dane ERA5-Land w Open-Meteo sięgają ostatnich dni; dla D = dziś ostatni dostępny dzień). Percentyl i anomalia dotyczą strefy korzeniowej względem okna ±15 dni wokół D z 10 poprzednich lat. Ocena: dry przy percentylu ≤ 20 lub strefie korzeniowej ≤ 30%, wet przy percentylu ≥ 80 lub ≥ 70%, inaczej normal. ZAPAS: gdy Open-Meteo zwróci 429, 5xx albo timeout, pole wypełnia NASA POWER (MERRA-2, ok. 50 km, GWETTOP/GWETROOT/GWETPROF 0–1 → %, -999 = brak, ostatni ważny dzień D−2) z fallback=true; product, collectionId i resolutionKm opisują wtedy NASA POWER, pola m3/m3 są null, pewność raportu −0,05, a sources[] i limitations mówią o zapasie. Wartość opisuje okolicę, nie samą działkę. Potwierdza lub przeczy klasie suszy, nie zmienia jej (ADR-007 §5a). W UI etykieta „Wilgotność gleby”. Nazwa encji zostaje (zgodność wstecz).",
       "fields": [
         {
           "name": "label",
@@ -615,19 +623,19 @@
           "name": "valuePct",
           "type": "number 0–100",
           "required": true,
-          "note": "wilgotność warstwy 0–5 cm w % (GWETTOP × 100, średnia 7 dni); jak dawniej: warstwa powierzchniowa"
+          "note": "wilgotność warstwy 0–7 cm w % pojemności wodnej (ERA5-Land soil_moisture_0_to_7cm, średnia 7 dni); w zapasie NASA POWER warstwa 0–5 cm (GWETTOP × 100)"
         },
         {
           "name": "rootZonePct",
           "type": "number 0–100 | null",
           "required": false,
-          "note": "wilgotność strefy korzeniowej w % (GWETROOT × 100, średnia 7 dni); główny wskaźnik oceny"
+          "note": "wilgotność strefy korzeniowej w % (ERA5-Land 7–28 i 28–100 cm, średnia ważona miąższością; w zapasie GWETROOT × 100); główny wskaźnik oceny"
         },
         {
           "name": "profilePct",
           "type": "number 0–100 | null",
           "required": false,
-          "note": "wilgotność całego profilu w % (GWETPROF × 100, średnia 7 dni)"
+          "note": "wilgotność całego profilu 0–100 cm w % (średnia ważona warstw ERA5-Land; w zapasie GWETPROF × 100)"
         },
         {
           "name": "percentile",
@@ -664,43 +672,79 @@
           "name": "ageDays",
           "type": "integer",
           "required": true,
-          "note": "dni od obserwacji do daty analizy (0 dla dat historycznych; 2 dla analizy z dzisiejszą datą, bo ostatni ważny dzień to D−2)"
+          "note": "dni od obserwacji do daty analizy (0 dla dat historycznych; ≥ 0 dla analizy z dzisiejszą datą; 2 w zapasie NASA POWER, bo ostatni ważny dzień to D−2)"
         },
         {
           "name": "product",
           "type": "string(80)",
           "required": true,
-          "note": "np. NASA POWER daily, MERRA-2 (GWETTOP, GWETROOT, GWETPROF)"
+          "note": "np. ERA5-Land (Copernicus C3S) przez Open-Meteo, 0–100 cm; zapas: NASA POWER daily, MERRA-2 (GWETTOP, GWETROOT, GWETPROF)"
         },
         {
           "name": "collectionId",
           "type": "string(60)",
           "required": true,
-          "note": "np. POWER daily point AG: GWETTOP,GWETROOT,GWETPROF"
+          "note": "np. open-meteo archive: soil_moisture_0_to_7cm,soil_moisture_7_to_28cm,soil_moisture_28_to_100cm; zapas: POWER daily point AG: GWETTOP,GWETROOT,GWETPROF"
         },
         {
           "name": "granuleId",
           "type": "string(160) | null",
           "required": true,
-          "note": "null dla nasa_power (brak granul); pole zostaje dla zgodności wstecz"
+          "note": "null dla era5land i nasa_power (brak granul); pole zostaje dla zgodności wstecz"
         },
         {
           "name": "resolutionKm",
           "type": "number",
           "required": true,
-          "note": "ok. 50 dla NASA POWER (siatka 0,5° × 0,625°)"
+          "note": "ok. 9 dla ERA5-Land; ok. 50 dla zapasu NASA POWER (siatka 0,5° × 0,625°)"
         },
         {
           "name": "depthLabel",
           "type": "string(40)",
           "required": true,
-          "note": "np. 0–5 cm i strefa korzeniowa (ok. 1 m)"
+          "note": "np. 0–7 cm i strefa korzeniowa (7–100 cm); zapas: 0–5 cm i strefa korzeniowa (ok. 1 m)"
         },
         {
           "name": "distanceKm",
           "type": "number | null",
           "required": true,
-          "note": "null dla nasa_power (API nie podaje punktu siatki); pole zostaje dla zgodności wstecz"
+          "note": "null dla era5land i nasa_power (API nie podaje punktu siatki); pole zostaje dla zgodności wstecz"
+        },
+        {
+          "name": "theta0to7M3",
+          "type": "number | null",
+          "required": false,
+          "note": "ERA5-Land: wilgotność wolumetryczna warstwy 0–7 cm w m3/m3, średnia 7 dni; null w zapasie NASA POWER"
+        },
+        {
+          "name": "theta7to28M3",
+          "type": "number | null",
+          "required": false,
+          "note": "ERA5-Land: wilgotność wolumetryczna warstwy 7–28 cm w m3/m3, średnia 7 dni; null w zapasie"
+        },
+        {
+          "name": "theta28to100M3",
+          "type": "number | null",
+          "required": false,
+          "note": "ERA5-Land: wilgotność wolumetryczna warstwy 28–100 cm w m3/m3, średnia 7 dni; null w zapasie"
+        },
+        {
+          "name": "thetaFcM3",
+          "type": "number | null",
+          "required": false,
+          "note": "θfc (pojemność polowa) działki z silnika gleby w m3/m3, użyta do przeliczenia na %; null w zapasie"
+        },
+        {
+          "name": "thetaWpM3",
+          "type": "number | null",
+          "required": false,
+          "note": "θwp (punkt trwałego więdnięcia) działki z silnika gleby w m3/m3, użyty do przeliczenia na %; null w zapasie"
+        },
+        {
+          "name": "fallback",
+          "type": "boolean | null",
+          "required": false,
+          "note": "true, gdy wartości pochodzą z zapasu NASA POWER (Open-Meteo 429/5xx/timeout); false lub brak dla ERA5-Land"
         }
       ],
       "relations": [],

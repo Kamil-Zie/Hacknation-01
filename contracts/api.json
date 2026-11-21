@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "base_url": "/api/v1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. Wymieniaj tylko błędy, które endpoint naprawdę zwraca w demo.",
@@ -1015,7 +1015,7 @@
       "status": "agreed",
       "method": "POST",
       "path": "/analyses",
-      "summary": "Uruchamia analizę na żywo (źródła równolegle: uldk, meteo, sentinel2, nasa_power, soilgrids, elevation, overpass; wilgotność gleby z NASA POWER jako assessment.soilMoistureSatellite; eumetsat jest opcjonalny i zawsze missing, więc zostaje wpis w dataGaps, ale nie zmienia statusu raportu; timeouty, cache), liczy ocenę, podatność, przyczyny i rekomendacje, zapisuje raport i go zwraca. Budżet ≤ 25 s po stronie serwera; awaria źródła obowiązkowego nie przerywa analizy (status 'partial' + dataGaps).",
+      "summary": "Uruchamia analizę na żywo (źródła równolegle: uldk, meteo, sentinel2, soilgrids, elevation, overpass; wilgotność gleby z ERA5-Land (sourceId era5land, w tym samym zapytaniu Open-Meteo co meteo; zapas NASA POWER nasa_power przy 429/5xx/timeout: pewność −0,05, wpis w limitations i sources) jako assessment.soilMoistureSatellite; eumetsat jest opcjonalny i zawsze missing, więc zostaje wpis w dataGaps, ale nie zmienia statusu raportu; timeouty, cache), liczy ocenę, podatność, przyczyny i rekomendacje, zapisuje raport i go zwraca. Budżet ≤ 25 s po stronie serwera; awaria źródła obowiązkowego nie przerywa analizy (status 'partial' + dataGaps).",
       "auth": "none",
       "request": {
         "body": {
@@ -1096,7 +1096,7 @@
             "confidenceReasons": [
               "Dostępnych jest 7 z 7 wymaganych źródeł danych (opcjonalny EUMETSAT jest niedostępny i nie obniża pewności)",
               "Zdjęcie Sentinel-2 jest świeże (4 dni) i dobrej jakości (92% ważnych pikseli)",
-              "Wilgotność gleby z NASA POWER (percentyl 4) i NDMI zgadzają się z wynikiem bilansu wodnego (+0,05, wynik ograniczony do 1,0)"
+              "Wilgotność gleby z ERA5-Land (percentyl 4) i NDMI zgadzają się z wynikiem bilansu wodnego (+0,05, wynik ograniczony do 1,0)"
             ],
             "summary": "W ostatnich 60 dniach klimatyczny bilans wodny wynosi −137 mm, czyli jest gorszy niż w 92% porównywalnych okresów z 10 lat (percentyl 8). Pszenica ozima jest w fazie krytycznej (kłoszenie i kwitnienie), a dane o wilgotności gleby (NASA POWER, percentyl 4) i zdjęcie satelitarne roślin to potwierdzają.",
             "kbw30": {
@@ -1163,7 +1163,7 @@
               "label": "Wilgotność gleby",
               "valuePct": 38,
               "rootZonePct": 35.1,
-              "profilePct": 35.9,
+              "profilePct": 35.3,
               "percentile": 4,
               "normRootZonePct": 42,
               "anomalyPp": -6.9,
@@ -1171,12 +1171,18 @@
               "agreement": "confirms",
               "observedAt": "2026-06-10T00:00:00.000Z",
               "ageDays": 0,
-              "product": "NASA POWER daily, MERRA-2 (GWETTOP, GWETROOT, GWETPROF)",
-              "collectionId": "POWER daily point AG: GWETTOP,GWETROOT,GWETPROF",
+              "product": "ERA5-Land (Copernicus C3S) przez Open-Meteo, 0–100 cm",
+              "collectionId": "open-meteo archive: soil_moisture_0_to_7cm,soil_moisture_7_to_28cm,soil_moisture_28_to_100cm",
               "granuleId": null,
-              "resolutionKm": 50,
-              "depthLabel": "0–5 cm i strefa korzeniowa (ok. 1 m)",
-              "distanceKm": null
+              "resolutionKm": 9,
+              "depthLabel": "0–7 cm i strefa korzeniowa (7–100 cm)",
+              "distanceKm": null,
+              "theta0to7M3": 0.151,
+              "theta7to28M3": 0.149,
+              "theta28to100M3": 0.145,
+              "thetaFcM3": 0.25,
+              "thetaWpM3": 0.09,
+              "fallback": false
             },
             "evidence": [
               {
@@ -1223,17 +1229,17 @@
                 "label": "Wilgotność gleby, strefa korzeniowa",
                 "value": 35.1,
                 "unit": "%",
-                "sourceId": "nasa_power",
+                "sourceId": "era5land",
                 "dataDate": "2026-06-10",
-                "note": "średnia 7 dni; percentyl 4 na tle tych samych dni z 10 lat (mediana 42,0%); siatka ok. 50 km, wartość regionalna"
+                "note": "średnia 7 dni; percentyl 4 na tle tych samych dni z 10 lat (mediana 42,0%); ERA5-Land, siatka ok. 9 km, wartość dla okolicy działki"
               },
               {
-                "label": "Wilgotność gleby, warstwa 0–5 cm",
+                "label": "Wilgotność gleby, warstwa 0–7 cm",
                 "value": 38,
                 "unit": "%",
-                "sourceId": "nasa_power",
+                "sourceId": "era5land",
                 "dataDate": "2026-06-10",
-                "note": "średnia 7 dni; warstwa powierzchniowa, mediana z 10 lat 51%"
+                "note": "średnia 7 dni; warstwa powierzchniowa ERA5-Land, mediana z 10 lat 51%"
               }
             ]
           },
@@ -1774,18 +1780,18 @@
               "message": "Zdjęcie z 2026-06-06, 92% ważnych pikseli działki"
             },
             {
-              "sourceId": "nasa_power",
-              "name": "NASA POWER Daily (reanaliza MERRA-2, wilgotność gleby)",
+              "sourceId": "era5land",
+              "name": "ERA5-Land (wilgotność gleby, Copernicus C3S przez Open-Meteo)",
               "label": "Wilgotność gleby",
               "category": "soil",
-              "provider": "NASA Langley Research Center (LaRC) POWER Project",
-              "url": "https://power.larc.nasa.gov/",
-              "license": "Dane NASA, otwarte; wymagane przypisanie NASA LaRC POWER",
+              "provider": "ECMWF / Copernicus Climate Change Service (dane przez Open-Meteo)",
+              "url": "https://open-meteo.com/en/docs/historical-weather-api",
+              "license": "CC BY 4.0; wymagane przypisanie Copernicus C3S i Open-Meteo",
               "status": "ok",
-              "dataPeriod": "2016-03-27–2026-06-10",
-              "fetchedAt": "2026-11-21T10:14:28.350Z",
-              "durationMs": 1390,
-              "message": "Obserwacja z 2026-06-10 (średnia 7 dni), siatka ok. 50 km"
+              "dataPeriod": "2016-06-04–2026-06-10",
+              "fetchedAt": "2026-11-21T10:14:27.004Z",
+              "durationMs": 1380,
+              "message": "Obserwacja z 2026-06-10 (średnia 7 dni), siatka ok. 9 km; to samo zapytanie co pogoda"
             },
             {
               "sourceId": "eumetsat",
@@ -1846,7 +1852,7 @@
           ],
           "limitations": [
             "Dane pogodowe ERA5 pochodzą z siatki 9–25 km, więc opad na samej działce może się różnić od podanego.",
-            "Wilgotność gleby pochodzi z reanalizy NASA POWER (MERRA-2) o siatce ok. 50 km, więc opisuje region wokół działki, a nie samą działkę; ocena (sucho, normalnie, mokro) to percentyl względem tych samych dni z 10 lat.",
+            "Wilgotność gleby pochodzi z reanalizy ERA5-Land (Copernicus C3S) o siatce ok. 9 km, więc opisuje okolicę działki, a nie samą działkę, i jest modelem z asymilacją obserwacji, a nie pomiarem; ocena (sucho, normalnie, mokro) to percentyl względem tych samych dni z 10 lat.",
             "Dane glebowe SoilGrids (250 m) to model, a nie pomiar na działce.",
             "Model terenu ma rozdzielczość 90 m i wygładza drobne nierówności.",
             "Zdjęcia Sentinel-2 mają rozdzielczość 10–20 m, a chmury mogą wydłużać czas od ostatniego użytecznego zdjęcia.",
@@ -1858,7 +1864,7 @@
             {
               "sourceId": "eumetsat",
               "what": "Brak niezależnego odczytu radarowego wilgotności gleby (EUMETSAT ASCAT, źródło opcjonalne)",
-              "impact": "Brak. Wilgotność gleby pochodzi z NASA POWER, a pewność i status raportu nie zmieniają się"
+              "impact": "Brak. Wilgotność gleby pochodzi z ERA5-Land, a pewność i status raportu nie zmieniają się"
             }
           ],
           "charts": {
@@ -2026,7 +2032,7 @@
             "confidenceScore": 0.85,
             "confidenceReasons": [
               "Nie pobrano zdjęcia Sentinel-2 (przekroczony czas odpowiedzi): nie sprawdzono stanu roślin (−0,15)",
-              "Wilgotność gleby z NASA POWER (percentyl 4) potwierdza bilans wodny, ale bez NDMI nie ma premii za zgodność danych satelitarnych",
+              "Wilgotność gleby z ERA5-Land (percentyl 4) potwierdza bilans wodny, ale bez NDMI nie ma premii za zgodność danych satelitarnych",
               "Pozostałe źródła (pogoda, wilgotność gleby, gleba, teren, woda, działka) są dostępne, więc wynik opiera się na bilansie wodnym, glebie i wilgotności gleby"
             ],
             "summary": "W ostatnich 60 dniach klimatyczny bilans wodny wynosi −137 mm, czyli jest gorszy niż w 92% porównywalnych okresów z 10 lat (percentyl 8). Pszenica ozima jest w fazie krytycznej (kłoszenie i kwitnienie), a dane o wilgotności gleby (NASA POWER, percentyl 4) to potwierdzają, ale brakuje zdjęcia satelitarnego, więc stan roślin nie został sprawdzony.",
@@ -2077,7 +2083,7 @@
               "label": "Wilgotność gleby",
               "valuePct": 38,
               "rootZonePct": 35.1,
-              "profilePct": 35.9,
+              "profilePct": 35.3,
               "percentile": 4,
               "normRootZonePct": 42,
               "anomalyPp": -6.9,
@@ -2085,12 +2091,18 @@
               "agreement": "confirms",
               "observedAt": "2026-06-10T00:00:00.000Z",
               "ageDays": 0,
-              "product": "NASA POWER daily, MERRA-2 (GWETTOP, GWETROOT, GWETPROF)",
-              "collectionId": "POWER daily point AG: GWETTOP,GWETROOT,GWETPROF",
+              "product": "ERA5-Land (Copernicus C3S) przez Open-Meteo, 0–100 cm",
+              "collectionId": "open-meteo archive: soil_moisture_0_to_7cm,soil_moisture_7_to_28cm,soil_moisture_28_to_100cm",
               "granuleId": null,
-              "resolutionKm": 50,
-              "depthLabel": "0–5 cm i strefa korzeniowa (ok. 1 m)",
-              "distanceKm": null
+              "resolutionKm": 9,
+              "depthLabel": "0–7 cm i strefa korzeniowa (7–100 cm)",
+              "distanceKm": null,
+              "theta0to7M3": 0.151,
+              "theta7to28M3": 0.149,
+              "theta28to100M3": 0.145,
+              "thetaFcM3": 0.25,
+              "thetaWpM3": 0.09,
+              "fallback": false
             },
             "evidence": [
               {
@@ -2129,17 +2141,17 @@
                 "label": "Wilgotność gleby, strefa korzeniowa",
                 "value": 35.1,
                 "unit": "%",
-                "sourceId": "nasa_power",
+                "sourceId": "era5land",
                 "dataDate": "2026-06-10",
-                "note": "średnia 7 dni; percentyl 4 na tle tych samych dni z 10 lat (mediana 42,0%); siatka ok. 50 km, wartość regionalna"
+                "note": "średnia 7 dni; percentyl 4 na tle tych samych dni z 10 lat (mediana 42,0%); ERA5-Land, siatka ok. 9 km, wartość dla okolicy działki"
               },
               {
-                "label": "Wilgotność gleby, warstwa 0–5 cm",
+                "label": "Wilgotność gleby, warstwa 0–7 cm",
                 "value": 38,
                 "unit": "%",
-                "sourceId": "nasa_power",
+                "sourceId": "era5land",
                 "dataDate": "2026-06-10",
-                "note": "średnia 7 dni; warstwa powierzchniowa, mediana z 10 lat 51%"
+                "note": "średnia 7 dni; warstwa powierzchniowa ERA5-Land, mediana z 10 lat 51%"
               }
             ]
           },
@@ -2649,18 +2661,18 @@
               "message": "Źródło nie odpowiedziało na czas"
             },
             {
-              "sourceId": "nasa_power",
-              "name": "NASA POWER Daily (reanaliza MERRA-2, wilgotność gleby)",
+              "sourceId": "era5land",
+              "name": "ERA5-Land (wilgotność gleby, Copernicus C3S przez Open-Meteo)",
               "label": "Wilgotność gleby",
               "category": "soil",
-              "provider": "NASA Langley Research Center (LaRC) POWER Project",
-              "url": "https://power.larc.nasa.gov/",
-              "license": "Dane NASA, otwarte; wymagane przypisanie NASA LaRC POWER",
+              "provider": "ECMWF / Copernicus Climate Change Service (dane przez Open-Meteo)",
+              "url": "https://open-meteo.com/en/docs/historical-weather-api",
+              "license": "CC BY 4.0; wymagane przypisanie Copernicus C3S i Open-Meteo",
               "status": "ok",
-              "dataPeriod": "2016-03-27–2026-06-10",
-              "fetchedAt": "2026-11-21T10:19:28.350Z",
-              "durationMs": 1390,
-              "message": "Obserwacja z 2026-06-10 (średnia 7 dni), siatka ok. 50 km"
+              "dataPeriod": "2016-06-04–2026-06-10",
+              "fetchedAt": "2026-11-21T10:19:27.004Z",
+              "durationMs": 1380,
+              "message": "Obserwacja z 2026-06-10 (średnia 7 dni), siatka ok. 9 km; to samo zapytanie co pogoda"
             },
             {
               "sourceId": "eumetsat",
@@ -2721,7 +2733,7 @@
           ],
           "limitations": [
             "Dane pogodowe ERA5 pochodzą z siatki 9–25 km, więc opad na samej działce może się różnić od podanego.",
-            "Wilgotność gleby pochodzi z reanalizy NASA POWER (MERRA-2) o siatce ok. 50 km, więc opisuje region wokół działki, a nie samą działkę; ocena (sucho, normalnie, mokro) to percentyl względem tych samych dni z 10 lat.",
+            "Wilgotność gleby pochodzi z reanalizy ERA5-Land (Copernicus C3S) o siatce ok. 9 km, więc opisuje okolicę działki, a nie samą działkę, i jest modelem z asymilacją obserwacji, a nie pomiarem; ocena (sucho, normalnie, mokro) to percentyl względem tych samych dni z 10 lat.",
             "Dane glebowe SoilGrids (250 m) to model, a nie pomiar na działce.",
             "Model terenu ma rozdzielczość 90 m i wygładza drobne nierówności.",
             "Mapa rowów i cieków z OpenStreetMap może być niekompletna.",
@@ -2737,7 +2749,7 @@
             {
               "sourceId": "eumetsat",
               "what": "Brak niezależnego odczytu radarowego wilgotności gleby (EUMETSAT ASCAT, źródło opcjonalne)",
-              "impact": "Brak. Wilgotność gleby pochodzi z NASA POWER, a pewność i status raportu nie zmieniają się"
+              "impact": "Brak. Wilgotność gleby pochodzi z ERA5-Land, a pewność i status raportu nie zmieniają się"
             }
           ],
           "charts": {
@@ -2862,7 +2874,7 @@
           "createdAt": "2026-11-21T10:19:41.198Z"
         }
       },
-      "examples_note": "Przykłady dotyczą głównej działki demo 061409_2.0009.612 (obręb Bronowice, gm. Puławy, lubelskie, pole uprawne, 0,55 ha). Rzeczywiste: geometria, numer, obręb, gmina, powiat i województwo (ULDK), powierzchnia i centroid (turf), piasek 60% i ił 13% (SoilGrids, T-002) oraz wilgotność gleby z NASA POWER dla 2026-06-10 (GWETTOP 38,0%, GWETROOT 35,1%, GWETPROF 35,9%, percentyl strefy korzeniowej 4 na tle 310 dni z 10 lat). Ilustracyjne (nie odpytywane): pogoda, KBW, Sentinel-2, spadek terenu i wysokości, rowy OSM, pojemność wodna TAW i próg RAW. 201_complete: eumetsat missing + wpis w dataGaps, status nadal complete. 201_partial: sentinel2 timeout, status partial. Pomocnicza działka 061401_1.0001.691/9 (Miasto Puławy, zabudowa): SoilGrids zwraca 0, więc gleba = missing + dataGap (bez pełnego przykładu); służy do testu ukośnika w ID (w ścieżce %2F, np. GET /parcels/061401_1.0001.691%2F9) i ścieżki dataGaps."
+      "examples_note": "Przykłady dotyczą głównej działki demo 061409_2.0009.612 (obręb Bronowice, gm. Puławy, lubelskie, pole uprawne, 0,55 ha). Rzeczywiste: geometria, numer, obręb, gmina, powiat i województwo (ULDK), powierzchnia i centroid (turf), piasek 60% i ił 13% (SoilGrids, T-002) oraz piasek i ił z SoilGrids. Ilustracyjne (nie odpytywane): pogoda, KBW, Sentinel-2, spadek terenu i wysokości, rowy OSM, pojemność wodna TAW i próg RAW. 201_complete: eumetsat missing + wpis w dataGaps, status nadal complete. 201_partial: sentinel2 timeout, status partial. Pomocnicza działka 061401_1.0001.691/9 (Miasto Puławy, zabudowa): SoilGrids zwraca 0, więc gleba = missing + dataGap (bez pełnego przykładu); służy do testu ukośnika w ID (w ścieżce %2F, np. GET /parcels/061401_1.0001.691%2F9) i ścieżki dataGaps. Wilgotność gleby (era5land, 2026-06-10) w przykładach jest ILUSTRACYJNA (Open-Meteo zwróciło 429, ADR-008 v2): percentyl 4, strefa korzeniowa 35,1% i θ w m3/m3 dobrane wiarygodnie dla piasku i suszy. nasa_power (zapas) nie występuje w sources[] przykładów, bo nie został użyty; pojawia się tam tylko przy fallbacku (pewność −0,05, wpis w limitations, soilMoistureSatellite.fallback=true)."
     },
     {
       "id": "API-005",
@@ -2891,7 +2903,7 @@
       "status": "agreed",
       "method": "GET",
       "path": "/sources",
-      "summary": "Katalog źródeł danych (uldk, meteo, sentinel2, nasa_power, eumetsat, soilgrids, elevation, overpass: nazwa, kategoria, dostawca, licencja, rozdzielczość, przypisanie) do listy postępu w kroku 3 i tabeli źródeł; stała z kodu. nasa_power = wilgotność gleby (etykieta \"Wilgotność gleby\"), eumetsat = opcjonalne, zawsze missing",
+      "summary": "Katalog źródeł danych (uldk, meteo, sentinel2, era5land, nasa_power, eumetsat, soilgrids, elevation, overpass: nazwa, kategoria, dostawca, licencja, rozdzielczość, przypisanie) do listy postępu w kroku 3 i tabeli źródeł; stała z kodu. era5land = wilgotność gleby (etykieta \"Wilgotność gleby\"), nasa_power = zapas meteo i wilgotności (ta sama etykieta, używany tylko przy awarii Open-Meteo), eumetsat = opcjonalne, zawsze missing",
       "auth": "none",
       "request": {},
       "response": {
@@ -2939,14 +2951,26 @@
               "timeoutMs": 15000
             },
             {
+              "id": "era5land",
+              "name": "ERA5-Land (wilgotność gleby, Copernicus C3S przez Open-Meteo)",
+              "category": "soil",
+              "label": "Wilgotność gleby",
+              "provider": "ECMWF / Copernicus Climate Change Service (dane przez Open-Meteo)",
+              "url": "https://open-meteo.com/en/docs/historical-weather-api",
+              "license": "CC BY 4.0; wymagane przypisanie Copernicus C3S i Open-Meteo",
+              "resolution": "siatka ok. 9 km, warstwy 0–7, 7–28 i 28–100 cm, dane dobowe",
+              "timeoutMs": 10000,
+              "attribution": "Contains modified Copernicus Climate Change Service information 2026. ERA5-Land data via Open-Meteo.com (CC BY 4.0)."
+            },
+            {
               "id": "nasa_power",
-              "name": "NASA POWER Daily (reanaliza MERRA-2, wilgotność gleby)",
+              "name": "NASA POWER Daily (zapas: reanaliza MERRA-2, meteo i wilgotność gleby)",
               "category": "soil",
               "label": "Wilgotność gleby",
               "provider": "NASA Langley Research Center (LaRC) POWER Project",
               "url": "https://power.larc.nasa.gov/",
               "license": "Dane NASA, otwarte; wymagane przypisanie NASA LaRC POWER",
-              "resolution": "siatka ok. 50 km (0,5° × 0,625°), dane dobowe",
+              "resolution": "siatka ok. 50 km (0,5° × 0,625°), dane dobowe; zapas gdy Open-Meteo zawiedzie",
               "timeoutMs": 10000,
               "attribution": "These data were obtained from the NASA Langley Research Center (LaRC) POWER Project funded through the NASA Earth Science/Applied Science Program."
             },

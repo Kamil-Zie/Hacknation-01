@@ -51,14 +51,27 @@ export const SOURCES: DataSource[] = [
     timeoutMs: 15000,
   },
   {
+    id: 'era5land',
+    name: 'ERA5-Land (wilgotność gleby, Copernicus C3S przez Open-Meteo)',
+    category: 'soil',
+    label: 'Wilgotność gleby',
+    provider: 'ECMWF / Copernicus Climate Change Service (dane przez Open-Meteo)',
+    url: 'https://open-meteo.com/en/docs/historical-weather-api',
+    license: 'CC BY 4.0; wymagane przypisanie Copernicus C3S i Open-Meteo',
+    resolution: 'siatka ok. 9 km, warstwy 0–7, 7–28 i 28–100 cm, dane dobowe',
+    timeoutMs: 10000,
+    attribution:
+      'Contains modified Copernicus Climate Change Service information 2026. ERA5-Land data via Open-Meteo.com (CC BY 4.0).',
+  },
+  {
     id: 'nasa_power',
-    name: 'NASA POWER Daily (reanaliza MERRA-2, wilgotność gleby)',
+    name: 'NASA POWER Daily (zapas: reanaliza MERRA-2, meteo i wilgotność gleby)',
     category: 'soil',
     label: 'Wilgotność gleby',
     provider: 'NASA Langley Research Center (LaRC) POWER Project',
     url: 'https://power.larc.nasa.gov/',
     license: 'Dane NASA, otwarte; wymagane przypisanie NASA LaRC POWER',
-    resolution: 'siatka ok. 50 km (0,5° × 0,625°), dane dobowe',
+    resolution: 'siatka ok. 50 km (0,5° × 0,625°), dane dobowe; zapas gdy Open-Meteo zawiedzie',
     timeoutMs: 10000,
     attribution:
       'These data were obtained from the NASA Langley Research Center (LaRC) POWER Project funded through the NASA Earth Science/Applied Science Program.',
@@ -114,6 +127,7 @@ export const SOURCE_TTL_MS: Record<SourceId, number> = {
   uldk: 30 * DAY_MS,
   meteo: 365 * DAY_MS,
   sentinel2: 365 * DAY_MS,
+  era5land: 365 * DAY_MS,
   nasa_power: 365 * DAY_MS,
   eumetsat: 365 * DAY_MS,
   soilgrids: 365 * DAY_MS,
@@ -124,6 +138,7 @@ export const SOURCE_TTL_MS: Record<SourceId, number> = {
 export const SHORT_TTL_MS = {
   meteo: 6 * 60 * 60 * 1000,
   sentinel2: DAY_MS,
+  era5land: 6 * 60 * 60 * 1000,
   nasa_power: 6 * 60 * 60 * 1000,
 };
 
