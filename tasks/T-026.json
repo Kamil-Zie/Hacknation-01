@@ -16,7 +16,10 @@
     "Lista poprawek w notatkach zadania, ścieżka demo przechodzi na telefonie (360 px) i desktopie"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: fe-uiux, fe-developer. Szacunek: 2h. Faza: 5. Przed zamrożeniem 07:00."],
+  "notes": [
+    "Agent: fe-uiux, fe-developer. Szacunek: 2h. Faza: 5. Przed zamrożeniem 07:00.",
+    "frontend-2: start 13:42 na mockach przed T-025 (decyzja Jakuba); po T-025 powtórka na prawdziwym API (dłuższe teksty, braki danych)."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
