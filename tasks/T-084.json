@@ -1,0 +1,29 @@
+{
+  "id": "T-084",
+  "title": "Ułatwiony dostęp: pasek dostępności (A A A, wysoki kontrast), skip link, focus, podstawa WCAG 2.1 AA",
+  "description": "Zlecenie Kamila 22:35, robi coord-1. Własny komponent bez nakładek: rozmiar tekstu 100/112,5/125% na html (typografia w rem), wysoki kontrast (html.high-contrast, prefers-contrast: more, forced-colors), linki: Tekst łatwy do czytania, Deklaracja dostępności, Mapa strony (szablony stron). Preferencje w localStorage nakładane przed pierwszym renderem (skrypt w index.html). Skip link do main#tresc, widoczny focus 3 px, prefers-reduced-motion, tytuły stron, poprawki z axe-core. Raport: docs/accessibility-report.md.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "coord-1",
+  "status": "in_progress",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-001", "UI-S-003", "UI-S-005", "UI-S-006"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "axe-core (wcag2a/aa, 21a/aa) bez błędów na logowaniu, panelu, starcie, raporcie, 404 i nowych stronach",
+    "Największy tekst i wysoki kontrast bez nakładania na 1440 i 390 px",
+    "Pasek działa z klawiatury, aria-pressed, cele 44 px",
+    "Brak mignięcia przy przeładowaniu z zapisanymi preferencjami"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 22:40: pliki zarezerwowane w claims/coord-1.md; frontend: nie ruszajcie AppLayout/AppNav/App.tsx do handoffu."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
