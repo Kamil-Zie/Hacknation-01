@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "ready",
+  "status": "in_progress",
   "priority": "medium",
   "depends_on": ["T-075"],
   "contract_refs": ["UI-S-005", "UI-S-006", "API-008", "API-015"],
@@ -22,7 +22,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix)."
+    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix).",
+    "frontend-2: start 21:15 (fe-developer) na mocku API-015, równolegle z T-073."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
