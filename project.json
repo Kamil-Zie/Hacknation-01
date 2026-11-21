@@ -1197,7 +1197,9 @@
       "new-data-task": "node .claude/scripts/new-data-task.mjs --title \"...\" [--refs ...] [--breaking] — obowiązkowe zadanie update danych",
       "discord-notify": "node .claude/scripts/discord-notify.mjs <plik-wiadomości> [--dry-run] [--test]",
       "milestone-reminder": "node .claude/scripts/milestone-reminder.mjs --list — harmonogram przypomnień (wysyła GitHub Actions)",
-      "scan-history": "node .claude/scripts/git-checks.mjs scan --history — sekrety w całej historii gita; obowiązkowo przed upublicznieniem repo (wymaga pełnej historii: git fetch --unshallow)"
+      "scan-history": "node .claude/scripts/git-checks.mjs scan --history — sekrety w całej historii gita; obowiązkowo przed upublicznieniem repo (wymaga pełnej historii: git fetch --unshallow)",
+      "brief": "node .claude/scripts/brief.mjs [--team <team>] — skrót project.json dla teamu (zamiast czytać cały plik); wstawiany do kontekstu na start sesji",
+      "project-map": "node .claude/scripts/project-map.mjs [--team <team>] — mapa kodu, kontraktów, zadań i wiadomości (.claude/state/PROJECT_MAP.md, nie w gicie); wstawiana na start sesji, odśwież po git pull"
     },
     "git_hooks": {
       "pre-commit": [
@@ -1217,11 +1219,17 @@
       "milestone-reminders": ".github/workflows/milestone-reminders.yml: przypomnienia na Discord co 15 min w dniach 21–22.11; wymaga sekretu repo DISCORD_WEBHOOK_SYNC; ręczny test przez workflow_dispatch"
     },
     "claude_hooks": {
-      "SessionStart": "check-tools.mjs --hook",
+      "SessionStart": "check-tools.mjs --hook (startup); brief.mjs + project-map.mjs (startup, clear, compact)",
       "PreToolUse Edit|Write": "guard-paths.mjs: ścieżki teamu, cudze rezerwacje, wymóg Claude Design",
       "PreToolUse Bash": "guard-bash.mjs: to samo dla zapisu z terminala (>, tee, sed -i, cp/mv/rm/touch, node -e/python -c z zapisem, git checkout/restore -- <plik>)",
       "PostToolUse mcp artifacts": "design-mcp-mark.mjs: zapisuje udane wywołanie Claude Design"
     },
-    "line_endings": ".gitattributes wymusza LF (hooki i skrypty działają na Windows, macOS i Linux)"
+    "line_endings": ".gitattributes wymusza LF (hooki i skrypty działają na Windows, macOS i Linux)",
+    "token_saving": [
+      "Brief i mapa w kontekście od startu sesji zamiast eksploracji repo i czytania całego project.json",
+      "Zagnieżdżone CLAUDE.md w apps/frontend, apps/backend, database: wczytywane tylko przy pracy w danym katalogu",
+      "Mapa kodu z pierwszego komentarza każdego pliku (wymaga go standard kodu)",
+      "Delegowanie z gotowym kontekstem (ID, ścieżki, plik-wzór) i krótkie raporty agentów wykonawczych"
+    ]
   }
 }

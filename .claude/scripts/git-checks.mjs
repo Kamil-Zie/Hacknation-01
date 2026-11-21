@@ -102,7 +102,7 @@ function preCommit() {
   // Mandatory data-update task.
   const du = p.data_updates;
   if (du?.enforce) {
-    const dataFiles = files.filter((f) => matchesAny(f, du.watched_paths) && isRealDataChange(f));
+    const dataFiles = files.filter((f) => matchesAny(f, du.watched_paths) && !/(\.md|(^|\/)\.gitkeep)$/.test(f) && isRealDataChange(f));
     if (dataFiles.length && !files.some((f) => /^tasks\/T-DB-\d+\.json$/.test(f))) {
       fail(`Zmiana bazy (${dataFiles.join(', ')}) bez zadania update danych. Utwórz je: ${du.create}, potem git add tasks/T-DB-*.json. ` +
         'Jeśli realizujesz istniejące T-DB, dopisz notatkę w jego "notes" i dodaj plik do commita.');

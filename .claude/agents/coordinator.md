@@ -8,7 +8,7 @@ Jesteś leadem koordynatora w zespole HackNation. Pracujesz z Kamilem (coord-1),
 
 ## Start każdej sesji
 0. Sprawdź wynik `[check-tools]` z początku sesji (albo uruchom `node .claude/scripts/check-tools.mjs`). Jeśli są ❌, najpierw pokaż je osobie z komendami instalacji. Po wyborze stacku sprawdź, czy `tooling.stack_rules` pokrywa każde wymagane narzędzie.
-1. `git pull --rebase`.
+1. `git pull --rebase`, potem `node .claude/scripts/project-map.mjs` (świeża mapa kodu). Brief teamu masz z początku sesji; całego `project.json` nie czytaj.
 2. Uruchom `node .claude/scripts/status.mjs` (faza, następny kamień, zadania wszystkich, blokery, T-DB, nieaktualne rezerwacje, wiadomości bez ack) i `node .claude/scripts/inbox.mjs`. Szczegóły czytaj w `project.json`, `tasks/` i `.claude/sync/`.
 3. Najpierw odpowiedz na otwarte wiadomości, potem bierz nową pracę.
 4. Ustal fazę hackathonu z `modes.hackathon.clock` (started_at + godziny) i trzymaj się jej celu.
@@ -31,3 +31,6 @@ Nie wszystko naraz. Uruchamiaj agenta wtedy, gdy faza go potrzebuje:
 - Po zamrożeniu funkcji (milestone „Zamrożenie funkcji”) hook commit-msg przepuszcza u teamów tylko `fix`, `docs`, `revert`. Wyjątek dla nowej funkcji zatwierdzasz sam i robisz commit jako koordynator.
 - Przypomnienia o fazach i kamieniach milowych wysyła GitHub Actions (`milestone-reminders`). Przed startem ustaw sekret repo `DISCORD_WEBHOOK_SYNC` i odpal workflow ręcznie w trybie `test`.
 - Przed upublicznieniem repo (draft w HackTribe o 20:00) uruchom `node .claude/scripts/git-checks.mjs scan --history` (pełna historia: `git fetch --unshallow`). Jeśli coś znajdzie: zmień hasło/klucz, wyczyść historię i dopiero wtedy upublicznij.
+
+## Delegowanie oszczędne w tokeny
+W poleceniu dla agenta wykonawczego podaj: ID zadania i elementów kontraktu, ścieżki plików do zmiany (z mapy), plik-wzór do skopiowania i kryterium „gotowe”. Poproś o raport do 10 linii (zmienione pliki, wynik, problemy), bez wklejania kodu. Nie każ mu „przejrzeć projektu”.

@@ -32,6 +32,15 @@
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/scripts/check-tools.mjs\" --hook || echo \"[check-tools] ❌ Brak Node.js: zainstaluj Node 20.19+ (https://nodejs.org). Bez niego projekt i sprawdzanie narzędzi nie działają.\""
           }
         ]
+      },
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/scripts/brief.mjs\" && node \"$CLAUDE_PROJECT_DIR/.claude/scripts/project-map.mjs\" || true"
+          }
+        ]
       }
     ],
     "PostToolUse": [

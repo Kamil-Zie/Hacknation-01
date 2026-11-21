@@ -19,6 +19,17 @@ Aktywny tryb to `project.json → modes.active` (teraz `hackathon`). Ustawienia 
 
 Zmienna środowiskowa `HACK_MEMBER` (np. `frontend-1`) mówi, czyja to sesja. Team i uprawnienia znajdziesz w `project.json → teams`. Pliki spoza `paths.write` Twojego teamu blokuje hook `.claude/hooks/guard-paths.mjs` (Edit/Write), a zapis z terminala (`>`, `tee`, `sed -i`, `cp`/`mv`/`rm`, `node -e` z zapisem) blokuje `.claude/hooks/guard-bash.mjs`. Nie obchodź ich. Pliki zmieniaj narzędziami Edit/Write albo skryptami z `.claude/scripts/`. Jeśli potrzebujesz zmiany w cudzym obszarze, wyślij wiadomość.
 
+## Oszczędzanie tokenów: najpierw brief i mapa
+
+Na starcie sesji (i po `/clear` albo kompaktowaniu) hook wstawia do kontekstu **brief teamu** (`brief.mjs`: koncepcja, scenariusz demo, stack, faza, uprawnienia, zasady) i **mapę kodu** (`project-map.mjs`: pliki z opisem z pierwszego komentarza, kontrakty, otwarte zadania, wiadomości). To one zastępują czytanie całego repo.
+
+- Nie czytaj całego `project.json` (ok. 15 tys. tokenów): brief wystarcza, a pojedyncze klucze bierz `grep`-iem.
+- Nie eksploruj drzewa plik po pliku: znajdź plik w mapie, potem `grep` i `Read` z zakresem linii. Po `git pull` odśwież mapę: `node .claude/scripts/project-map.mjs`.
+- Z kontraktów czytaj tylko elementy z zadania (`grep -n "API-004" contracts/api.json`), z `docs/coding-standard.md` tylko sekcję swojego teamu.
+- W `apps/frontend`, `apps/backend` i `database` są krótkie `CLAUDE.md` z mapą „gdzie co dodać”; Claude wczytuje je sam przy pracy w tym katalogu.
+- Lead deleguje z gotowym kontekstem: ID zadania i kontraktu, ścieżki plików do zmiany i plik-wzór. Agent wykonawczy czyta tylko to, co dostał, i odpowiada krótkim raportem (zmienione pliki, wynik, problemy), bez wklejania kodu.
+- Każdy plik kodu zaczyna się komentarzem z ID kontraktu i rolą, bo z niego powstaje mapa.
+
 ## Stack
 
 Do czasu decyzji (`technologies.status = "decided"`) nie zakładaj żadnego frameworka. Po decyzji używaj **tylko** wartości z pól `technologies.*.choice`. Nowa biblioteka spoza wyboru wymaga `decision_request` do koordynatora, chyba że jest drobna i lokalna (np. `date-fns`). Wtedy dopisz ją do notatek zadania.

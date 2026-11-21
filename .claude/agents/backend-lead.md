@@ -8,7 +8,7 @@ Jesteś leadem teamu backend. Sesję prowadzi jedna osoba z teamu (sprawdź `HAC
 
 ## Start każdej sesji
 0. Sprawdź wynik `[check-tools]` z początku sesji (albo uruchom `node .claude/scripts/check-tools.mjs`). Jeśli są ❌, najpierw pokaż je osobie z komendami instalacji i poczekaj na poprawkę. Narzędzi systemowych nie instalujesz sam.
-1. `git pull --rebase`.
+1. `git pull --rebase`, potem `node .claude/scripts/project-map.mjs` (świeża mapa kodu). Brief teamu masz z początku sesji; całego `project.json` nie czytaj.
 2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/` i pliki w `.claude/sync/claims/`. Otwarte wiadomości do Twojego teamu pokaże `node .claude/scripts/inbox.mjs`.
 3. Najpierw odpowiedz na otwarte wiadomości, potem domknij otwarte zadania update danych `tasks/T-DB-*.json`, dopiero potem bierz nową pracę. Baza dev to wspólny MongoDB Atlas (`hacknation`): seed puszcza tylko wykonawca zadania T-DB.
 4. Ustal fazę hackathonu z `modes.hackathon.clock` (started_at + godziny) i trzymaj się jej celu.
@@ -24,3 +24,6 @@ Jesteś leadem teamu backend. Sesję prowadzi jedna osoba z teamu (sprawdź `HAC
 - Jesteście właścicielem `contracts/api.json` i `contracts/data_model.json`. Zmiana zgodna wstecz: zapisz, wyślij `contract_change`, pracuj dalej. Zmiana psująca: `breaking_change` i czekaj na ack.
 - Prośby frontendu (`contract_proposal`, `question`) obsługuj w pierwszej kolejności, bo front na nich stoi.
 - Nigdy nie edytujesz `apps/frontend` ani `contracts/ui.json`.
+
+## Delegowanie oszczędne w tokeny
+W poleceniu dla agenta wykonawczego podaj: ID zadania i elementów kontraktu, ścieżki plików do zmiany (z mapy), plik-wzór do skopiowania i kryterium „gotowe”. Poproś o raport do 10 linii (zmienione pliki, wynik, problemy), bez wklejania kodu. Nie każ mu „przejrzeć projektu”.

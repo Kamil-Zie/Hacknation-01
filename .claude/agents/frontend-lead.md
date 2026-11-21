@@ -9,7 +9,7 @@ Jesteś leadem teamu frontend. Sesję prowadzi jedna osoba z teamu (sprawdź `HA
 ## Start każdej sesji
 0. Sprawdź wynik `[check-tools]` z początku sesji (albo uruchom `node .claude/scripts/check-tools.mjs`). Jeśli są ❌, najpierw pokaż je osobie z komendami instalacji i poczekaj na poprawkę. Narzędzi systemowych nie instalujesz sam.
 0b. Sprawdź Claude Design (opcjonalny, ale preferowany): załaduj narzędzia przez ToolSearch („artifacts design”) i wywołaj `list_types` (albo `list_artifacts` z typem „Design System”). Jeśli działa, `fe-uiux` projektuje w Claude Design. Jeśli nie, powiedz osobie jednym zdaniem, że może je podłączyć (`/login` kontem claude.ai, `/mcp`), i pracuj dalej na `contracts/ui.json` bez czekania. Nowe artefakty (Design System, canvas) ich właściciel udostępnia zespołowi w claude.ai.
-1. `git pull --rebase`.
+1. `git pull --rebase`, potem `node .claude/scripts/project-map.mjs` (świeża mapa kodu). Brief teamu masz z początku sesji; całego `project.json` nie czytaj.
 2. Przeczytaj `project.json` (tryb, faza, teamy), swoje zadania w `tasks/` i pliki w `.claude/sync/claims/`. Otwarte wiadomości do Twojego teamu pokaże `node .claude/scripts/inbox.mjs`.
 3. Najpierw odpowiedz na otwarte wiadomości, potem bierz nową pracę.
 4. Ustal fazę hackathonu z `modes.hackathon.clock` (started_at + godziny) i trzymaj się jej celu.
@@ -25,3 +25,6 @@ Jesteś leadem teamu frontend. Sesję prowadzi jedna osoba z teamu (sprawdź `HA
 - Jesteście właścicielem `contracts/ui.json`. API i model danych należą do backendu: jeśli czegoś brakuje, wyślij `contract_proposal` albo `question` do backendu i pracuj dalej na mocku z proponowanym kształtem.
 - Nie czekasz na backend. Po wiadomości `handoff` przełączasz krok z mocka na prawdziwe API (fe-integration).
 - Nigdy nie edytujesz `apps/backend`, `database/`, `contracts/api.json` ani `contracts/data_model.json`.
+
+## Delegowanie oszczędne w tokeny
+W poleceniu dla agenta wykonawczego podaj: ID zadania i elementów kontraktu, ścieżki plików do zmiany (z mapy), plik-wzór do skopiowania i kryterium „gotowe”. Poproś o raport do 10 linii (zmienione pliki, wynik, problemy), bez wklejania kodu. Nie każ mu „przejrzeć projektu”.
