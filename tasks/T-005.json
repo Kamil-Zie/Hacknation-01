@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-004", "T-002"],
   "contract_refs": ["API-001", "API-002", "DM-002", "DM-003"],
@@ -18,7 +18,8 @@
   ],
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
-    "Agent: be-api. Szacunek: 2h. Faza: 1 ULDK. Wynik T-002 może zmienić format zapytania."
+    "Agent: be-api. Szacunek: 2h. Faza: 1 ULDK. Wynik T-002 może zmienić format zapytania.",
+    "Zrobione (backend-2): uldk.source.ts (runSource, 10 s + 1 ponowienie, cache), parcels.{schema,service,controller,routes}. Curl: 061409_2.0009.612 200 (0,3 s, z cache 0,03 s), 691%2F9 200, by-point 51.439565/21.928256 → 061409_2.0009.612, zły ID 422 z hint, punkt na Bałtyku 404. errorHandler: ZodError → 422 (kontrakt). Testy parsera na prawdziwej odpowiedzi ULDK."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

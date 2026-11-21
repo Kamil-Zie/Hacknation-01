@@ -17,7 +17,8 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   }
   if (err instanceof ZodError) {
     const issue = err.issues[0];
-    res.status(400).json({
+    // Contract (api.json): VALIDATION_ERROR is always 422
+    res.status(422).json({
       code: 'VALIDATION_ERROR',
       message: issue ? `${issue.path.join('.')}: ${issue.message}` : 'Nieprawidłowe dane',
       details: { issues: err.issues },
