@@ -110,23 +110,40 @@ const baseTheme = createTheme({
   typography: {
     fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
     fontSize: 16,
-    h1: { fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)', fontWeight: 700 },
-    h2: { fontSize: 'clamp(1.375rem, 1.1rem + 1vw, 2rem)', fontWeight: 700 },
-    h3: { fontSize: '1.25rem', fontWeight: 600 },
-    body1: { fontSize: '1rem', fontWeight: 400, lineHeight: 1.5 },
+    h1: { fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)', fontWeight: 800, lineHeight: 1.15 },
+    h2: { fontSize: 'clamp(1.375rem, 1.1rem + 1vw, 2rem)', fontWeight: 800 },
+    h3: { fontSize: '1.25rem', fontWeight: 700 },
+    body1: { fontSize: '1.125rem', fontWeight: 400, lineHeight: 1.5 },
     caption: { fontSize: '0.875rem', fontWeight: 400 },
     metric: {
       fontSize: 'clamp(1.5rem, 1.2rem + 1vw, 2.25rem)',
       fontWeight: 700,
       fontVariantNumeric: 'tabular-nums',
     },
-    button: { textTransform: 'none', fontWeight: 600 },
+    button: { textTransform: 'none', fontWeight: 700, fontSize: '1.125rem' },
   },
   spacing: 8,
   shape: { borderRadius: 12 },
   // White page and white cards: cards get a divider border instead of a shadow to stay visible.
   components: {
     MuiCard: { defaultProps: { variant: 'outlined' } },
+    // Kropla: big touch targets, light-blue gradient CTA with dark text
+    MuiButton: {
+      styleOverrides: {
+        root: { borderRadius: 12, minHeight: 44 },
+        sizeLarge: { minHeight: 56, fontSize: '1.125rem' },
+        containedPrimary: ({ theme: t }) => ({
+          minHeight: 56,
+          background: t.palette.kropla.ctaGradient,
+          color: t.palette.kropla.ctaText,
+          boxShadow: 'none',
+          '&:hover': { background: t.palette.secondary.main, boxShadow: 'none' },
+          '&.Mui-disabled': { background: t.palette.action.disabledBackground },
+        }),
+        outlined: { borderWidth: 2, '&:hover': { borderWidth: 2 } },
+      },
+    },
+    MuiOutlinedInput: { styleOverrides: { notchedOutline: { borderWidth: 2 } } },
   },
 });
 

@@ -1,5 +1,6 @@
 // UI-S-002 Uprawa, data i analiza: parcel from API-001, AnalysisForm, SourceProgressList during API-004, redirect to report
-import { Alert, Box, Button, Container, LinearProgress, Stack, Typography } from '@mui/material';
+import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
+import { Alert, Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 
@@ -10,8 +11,6 @@ import { useParcelQuery } from '@/api/parcels';
 import { useSources } from '@/api/sources';
 import type { CropCode, Report } from '@/api/types';
 import { AnalysisForm } from '@/components/AnalysisForm/AnalysisForm';
-import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
-import { ParcelSummaryCard } from '@/components/ParcelSummaryCard/ParcelSummaryCard';
 import { SourceProgressList } from '@/components/SourceProgressList/SourceProgressList';
 import { useSelectionStore } from '@/store/selection';
 import { useSessionStore } from '@/store/session';
@@ -230,6 +229,7 @@ export function ParcelPage() {
           defaultCropCode={values?.cropCode ?? (showExample ? 'winter_wheat' : undefined)}
           defaultDate={values?.analysisDate ?? (showExample ? '2026-05-25' : undefined)}
           isSubmitting={mutation.isPending}
+          backTo="/"
           onSubmit={handleSubmit}
         />
         {showExample && (
@@ -247,45 +247,57 @@ export function ParcelPage() {
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: { xs: 'column', lg: 'row' },
-        // AppLayout: 56 px header + 2 × 32 px main padding, so the map fits a 1280×720 projector
-        minHeight: { lg: 'calc(100vh - 120px)' },
-        overflowX: 'hidden',
-      }}
-    >
-      <Container
-        disableGutters
-        maxWidth={false}
-        // AppLayout already pads the page, so no extra gutters here (T-026 review)
-        sx={{ pr: { lg: 3 }, width: { lg: 480 }, maxWidth: { lg: 480 }, flexShrink: 0 }}
-      >
-        <Stack spacing={3}>
-          <Typography variant="h1">Uprawa, data i analiza</Typography>
-          {parcel && <ParcelSummaryCard parcel={parcel} />}
-          {/* Always-mounted live region; focus moves here after „Analizuj” (T-026 a11y) */}
-          <Box ref={panelRef} tabIndex={-1} aria-live="polite" sx={{ outline: 'none' }}>
-            {panel}
-          </Box>
-        </Stack>
-      </Container>
+    <Stack spacing={3} sx={{ maxWidth: 1120, mx: 'auto' }}>
       <Box
         sx={{
-          flex: 1,
-          pt: { xs: 2, lg: 0 },
-          minWidth: 0,
           display: 'flex',
+          flexWrap: 'wrap',
+          gap: '12px 24px',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        <ParcelMap
-          parcel={parcel}
-          height={{ xs: '30vh', md: '50vh', lg: '100%' }}
-          isInteractive={false}
-          isLoading={isLoading}
-        />
+        <Stack spacing={1}>
+          <Typography sx={{ fontWeight: 700, fontSize: '1.125rem', color: 'primary.main' }}>
+            KROK 2 Z 3
+          </Typography>
+          <Typography variant="h1">Co rośnie na działce?</Typography>
+          {parcel && (
+            <Typography color="text.secondary">
+              {parcel.commune} · {parcel.areaHa.toLocaleString('pl-PL')} ha
+            </Typography>
+          )}
+        </Stack>
+        {parcel && (
+          <Box
+            component="section"
+            aria-label="Wybrana działka"
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 1.25,
+              maxWidth: '100%',
+              bgcolor: 'background.paper',
+              border: 2,
+              borderColor: 'kropla.iconMuted',
+              borderRadius: '9999px',
+              px: 2.25,
+              py: 1.25,
+            }}
+          >
+            <PlaceOutlinedIcon aria-hidden sx={{ color: 'kropla.iconMuted' }} />
+            <Typography
+              sx={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', overflowWrap: 'anywhere' }}
+            >
+              Działka {parcel.id}
+            </Typography>
+          </Box>
+        )}
       </Box>
-    </Box>
+      {/* Always-mounted live region; focus moves here after „Pokaż raport” (T-026 a11y) */}
+      <Box ref={panelRef} tabIndex={-1} aria-live="polite" sx={{ outline: 'none' }}>
+        {panel}
+      </Box>
+    </Stack>
   );
 }

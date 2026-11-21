@@ -1,5 +1,7 @@
-// UI-S-001 Start i wybór działki: search by TERYT ID or map click, summary card, next step button
-import { Box, Button, Container, Stack, Typography } from '@mui/material';
+// UI-S-001 Start i wybór działki (krok 1 z 3): search by TERYT ID / address / GPS or map click, selected parcel card, next step button
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import TouchAppOutlinedIcon from '@mui/icons-material/TouchAppOutlined';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,13 +10,10 @@ import { useParcelByPointMutation, useParcelQuery } from '@/api/parcels';
 import { ExampleParcelButton } from '@/components/ExampleParcelButton/ExampleParcelButton';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ParcelSearch } from '@/components/ParcelSearch/ParcelSearch';
-import { ParcelSummaryCard } from '@/components/ParcelSummaryCard/ParcelSummaryCard';
 import { RecentParcels } from '@/components/RecentParcels/RecentParcels';
 import { useRecentParcelsStore } from '@/store/recentParcels';
 import { useSelectionStore } from '@/store/selection';
 import { errorMessage } from '@/utils/errorMessages';
-
-const STEPS = ['Wskaż działkę', 'Wybierz uprawę i datę', 'Zobacz raport o wodzie'];
 
 function toError(error: unknown): { code: string; message: string; canRetry: boolean } | null {
   if (!error) return null;
@@ -31,6 +30,7 @@ export function StartPage() {
   const [searchId, setSearchId] = useState<string | null>(null);
   const searchQuery = useParcelQuery(searchId);
   const pickMutation = useParcelByPointMutation();
+  const [focus, setFocus] = useState<{ lat: number; lon: number } | null>(null);
 
   const recentParcels = useRecentParcelsStore((state) => state.items);
   const addRecentParcel = useRecentParcelsStore((state) => state.add);
@@ -82,68 +82,153 @@ export function StartPage() {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: { xs: 'column', lg: 'row' },
-        // AppLayout: 56 px header + 2 × 32 px main padding, so the map fits a 1280×720 projector
-        minHeight: { lg: 'calc(100vh - 120px)' },
-        overflowX: 'hidden',
+        display: 'grid',
+        gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 560px) minmax(0, 1fr)' },
+        gap: { xs: 3, md: 4 },
+        alignItems: 'stretch',
       }}
     >
-      <Container
-        disableGutters
-        maxWidth={false}
-        // AppLayout already pads the page, so no extra gutters here (T-026 review)
-        sx={{ pr: { lg: 3 }, width: { lg: 480 }, maxWidth: { lg: 480 }, flexShrink: 0 }}
-      >
-        <Stack spacing={3}>
-          <Box>
-            <Typography variant="h1" gutterBottom>
-              Sprawdź wodę na swojej działce
-            </Typography>
-            <Box component="ol" sx={{ m: 0, pl: 3, color: 'text.secondary' }}>
-              {STEPS.map((step) => (
-                <li key={step}>{step}</li>
-              ))}
-            </Box>
-          </Box>
-          {/* key: remount with the picked parcel ID after a map click */}
-          <ParcelSearch
-            key={parcel?.id ?? 'empty'}
-            defaultValue={parcel?.id}
-            isLoading={isLoading}
-            error={searchId !== null ? error : null}
-            onSearch={handleSearch}
-          />
-          <ExampleParcelButton disabled={isLoading} onSelect={handleExample} />
-          {error?.canRetry && !isLoading && (
-            <Button variant="outlined" onClick={handleRetry} sx={{ minHeight: 44 }}>
-              Ponów
-            </Button>
-          )}
-          <RecentParcels
-            items={recentParcels}
-            currentId={parcel?.id ?? null}
-            onSelect={handleSearch}
-          />
-          {parcel && <ParcelSummaryCard parcel={parcel} />}
-          <Button
-            variant="contained"
-            size="large"
-            disabled={!parcel}
-            onClick={() => parcel && navigate(`/parcel/${encodeURIComponent(parcel.id)}`)}
-            sx={{ minHeight: 48 }}
-          >
-            Dalej: uprawa
-          </Button>
+      <Stack spacing={3} component="section" aria-label="Wybór działki">
+        <Stack spacing={1.25}>
+          <Typography sx={{ fontWeight: 700, fontSize: '1.125rem', color: 'primary.main' }}>
+            KROK 1 Z 3
+          </Typography>
+          <Typography variant="h1">Gdzie jest Twoja działka?</Typography>
+          <Typography color="text.secondary" sx={{ fontSize: { xs: '1.125rem', md: '1.25rem' } }}>
+            Wpisz numer lub adres, użyj GPS <b>albo</b> kliknij działkę na mapie.
+          </Typography>
         </Stack>
-      </Container>
-      <Box sx={{ flex: 1, pt: { xs: 2, lg: 0 }, minWidth: 0, display: 'flex' }}>
+        <ParcelSearch
+          key={parcel?.id ?? 'empty'}
+          defaultValue={parcel?.id}
+          isLoading={isLoading}
+          error={searchId !== null ? error : null}
+          onSearch={handleSearch}
+          onLocate={handlePick}
+          onPlaceFound={(lat, lon) => setFocus({ lat, lon })}
+        />
+        {error?.canRetry && !isLoading && (
+          <Button variant="outlined" onClick={handleRetry} sx={{ alignSelf: 'flex-start' }}>
+            Ponów
+          </Button>
+        )}
+        <ExampleParcelButton disabled={isLoading} onSelect={handleExample} />
+        <RecentParcels
+          items={recentParcels}
+          currentId={parcel?.id ?? null}
+          onSelect={handleSearch}
+        />
+      </Stack>
+      <Box
+        component="section"
+        aria-label="Mapa"
+        sx={{
+          position: 'relative',
+          minWidth: 0,
+          minHeight: { xs: 480, md: 560 },
+          display: 'flex',
+          border: 1,
+          borderColor: 'kropla.line',
+          borderRadius: '16px',
+          overflow: 'hidden',
+        }}
+      >
         <ParcelMap
           parcel={parcel}
+          focus={focus}
+          height="100%"
           isLoading={isLoading}
           errorMessage={searchId === null ? (error?.message ?? null) : null}
           onPick={handlePick}
         />
+        <Box
+          sx={{
+            position: 'absolute',
+            top: { xs: 12, md: 24 },
+            left: { xs: 56, md: 64 },
+            right: { xs: 12, md: 24 },
+            zIndex: 1000,
+            pointerEvents: 'none',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 1.5,
+              bgcolor: 'background.paper',
+              borderRadius: '12px',
+              px: 2,
+              py: 1.25,
+              boxShadow: 3,
+              maxWidth: '100%',
+            }}
+          >
+            <TouchAppOutlinedIcon aria-hidden sx={{ color: 'kropla.iconMuted', flexShrink: 0 }} />
+            <Typography sx={{ fontWeight: 600, fontSize: { xs: '1rem', md: '1.125rem' } }}>
+              Przybliż mapę i kliknij swoją działkę
+            </Typography>
+          </Box>
+        </Box>
+        {parcel && (
+          <Box
+            sx={{
+              position: 'absolute',
+              left: { xs: 12, md: 24 },
+              right: { xs: 12, md: 24 },
+              bottom: { xs: 28, md: 32 },
+              zIndex: 1000,
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            <Box
+              component="section"
+              aria-label="Wybrana działka"
+              sx={{
+                bgcolor: 'background.paper',
+                borderRadius: '16px',
+                p: { xs: 2, md: 2.5 },
+                boxShadow: 4,
+                width: '100%',
+                maxWidth: 640,
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 2,
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Box sx={{ minWidth: 0 }}>
+                <Typography color="text.secondary" sx={{ fontSize: '1rem' }}>
+                  Wybrana działka
+                </Typography>
+                <Typography
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.375rem',
+                    fontVariantNumeric: 'tabular-nums',
+                    overflowWrap: 'anywhere',
+                  }}
+                >
+                  {parcel.id}
+                </Typography>
+                <Typography color="text.secondary" sx={{ fontSize: '1rem' }}>
+                  {parcel.commune} · {parcel.areaHa.toLocaleString('pl-PL')} ha
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                size="large"
+                endIcon={<ArrowForwardIcon aria-hidden />}
+                onClick={() => navigate(`/parcel/${encodeURIComponent(parcel.id)}`)}
+                sx={{ minHeight: 64, px: 3.5, fontSize: '1.3125rem', flexGrow: { xs: 1, sm: 0 } }}
+              >
+                To moja działka – dalej
+              </Button>
+            </Box>
+          </Box>
+        )}
       </Box>
     </Box>
   );

@@ -30,6 +30,8 @@ interface ParcelMapProps {
   parcel: Parcel | null;
   /** Responsive height (MUI sx value). When given, the default 280 px min height is dropped. */
   height?: MapHeight;
+  /** Centers the map on a searched place (address search); a new object re-centers again */
+  focus?: { lat: number; lon: number; zoom?: number } | null;
   markers?: { lat: number; lon: number; label: string }[];
   isInteractive?: boolean;
   isLoading?: boolean;
@@ -71,9 +73,18 @@ function FitToParcel({ parcel }: { parcel: Parcel | null }) {
   return null;
 }
 
+function FocusPlace({ focus }: { focus: ParcelMapProps['focus'] }) {
+  const map = useMap();
+  useEffect(() => {
+    if (focus) map.setView([focus.lat, focus.lon], focus.zoom ?? 16);
+  }, [map, focus]);
+  return null;
+}
+
 export function ParcelMap({
   parcel,
   height,
+  focus = null,
   markers,
   isInteractive = true,
   isLoading = false,
@@ -126,6 +137,7 @@ export function ParcelMap({
           />
         )}
         <FitToParcel parcel={parcel} />
+        <FocusPlace focus={focus} />
         {markers?.map((marker) => (
           <CircleMarker
             key={`${marker.lat},${marker.lon}`}
