@@ -32,7 +32,14 @@ export function ReportActions({ reportId }: ReportActionsProps) {
 
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      if (!navigator.clipboard) throw new Error('clipboard unavailable');
+      // T-083 writeText can hang without a browser permission answer: give up after 1.5 s and show the link
+      await Promise.race([
+        navigator.clipboard.writeText(window.location.href),
+        new Promise<never>((_, reject) =>
+          window.setTimeout(() => reject(new Error('clipboard timeout')), 1500),
+        ),
+      ]);
       setFallbackUrl(null);
       setMessage('Skopiowano link do raportu');
     } catch {
@@ -132,7 +139,7 @@ export function ReportActions({ reportId }: ReportActionsProps) {
       </Paper>
       <Menu anchorEl={menuAnchor} open={menuAnchor !== null} onClose={() => setMenuAnchor(null)}>
         <MenuItem
-          sx={{ minHeight: 44 }}
+          sx={{ minHeight: 48 }}
           onClick={() => {
             setMenuAnchor(null);
             void copyLink();
@@ -141,7 +148,7 @@ export function ReportActions({ reportId }: ReportActionsProps) {
           Wyślij link
         </MenuItem>
         <MenuItem
-          sx={{ minHeight: 44 }}
+          sx={{ minHeight: 48 }}
           onClick={() => {
             setMenuAnchor(null);
             navigate('/');

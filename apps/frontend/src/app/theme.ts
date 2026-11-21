@@ -128,6 +128,16 @@ const baseTheme = createTheme({
   // White page and white cards: cards get a divider border instead of a shadow to stay visible.
   components: {
     MuiCard: { defaultProps: { variant: 'outlined' } },
+    // T-083 menu rows ≥ 48 px and 18 px text for users 18–99 (MUI drops minHeight to auto from sm up)
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          minHeight: 48,
+          fontSize: '1.125rem',
+          '@media (min-width: 600px)': { minHeight: 48 },
+        },
+      },
+    },
     // Kropla: big touch targets, light-blue gradient CTA with dark text
     MuiButton: {
       styleOverrides: {

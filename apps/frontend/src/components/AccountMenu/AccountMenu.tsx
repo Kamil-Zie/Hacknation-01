@@ -92,7 +92,7 @@ export function AccountMenu() {
             role="menuitemradio"
             aria-checked={account.id === active?.id}
             selected={account.id === active?.id}
-            sx={{ minHeight: 44 }}
+            sx={{ minHeight: 48 }}
             onClick={() => {
               setActiveAccount(account.id);
               setAnchor(null);
@@ -105,7 +105,7 @@ export function AccountMenu() {
         <MenuItem
           component={RouterLink}
           to="/konto"
-          sx={{ minHeight: 44 }}
+          sx={{ minHeight: 48 }}
           onClick={() => setAnchor(null)}
         >
           {active ? `Panel: ${active.name}` : 'Panel gospodarstwa'}

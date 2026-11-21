@@ -1,4 +1,4 @@
-// UI-C-011 KbwChart: water balance (KBW) series against the 10-year p10-p90 band and p50 median, 30/60 day window
+// UI-C-011 KbwChart: rolling 60-day water balance (KBW60) per day against the 10-year p10-p90 band and p50 median; the toggle only changes the visible period
 import {
   Alert,
   Box,
@@ -119,16 +119,16 @@ export function KbwChart({ charts }: KbwChartProps) {
       const diff = lastRow.kbw - lastRow.p50;
       const belowP10 = lastRow.kbw < lastRow.p10;
       summary =
-        `Ostatnia wartość KBW (${formatDayMonth(lastRow.date)}): ${formatNumber(lastRow.kbw)} mm. ` +
+        `Bilans z 60 dni na ${formatDayMonth(lastRow.date)}: ${formatNumber(lastRow.kbw)} mm. ` +
         `Mediana wielolecia: ${formatNumber(lastRow.p50)} mm, różnica ${formatSigned(diff)} mm. ` +
         (belowP10
           ? `Wartość jest poniżej dolnego decyla normy (${formatNumber(lastRow.p10)} mm).`
           : 'Wartość nie spada poniżej dolnego decyla normy.');
     } else {
-      summary = `Ostatnia wartość KBW (${formatDayMonth(lastRow.date)}): ${formatNumber(lastRow.kbw)} mm.`;
+      summary = `Bilans z 60 dni na ${formatDayMonth(lastRow.date)}: ${formatNumber(lastRow.kbw)} mm.`;
     }
   }
-  const ariaLabel = `Wykres klimatycznego bilansu wodnego z ostatnich ${windowDays} dni, trend ${trend}. ${summary}`;
+  const ariaLabel = `Wykres bilansu wody liczonego z 60 dni, pokazany za ostatnie ${windowDays} dni, trend ${trend}. ${summary}`;
 
   const dates = visible.map((row) => row.date);
   // ~5 date labels on phones, ~9 on wider screens, whatever the point density (weekly mock vs daily API)
@@ -144,24 +144,29 @@ export function KbwChart({ charts }: KbwChartProps) {
         useFlexGap
         sx={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}
       >
-        <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>
-          Bilans wody (KBW), mm
-        </Typography>
+        <Stack spacing={0.25}>
+          <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>
+            Bilans wody z 60 dni (KBW), mm
+          </Typography>
+          <Typography color="text.secondary" sx={{ fontSize: '1rem' }}>
+            Każdy punkt to suma z poprzednich 60 dni. Przełącznik zmienia tylko pokazany okres.
+          </Typography>
+        </Stack>
         <ToggleButtonGroup
           exclusive
           size="small"
           color="primary"
           value={windowDays}
-          aria-label="Okno czasowe wykresu"
+          aria-label="Pokazany okres"
           onChange={(_, value: WindowDays | null) => {
             if (value) setWindowDays(value);
           }}
         >
-          <ToggleButton value={30} sx={{ minWidth: 64, minHeight: 44 }}>
-            30 dni
+          <ToggleButton value={30} sx={{ minWidth: 64, minHeight: 48, fontSize: '1rem' }}>
+            Ostatni miesiąc
           </ToggleButton>
-          <ToggleButton value={60} sx={{ minWidth: 64, minHeight: 44 }}>
-            60 dni
+          <ToggleButton value={60} sx={{ minWidth: 64, minHeight: 48, fontSize: '1rem' }}>
+            Ostatnie 2 miesiące
           </ToggleButton>
         </ToggleButtonGroup>
       </Stack>
