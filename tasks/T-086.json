@@ -16,11 +16,12 @@
     "axe 0 błędów, 390 i 1440 px"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "00:30 kontrola wizualna na prawdziwym API-020 (6 działek z całej Polski): działa, mapa dominuje, lista zagrożonych pod mapą, axe-friendly struktura (1 h1), 390 px bez przewijania w poziomie, panel boczny jako Menu."
   },
   "notes": [
+    "coord-1 00:30: 3 poprawki przed 6:00 (nie blokują): (1) przy działkach w całej Polsce obrysy są niewidoczne na zoomie kraju, widać tylko podpisy – dodaj CircleMarker w centroidzie w kolorze klasy, gdy zoom < 12; (2) na 390 px mapa jest dopiero pod Zmień nazwę / Aktywne gospodarstwo / Sprawdź nową działkę – przenieś kafelek mapy zaraz pod h1, przełącznik gospodarstwa niżej; (3) na 1440 px kafelek Twoje działki rozciąga się do wysokości mapy z pustym miejscem – Twoje działki i Stan suszy w jednej kolumnie bez stretch albo alignSelf: start.",
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu.",
     "backend-1 ecb9df0: pulpit 6 kafelków + ThreatMap + DashboardTile na main; typecheck, eslint, build OK. Do zrobienia: kontrola wizualna 390/1440 px i axe; usunąć MemberList/FieldList z pulpitu po T-089/T-090 (teraz stuby)."
   ],
