@@ -1,0 +1,28 @@
+{
+  "id": "T-052",
+  "title": "Przycisk „Wypróbuj na przykładowej działce” na ekranie startowym",
+  "description": "Jeden przycisk/link pod polem ID działki, który wpisuje 061409_2.0009.612 (Bronowice, gm. Puławy) i przechodzi dalej; na formularzu analizy podpowiedź daty 2026-05-25 i pszenicy ozimej tylko gdy weszło się z przykładu. Ułatwia demo i testy jury.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": [],
+  "contract_refs": ["UI-S-001", "UI-C-001"],
+  "demo_step": 2,
+  "acceptance_criteria": [
+    "Jedno kliknięcie prowadzi do działki demo z mapą",
+    "Data domyślna przy wejściu zwykłym bez zmian (dziś)",
+    "390 px i 1440 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 17:00: szybkie zadanie dla Dawida, gdy Kuba robi nowy UI. Przed dotknięciem wspólnych plików (AppLayout, Start, Report, SourcesLimitations) sprawdź claims i napisz do frontend-2. Szacunek: 20 min."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

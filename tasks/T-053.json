@@ -1,0 +1,27 @@
+{
+  "id": "T-053",
+  "title": "Marka Kropelka w karcie przeglądarki: favicon, meta description, Open Graph",
+  "description": "index.html: favicon kropli (SVG, kolor z design_tokens), meta description po polsku, og:title/og:description, theme-color. Bez logo marek zewnętrznych.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "low",
+  "depends_on": [],
+  "contract_refs": ["UI-S-001"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Favicon widoczny w karcie, tytuł Kropelka",
+    "Link wklejony do komunikatora ma tytuł i opis"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 17:00: szybkie zadanie dla Dawida, gdy Kuba robi nowy UI. Przed dotknięciem wspólnych plików (AppLayout, Start, Report, SourcesLimitations) sprawdź claims i napisz do frontend-2. Szacunek: 15 min."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

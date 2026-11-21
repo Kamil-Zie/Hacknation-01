@@ -1,0 +1,27 @@
+{
+  "id": "T-050",
+  "title": "Teksty dla reasonCode przy źródłach i lukach danych (DM-011, DM-012)",
+  "description": "Backend (T-039) wysyła reasonCode w sources[] i dataGaps[]: NO_SCENE, CLOUD_COVER, PARCEL_TOO_SMALL, TIMEOUT, RATE_LIMIT, UPSTREAM_ERROR, NOT_CONFIGURED. Jedna mapa kod → krótki tekst dla rolnika w nowym pliku (np. src/utils/reasonCodes.ts), użyta przy statusie źródła i w lukach danych. Np. CLOUD_COVER: „Zdjęcie satelitarne zasłonięte chmurami”, TIMEOUT: „Źródło nie odpowiedziało na czas”, RATE_LIMIT: „Chwilowy limit zapytań źródła”. Brak kodu → dotychczasowy message.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["DM-011", "DM-012", "API-004"],
+  "demo_step": 6,
+  "acceptance_criteria": [
+    "Każdy z 7 kodów ma tekst po polsku; nieznany kod → message z API",
+    "Bronowice 2026-06-10 (chmury) pokazuje tekst CLOUD_COVER przy satelicie"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 17:00: szybkie zadanie dla Dawida, gdy Kuba robi nowy UI. Przed dotknięciem wspólnych plików (AppLayout, Start, Report, SourcesLimitations) sprawdź claims i napisz do frontend-2. Szacunek: 30 min."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

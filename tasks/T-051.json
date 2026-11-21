@@ -1,0 +1,27 @@
+{
+  "id": "T-051",
+  "title": "Komunikaty dla nowych kodów błędów HTTP: 504 UPSTREAM_TIMEOUT, 429 TOO_MANY_ATTEMPTS, 403 NOT_A_MEMBER",
+  "description": "Wspólna mapa code → komunikat (tam, gdzie dziś obsługiwane są VALIDATION_ERROR i UPSTREAM_UNAVAILABLE). 504 UPSTREAM_TIMEOUT przy wyszukiwaniu działki i analizie: „Rejestr działek (ULDK) nie odpowiedział na czas. Spróbuj ponownie za chwilę” + przycisk Ponów. 429 TOO_MANY_ATTEMPTS na logowaniu z details.retryAfterSec („Spróbuj za N min”). 403 NOT_A_MEMBER: „Nie należysz do tego gospodarstwa”.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["API-001", "API-004", "API-008"],
+  "demo_step": 2,
+  "acceptance_criteria": [
+    "Mock/stub każdego z 3 kodów pokazuje właściwy komunikat",
+    "Ponów przy 504 powtarza zapytanie"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 17:00: szybkie zadanie dla Dawida, gdy Kuba robi nowy UI. Przed dotknięciem wspólnych plików (AppLayout, Start, Report, SourcesLimitations) sprawdź claims i napisz do frontend-2. Szacunek: 25 min."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
