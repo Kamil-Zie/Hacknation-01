@@ -34,6 +34,7 @@ export function StartPage() {
   const pickMutation = useParcelByPointMutation();
   const [focus, setFocus] = useState<{ lat: number; lon: number } | null>(null);
   const [focusKey, setFocusKey] = useState(0);
+  const mapSectionRef = useRef<HTMLDivElement>(null);
 
   // T-058 "Dodaj działkę" navigates here with a reset stamp: forget the previous search
   const resetStamp = (location.state as { resetAt?: number } | null)?.resetAt;
@@ -123,6 +124,7 @@ export function StartPage() {
           defaultValue={parcel?.id}
           isLoading={isLoading}
           error={searchId !== null ? error : null}
+          pickError={searchId === null ? error : null}
           onSearch={handleSearch}
           onLocate={handlePick}
           onPlaceFound={(lat, lon) => setFocus({ lat, lon })}
@@ -142,6 +144,7 @@ export function StartPage() {
       <Box
         component="section"
         aria-label="Mapa"
+        ref={mapSectionRef}
         sx={{
           position: { xs: 'relative', md: 'sticky' },
           minWidth: 0,
@@ -261,7 +264,10 @@ export function StartPage() {
                   variant="outlined"
                   size="large"
                   startIcon={<VisibilityOutlinedIcon aria-hidden />}
-                  onClick={() => setFocusKey((key) => key + 1)}
+                  onClick={() => {
+                    setFocusKey((key) => key + 1);
+                    mapSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }}
                   sx={{ minHeight: 48, px: 2.5, fontSize: '1.125rem' }}
                 >
                   Podgląd tej działki

@@ -1,4 +1,5 @@
 // UI-C-001 ParcelSearch: "Jak znaleźć działkę?" card with mode switch (parcel ID with format validation / address / GPS) and loading state
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
@@ -21,6 +22,7 @@ import { geocodeAddress } from '@/api/geocode';
 import { PARCEL_ID_REGEX } from '@/api/parcels';
 
 const EXAMPLE_ID = '061409_2.0009.612';
+const NOT_FOUND_MESSAGE = 'Nie znaleziono działki. Sprawdź numer albo kliknij działkę na mapie.';
 const FORMAT_HINT = `Format: ${EXAMPLE_ID}`;
 
 type Mode = 'number' | 'address' | 'gps';
@@ -35,6 +37,8 @@ interface ParcelSearchProps {
   defaultValue?: string;
   isLoading?: boolean;
   error?: { code: string; message: string } | null;
+  /** Error of the GPS / map-click lookup (shown in the GPS tab) */
+  pickError?: { code: string; message: string } | null;
   onSearch: (parcelId: string) => void;
   /** GPS position found: the page looks up the parcel under it (same as a map click) */
   onLocate?: (lat: number, lon: number) => void;
@@ -60,18 +64,30 @@ function InfoBox({ children }: { children: ReactNode }) {
   );
 }
 
+function FieldError({ children }: { children: ReactNode }) {
+  return (
+    <Box component="span" sx={{ display: 'inline-flex', gap: 0.75, alignItems: 'flex-start' }}>
+      <ErrorOutlineIcon aria-hidden fontSize="small" sx={{ mt: '2px', flexShrink: 0 }} />
+      <span>{children}</span>
+    </Box>
+  );
+}
+
 const inputSx = {
   '& .MuiInputBase-root': {
     minHeight: { xs: 64, md: 68 },
     fontSize: { xs: '1.25rem', md: '1.375rem' },
   },
   '& .MuiOutlinedInput-notchedOutline': { borderColor: 'text.secondary' },
+  '& .Mui-error .MuiOutlinedInput-notchedOutline': { borderColor: 'error.main', borderWidth: 3 },
+  '& .MuiFormHelperText-root': { fontSize: '1.125rem', fontWeight: 600, mx: 0 },
 };
 
 export function ParcelSearch({
   defaultValue = '',
   isLoading = false,
   error = null,
+  pickError = null,
   onSearch,
   onLocate,
   onPlaceFound,
@@ -112,7 +128,7 @@ export function ParcelSearch({
     try {
       const place = await geocodeAddress(query);
       if (place) onPlaceFound?.(place.lat, place.lon);
-      else setAddressError('Nie znaleziono takiego miejsca. Sprawdź pisownię albo kliknij mapę.');
+      else setAddressError(NOT_FOUND_MESSAGE);
     } catch {
       setAddressError('Nie udało się wyszukać adresu. Sprawdź internet albo kliknij mapę.');
     } finally {
@@ -249,7 +265,15 @@ export function ParcelSearch({
                 setValidationError(null);
               }}
               error={errorMessage !== null}
-              helperText={errorMessage ? `${errorMessage} (${FORMAT_HINT})` : FORMAT_HINT}
+              helperText={
+                errorMessage ? (
+                  <FieldError>
+                    {errorMessage} ({FORMAT_HINT})
+                  </FieldError>
+                ) : (
+                  FORMAT_HINT
+                )
+              }
               slotProps={{
                 htmlInput: { 'aria-describedby': helperId },
                 formHelperText: { id: helperId, role: errorMessage ? 'alert' : undefined },
@@ -289,7 +313,9 @@ export function ParcelSearch({
                 setAddressError(null);
               }}
               error={addressError !== null}
-              helperText={addressError ?? 'np. Bronowice 12, Puławy'}
+              helperText={
+                addressError ? <FieldError>{addressError}</FieldError> : 'np. Bronowice 12, Puławy'
+              }
               slotProps={{ formHelperText: { role: addressError ? 'alert' : undefined } }}
               placeholder="np. Bronowice 12, Puławy"
               fullWidth
@@ -327,9 +353,20 @@ export function ParcelSearch({
           <InfoBox>
             Przeglądarka zapyta o <b>zgodę na lokalizację</b> – kliknij „Zezwól”.
           </InfoBox>
-          {(gpsError ?? error?.message) && (
-            <Typography role="alert" color="error" sx={{ fontWeight: 600 }}>
-              {gpsError ?? error?.message}
+          {(gpsError ?? pickError?.message) && (
+            <Typography
+              role="alert"
+              color="error"
+              sx={{
+                fontWeight: 600,
+                fontSize: '1.125rem',
+                border: 3,
+                borderColor: 'error.main',
+                borderRadius: '12px',
+                p: 1.5,
+              }}
+            >
+              <FieldError>{gpsError ?? pickError?.message}</FieldError>
             </Typography>
           )}
           <Button

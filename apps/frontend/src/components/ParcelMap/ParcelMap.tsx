@@ -14,6 +14,8 @@ import type { LatLngBoundsExpression, LatLngTuple } from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 
 import type { Parcel } from '@/api/types';
+import { MapLayerToggle } from '@/components/MapLayerToggle/MapLayerToggle';
+import { MAP_LAYERS, useMapLayer } from '@/components/MapLayerToggle/mapLayers';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -37,6 +39,8 @@ interface ParcelMapProps {
   focusKey?: number;
   markers?: { lat: number; lon: number; label: string }[];
   isInteractive?: boolean;
+  /** Mapa / Satelita switch; defaults to isInteractive (off in print) */
+  showLayerToggle?: boolean;
   isLoading?: boolean;
   errorMessage?: string | null;
   onPick?: (lat: number, lon: number) => void;
@@ -91,11 +95,14 @@ export function ParcelMap({
   focusKey = 0,
   markers,
   isInteractive = true,
+  showLayerToggle = isInteractive,
   isLoading = false,
   errorMessage = null,
   onPick,
 }: ParcelMapProps) {
   const theme = useTheme();
+  const [layer, setLayer] = useMapLayer();
+  const layerConfig = MAP_LAYERS[layer];
   const [isHighlighted, setIsHighlighted] = useState(false);
   useEffect(() => {
     if (!focusKey) return;
@@ -136,8 +143,10 @@ export function ParcelMap({
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          key={layer}
+          attribution={layerConfig.attribution}
+          url={layerConfig.url}
+          maxZoom={layerConfig.maxZoom}
         />
         {isInteractive && <ClickHandler onPick={onPick} />}
         {parcel && (
@@ -159,6 +168,11 @@ export function ParcelMap({
           </CircleMarker>
         ))}
       </MapContainer>
+      {showLayerToggle && (
+        <Box sx={{ position: 'absolute', top: { xs: 76, md: 84 }, right: 12, zIndex: 1000 }}>
+          <MapLayerToggle value={layer} onChange={setLayer} />
+        </Box>
+      )}
       {isLoading && (
         <LinearProgress
           aria-label="Ładowanie działki"
