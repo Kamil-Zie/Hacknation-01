@@ -7,7 +7,7 @@ const SOURCE_LABEL: Record<EvidenceSourceId, string> = {
   meteo: 'Pogoda',
   sentinel2: 'Satelita',
   era5land: 'Wilgotność gleby',
-  nasa_power: 'Wilgotność gleby (zapas NASA)',
+  nasa_power: 'Historia 10 lat (NASA POWER)',
   eumetsat: 'Satelita ASCAT',
   soilgrids: 'Gleba',
   elevation: 'Teren',

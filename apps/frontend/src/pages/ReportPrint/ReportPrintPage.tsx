@@ -42,7 +42,7 @@ export function ReportPrintPage() {
   const backTo = `/report/${encodeURIComponent(id ?? '')}`;
 
   let content;
-  if (isLoading) {
+  if (!data && isLoading) {
     content = (
       <Stack spacing={2} aria-busy="true" aria-label="Ładowanie raportu" role="status">
         <Skeleton variant="text" height={56} width="70%" />
@@ -50,7 +50,7 @@ export function ReportPrintPage() {
         <Skeleton variant="rounded" height={240} />
       </Stack>
     );
-  } else if (isError) {
+  } else if (!data && isError) {
     content = (
       <Alert
         severity="error"
@@ -69,6 +69,7 @@ export function ReportPrintPage() {
   } else {
     content = (
       <Stack spacing={2.5}>
+        {isError && <Alert severity="warning">Nie udało się odświeżyć raportu.</Alert>}
         <Typography variant="overline" color="text.secondary">
           Kropla – raport wody
         </Typography>

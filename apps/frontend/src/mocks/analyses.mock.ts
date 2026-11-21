@@ -1,5 +1,7 @@
 // API-004 API-005 Mock reports taken verbatim from contracts/api.json → API-004 examples (DM-001 shape)
 import type { AnalysisRequest, Report } from '@/api/types';
+import { MOCK_CROPS } from '@/mocks/crops.mock';
+import { useSelectionStore } from '@/store/selection';
 
 import contract from '../../../../contracts/api.json';
 
@@ -22,10 +24,16 @@ export function findMockReport(id: string): Report | null {
 }
 
 export function buildMockReport(body: AnalysisRequest): Report {
+  const selected = useSelectionStore.getState().parcel;
+  const parcel =
+    selected && selected.id === body.parcelId
+      ? selected
+      : { ...demoReport.parcel, id: body.parcelId };
+  const cropName = MOCK_CROPS.find((c) => c.code === body.cropCode)?.name ?? demoReport.crop.name;
   return {
     ...demoReport,
     analysisDate: body.analysisDate,
-    parcel: { ...demoReport.parcel, id: body.parcelId },
-    crop: { code: body.cropCode, name: demoReport.crop.name },
+    parcel,
+    crop: { code: body.cropCode, name: cropName },
   };
 }

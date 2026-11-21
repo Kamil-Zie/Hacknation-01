@@ -54,6 +54,8 @@ export function useReportQuery(id: string | undefined) {
     queryFn: () => getReport(id as string),
     enabled: Boolean(id),
     retry: false,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
 }
 

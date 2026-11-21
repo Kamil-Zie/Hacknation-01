@@ -44,7 +44,17 @@ const CATEGORY_LABEL: Record<SourceCategory, string> = {
 
 function period(source: SourceStatus): string {
   if (source.dataPeriod) return source.dataPeriod;
-  return source.fetchedAt ? formatDateTime(source.fetchedAt) : '—';
+  return source.fetchedAt ? `pobrano ${formatDateTime(source.fetchedAt)}` : '—';
+}
+
+const ROLE_LABEL = {
+  current: 'dane bieżące (90 dni)',
+  climatology: 'historia 10 lat',
+  fallback: 'dane zapasowe',
+} as const;
+
+function roleLabel(source: SourceStatus): string | null {
+  return source.role ? ROLE_LABEL[source.role] : null;
 }
 
 function SourceLink({ source }: { source: SourceStatus }) {
@@ -105,7 +115,14 @@ function SourcesTable({ sources }: { sources: SourceStatus[] }) {
                 <Typography sx={{ fontWeight: 600 }}>{s.label}</Typography>
                 <Typography variant="caption">{s.name}</Typography>
               </TableCell>
-              <TableCell>{CATEGORY_LABEL[s.category]}</TableCell>
+              <TableCell>
+                {CATEGORY_LABEL[s.category]}
+                {roleLabel(s) && (
+                  <Typography variant="caption" component="div">
+                    {roleLabel(s)}
+                  </Typography>
+                )}
+              </TableCell>
               <TableCell>{period(s)}</TableCell>
               <TableCell>
                 <StatusCell source={s} />
@@ -145,7 +162,8 @@ function SourceCards({ sources }: { sources: SourceStatus[] }) {
               </Box>
               <StatusCell source={s} />
               <Typography variant="caption">
-                {CATEGORY_LABEL[s.category]} · {period(s)}
+                {CATEGORY_LABEL[s.category]}
+                {roleLabel(s) ? ` (${roleLabel(s)})` : ''} · {period(s)}
               </Typography>
               <Typography variant="caption">Licencja: {s.license}</Typography>
               <SourceLink source={s} />

@@ -16,7 +16,7 @@ export function ReportPage() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, isError, error, refetch } = useReportQuery(id);
 
-  if (isLoading) {
+  if (!data && isLoading) {
     return (
       <Stack spacing={2} aria-busy="true" aria-label="Ładowanie raportu" role="status">
         <Skeleton variant="text" height={56} width="70%" />
@@ -26,7 +26,7 @@ export function ReportPage() {
       </Stack>
     );
   }
-  if (isError) {
+  if (!data && isError) {
     return (
       <Alert
         severity="error"
@@ -56,6 +56,7 @@ export function ReportPage() {
       }}
     >
       <Box sx={{ gridColumn: { lg: '1 / -1' }, display: 'grid', gap: { xs: 2, md: 2 } }}>
+        {isError && <Alert severity="warning">Nie udało się odświeżyć raportu.</Alert>}
         <ReportHeader report={data} />
         <ReportActions reportId={data.id} />
       </Box>

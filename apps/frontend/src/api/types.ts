@@ -149,7 +149,7 @@ export interface SatelliteObservation {
 // DM-015
 export interface SatelliteSoilMoisture {
   label?: string;
-  valuePct: number;
+  valuePct: number | null;
   rootZonePct?: number | null;
   profilePct?: number | null;
   percentile?: number | null;
@@ -265,6 +265,7 @@ export interface SourceStatus {
   fetchedAt: string | null;
   durationMs: number;
   message: string | null;
+  role?: 'current' | 'climatology' | 'fallback' | null;
 }
 
 // DM-012

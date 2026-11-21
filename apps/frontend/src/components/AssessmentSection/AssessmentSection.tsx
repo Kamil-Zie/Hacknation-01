@@ -28,6 +28,13 @@ const INDEX_LABEL: Record<IndexAssessment, string> = {
   unknown: 'ocena niemożliwa',
 };
 
+const SM_ASSESSMENT_LABEL = {
+  dry: 'sucho',
+  normal: 'w normie',
+  wet: 'mokro',
+  unknown: 'brak oceny',
+} as const;
+
 const AGREEMENT_LABEL = {
   confirms: 'potwierdza ocenę',
   contradicts: 'nie potwierdza oceny',
@@ -278,12 +285,21 @@ export function AssessmentSection({
 
             {sm ? (
               <MetricTile title={sm.label ?? 'Wilgotność gleby'}>
-                <Metric value={formatNumber(sm.valuePct, 0)} unit="%" />
+                {sm.valuePct != null ? (
+                  <Metric value={formatNumber(sm.valuePct, 0)} unit="%" />
+                ) : sm.percentile != null ? (
+                  <Metric value={`percentyl ${formatNumber(sm.percentile, 0)}`} />
+                ) : (
+                  <Metric value={SM_ASSESSMENT_LABEL[sm.assessment]} />
+                )}
                 <Line>Warstwa: {sm.depthLabel}</Line>
+                {sm.profilePct != null && (
+                  <Line>Profil gleby: {formatNumber(sm.profilePct, 0)}%</Line>
+                )}
                 {sm.rootZonePct != null && (
                   <Line>Strefa korzeni: {formatNumber(sm.rootZonePct, 0)}%</Line>
                 )}
-                {sm.percentile != null && (
+                {sm.valuePct != null && sm.percentile != null && (
                   <Line>Percentyl 10 lat: {formatNumber(sm.percentile, 0)}</Line>
                 )}
                 <Line>Pomiar z {formatDate(sm.observedAt)}</Line>
