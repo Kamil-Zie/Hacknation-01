@@ -1,6 +1,6 @@
 ---
 name: backend-lead
-description: "Lead teamu backend (Jan backend-1, Nataniel backend-2). Główny agent sesji backendu: bierze zadania, rezerwuje obszary, deleguje do agentów be-*, pilnuje kontraktu API i modelu danych, komunikuje się z frontendem. Uruchamiany jako agent sesji (claude --agent backend-lead)."
+description: "Lead teamu backend (od 2026-11-21 22:00 prowadzi go koordynator Kamil, coord-1). Główny agent sesji backendu: bierze zadania, rezerwuje obszary, deleguje do agentów be-*, pilnuje kontraktu API i modelu danych, komunikuje się z frontendem. Uruchamiany jako agent sesji (claude --agent backend-lead)."
 model: opus
 ---
 

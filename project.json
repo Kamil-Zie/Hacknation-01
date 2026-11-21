@@ -657,22 +657,7 @@
     "backend": {
       "description": "API, logika biznesowa, baza danych",
       "lead_agent": "backend-lead",
-      "members": [
-        {
-          "id": "backend-1",
-          "name": "Jan Mickiewicz",
-          "focus": "complex",
-          "folder": "team/jan",
-          "os": "windows"
-        },
-        {
-          "id": "backend-2",
-          "name": "Nataniel Gadziński",
-          "focus": "standard",
-          "folder": "team/nataniel",
-          "os": "windows"
-        }
-      ],
+      "members": [],
       "agents": [
         "backend-lead",
         "be-api",
@@ -692,7 +677,8 @@
           "tasks/**",
           ".claude/sync/**"
         ]
-      }
+      },
+      "_note": "Od 2026-11-21 22:00 backend prowadzi koordynator (coord-1, Kamil). Wiadomości „to: backend” czyta coord-1 (inbox.mjs --team backend)."
     },
     "frontend": {
       "description": "UI/UX, komponenty, ekrany, warstwa klienta API",
@@ -711,6 +697,22 @@
           "focus": "standard",
           "folder": "team/jakub",
           "os": "ubuntu"
+        },
+        {
+          "id": "backend-1",
+          "name": "Jan Mickiewicz",
+          "focus": "complex",
+          "folder": "team/jan",
+          "os": "windows",
+          "note": "Od 2026-11-21 22:00 w teamie frontend (decyzja Kamila); ID bez zmian, żeby historia zadań, wiadomości i rezerwacji się zgadzała."
+        },
+        {
+          "id": "backend-2",
+          "name": "Nataniel Gadziński",
+          "focus": "standard",
+          "folder": "team/nataniel",
+          "os": "windows",
+          "note": "Od 2026-11-21 22:00 w teamie frontend (decyzja Kamila); ID bez zmian, żeby historia zadań, wiadomości i rezerwacji się zgadzała."
         }
       ],
       "agents": [
@@ -1130,7 +1132,7 @@
     ],
     "task": {
       "team": "backend",
-      "default_assignee": "backend-2",
+      "default_assignee": "coord-1",
       "priority": "high",
       "acceptance_criteria": [
         "contracts/data_model.json opisuje nowy stan i ma podbite version",

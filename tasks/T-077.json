@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 22:00: backend przejmuje Kamil (wcześniej coord-1).",
     "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo.",
     "Zrobione (backend-2): models/Field.model.ts (DM-024), services/fields/adjacency.ts (granice ≤ 50 m: booleanIntersects → 0, inaczej min pointToLineDistance wierzchołków w obie strony, union-find), fields.service/controller/schema/routes: POST/GET/DELETE /accounts/:accountId/fields. Testy 324/324 (adjacency 0/30/80 m, HTTP 201/403/404/422). Na żywo: niesąsiednia (691/9 Puławy) → 422 PARCELS_NOT_ADJACENT, 1 działka → 422, lista 200, DELETE 404, cudze konto 403, bez tokenu 401. 201 na żywo NIESPRAWDZONE: ULDK ma awarię (21:18, przekierowanie GUGiK na integracja01.gugik.gov.pl/resp/uldk.php), nie udało się pobrać prawdziwej sąsiedniej działki; examples poprawione (commune Puławy, region Bronowice), drugie ID 061409_2.0009.613 nadal przykładowe."
   ],

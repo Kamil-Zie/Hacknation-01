@@ -22,6 +22,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 22:00: backend przejmuje Kamil (wcześniej coord-1).",
     "backend-1 22:25: decyzja Jana – zadania backendu przejmuje Kamil (coord-1); status bez zmian.",
     "coord-1 21:30: Kamil – nie zamykać, zostaje w backlogu.",
     "coord-1 2026-11-21: WONT dla MVP (wynik T-002: SOMO25/SOMO12 bez danych po 2025-07-15, format .nat, H SAF poza Data Store). Nie brać. Źródło eumetsat w kodzie = zawsze missing + dataGap (robi T-017).",
