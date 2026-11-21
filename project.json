@@ -880,7 +880,7 @@
             "at": "2026-11-21T20:00:00+01:00",
             "hour": 9,
             "name": "Draft w HackTribe",
-            "goal": "Zgłoszenie draftu w HackTribe. Repo publicznie gotowe (README z opisem, działający start aplikacji) i opis projektu wpisany."
+            "goal": "Zgłoszenie draftu w HackTribe. Repo ZOSTAJE PRYWATNE do końca wydarzenia (wymóg KOWR), jury dostaje dostęp według instrukcji z Platformy. README z opisem, działający start aplikacji i opis projektu wpisany."
           },
           {
             "at": "2026-11-22T07:00:00+01:00",
@@ -1197,7 +1197,7 @@
       "new-data-task": "node .claude/scripts/new-data-task.mjs --title \"...\" [--refs ...] [--breaking] — obowiązkowe zadanie update danych",
       "discord-notify": "node .claude/scripts/discord-notify.mjs <plik-wiadomości> [--dry-run] [--test]",
       "milestone-reminder": "node .claude/scripts/milestone-reminder.mjs --list — harmonogram przypomnień (wysyła GitHub Actions)",
-      "scan-history": "node .claude/scripts/git-checks.mjs scan --history — sekrety w całej historii gita; obowiązkowo przed upublicznieniem repo (wymaga pełnej historii: git fetch --unshallow)",
+      "scan-history": "node .claude/scripts/git-checks.mjs scan --history — sekrety w całej historii gita; obowiązkowo przed udostępnieniem repo jury, repo zostaje prywatne (wymaga pełnej historii: git fetch --unshallow)",
       "brief": "node .claude/scripts/brief.mjs [--team <team>] — skrót project.json dla teamu (zamiast czytać cały plik); wstawiany do kontekstu na start sesji",
       "project-map": "node .claude/scripts/project-map.mjs [--team <team>] — mapa kodu, kontraktów, zadań i wiadomości (.claude/state/PROJECT_MAP.md, nie w gicie); wstawiana na start sesji, odśwież po git pull"
     },
