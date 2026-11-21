@@ -3473,6 +3473,43 @@
           "details": null
         }
       }
+    },
+    {
+      "id": "API-015",
+      "status": "proposed",
+      "method": "PATCH",
+      "path": "/auth/me",
+      "summary": "Edycja profilu zalogowanego użytkownika: imię, e-mail, hasło (T-075). Zmiana e-maila lub hasła wymaga obecnego hasła.",
+      "auth": "required",
+      "request": {
+        "body": {
+          "name": "string?, 1–80 znaków po trim",
+          "email": "string?, e-mail (jak rejestracja)",
+          "currentPassword": "string?, wymagane przy zmianie email lub newPassword",
+          "newPassword": "string?, min. 8 znaków"
+        }
+      },
+      "response": {
+        "200": "User (DM-020)"
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "401 INVALID_CREDENTIALS (złe currentPassword)",
+        "409 EMAIL_TAKEN",
+        "422 VALIDATION_ERROR (details.field)",
+        "429 TOO_MANY_REQUESTS",
+        "503 DB_UNAVAILABLE"
+      ],
+      "data_refs": ["DM-016", "DM-020"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-006"],
+      "examples": {
+        "200": {
+          "id": "665f0c0ffee0000000000a01",
+          "email": "jan.kowalski@example.pl",
+          "name": "Jan Kowalski"
+        }
+      }
     }
   ]
 }

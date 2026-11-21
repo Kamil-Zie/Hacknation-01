@@ -1,0 +1,29 @@
+{
+  "id": "T-072",
+  "title": "Wybór uprawy: kategorie roślin i wyraźna informacja o niewybranej uprawie",
+  "description": "Pliki: components/AnalysisForm, components/CropIcon, pages/Parcel.\n(1) Uprawy pogrupowane w kategorie (zakładki albo nagłówki sekcji): Zboża, Oleiste, Okopowe, Kukurydza, Strączkowe, Warzywa, Sady i jagodowe, Użytki zielone. Kategoria przychodzi z API-003 (pole category w DM-004, T-074 Jana) – do czasu wdrożenia mapowanie na froncie po code z fallbackiem 'Inne'. Przy dużej liczbie upraw: pole 'Szukaj uprawy' nad kafelkami.\n(2) Gdy użytkownik kliknie 'Pokaż raport o wodzie' bez uprawy: wyraźny komunikat (Alert warning nad kafelkami + czerwona ramka sekcji + przewinięcie do niej + focus), tekst 'Wybierz, co rośnie na działce'. Przycisk nie może po cichu nic nie robić.\n\nUX dla wieku 18–99 (wymóg Kamila): tekst min. 18 px (treść), przyciski min. 48 px wysokości, kontrast WCAG AA, proste słowa bez żargonu, każda ikona z podpisem, błędy przy polu, nie tylko kolorem.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-002", "API-003", "DM-004"],
+  "demo_step": 3,
+  "acceptance_criteria": [
+    "Kafelki w kategoriach, wyszukiwarka upraw filtruje",
+    "Brak uprawy: widoczny alert, przewinięcie i focus na sekcji",
+    "Działa z 7 obecnymi uprawami i z nową listą z T-074",
+    "UX 18–99: tekst ≥ 18 px, cele dotyku ≥ 48 px, kontrast AA, sprawdzone na 390 px i 1440 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

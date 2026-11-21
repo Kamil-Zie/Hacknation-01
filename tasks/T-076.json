@@ -1,0 +1,28 @@
+{
+  "id": "T-076",
+  "title": "Większa pula upraw z kategoriami (DM-004 category), Kc FAO-56",
+  "description": "Po T-070. engine/crops.ts: dodaj pole category ('cereals' | 'oilseeds' | 'root' | 'maize' | 'legumes' | 'vegetables' | 'orchards' | 'grassland') i rozszerz listę o najczęstsze uprawy w PL (GUS): pszenica jara, żyto, pszenżyto, owies, jęczmień ozimy, rzepak jary, kukurydza na kiszonkę, groch, bobik, łubin, soja, marchew, cebula, kapusta, truskawka, jabłoń, lucerna/koniczyna. Kc i fazy wyłącznie z FAO-56 tab. 12/17 (i p z tab. 22), źródło w komentarzu. CropCode i walidacja analyses.schema.ts, rekomendacje bez zmian dla nowych kodów (fallback ogólny). DM-004 category + zadanie T-DB (bez seeda, dane w kodzie) + contract_change.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-070"],
+  "contract_refs": ["API-003", "DM-004"],
+  "demo_step": 3,
+  "acceptance_criteria": [
+    "GET /crops zwraca ≥ 20 upraw, każda z category",
+    "Analiza Bronowice dla 3 nowych upraw: 201 bez błędu",
+    "Testy zielone, T-DB i contract_change wysłane"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

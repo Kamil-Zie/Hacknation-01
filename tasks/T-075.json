@@ -1,0 +1,28 @@
+{
+  "id": "T-075",
+  "title": "API-015 PATCH /auth/me (profil: imię, e-mail, hasło) + rememberMe w logowaniu",
+  "description": "Kontrakt najpierw: API-015 PATCH /auth/me (auth bearer) body { name?, email?, currentPassword?, newPassword? } → 200 User (DM-020); zmiana e-maila lub hasła wymaga currentPassword (401 INVALID_CREDENTIALS), e-mail zajęty 409 EMAIL_TAKEN, walidacja jak rejestracja (422). API-008 login: opcjonalne rememberMe (true → token 30 dni, false → 1 dzień; domyślnie 7 dni jak dziś). Wzór: accounts PATCH API-014. Limit prób jak przy logowaniu (T-066). contract_change do frontendu zaraz po zapisie kontraktu.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": [],
+  "contract_refs": ["API-015", "API-008", "DM-020"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "API-015 w contracts/api.json (agreed) + contract_change do frontend",
+    "Testy: zmiana imienia, e-maila (zajęty 409), hasła (złe stare 401), bez tokenu 401",
+    "rememberMe zmienia exp tokenu"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

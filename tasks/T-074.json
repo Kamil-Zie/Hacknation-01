@@ -1,0 +1,29 @@
+{
+  "id": "T-074",
+  "title": "Logowanie z 'Zapamiętaj mnie' i panel edycji profilu",
+  "description": "Pliki: components/AuthForm, pages/Login, store/session.ts, pages/Account (nowa sekcja 'Mój profil' albo /konto/profil), components/AccountMenu.\n(1) Checkbox 'Zapamiętaj mnie' (domyślnie zaznaczony, duży, ≥ 48 px): zaznaczony = token w localStorage (jak dziś), odznaczony = sessionStorage (wylogowanie po zamknięciu przeglądarki). Przekaż rememberMe do API-008 (T-075: token 30 dni vs 1 dzień).\n(2) Panel 'Mój profil' (z menu konta): zmiana imienia, e-maila i hasła (stare + nowe ×2, pokaż/ukryj hasło). Na mocku zgodnym z API-015 (T-075 Nataniela), potem prawdziwe API. Komunikat sukcesu, błędy przy polach.\n\nUX dla wieku 18–99 (wymóg Kamila): tekst min. 18 px (treść), przyciski min. 48 px wysokości, kontrast WCAG AA, proste słowa bez żargonu, każda ikona z podpisem, błędy przy polu, nie tylko kolorem.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": ["T-075"],
+  "contract_refs": ["UI-S-005", "UI-S-006", "API-008", "API-015"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Odznaczone 'Zapamiętaj mnie': po zamknięciu i otwarciu przeglądarki użytkownik wylogowany",
+    "Zmiana imienia widoczna od razu w menu konta",
+    "Zmiana hasła wymaga starego hasła; złe stare hasło = błąd przy polu",
+    "UX 18–99: tekst ≥ 18 px, cele dotyku ≥ 48 px, kontrast AA, sprawdzone na 390 px i 1440 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

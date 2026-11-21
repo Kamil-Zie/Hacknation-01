@@ -1,0 +1,29 @@
+{
+  "id": "T-071",
+  "title": "Wyszukiwanie i mapa: czerwone pole 'Nie znaleziono działki', działający 'Podgląd tej działki', warstwy Topograficzna / Satelitarna",
+  "description": "Pliki: pages/Start/StartPage.tsx, components/ParcelSearch, components/ParcelMap.\n(1) Gdy działki nie znaleziono: pole numeru/adresu z czerwoną ramką (error) i komunikat pod polem 'Nie znaleziono działki. Sprawdź numer albo kliknij działkę na mapie.' (dziś tekst jest, ramka ma być wyraźnie czerwona także dla adresu i GPS).\n(2) 'Podgląd tej działki' (StartPage.tsx:262) robi dziś tylko setFocusKey – na telefonie nic nie widać. Ma pokazać działkę: mapa przybliżona do obrysu (fitBounds z marginesem) i przewinięta do widoku (scrollIntoView, na telefonie mapa jest pod formularzem); obrys wyróżniony. Jeśli zamysł to osobny widok – przekieruj na podgląd, ale nie na krok 2.\n(3) Przełącznik warstw mapy 'Mapa' / 'Satelita' (Leaflet LayersControl albo dwa duże przyciski): OSM/OpenTopoMap i Esri World Imagery (bez klucza, atrybucja 'Tiles © Esri'). Domyślnie mapa; wybór zapamiętany w localStorage.\n\nUX dla wieku 18–99 (wymóg Kamila): tekst min. 18 px (treść), przyciski min. 48 px wysokości, kontrast WCAG AA, proste słowa bez żargonu, każda ikona z podpisem, błędy przy polu, nie tylko kolorem.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-001", "API-001", "API-002"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Zły numer i nieznany adres: czerwona ramka + 'Nie znaleziono działki' pod polem",
+    "'Podgląd tej działki' na 390 px przewija do mapy przybliżonej do obrysu",
+    "Przełącznik Mapa/Satelita działa na start i w kroku 2, atrybucja widoczna",
+    "UX 18–99: tekst ≥ 18 px, cele dotyku ≥ 48 px, kontrast AA, sprawdzone na 390 px i 1440 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

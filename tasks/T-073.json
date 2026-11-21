@@ -1,0 +1,30 @@
+{
+  "id": "T-073",
+  "title": "Raport: 'Brak danych' zamiast 'Brak', czytelna legenda wykresu, animacja rozwijania szczegółów",
+  "description": "Pliki: components/ReportOverview, AssessmentSection, KbwChart, MetricCard, SectionCard, VulnerabilityCauses.\n(1) Karta 'Ile wody jest w glebie?' (ReportOverview.tsx:296) zawsze z tym tytułem; gdy brak wartości – w miejscu liczby 'Brak danych' + krótko dlaczego. Przejrzyj cały raport: każda pusta wartość ('Brak', '—', null) jako 'Brak danych'. Pola DM-013 precipitationNormPct, meanTmaxC, normTmaxC mogą być teraz null (contract_change Nataniela 2055).\n(2) Legenda wykresu bilansu (KbwChart): nad wykresem, większa (≥ 16 px), wyraźne próbki koloru/linii, opis serii prostymi słowami (np. 'Deszcz', 'Parowanie roślin', 'Norma z 10 lat').\n(3) Rozwijanie szczegółów (sekcje 'Szczegóły', 'Dlaczego', źródła): płynna animacja MUI Collapse/Accordion (ok. 200–250 ms), strzałka obraca się; szanuj prefers-reduced-motion.\n\nUX dla wieku 18–99 (wymóg Kamila): tekst min. 18 px (treść), przyciski min. 48 px wysokości, kontrast WCAG AA, proste słowa bez żargonu, każda ikona z podpisem, błędy przy polu, nie tylko kolorem.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-003", "DM-013"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Żadne pole raportu nie pokazuje gołego 'Brak' ani '—'; brak wartości = 'Brak danych'",
+    "Legenda czytelna na 390 px bez powiększania",
+    "Rozwijanie animowane, bez animacji przy prefers-reduced-motion",
+    "Widok druku nadal pokazuje wszystkie sekcje rozwinięte",
+    "UX 18–99: tekst ≥ 18 px, cele dotyku ≥ 48 px, kontrast AA, sprawdzone na 390 px i 1440 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
