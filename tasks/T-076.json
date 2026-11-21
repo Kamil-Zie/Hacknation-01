@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-070"],
   "contract_refs": ["API-003", "DM-004"],
@@ -21,7 +21,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix)."
+    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix).",
+    "WYNIK (backend-1): 25 upraw w 8 kategoriach (engine/crops.ts, Kc/Zr/p z FAO-56 tab. 12 i 22, źródło w reference), CROP_CODES z CROPS, DM-004 category + T-DB-013. Analiza 061409_2.0009.612 dla rye, pea, apple: OK (partial przez 429 Open-Meteo i brak bazy w skrypcie). Testy 317/317."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

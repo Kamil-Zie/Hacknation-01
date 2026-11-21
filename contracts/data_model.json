@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -307,13 +307,20 @@
       "fields": [
         {
           "name": "code",
-          "type": "enum(winter_wheat|spring_barley|maize|potato|winter_rapeseed|sugar_beet|grassland)",
-          "required": true
+          "type": "enum(winter_wheat|spring_barley|maize|potato|winter_rapeseed|sugar_beet|grassland|spring_wheat|winter_barley|rye|triticale|oats|spring_rapeseed|maize_silage|pea|faba_bean|lupin|soybean|carrot|onion|cabbage|strawberry|apple|alfalfa|clover)",
+          "required": true,
+          "note": "T-076: 25 upraw; aktualna lista zawsze z GET /crops (API-003)"
         },
         {
           "name": "name",
           "type": "string(60)",
           "required": true
+        },
+        {
+          "name": "category",
+          "type": "enum(cereals|oilseeds|root|maize|legumes|vegetables|orchards|grassland)",
+          "required": true,
+          "note": "T-076: grupa do wyboru uprawy (zboża, oleiste, okopowe, kukurydza, strączkowe, warzywa, sady i owoce, użytki zielone)"
         },
         {
           "name": "kcIni",

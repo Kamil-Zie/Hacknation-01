@@ -1,11 +1,33 @@
-// T-011 DM-004 Crop table tests: completeness, stage lookup, Kc over the new year
+// T-011 T-076 DM-004 Crop table tests: completeness, stage lookup, Kc over the new year
 import { describe, expect, it } from 'vitest';
 
 import { CROPS, OUT_OF_SEASON_KC, getCrop, getKcForDate, getStageForDate } from './crops.js';
 
+const CATEGORIES = [
+  'cereals',
+  'oilseeds',
+  'root',
+  'maize',
+  'legumes',
+  'vegetables',
+  'orchards',
+  'grassland',
+];
+
 describe('CROPS', () => {
-  it('has 7 crops with complete fields', () => {
-    expect(CROPS).toHaveLength(7);
+  it('has at least 20 crops with unique codes and a valid category', () => {
+    expect(CROPS.length).toBeGreaterThanOrEqual(20);
+    expect(new Set(CROPS.map((c) => c.code)).size).toBe(CROPS.length);
+    for (const crop of CROPS) expect(CATEGORIES).toContain(crop.category);
+  });
+
+  it('returns Kc mid in the critical stage of new crops', () => {
+    expect(getKcForDate(getCrop('pea')!, '2026-06-15')).toBe(1.15);
+    expect(getKcForDate(getCrop('carrot')!, '2026-07-20')).toBe(1.05);
+    expect(getKcForDate(getCrop('apple')!, '2026-05-15')).toBe(1.2);
+  });
+
+  it('has complete fields for every crop', () => {
     for (const crop of CROPS) {
       expect(crop.kcMid).toBeGreaterThan(0);
       expect(crop.rootDepthM).toBeGreaterThan(0);

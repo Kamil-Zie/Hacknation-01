@@ -14,8 +14,7 @@ import { PARCEL_ID_HINT } from '@/validation/parcels.schema';
 
 const FIELD_HINTS: Record<string, string> = {
   parcelId: PARCEL_ID_HINT,
-  cropCode:
-    'winter_wheat | spring_barley | maize | potato | winter_rapeseed | sugar_beet | grassland',
+  cropCode: 'kod uprawy z GET /crops, np. winter_wheat',
   analysisDate: 'YYYY-MM-DD, od dziś minus 10 lat do dziś',
 };
 

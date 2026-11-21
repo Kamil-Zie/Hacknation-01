@@ -1,6 +1,8 @@
 // T-017 T-018 T-043 API-004 API-005 API-013 Zod schemas: POST /analyses body and GET /analyses/:id params
 import { z } from 'zod';
 
+import { CROPS, type CropCode } from '@/services/engine/crops';
+
 export const ANALYSIS_ID_HINT = 'Format: 24 znaki szesnastkowe, np. 665f0c0ffee0000000000001';
 
 export const analysisIdParamsSchema = z.object({
@@ -9,15 +11,7 @@ export const analysisIdParamsSchema = z.object({
 
 export type AnalysisIdParams = z.infer<typeof analysisIdParamsSchema>;
 
-export const CROP_CODES = [
-  'winter_wheat',
-  'spring_barley',
-  'maize',
-  'potato',
-  'winter_rapeseed',
-  'sugar_beet',
-  'grassland',
-] as const;
+export const CROP_CODES = CROPS.map((crop) => crop.code) as [CropCode, ...CropCode[]];
 
 const HISTORY_YEARS = 10;
 const TIMEZONE = 'Europe/Warsaw';

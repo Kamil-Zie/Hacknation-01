@@ -1,4 +1,4 @@
-// T-011 DM-004 Crop table (FAO-56 Kc, stages, root depth, p, expected NDVI/NDMI) and helpers for the engine
+// T-011 T-076 API-003 DM-004 Crop table (FAO-56 Kc, stages, root depth, p, expected NDVI/NDMI) and helpers for the engine
 export type CropCode =
   | 'winter_wheat'
   | 'spring_barley'
@@ -6,7 +6,28 @@ export type CropCode =
   | 'potato'
   | 'winter_rapeseed'
   | 'sugar_beet'
-  | 'grassland';
+  | 'grassland'
+  | 'spring_wheat'
+  | 'winter_barley'
+  | 'rye'
+  | 'triticale'
+  | 'oats'
+  | 'spring_rapeseed'
+  | 'maize_silage'
+  | 'pea'
+  | 'faba_bean'
+  | 'lupin'
+  | 'soybean'
+  | 'carrot'
+  | 'onion'
+  | 'cabbage'
+  | 'strawberry'
+  | 'apple'
+  | 'alfalfa'
+  | 'clover';
+
+export type CropCategory =
+  'cereals' | 'oilseeds' | 'root' | 'maize' | 'legumes' | 'vegetables' | 'orchards' | 'grassland';
 
 export type CropStage = {
   code: string;
@@ -27,6 +48,7 @@ export type ExpectedIndices = {
 export type Crop = {
   code: CropCode;
   name: string;
+  category: CropCategory;
   kcIni: number;
   kcMid: number;
   kcEnd: number;
@@ -59,10 +81,11 @@ function indices(rows: IndexRow[]): ExpectedIndices[] {
 }
 
 // FAO-56 Tab. 12 (Kc ini/mid/end, Zr) and Tab. 22 (p); stage calendar for Poland.
-export const CROPS: Crop[] = [
+const BASE_CROPS: Crop[] = [
   {
     code: 'winter_wheat',
     name: 'Pszenica ozima',
+    category: 'cereals',
     kcIni: 0.4,
     kcMid: 1.15,
     kcEnd: 0.3,
@@ -125,6 +148,7 @@ export const CROPS: Crop[] = [
   {
     code: 'spring_barley',
     name: 'Jęczmień jary',
+    category: 'cereals',
     kcIni: 0.3,
     kcMid: 1.15,
     kcEnd: 0.25,
@@ -174,6 +198,7 @@ export const CROPS: Crop[] = [
   {
     code: 'maize',
     name: 'Kukurydza na ziarno',
+    category: 'maize',
     kcIni: 0.3,
     kcMid: 1.2,
     kcEnd: 0.6,
@@ -230,6 +255,7 @@ export const CROPS: Crop[] = [
   {
     code: 'potato',
     name: 'Ziemniak',
+    category: 'root',
     kcIni: 0.5,
     kcMid: 1.15,
     kcEnd: 0.75,
@@ -286,6 +312,7 @@ export const CROPS: Crop[] = [
   {
     code: 'winter_rapeseed',
     name: 'Rzepak ozimy',
+    category: 'oilseeds',
     kcIni: 0.35,
     kcMid: 1.1,
     kcEnd: 0.35,
@@ -336,6 +363,7 @@ export const CROPS: Crop[] = [
   {
     code: 'sugar_beet',
     name: 'Burak cukrowy',
+    category: 'root',
     kcIni: 0.35,
     kcMid: 1.2,
     kcEnd: 0.7,
@@ -385,6 +413,7 @@ export const CROPS: Crop[] = [
   {
     code: 'grassland',
     name: 'Użytki zielone',
+    category: 'grassland',
     kcIni: 0.4,
     kcMid: 1,
     kcEnd: 0.85,
@@ -431,6 +460,463 @@ export const CROPS: Crop[] = [
     reference: REFERENCE,
   },
 ];
+
+// Index rows of the base crops reused as templates for analogous crops.
+function indicesOf(code: CropCode): ExpectedIndices[] {
+  return BASE_CROPS.find((crop) => crop.code === code)!.expectedIndices;
+}
+
+const WINTER_CEREAL_INDICES = indicesOf('winter_wheat');
+const SPRING_CEREAL_INDICES = indicesOf('spring_barley');
+const MAIZE_INDICES = indicesOf('maize');
+const ROOT_INDICES = indicesOf('sugar_beet');
+const GRASSLAND_INDICES = indicesOf('grassland');
+
+// Estimate analogous to spring barley, shifted: flowering peak in June, ripening in July-August.
+const SPRING_OILSEED_INDICES = indices([
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.1, 0.34, -0.08, 0.16],
+  [0.35, 0.59, 0.04, 0.28],
+  [0.62, 0.86, 0.14, 0.38],
+  [0.55, 0.79, 0.1, 0.34],
+  [0.2, 0.44, -0.04, 0.2],
+  [0.1, 0.34, -0.1, 0.14],
+  [0.08, 0.32, -0.08, 0.16],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+]);
+
+// Estimate analogous to spring barley, shifted for pea, faba bean and lupin (flowering in June).
+const LEGUME_INDICES = indices([
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.12, 0.36, -0.06, 0.18],
+  [0.4, 0.64, 0.06, 0.3],
+  [0.65, 0.89, 0.16, 0.4],
+  [0.5, 0.74, 0.08, 0.32],
+  [0.2, 0.44, -0.06, 0.18],
+  [0.1, 0.34, -0.1, 0.14],
+  [0.08, 0.32, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+]);
+
+// Estimate analogous to maize, shifted: soybean is sown in May and peaks in July-August.
+const SOYBEAN_INDICES = indices([
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.06, 0.3, -0.08, 0.16],
+  [0.1, 0.34, -0.07, 0.17],
+  [0.3, 0.54, 0.02, 0.26],
+  [0.65, 0.9, 0.16, 0.4],
+  [0.7, 0.92, 0.18, 0.42],
+  [0.4, 0.64, 0.04, 0.28],
+  [0.12, 0.36, -0.06, 0.18],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+]);
+
+// Estimate analogous to sugar beet, with a lower canopy peak for onion.
+const ONION_INDICES = indices([
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.06, 0.3, -0.08, 0.16],
+  [0.2, 0.44, -0.04, 0.2],
+  [0.45, 0.69, 0.06, 0.3],
+  [0.55, 0.79, 0.1, 0.34],
+  [0.5, 0.74, 0.06, 0.3],
+  [0.2, 0.44, -0.04, 0.2],
+  [0.08, 0.32, -0.07, 0.17],
+  [0.05, 0.27, -0.09, 0.15],
+  [0.05, 0.27, -0.09, 0.15],
+]);
+
+// Estimate analogous to grassland, with a lower summer canopy for a perennial strawberry plantation.
+const STRAWBERRY_INDICES = indices([
+  [0.1, 0.3, -0.05, 0.15],
+  [0.1, 0.3, -0.05, 0.15],
+  [0.1, 0.34, -0.04, 0.2],
+  [0.3, 0.54, 0.02, 0.26],
+  [0.5, 0.74, 0.08, 0.32],
+  [0.55, 0.78, 0.1, 0.34],
+  [0.5, 0.74, 0.08, 0.32],
+  [0.5, 0.74, 0.08, 0.32],
+  [0.4, 0.64, 0.04, 0.28],
+  [0.25, 0.5, 0, 0.24],
+  [0.15, 0.38, -0.04, 0.2],
+  [0.1, 0.3, -0.05, 0.15],
+]);
+
+// Estimate analogous to grassland: orchard with grass cover, canopy peak in July-August.
+const ORCHARD_INDICES = indices([
+  [0.1, 0.3, -0.05, 0.15],
+  [0.1, 0.3, -0.05, 0.15],
+  [0.12, 0.34, -0.04, 0.18],
+  [0.25, 0.5, 0, 0.24],
+  [0.5, 0.75, 0.08, 0.32],
+  [0.6, 0.85, 0.12, 0.36],
+  [0.65, 0.88, 0.14, 0.38],
+  [0.65, 0.88, 0.14, 0.38],
+  [0.55, 0.8, 0.1, 0.34],
+  [0.35, 0.6, 0.04, 0.28],
+  [0.15, 0.4, -0.02, 0.2],
+  [0.1, 0.3, -0.05, 0.15],
+]);
+
+function stage(
+  code: string,
+  name: string,
+  from: string,
+  to: string,
+  isCritical = false,
+): CropStage {
+  return { code, name, from, to, isCritical };
+}
+
+function winterCerealStages(
+  start: string,
+  tillering: string,
+  stem: string,
+  heading: string,
+  grain: string,
+  end: string,
+): CropStage[] {
+  return [
+    stage('autumn_dormancy', 'Jesień i spoczynek zimowy', start, tillering),
+    stage('tillering', 'Krzewienie wiosenne', tillering, stem),
+    stage('stem_elongation', 'Strzelanie w źdźbło', stem, heading, true),
+    stage('heading_flowering', 'Kłoszenie i kwitnienie', heading, grain, true),
+    stage('grain_filling', 'Nalewanie i dojrzewanie ziarna', grain, end),
+  ];
+}
+
+const SPRING_CEREAL_STAGES: CropStage[] = [
+  stage('sowing_emergence', 'Siew i wschody', '04-01', '05-05'),
+  stage('tillering', 'Krzewienie', '05-06', '05-20'),
+  stage('stem_elongation_heading', 'Strzelanie w źdźbło i kłoszenie', '05-21', '06-20', true),
+  stage('grain_filling', 'Nalewanie i dojrzewanie ziarna', '06-21', '07-31'),
+];
+
+function legumeStages(sowing: string, podEnd: string): CropStage[] {
+  return [
+    stage('sowing_emergence', 'Siew i wschody', sowing, '05-10'),
+    stage('vegetative', 'Wzrost wegetatywny', '05-11', '05-31'),
+    stage('flowering', 'Kwitnienie', '06-01', '06-30', true),
+    stage('pod_filling', 'Nalewanie strąków i dojrzewanie', '07-01', podEnd),
+  ];
+}
+
+const GRASSLAND_STAGES: CropStage[] = [
+  stage('spring_growth', 'Wzrost wiosenny', '03-20', '04-30'),
+  stage('regrowth_after_cuts', 'Odrost po pokosach', '05-01', '08-31', true),
+  stage('autumn_growth', 'Wzrost jesienny', '09-01', '10-31'),
+];
+
+// Further crops: FAO-56 Tab. 12 and 22 values; stage calendar for Poland.
+const EXTRA_CROPS: Crop[] = [
+  {
+    code: 'spring_wheat',
+    name: 'Pszenica jara',
+    category: 'cereals',
+    kcIni: 0.3,
+    kcMid: 1.15,
+    kcEnd: 0.25,
+    rootDepthM: 1,
+    depletionFraction: 0.55,
+    stages: SPRING_CEREAL_STAGES,
+    criticalPeriodLabel: 'strzelanie w źdźbło – kłoszenie (maj–czerwiec)',
+    expectedIndices: SPRING_CEREAL_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'winter_barley',
+    name: 'Jęczmień ozimy',
+    category: 'cereals',
+    kcIni: 0.4,
+    kcMid: 1.15,
+    kcEnd: 0.25,
+    rootDepthM: 1,
+    depletionFraction: 0.55,
+    stages: winterCerealStages('09-20', '03-26', '04-26', '05-16', '06-11', '07-15'),
+    criticalPeriodLabel: 'strzelanie w źdźbło – kłoszenie (kwiecień–czerwiec)',
+    expectedIndices: WINTER_CEREAL_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'rye',
+    name: 'Żyto',
+    category: 'cereals',
+    kcIni: 0.4,
+    kcMid: 1.15,
+    kcEnd: 0.25,
+    rootDepthM: 1.2,
+    depletionFraction: 0.55,
+    stages: winterCerealStages('09-25', '04-01', '04-26', '05-21', '06-16', '07-25'),
+    criticalPeriodLabel: 'strzelanie w źdźbło – kłoszenie (maj–czerwiec)',
+    expectedIndices: WINTER_CEREAL_INDICES,
+    reference: `${REFERENCE}; zboża drobnoziarniste FAO-56 tab. 12`,
+  },
+  {
+    code: 'triticale',
+    name: 'Pszenżyto',
+    category: 'cereals',
+    kcIni: 0.4,
+    kcMid: 1.15,
+    kcEnd: 0.25,
+    rootDepthM: 1.2,
+    depletionFraction: 0.55,
+    stages: winterCerealStages('10-01', '04-01', '05-01', '05-21', '06-21', '07-31'),
+    criticalPeriodLabel: 'strzelanie w źdźbło – kwitnienie (maj–czerwiec)',
+    expectedIndices: WINTER_CEREAL_INDICES,
+    reference: `${REFERENCE}; zboża drobnoziarniste FAO-56 tab. 12`,
+  },
+  {
+    code: 'oats',
+    name: 'Owies',
+    category: 'cereals',
+    kcIni: 0.3,
+    kcMid: 1.15,
+    kcEnd: 0.25,
+    rootDepthM: 1,
+    depletionFraction: 0.55,
+    stages: SPRING_CEREAL_STAGES,
+    criticalPeriodLabel: 'strzelanie w źdźbło – wiechowanie (maj–czerwiec)',
+    expectedIndices: SPRING_CEREAL_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'spring_rapeseed',
+    name: 'Rzepak jary',
+    category: 'oilseeds',
+    kcIni: 0.35,
+    kcMid: 1.1,
+    kcEnd: 0.35,
+    rootDepthM: 1,
+    depletionFraction: 0.6,
+    stages: [
+      stage('sowing_emergence', 'Siew i wschody', '04-01', '05-15'),
+      stage('stem_budding', 'Wzrost pędu i pąkowanie', '05-16', '05-31'),
+      stage('flowering', 'Kwitnienie', '06-01', '07-10', true),
+      stage('pod_ripening', 'Dojrzewanie łuszczyn', '07-11', '08-20'),
+    ],
+    criticalPeriodLabel: 'kwitnienie (czerwiec–lipiec)',
+    expectedIndices: SPRING_OILSEED_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'maize_silage',
+    name: 'Kukurydza na kiszonkę',
+    category: 'maize',
+    kcIni: 0.3,
+    kcMid: 1.2,
+    kcEnd: 0.5,
+    rootDepthM: 1.2,
+    depletionFraction: 0.55,
+    stages: [
+      stage('sowing_emergence', 'Siew i wschody', '04-25', '05-31'),
+      stage('vegetative', 'Wzrost wegetatywny', '06-01', '07-05'),
+      stage('tasseling_flowering', 'Wiechowanie i kwitnienie', '07-06', '08-05', true),
+      stage('grain_filling', 'Nalewanie ziarna', '08-06', '08-31', true),
+      stage('maturation', 'Dojrzałość woskowa', '09-01', '09-15'),
+    ],
+    criticalPeriodLabel: 'wiechowanie – nalewanie ziarna (lipiec–sierpień)',
+    expectedIndices: MAIZE_INDICES,
+    reference: `${REFERENCE}; zbiór w fazie woskowej, FAO-56 tab. 12 przypis`,
+  },
+  {
+    code: 'pea',
+    name: 'Groch',
+    category: 'legumes',
+    kcIni: 0.5,
+    kcMid: 1.15,
+    kcEnd: 0.3,
+    rootDepthM: 0.8,
+    depletionFraction: 0.35,
+    stages: legumeStages('03-25', '07-31'),
+    criticalPeriodLabel: 'kwitnienie (czerwiec)',
+    expectedIndices: LEGUME_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'faba_bean',
+    name: 'Bobik',
+    category: 'legumes',
+    kcIni: 0.5,
+    kcMid: 1.15,
+    kcEnd: 0.3,
+    rootDepthM: 0.6,
+    depletionFraction: 0.45,
+    stages: legumeStages('03-25', '08-05'),
+    criticalPeriodLabel: 'kwitnienie (czerwiec)',
+    expectedIndices: LEGUME_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'lupin',
+    name: 'Łubin',
+    category: 'legumes',
+    kcIni: 0.4,
+    kcMid: 1.15,
+    kcEnd: 0.35,
+    rootDepthM: 0.8,
+    depletionFraction: 0.45,
+    stages: legumeStages('04-01', '08-10'),
+    criticalPeriodLabel: 'kwitnienie (czerwiec)',
+    expectedIndices: LEGUME_INDICES,
+    reference: `${REFERENCE}; strączkowe na ziarno, analogia FAO-56 tab. 12`,
+  },
+  {
+    code: 'soybean',
+    name: 'Soja',
+    category: 'legumes',
+    kcIni: 0.4,
+    kcMid: 1.15,
+    kcEnd: 0.5,
+    rootDepthM: 1,
+    depletionFraction: 0.5,
+    stages: [
+      stage('sowing_emergence', 'Siew i wschody', '05-01', '06-10'),
+      stage('vegetative', 'Wzrost wegetatywny', '06-11', '06-30'),
+      stage('flowering_pod_set', 'Kwitnienie i zawiązywanie strąków', '07-01', '08-20', true),
+      stage('maturation', 'Dojrzewanie', '08-21', '09-30'),
+    ],
+    criticalPeriodLabel: 'kwitnienie – zawiązywanie strąków (lipiec–sierpień)',
+    expectedIndices: SOYBEAN_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'carrot',
+    name: 'Marchew',
+    category: 'vegetables',
+    kcIni: 0.7,
+    kcMid: 1.05,
+    kcEnd: 0.95,
+    rootDepthM: 0.6,
+    depletionFraction: 0.35,
+    stages: [
+      stage('sowing_emergence', 'Siew i wschody', '04-15', '05-31'),
+      stage('leaf_growth', 'Rozwój liści', '06-01', '06-30'),
+      stage('root_growth', 'Wzrost korzenia', '07-01', '08-31', true),
+      stage('maturation', 'Dojrzewanie', '09-01', '10-15'),
+    ],
+    criticalPeriodLabel: 'wzrost korzenia (lipiec–sierpień)',
+    expectedIndices: ROOT_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'onion',
+    name: 'Cebula',
+    category: 'vegetables',
+    kcIni: 0.7,
+    kcMid: 1.05,
+    kcEnd: 0.75,
+    rootDepthM: 0.4,
+    depletionFraction: 0.3,
+    stages: [
+      stage('planting_emergence', 'Siew lub sadzenie i wschody', '04-10', '05-20'),
+      stage('leaf_growth', 'Rozwój liści', '05-21', '06-30'),
+      stage('bulb_growth', 'Wzrost cebuli', '07-01', '08-15', true),
+      stage('maturation', 'Dojrzewanie', '08-16', '09-10'),
+    ],
+    criticalPeriodLabel: 'wzrost cebuli (lipiec–sierpień)',
+    expectedIndices: ONION_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'cabbage',
+    name: 'Kapusta',
+    category: 'vegetables',
+    kcIni: 0.7,
+    kcMid: 1.05,
+    kcEnd: 0.95,
+    rootDepthM: 0.6,
+    depletionFraction: 0.45,
+    stages: [
+      stage('planting_establishment', 'Sadzenie i ukorzenianie', '05-01', '06-05'),
+      stage('leaf_growth', 'Rozwój liści', '06-06', '06-30'),
+      stage('head_formation', 'Formowanie główki', '07-01', '08-31', true),
+      stage('maturation', 'Dojrzewanie', '09-01', '10-20'),
+    ],
+    criticalPeriodLabel: 'formowanie główki (lipiec–sierpień)',
+    expectedIndices: ROOT_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'strawberry',
+    name: 'Truskawka',
+    category: 'orchards',
+    kcIni: 0.4,
+    kcMid: 0.85,
+    kcEnd: 0.75,
+    rootDepthM: 0.25,
+    depletionFraction: 0.2,
+    stages: [
+      stage('spring_regrowth', 'Wznowienie wegetacji', '03-20', '04-30'),
+      stage('flowering_fruiting', 'Kwitnienie i owocowanie', '05-01', '06-30', true),
+      stage('post_harvest', 'Regeneracja po zbiorze', '07-01', '08-31'),
+      stage('autumn_growth', 'Wzrost jesienny', '09-01', '10-31'),
+    ],
+    criticalPeriodLabel: 'kwitnienie i owocowanie (maj–czerwiec)',
+    expectedIndices: STRAWBERRY_INDICES,
+    reference: REFERENCE,
+  },
+  {
+    code: 'apple',
+    name: 'Jabłoń (sad z murawą)',
+    category: 'orchards',
+    kcIni: 0.5,
+    kcMid: 1.2,
+    kcEnd: 0.95,
+    rootDepthM: 1.2,
+    depletionFraction: 0.5,
+    stages: [
+      stage('bud_break', 'Rozwój pąków', '03-25', '04-24'),
+      stage('flowering_fruit_set', 'Kwitnienie i zawiązywanie owoców', '04-25', '06-20', true),
+      stage('shoot_growth', 'Wzrost pędów', '06-21', '06-30'),
+      stage('fruit_growth', 'Wzrost owoców', '07-01', '08-31', true),
+      stage('ripening', 'Dojrzewanie owoców', '09-01', '10-15'),
+    ],
+    criticalPeriodLabel:
+      'kwitnienie i zawiązywanie owoców (maj–czerwiec), wzrost owoców (lipiec–sierpień)',
+    expectedIndices: ORCHARD_INDICES,
+    reference: `${REFERENCE}; Apples, active ground cover, killing frost`,
+  },
+  {
+    code: 'alfalfa',
+    name: 'Lucerna',
+    category: 'grassland',
+    kcIni: 0.4,
+    kcMid: 0.95,
+    kcEnd: 0.9,
+    rootDepthM: 1.2,
+    depletionFraction: 0.55,
+    stages: GRASSLAND_STAGES,
+    criticalPeriodLabel: 'odrost po pokosach (maj–sierpień)',
+    expectedIndices: GRASSLAND_INDICES,
+    reference: `${REFERENCE}; hay, averaged cutting effects`,
+  },
+  {
+    code: 'clover',
+    name: 'Koniczyna',
+    category: 'grassland',
+    kcIni: 0.4,
+    kcMid: 0.9,
+    kcEnd: 0.85,
+    rootDepthM: 0.8,
+    depletionFraction: 0.5,
+    stages: GRASSLAND_STAGES,
+    criticalPeriodLabel: 'odrost po pokosach (maj–sierpień)',
+    expectedIndices: GRASSLAND_INDICES,
+    reference: `${REFERENCE}; hay, averaged cutting effects`,
+  },
+];
+
+export const CROPS: Crop[] = [...BASE_CROPS, ...EXTRA_CROPS];
 
 export function getCrop(code: string): Crop | null {
   return CROPS.find((crop) => crop.code === code) ?? null;
