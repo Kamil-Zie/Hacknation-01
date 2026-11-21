@@ -90,10 +90,10 @@ export function AuthForm({
           aria-label="Tryb"
           onChange={(_, value: AuthMode | null) => value && onModeChange(value)}
         >
-          <ToggleButton value="login" sx={{ minHeight: 44 }}>
-            Zaloguj
+          <ToggleButton value="login" sx={{ minHeight: 52, fontSize: '1.125rem' }}>
+            Zaloguj się
           </ToggleButton>
-          <ToggleButton value="register" sx={{ minHeight: 44 }}>
+          <ToggleButton value="register" sx={{ minHeight: 52, fontSize: '1.125rem' }}>
             Załóż konto
           </ToggleButton>
         </ToggleButtonGroup>

@@ -9,6 +9,7 @@ import { StepNav } from '@/components/StepNav/StepNav';
 
 export function AppLayout() {
   const { pathname } = useLocation();
+  const isLogin = pathname === '/logowanie';
   const isWide = pathname.startsWith('/report/');
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -42,8 +43,8 @@ export function AppLayout() {
               Woda na Twojej działce
             </Typography>
           </Link>
-          <AppNav />
-          <AccountMenu />
+          {isLogin ? <Box sx={{ flexGrow: 1 }} /> : <AppNav />}
+          {!isLogin && <AccountMenu />}
         </Toolbar>
       </AppBar>
       <StepNav />

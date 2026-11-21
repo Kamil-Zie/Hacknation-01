@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-005", "UI-S-006", "UI-S-001", "API-008", "API-009"],
@@ -24,7 +24,8 @@
   },
   "notes": [
     "coord-1 21:20: zmienia krok 1 scenariusza demo – priorytet przed T-073. Backend bez zmian (POST /analyses dalej działa bez konta).",
-    "frontend-2: start 21:30 (fe-developer)."
+    "frontend-2: start 21:30 (fe-developer).",
+    "frontend-2: done 21:45. RequireAuth na /, /parcel, /konto, /konto/profil, /pole/:id/raport; publiczne /report i druk. Panel /konto: Sprawdź nową działkę, Moje działki, slot Moje pola (id=moje-pola, dla T-079), członkowie, historia. 401 → /logowanie + 'Zaloguj się ponownie'. Sprawdzone geckodriverem na żywym API (500 i 1440 px)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

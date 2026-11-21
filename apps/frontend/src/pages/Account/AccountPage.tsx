@@ -1,4 +1,4 @@
-// UI-S-006 Household account page: active account name (rename via API-014), members and report history
+// UI-S-006 T-081 Panel: CTA, Moje działki, miejsce na Moje pola (T-079), household account page: active account name (rename via API-014), members and report history
 import {
   Box,
   Button,
@@ -9,10 +9,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import { useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
+  useAccountReportsQuery,
   useAddMemberMutation,
   useMembersQuery,
   useRemoveMemberMutation,
@@ -21,6 +23,9 @@ import {
 import { ApiError } from '@/api/client';
 import { AccountReportHistory } from '@/components/AccountReportHistory/AccountReportHistory';
 import { MemberList } from '@/components/MemberList/MemberList';
+import { RecentParcels } from '@/components/RecentParcels/RecentParcels';
+import { SectionCard } from '@/components/SectionCard/SectionCard';
+import { useRecentParcelsStore } from '@/store/recentParcels';
 import { useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
 
@@ -31,20 +36,28 @@ function toError(error: unknown): { code: string; message: string } | null {
 }
 
 export function AccountPage() {
-  const location = useLocation();
+  const navigate = useNavigate();
+  const recent = useRecentParcelsStore((state) => state.items);
   const { token, accounts, activeAccountId, setActiveAccount } = useSessionStore();
   const accountId = activeAccountId ?? '';
   const members = useMembersQuery(activeAccountId, token);
   const add = useAddMemberMutation(accountId, token ?? '');
   const remove = useRemoveMemberMutation(accountId, token ?? '');
   const rename = useRenameAccountMutation(accountId, token ?? '');
+  const reports = useAccountReportsQuery(activeAccountId, token);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const renameError = rename.error ? errorMessage(rename.error) : null;
 
-  if (!token) {
-    return <Navigate to={`/logowanie?next=${encodeURIComponent(location.pathname)}`} replace />;
+  // recent picks first, then parcels from saved reports (no duplicates)
+  const parcels = [...recent];
+  for (const report of reports.data ?? []) {
+    const { id, parcelNumber, region, commune } = report.parcel;
+    if (!parcels.some((item) => item.id === id)) {
+      parcels.push({ id, label: `${parcelNumber}, ${region} (${commune})` });
+    }
   }
+  const myParcels = parcels.slice(0, 8);
 
   const active = accounts.find((account) => account.id === activeAccountId);
 
@@ -132,6 +145,39 @@ export function AccountPage() {
             ))}
           </TextField>
         )}
+      </Box>
+      <Button
+        variant="contained"
+        size="large"
+        startIcon={<AddLocationAltIcon />}
+        onClick={() => navigate('/')}
+        sx={{ minHeight: 64, fontSize: '1.25rem', alignSelf: { sm: 'flex-start' }, px: 4 }}
+      >
+        Sprawdź nową działkę
+      </Button>
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 3,
+          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
+          alignItems: 'start',
+        }}
+      >
+        <SectionCard id="moje-dzialki" title="Moje działki">
+          {myParcels.length === 0 ? (
+            <Typography>Nie sprawdzano jeszcze żadnej działki.</Typography>
+          ) : (
+            <RecentParcels
+              items={myParcels}
+              currentId={null}
+              onSelect={(id) => navigate(`/parcel/${encodeURIComponent(id)}`)}
+            />
+          )}
+        </SectionCard>
+        {/* T-079 slot: Dawid drops the "Moje pola" component here */}
+        <SectionCard id="moje-pola" title="Moje pola">
+          <Typography>Wkrótce: łącz sąsiednie działki w pole.</Typography>
+        </SectionCard>
       </Box>
       <Box
         sx={{

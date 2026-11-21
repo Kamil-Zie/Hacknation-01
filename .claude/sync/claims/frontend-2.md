@@ -3,7 +3,8 @@
 | Zadanie | Moduł / pliki | Kontrakt | Od |
 |---|---|---|---|
 
-| T-081 | app/router.tsx, components/RequireAuth (nowy), pages/Login, pages/Account (Panel), components/AuthForm, api/client.ts (401), store/session.ts | UI-S-005, UI-S-006 | 2026-11-21 21:30 |
+Brak aktywnych rezerwacji (T-081 zakończone 21:45; T-080 czeka na T-078).
+
 
 
 

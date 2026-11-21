@@ -83,3 +83,18 @@ export const useSessionStore = create<SessionState>()(
     { name: STORAGE_KEY, storage: createJSONStorage(() => dualStorage) },
   ),
 );
+
+const EXPIRED_KEY = 'kropelka-session-expired';
+
+// T-081 one-shot flag for the login page after a 401 (survives the redirect, read once)
+export function markSessionExpired(): void {
+  safe(() => sessionStorage.setItem(EXPIRED_KEY, '1'));
+}
+
+export function readSessionExpired(): boolean {
+  return safe(() => sessionStorage.getItem(EXPIRED_KEY)) === '1';
+}
+
+export function clearSessionExpired(): void {
+  safe(() => sessionStorage.removeItem(EXPIRED_KEY));
+}

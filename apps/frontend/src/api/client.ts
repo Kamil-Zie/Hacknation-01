@@ -13,6 +13,15 @@ export class ApiError extends Error {
   }
 }
 
+// T-081 expired token: registered once by the router (avoids a circular import with the session store)
+let unauthorizedHandler: (() => void) | null = null;
+
+export function setUnauthorizedHandler(handler: (() => void) | null): void {
+  unauthorizedHandler = handler;
+}
+
+const AUTH_ENTRY_PATHS = ['/auth/login', '/auth/register'];
+
 export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
 
 export async function apiFetch<T>(
@@ -38,6 +47,7 @@ export async function apiFetch<T>(
     clearTimeout(timer);
   }
   if (!response.ok) {
+    if (response.status === 401 && !AUTH_ENTRY_PATHS.includes(path)) unauthorizedHandler?.();
     const body = (await response.json().catch(() => null)) as {
       code?: string;
       message?: string;

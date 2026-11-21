@@ -3,15 +3,15 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Box, Button, Divider, ListSubheader, Menu, MenuItem, Typography } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 
 import { useMeQuery } from '@/api/auth';
-import { ApiError } from '@/api/client';
 import { useSessionStore } from '@/store/session';
 
 export function AccountMenu() {
   const queryClient = useQueryClient();
   const location = useLocation();
+  const navigate = useNavigate();
   const { token, user, accounts, activeAccountId, setAccounts, setUser, setActiveAccount, logout } =
     useSessionStore();
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
@@ -24,12 +24,9 @@ export function AccountMenu() {
     }
   }, [me.data, setUser, setAccounts]);
 
-  useEffect(() => {
-    if (me.error instanceof ApiError && me.error.status === 401) logout();
-  }, [me.error, logout]);
-
   const handleLogout = () => {
     setAnchor(null);
+    navigate('/logowanie', { replace: true });
     logout();
     queryClient.removeQueries({ queryKey: ['accounts'] });
     queryClient.removeQueries({ queryKey: ['auth'] });

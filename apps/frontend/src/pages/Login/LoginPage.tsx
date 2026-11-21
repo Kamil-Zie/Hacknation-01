@@ -1,31 +1,46 @@
-// UI-S-005 Logowanie i rejestracja: AuthForm in a centered card, redirect to ?next= after success
-import { Box, Button, Link, Paper, Stack, Typography } from '@mui/material';
-import { useState } from 'react';
-import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router-dom';
+// UI-S-005 T-081 Logowanie i rejestracja jako ekran startowy: logo, jedno zdanie, zakładki Zaloguj się / Załóż konto; po sukcesie powrót do state.from albo Panel (/konto)
+import OpacityIcon from '@mui/icons-material/Opacity';
+import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Navigate, useLocation, useSearchParams } from 'react-router-dom';
 
 import { useLoginMutation, useRegisterMutation } from '@/api/auth';
 import { ApiError } from '@/api/client';
-import type { LoginRequest, RegisterRequest, Session } from '@/api/types';
+import type { LoginRequest, RegisterRequest } from '@/api/types';
 import { AuthForm } from '@/components/AuthForm/AuthForm';
 import type { AuthMode } from '@/components/AuthForm/AuthForm';
-import { useSessionStore } from '@/store/session';
+import { clearSessionExpired, readSessionExpired, useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
 
-function safeNext(next: string | null): string {
-  return next && next.startsWith('/') && !next.startsWith('//') ? next : '/';
+const PANEL_PATH = '/konto';
+
+function safePath(path: string | null | undefined): string | null {
+  return path && path.startsWith('/') && !path.startsWith('//') && !path.startsWith('/logowanie')
+    ? path
+    : null;
 }
 
 export function LoginPage() {
-  const navigate = useNavigate();
+  const location = useLocation();
   const [params] = useSearchParams();
-  const next = safeNext(params.get('next'));
+  const state = location.state as {
+    from?: { pathname: string; search?: string };
+  } | null;
+  const target =
+    safePath(state?.from ? state.from.pathname + (state.from.search ?? '') : null) ??
+    safePath(params.get('next')) ??
+    PANEL_PATH;
+  const [expired] = useState(readSessionExpired);
+  useEffect(() => clearSessionExpired, []);
   const [mode, setMode] = useState<AuthMode>('login');
-  const user = useSessionStore((state) => state.user);
-  const token = useSessionStore((state) => state.token);
-  const setSession = useSessionStore((state) => state.setSession);
+  const user = useSessionStore((s) => s.user);
+  const token = useSessionStore((s) => s.token);
+  const setSession = useSessionStore((s) => s.setSession);
   const loginMutation = useLoginMutation();
   const registerMutation = useRegisterMutation();
   const mutation = mode === 'register' ? registerMutation : loginMutation;
+
+  if (token && user) return <Navigate to={target} replace />;
 
   const error =
     mutation.error instanceof ApiError
@@ -34,16 +49,13 @@ export function LoginPage() {
         ? { code: 'NETWORK_ERROR', message: 'Nie udało się połączyć. Spróbuj ponownie.' }
         : null;
 
-  const handleSuccess = (session: Session, rememberMe = true) => {
-    setSession(session, rememberMe);
-    navigate(next, { replace: true });
-  };
-
+  // the guard above redirects as soon as the session is stored
   const handleSubmit = (values: LoginRequest | RegisterRequest) => {
-    if ('name' in values) registerMutation.mutate(values, { onSuccess: (s) => handleSuccess(s) });
+    if ('name' in values)
+      registerMutation.mutate(values, { onSuccess: (session) => setSession(session) });
     else
       loginMutation.mutate(values, {
-        onSuccess: (s) => handleSuccess(s, values.rememberMe ?? true),
+        onSuccess: (session) => setSession(session, values.rememberMe ?? true),
       });
   };
 
@@ -54,56 +66,37 @@ export function LoginPage() {
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', py: { xs: 0, md: 4 } }}>
-      <Paper
-        variant="outlined"
-        component="section"
-        aria-labelledby="login-title"
-        sx={{ width: '100%', maxWidth: 440, p: { xs: 2, md: 4 } }}
-      >
-        {token && user ? (
-          <Stack spacing={2}>
-            <Typography id="login-title" variant="h2" component="h1">
-              Jesteś zalogowany jako {user.name}
-            </Typography>
-            <Button
-              component={RouterLink}
-              to="/"
-              variant="contained"
-              size="large"
-              sx={{ minHeight: 44 }}
-            >
-              Wróć do sprawdzania działki
-            </Button>
-          </Stack>
-        ) : (
-          <Stack spacing={2}>
-            <Typography id="login-title" variant="h2" component="h1">
-              {mode === 'register' ? 'Załóż konto' : 'Zaloguj się'}
-            </Typography>
-            <AuthForm
-              mode={mode}
-              onModeChange={handleModeChange}
-              isLoading={mutation.isPending}
-              error={error}
-              onSubmit={handleSubmit}
-            />
-            <Link
-              component={RouterLink}
-              to="/"
-              underline="hover"
-              sx={{
-                alignSelf: 'center',
-                display: 'inline-flex',
-                alignItems: 'center',
-                minHeight: 44,
-              }}
-            >
-              Kontynuuj bez konta
-            </Link>
-          </Stack>
+    <Box sx={{ display: 'flex', justifyContent: 'center', py: { xs: 1, md: 6 } }}>
+      <Stack spacing={3} sx={{ width: '100%', maxWidth: 480 }}>
+        <Stack spacing={1} sx={{ alignItems: 'center', textAlign: 'center' }}>
+          <OpacityIcon aria-hidden color="primary" sx={{ fontSize: 56 }} />
+          <Typography variant="h1" component="p" sx={{ fontWeight: 800 }}>
+            Kropelka
+          </Typography>
+          <Typography id="login-title" variant="h2" component="h1" sx={{ fontWeight: 600 }}>
+            Sprawdź wodę na swojej działce
+          </Typography>
+        </Stack>
+        {expired && (
+          <Alert severity="info" role="status" sx={{ fontSize: '1.125rem' }}>
+            Zaloguj się ponownie
+          </Alert>
         )}
-      </Paper>
+        <Paper
+          variant="outlined"
+          component="section"
+          aria-labelledby="login-title"
+          sx={{ p: { xs: 2, md: 4 } }}
+        >
+          <AuthForm
+            mode={mode}
+            onModeChange={handleModeChange}
+            isLoading={mutation.isPending}
+            error={error}
+            onSubmit={handleSubmit}
+          />
+        </Paper>
+      </Stack>
     </Box>
   );
 }
