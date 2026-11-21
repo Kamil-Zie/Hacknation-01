@@ -50,14 +50,14 @@ declare module '@mui/material/Typography' {
 export const theme = createTheme({
   breakpoints: { values: { xs: 0, sm: 600, md: 900, lg: 1280, xl: 1920 } },
   palette: {
-    primary: { main: '#2E6B3F', contrastText: '#FFFFFF' },
-    secondary: { main: '#1F6FB2' },
-    background: { default: '#F6F7F3', paper: '#FFFFFF' },
+    primary: { main: '#357A1F', contrastText: '#FFFFFF' },
+    secondary: { main: '#293698' },
+    background: { default: '#D4FFC4', paper: '#FFFFFF' },
     text: { primary: '#1B1F1A', secondary: '#4A5248' },
     divider: '#DDE1D8',
     drought: { none: '#2E7D32', moderate: '#B26A00', severe: '#C62828', unknown: '#6B7280' },
     confidence: { high: '#2E7D32', medium: '#B26A00', low: '#C62828' },
-    parcel: { stroke: '#1F6FB2', fill: 'rgba(31,111,178,0.15)' },
+    parcel: { stroke: '#293698', fill: 'rgba(41,54,152,0.15)' },
     water: '#2A9FD6',
   },
   typography: {

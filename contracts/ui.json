@@ -6,10 +6,10 @@
   "design_tokens": {
     "_note": "Bazowe tokeny od architekta; fe-uiux może je dopracować w Design Systemie. Kolory klas suszy zawsze z ikoną i tekstem (nie tylko kolor).",
     "colors": {
-      "primary": "#2E6B3F",
+      "primary": "#357A1F",
       "primaryContrast": "#FFFFFF",
-      "accent": "#1F6FB2",
-      "background": "#F6F7F3",
+      "accent": "#293698",
+      "background": "#D4FFC4",
       "surface": "#FFFFFF",
       "textPrimary": "#1B1F1A",
       "textSecondary": "#4A5248",
@@ -21,8 +21,8 @@
       "confidenceHigh": "#2E7D32",
       "confidenceMedium": "#B26A00",
       "confidenceLow": "#C62828",
-      "parcelStroke": "#1F6FB2",
-      "parcelFill": "rgba(31,111,178,0.15)",
+      "parcelStroke": "#293698",
+      "parcelFill": "rgba(41,54,152,0.15)",
       "water": "#2A9FD6"
     },
     "typography": {
