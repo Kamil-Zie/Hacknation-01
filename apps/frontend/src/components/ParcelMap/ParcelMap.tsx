@@ -86,7 +86,9 @@ export function ParcelMap({
   return (
     <Box
       role="region"
-      aria-label="Mapa działki"
+      aria-label={
+        parcel ? `Mapa działki ${parcel.parcelNumber}, obręb ${parcel.region}` : 'Mapa działki'
+      }
       sx={{
         position: 'relative',
         width: '100%',
@@ -102,6 +104,9 @@ export function ParcelMap({
         zoom={POLAND_ZOOM}
         scrollWheelZoom={isInteractive}
         dragging={isInteractive}
+        keyboard={isInteractive}
+        doubleClickZoom={isInteractive}
+        touchZoom={isInteractive}
         style={{ height: '100%', width: '100%' }}
       >
         <TileLayer
