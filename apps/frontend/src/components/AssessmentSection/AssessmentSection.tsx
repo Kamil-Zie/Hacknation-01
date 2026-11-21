@@ -160,8 +160,9 @@ function IndexTile({
         title={title}
         missing={{
           // Scene exists but this one index is missing: say so instead of "no clear scene".
+          // Backend adds a sentinel2 data gap with the reason (e.g. plan B: NDVI only); prefer it.
           reason: satellite
-            ? `Wskaźnika ${kind.toUpperCase()} nie udało się policzyć dla zdjęcia z ${formatDate(satellite.sceneDate)}.`
+            ? `Wskaźnika ${kind.toUpperCase()} nie udało się policzyć dla zdjęcia z ${formatDate(satellite.sceneDate)}.${gap ? ` ${gap.impact}` : ''}`
             : (gap?.impact ?? 'Brak bezchmurnego zdjęcia satelitarnego z ostatnich tygodni.'),
         }}
       />
