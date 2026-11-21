@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-001"],
   "contract_refs": ["API-003", "DM-004"],
@@ -17,7 +17,8 @@
   ],
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
-    "Agent: be-api. Szacunek: 1,5h. Faza: 2 (konieczne dla silnika TAW/RAW). Stała z kodu, bez bazy."
+    "Agent: be-api. Szacunek: 1,5h. Faza: 2 (konieczne dla silnika TAW/RAW). Stała z kodu, bez bazy.",
+    "Zrobione (backend-2): services/engine/crops.ts (CROPS = examples API-003, 7 upraw zamiast 5 z kryteriów, zgodnie z kontraktem; getCrop, getStageForDate, getKcForDate wg ADR-007 §2, fazy przez przełom roku, poza fazami Kc 0.3), GET /api/v1/crops (curl 200, 7 upraw). Testy w crops.test.ts."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
