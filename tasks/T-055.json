@@ -5,7 +5,7 @@
   "type": "fix",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "ready",
+  "status": "in_progress",
   "priority": "high",
   "depends_on": ["T-054"],
   "contract_refs": ["API-004"],

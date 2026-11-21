@@ -32,6 +32,8 @@ export type ClassifyInput = {
   kbw60: WaterBalanceWindow | null;
   soilWater: ClassifySoilWater | null;
   analysisDate: string;
+  // Current-window data came from the NASA POWER fallback (Open-Meteo/ERA5 unavailable).
+  isMeteoFallback?: boolean;
 };
 
 export type ClassifyResult = {
@@ -62,7 +64,7 @@ export function isOutOfSeasonDate(analysisDate: string): boolean {
 }
 
 export function classifyDrought(input: ClassifyInput): ClassifyResult {
-  const { kbw60, soilWater, analysisDate } = input;
+  const { kbw60, soilWater, analysisDate, isMeteoFallback = false } = input;
   const isOutOfSeason = isOutOfSeasonDate(analysisDate);
   if (!kbw60) {
     return {
@@ -78,11 +80,13 @@ export function classifyDrought(input: ClassifyInput): ClassifyResult {
     soilWater !== null && depletion !== null && depletion > soilWater.rawMm;
   const percentile = kbw60.percentile;
 
+  // ADR-007 update 17:55 (T-055, IUNG comparison T-054): with the NASA POWER fallback the soil depletion comes
+  // from a ~50 km grid, so "Dr > RAW and percentile <= 30" gives at most moderate; severe only from percentile.
+  const severeByDepletion =
+    !isMeteoFallback && depletionExceedsRaw && percentile <= SEVERE_WITH_DEPLETION_PERCENTILE;
+
   let droughtClass: DroughtClass = 'none';
-  if (
-    percentile <= SEVERE_PERCENTILE ||
-    (depletionExceedsRaw && percentile <= SEVERE_WITH_DEPLETION_PERCENTILE)
-  ) {
+  if (percentile <= SEVERE_PERCENTILE || severeByDepletion) {
     droughtClass = 'severe';
   } else if (
     percentile <= MODERATE_PERCENTILE ||

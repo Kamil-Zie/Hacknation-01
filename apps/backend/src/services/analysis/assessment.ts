@@ -141,7 +141,7 @@ export function computeEngine(input: EngineInput): EngineOutput {
   );
 
   const classified = classifyWithFallback(
-    classifyDrought({ kbw60, soilWater, analysisDate }),
+    classifyDrought({ kbw60, soilWater, analysisDate, isMeteoFallback: isFallback }),
     kbw60,
     soilWater,
     analysisDate,

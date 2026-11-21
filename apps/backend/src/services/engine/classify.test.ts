@@ -80,6 +80,37 @@ describe('classifyDrought', () => {
     );
   });
 
+  // T-055 (ADR-007 update 17:55): NASA POWER fallback caps the Dr > RAW rule at moderate.
+  it('NASA fallback: Dr > RAW at percentile 20 gives moderate, not severe', () => {
+    const result = classifyDrought({
+      kbw60: kbw60(20),
+      soilWater: { depletionMm: 60, rawMm: 52 },
+      analysisDate: summer,
+      isMeteoFallback: true,
+    });
+    expect(result.droughtClass).toBe('moderate');
+  });
+
+  it('NASA fallback: percentile 8 still gives severe', () => {
+    const result = classifyDrought({
+      kbw60: kbw60(8),
+      soilWater: { depletionMm: 60, rawMm: 52 },
+      analysisDate: summer,
+      isMeteoFallback: true,
+    });
+    expect(result.droughtClass).toBe('severe');
+  });
+
+  it('ERA5 (no fallback): Dr > RAW at percentile 20 stays severe', () => {
+    const result = classifyDrought({
+      kbw60: kbw60(20),
+      soilWater: { depletionMm: 60, rawMm: 52 },
+      analysisDate: summer,
+      isMeteoFallback: false,
+    });
+    expect(result.droughtClass).toBe('severe');
+  });
+
   it('ignores soil water without depletion', () => {
     const result = classifyDrought({
       kbw60: kbw60(50),

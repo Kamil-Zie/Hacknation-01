@@ -242,7 +242,11 @@ test('Open-Meteo 503 with working NASA fallback: not partial, data gap, replaced
   assert.match(report.sources.find((s) => s.sourceId === 'meteo')?.message ?? '', /nasa_power/);
   assert.equal(report.sources.find((s) => s.sourceId === 'nasa_power')?.role, 'fallback');
   assert.equal(report.assessment.soilMoistureSatellite?.fallback, true);
-  assert.ok(report.assessment.confidenceScore < complete.assessment.confidenceScore);
+  // Fallback penalty is applied (ADR-008); T-055: with NASA fallback the Dr > RAW rule gives at most moderate,
+  // so the class can differ from the ERA5 run (and with it the NDMI agreement), hence no strict score comparison.
+  assert.ok(report.assessment.confidenceReasons.some((reason) => /zapasowego/.test(reason)));
+  assert.equal(complete.assessment.droughtClass, 'severe');
+  assert.equal(report.assessment.droughtClass, 'moderate');
   assert.ok(report.assessment.kbw60);
   assert.equal(saved.length, 1);
 });
