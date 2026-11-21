@@ -81,6 +81,8 @@ export interface Crop {
   depletionFraction: number;
   stages: CropStage[];
   criticalPeriodLabel: string;
+  /** DM-004 category (Polish name or code), optional until backend ships it */
+  category?: string;
   expectedIndices: {
     month: number;
     ndviMin: number;

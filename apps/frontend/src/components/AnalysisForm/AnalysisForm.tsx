@@ -2,11 +2,22 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SearchIcon from '@mui/icons-material/Search';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, CircularProgress, Stack, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  InputAdornment,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import type { Theme } from '@mui/material/styles';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import type { FieldErrors } from 'react-hook-form';
 import { Link as RouterLink } from 'react-router-dom';
 
 import type { Crop } from '@/api/types';
@@ -17,6 +28,7 @@ import {
 } from '@/components/AnalysisForm/AnalysisForm.schema';
 import type { AnalysisFormValues } from '@/components/AnalysisForm/AnalysisForm.schema';
 import { CropIcon } from '@/components/CropIcon/CropIcon';
+import { groupCropsByCategory, normalizeSearch } from '@/utils/cropCategories';
 
 interface AnalysisFormProps {
   crops: Crop[];
@@ -51,6 +63,9 @@ const tileSx = (isSelected: boolean) => (theme: Theme) => ({
   },
 });
 
+// search box appears only when the list is long enough to need it
+const SEARCH_MIN_CROPS = 9;
+
 const DAY_FORMAT = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long' });
 
 export function AnalysisForm({
@@ -64,6 +79,8 @@ export function AnalysisForm({
   const schema = useMemo(() => createAnalysisFormSchema(), []);
   const today = getTodayIso();
   const [isOtherDay, setIsOtherDay] = useState(defaultDate !== undefined && defaultDate !== today);
+  const [search, setSearch] = useState('');
+  const cropSectionRef = useRef<HTMLFieldSetElement>(null);
   const {
     control,
     handleSubmit,
@@ -74,93 +91,165 @@ export function AnalysisForm({
     defaultValues: { cropCode: defaultCropCode ?? '', analysisDate: defaultDate ?? today },
   });
 
+  const hasSearch = crops.length >= SEARCH_MIN_CROPS;
+  const query = hasSearch ? normalizeSearch(search) : '';
+  const groups = useMemo(
+    () =>
+      groupCropsByCategory(
+        query ? crops.filter((crop) => normalizeSearch(crop.name).includes(query)) : crops,
+      ),
+    [crops, query],
+  );
+
+  function handleInvalid(formErrors: FieldErrors<AnalysisFormValues>) {
+    if (!formErrors.cropCode) return;
+    const section = cropSectionRef.current;
+    section?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    section?.focus({ preventScroll: true });
+  }
+
   return (
-    <form onSubmit={handleSubmit((values) => onSubmit(values))} noValidate>
+    <form onSubmit={handleSubmit((values) => onSubmit(values), handleInvalid)} noValidate>
       <Stack spacing={3}>
         <Controller
           name="cropCode"
           control={control}
           render={({ field }) => (
-            <Box component="fieldset" sx={{ border: 0, p: 0, m: 0, minWidth: 0 }}>
+            <Box
+              component="fieldset"
+              ref={cropSectionRef}
+              tabIndex={-1}
+              sx={(theme) => ({
+                border: errors.cropCode ? 3 : 0,
+                borderStyle: 'solid',
+                borderColor: theme.palette.error.main,
+                borderRadius: '14px',
+                p: errors.cropCode ? 1.5 : 0,
+                m: 0,
+                minWidth: 0,
+                outline: 'none',
+              })}
+            >
               <Box component="legend" sx={{ position: 'absolute', left: -10000 }}>
                 Uprawa
               </Box>
-              <Box
-                role="radiogroup"
-                aria-label="Uprawa"
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: {
-                    xs: 'repeat(2, minmax(0, 1fr))',
-                    md: 'repeat(auto-fill, minmax(240px, 1fr))',
-                  },
-                  gap: { xs: 1.25, md: 1.75 },
-                }}
-              >
-                {crops.map((crop) => {
-                  const isSelected = field.value === crop.code;
-                  return (
-                    <Box component="label" key={crop.code} sx={tileSx(isSelected)}>
-                      <input
-                        type="radio"
-                        name="cropCode"
-                        value={crop.code}
-                        checked={isSelected}
-                        disabled={isSubmitting}
-                        onChange={() => field.onChange(crop.code)}
-                        onBlur={field.onBlur}
-                      />
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: { xs: 1, md: 1.75 },
-                          minHeight: { xs: 80, md: 88 },
-                          width: '100%',
-                          px: { xs: 1.5, md: 2.5 },
-                          minWidth: 0,
-                        }}
-                      >
-                        <CropIcon
-                          cropCode={crop.code}
-                          sx={{ fontSize: { xs: 30, md: 44 }, flexShrink: 0 }}
-                        />
-                        <Typography
-                          component="span"
-                          sx={{
-                            flex: 1,
-                            minWidth: 0,
-                            fontWeight: 700,
-                            fontSize: { xs: '1rem', md: '1.375rem' },
-                            lineHeight: 1.2,
-                            // break between words only (360 px tiles split "Psze-nica" with 'anywhere')
-                            overflowWrap: 'break-word',
-                            hyphens: 'auto',
-                          }}
-                        >
-                          {crop.name}
-                        </Typography>
-                        {isSelected && (
-                          <CheckCircleIcon
-                            aria-hidden
-                            sx={{
-                              color: 'kropla.iconMuted',
-                              fontSize: { xs: 26, md: 30 },
-                              // on phones the highlighted tile already shows the choice; keep the width for the name
-                              display: { xs: 'none', sm: 'inline-flex' },
-                            }}
-                          />
-                        )}
-                      </Box>
+              <Stack spacing={2.5}>
+                {errors.cropCode && (
+                  <Alert severity="warning" role="alert" sx={{ fontSize: '1.125rem' }}>
+                    Wybierz, co rośnie na działce
+                  </Alert>
+                )}
+                {hasSearch && (
+                  <TextField
+                    type="search"
+                    label="Szukaj uprawy"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon aria-hidden />
+                          </InputAdornment>
+                        ),
+                        sx: { minHeight: 48, fontSize: '1.125rem' },
+                      },
+                      inputLabel: { sx: { fontSize: '1.125rem' } },
+                    }}
+                    sx={{ maxWidth: { sm: 420 } }}
+                  />
+                )}
+                {groups.length === 0 && (
+                  <Typography sx={{ fontSize: '1.125rem' }}>
+                    Nie ma takiej uprawy. Sprawdź pisownię.
+                  </Typography>
+                )}
+                {groups.map((group) => (
+                  <Box
+                    key={group.category}
+                    role="radiogroup"
+                    aria-labelledby={`crop-group-${group.category}`}
+                  >
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      id={`crop-group-${group.category}`}
+                      sx={{ fontSize: '1.125rem', fontWeight: 700, mb: 1.25 }}
+                    >
+                      {group.category}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gridTemplateColumns: {
+                          xs: 'repeat(2, minmax(0, 1fr))',
+                          md: 'repeat(auto-fill, minmax(240px, 1fr))',
+                        },
+                        gap: { xs: 1.25, md: 1.75 },
+                      }}
+                    >
+                      {group.crops.map((crop) => {
+                        const isSelected = field.value === crop.code;
+                        return (
+                          <Box component="label" key={crop.code} sx={tileSx(isSelected)}>
+                            <input
+                              type="radio"
+                              name="cropCode"
+                              value={crop.code}
+                              checked={isSelected}
+                              disabled={isSubmitting}
+                              onChange={() => field.onChange(crop.code)}
+                              onBlur={field.onBlur}
+                            />
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: { xs: 1, md: 1.75 },
+                                minHeight: { xs: 80, md: 88 },
+                                width: '100%',
+                                px: { xs: 1.5, md: 2.5 },
+                                minWidth: 0,
+                              }}
+                            >
+                              <CropIcon
+                                cropCode={crop.code}
+                                sx={{ fontSize: { xs: 30, md: 44 }, flexShrink: 0 }}
+                              />
+                              <Typography
+                                component="span"
+                                sx={{
+                                  flex: 1,
+                                  minWidth: 0,
+                                  fontWeight: 700,
+                                  fontSize: { xs: '1.125rem', md: '1.375rem' },
+                                  lineHeight: 1.2,
+                                  // break between words only (360 px tiles split "Psze-nica" with 'anywhere')
+                                  overflowWrap: 'break-word',
+                                  hyphens: 'auto',
+                                }}
+                              >
+                                {crop.name}
+                              </Typography>
+                              {isSelected && (
+                                <CheckCircleIcon
+                                  aria-hidden
+                                  sx={{
+                                    color: 'kropla.iconMuted',
+                                    fontSize: { xs: 26, md: 30 },
+                                    // on phones the highlighted tile already shows the choice; keep the width for the name
+                                    display: { xs: 'none', sm: 'inline-flex' },
+                                  }}
+                                />
+                              )}
+                            </Box>
+                          </Box>
+                        );
+                      })}
                     </Box>
-                  );
-                })}
-              </Box>
-              {errors.cropCode && (
-                <Typography role="alert" color="error" sx={{ mt: 1, fontWeight: 600 }}>
-                  {errors.cropCode.message}
-                </Typography>
-              )}
+                  </Box>
+                ))}
+              </Stack>
             </Box>
           )}
         />

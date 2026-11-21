@@ -4,9 +4,16 @@ import type { Crop, CropCode } from '@/api/types';
 
 const MOCK_DELAY_MS = 300;
 
-function makeCrop(code: CropCode, name: string, kcMid: number, critical: string): Crop {
+function makeCrop(
+  code: CropCode,
+  name: string,
+  kcMid: number,
+  critical: string,
+  category?: string,
+): Crop {
   return {
     code,
+    category,
     name,
     kcIni: 0.3,
     kcMid,
@@ -53,6 +60,17 @@ export const MOCK_CROPS: Crop[] = [
   ),
   makeCrop('sugar_beet', 'Burak cukrowy', 1.2, 'rozwój liści i korzenia (czerwiec–sierpień)'),
   makeCrop('grassland', 'Użytki zielone', 0.95, 'intensywny wzrost runi (maj–czerwiec)'),
+  // extra crops to exercise grouping and search (codes not yet in CropCode)
+  makeCrop('winter_rye' as CropCode, 'Żyto ozime', 1.1, 'kłoszenie (maj)', 'Zboża'),
+  makeCrop(
+    'field_pea' as CropCode,
+    'Groch siewny',
+    1.15,
+    'kwitnienie (maj–czerwiec)',
+    'Strączkowe',
+  ),
+  makeCrop('apple' as CropCode, 'Jabłoń', 1.2, 'zawiązywanie owoców (czerwiec)', 'Sady i jagodowe'),
+  makeCrop('cabbage' as CropCode, 'Kapusta', 1.05, 'zawijanie główek (lipiec)', 'Warzywa'),
 ];
 
 export async function mockGetCrops(): Promise<CropsResponse> {
