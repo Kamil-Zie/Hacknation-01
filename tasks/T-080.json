@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "ready",
+  "status": "in_progress",
   "priority": "medium",
   "depends_on": ["T-073", "T-078"],
   "contract_refs": ["UI-S-003", "API-019", "DM-025"],
@@ -22,7 +22,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo."
+    "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo.",
+    "frontend-2: start 21:40 na mocku API-019/DM-025 (fe-developer)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
