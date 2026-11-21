@@ -14,6 +14,7 @@ import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ParcelSummaryCard } from '@/components/ParcelSummaryCard/ParcelSummaryCard';
 import { SourceProgressList } from '@/components/SourceProgressList/SourceProgressList';
 import { useSelectionStore } from '@/store/selection';
+import { useSessionStore } from '@/store/session';
 
 const TICK_MS = 200;
 const RESULT_PREVIEW_MS = 1500;
@@ -57,6 +58,11 @@ export function ParcelPage() {
   const cropsQuery = useCrops();
   const sourcesQuery = useSources();
   const mutation = useCreateAnalysisMutation();
+  const token = useSessionStore((state) => state.token);
+  const activeAccountId = useSessionStore((state) => state.activeAccountId);
+  const activeAccountName = useSessionStore(
+    (state) => state.accounts.find((account) => account.id === state.activeAccountId)?.name,
+  );
 
   const [values, setValues] = useState<FormValues | null>(null);
   const [report, setReport] = useState<Report | null>(null);
@@ -100,9 +106,12 @@ export function ParcelPage() {
     setLocalError(null);
     mutation.mutate(
       {
-        parcelId,
-        cropCode: formValues.cropCode as CropCode,
-        analysisDate: formValues.analysisDate,
+        request: {
+          parcelId,
+          cropCode: formValues.cropCode as CropCode,
+          analysisDate: formValues.analysisDate,
+        },
+        options: { accountId: token ? activeAccountId : null, token },
       },
       {
         onSuccess: (created) => {
@@ -198,13 +207,20 @@ export function ParcelPage() {
     );
   } else {
     panel = (
-      <AnalysisForm
-        crops={cropsQuery.data?.items ?? []}
-        defaultCropCode={values?.cropCode}
-        defaultDate={values?.analysisDate}
-        isSubmitting={mutation.isPending}
-        onSubmit={handleSubmit}
-      />
+      <Stack spacing={1}>
+        <AnalysisForm
+          crops={cropsQuery.data?.items ?? []}
+          defaultCropCode={values?.cropCode}
+          defaultDate={values?.analysisDate}
+          isSubmitting={mutation.isPending}
+          onSubmit={handleSubmit}
+        />
+        {token && activeAccountName && (
+          <Typography variant="caption" color="text.secondary">
+            Raport zapiszemy w: {activeAccountName}
+          </Typography>
+        )}
+      </Stack>
     );
   }
 

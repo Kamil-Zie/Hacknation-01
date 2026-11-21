@@ -1,6 +1,7 @@
 // API-004 POST /analyses, API-005 GET /analyses/:id
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { authHeaders } from '@/api/auth';
 import { ApiError, USE_MOCKS, apiFetch } from '@/api/client';
 import type { AnalysisRequest, Report } from '@/api/types';
 
@@ -22,15 +23,47 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function createAnalysis(body: AnalysisRequest): Promise<Report> {
+export interface CreateAnalysisOptions {
+  accountId?: string | null;
+  token?: string | null;
+}
+
+export async function createAnalysis(
+  body: AnalysisRequest,
+  { accountId, token }: CreateAnalysisOptions = {},
+): Promise<Report> {
+  const withAccount = Boolean(accountId && token);
   if (MOCK_ANALYSES) {
     await delay(MOCK_CREATE_DELAY_MS);
     const { buildMockReport } = await import('@/mocks/analyses.mock');
-    return buildMockReport(body);
+    const report = buildMockReport(body);
+    if (withAccount) {
+      const { mockAppendAccountReport } = await import('@/mocks/accounts.mock');
+      report.accountId = accountId;
+      mockAppendAccountReport(accountId as string, {
+        id: report.id,
+        parcel: {
+          id: report.parcel.id,
+          parcelNumber: report.parcel.parcelNumber,
+          region: report.parcel.region,
+          commune: report.parcel.commune,
+        },
+        crop: report.crop,
+        analysisDate: report.analysisDate,
+        status: report.status,
+        droughtClass: report.assessment.droughtClass,
+        createdAt: report.createdAt,
+      });
+    }
+    return report;
   }
   return apiFetch<Report>(
     '/analyses',
-    { method: 'POST', body: JSON.stringify(body) },
+    {
+      method: 'POST',
+      body: JSON.stringify(withAccount ? { ...body, accountId } : body),
+      ...(withAccount ? { headers: authHeaders(token as string) } : {}),
+    },
     CREATE_TIMEOUT_MS,
   );
 }
@@ -62,9 +95,18 @@ export function useReportQuery(id: string | undefined) {
 export function useCreateAnalysisMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createAnalysis,
+    mutationFn: ({
+      request,
+      options,
+    }: {
+      request: AnalysisRequest;
+      options?: CreateAnalysisOptions;
+    }) => createAnalysis(request, options),
     onSuccess: (report) => {
       queryClient.setQueryData([...REPORTS_KEY, report.id], report);
+      if (report.accountId) {
+        void queryClient.invalidateQueries({ queryKey: ['accounts', report.accountId, 'reports'] });
+      }
     },
   });
 }

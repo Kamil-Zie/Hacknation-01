@@ -59,6 +59,14 @@ export async function mockRemoveMember(
   saveStore();
 }
 
+// Called by createAnalysis in mock mode, so other members see the report after logging in
+export function mockAppendAccountReport(accountId: string, summary: ReportSummary): void {
+  const account = getStore().accounts.find((item) => item.id === accountId);
+  if (!account) return;
+  account.reports = [summary, ...account.reports.filter((item) => item.id !== summary.id)];
+  saveStore();
+}
+
 export async function mockGetAccountReports(
   accountId: string,
   token: string,

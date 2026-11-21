@@ -297,6 +297,8 @@ export interface Report {
   computedAt: string;
   durationMs: number;
   createdAt: string;
+  // DM-001 / ADR-010: household account the report is saved in, null for anonymous reports
+  accountId?: string | null;
 }
 
 // API-004 request body
@@ -304,6 +306,7 @@ export interface AnalysisRequest {
   parcelId: string;
   cropCode: CropCode;
   analysisDate: string;
+  accountId?: string;
 }
 
 export interface ApiErrorBody {
