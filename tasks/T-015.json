@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-012", "T-014"],
   "contract_refs": ["API-004", "DM-008", "DM-010"],
@@ -17,7 +17,11 @@
     "Testy jednostkowe"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: be-api. Szacunek: 1,5h. Faza: 4 raport+rekomendacje."],
+  "notes": [
+    "Agent: be-api. Szacunek: 1,5h. Faza: 4 raport+rekomendacje.",
+    "WYNIK: engine/causes.ts computeCauses({analysisDate, crop, kbw30, kbw60, soil, tawMm, terrain, satellite}) = Cause[] (DM-008), 5 reguł ADR-007 §8, sortowanie severity, potem kolejność z tabeli. Reguła bez wejścia się nie uruchamia. Fixture piasek 82% / TAW 48 / percentyl 8: precip_deficit_heat high, low_soil_retention high, crop_water_demand medium. Testy backendu 96/96.",
+    "Severity (ADR nie definiuje): progi opisane w komentarzu w causes.ts. Kropka dziesiętna w tekstach poprawiana na przecinek w T-016 (wspólny formatter)."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
