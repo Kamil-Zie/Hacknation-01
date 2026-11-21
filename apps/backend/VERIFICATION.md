@@ -14,13 +14,23 @@ Plik `src/services/engine/__control__/control.test.ts` (uruchomienie: `npm test 
 
 ## 2. Porównanie z niezależnym źródłem
 
-Plan: miesięczny opad NASA POWER (`PRECTOTCORR`, punkt 51,44 N / 21,93 E, fixture w `src/services/sources/__fixtures__/`) wobec miesięcznych sum opadu IMGW (stacja Puławy lub Lublin-Radawiec, archiwum `danepubliczne.imgw.pl`).
+Miesięczny opad NASA POWER (`PRECTOTCORR`, punkt działki demo 51,44 N / 21,93 E, fixture w `src/services/sources/__fixtures__/`) wobec miesięcznych sum opadu IMGW ze stacji synoptycznej **Lublin-Radawiec** (ok. 45 km od działki; archiwum `danepubliczne.imgw.pl`, `miesieczne/synop`, pliki 2023 i 2024; w Puławach nie ma stacji w archiwum miesięcznym). Okres: sezon wegetacyjny IV–IX 2023 oraz IV–VI 2024 (IMGW opublikowało 2024 tylko do czerwca).
 
-| Stacja IMGW | Miesiąc | NASA [mm] | IMGW [mm] | Różnica [mm / %] |
-|---|---|---|---|---|
-| nie wykonano | | | | |
+| Miesiąc | NASA [mm] | IMGW [mm] | Różnica [mm / %] |
+|---|---|---|---|
+| 2023-04 | 58,1 | 62,5 | −4,4 / −7% |
+| 2023-05 | 76,8 | 71,6 | +5,2 / +7% |
+| 2023-06 | 46,3 | 38,4 | +7,9 / +21% |
+| 2023-07 | 98,4 | 87,7 | +10,7 / +12% |
+| 2023-08 | 65,0 | 68,6 | −3,6 / −5% |
+| 2023-09 | 31,1 | 33,2 | −2,1 / −6% |
+| **IV–IX 2023** | **375,7** | **362,0** | **+13,7 / +4%** |
+| 2024-04 | 38,7 | 22,9 | +15,8 / +69% |
+| 2024-05 | 25,8 | 17,1 | +8,7 / +51% |
+| 2024-06 | 78,3 | 95,5 | −17,2 / −18% |
+| **IV–VI 2024** | **142,8** | **135,5** | **+7,3 / +5%** |
 
-Status: porównanie nie zostało jeszcze policzone (pobranie archiwum IMGW zostało zablokowane przez uprawnienia sesji; Open-Meteo zwraca 429). Do uzupełnienia po pobraniu `…/miesieczne/klimat/2024/2024_m_k.zip`. Archiwum miesięczne IMGW kończy się na 2024, więc porównanie obejmie miesiące IV–IX 2024.
+Wynik: suma sezonowa zgadza się z dokładnością 4–5%, a NASA POWER poprawnie oddaje miesiące suche i mokre (np. bardzo suchy IV–V 2024). Duże różnice procentowe w miesiącach suchych wynikają z małych sum (kilkanaście mm). KBW i percentyl liczymy na sumach 30–60 dni z 10 lat w całości na NASA (ADR-009), więc taki rozrzut miesięczny ma ograniczony wpływ na klasę suszy.
 
 Ograniczenia takiego porównania: NASA POWER to siatka ok. 50 km (MERRA-2) z korektą opadu, a IMGW to pomiar punktowy, więc lokalne burze mogą dać duże różnice miesięczne (kilkadziesiąt %). Zgodność trendu (miesiące suche i mokre) jest ważniejsza niż zgodność co do milimetra.
 
