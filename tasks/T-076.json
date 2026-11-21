@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "ready",
+  "status": "in_progress",
   "priority": "high",
   "depends_on": ["T-070"],
   "contract_refs": ["API-003", "DM-004"],
