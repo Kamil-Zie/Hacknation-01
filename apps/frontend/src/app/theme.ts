@@ -52,7 +52,7 @@ export const theme = createTheme({
   palette: {
     primary: { main: '#357A1F', contrastText: '#FFFFFF' },
     secondary: { main: '#293698' },
-    background: { default: '#D4FFC4', paper: '#FFFFFF' },
+    background: { default: '#FFFFFF', paper: '#FFFFFF' },
     text: { primary: '#1B1F1A', secondary: '#4A5248' },
     divider: '#DDE1D8',
     drought: { none: '#2E7D32', moderate: '#B26A00', severe: '#C62828', unknown: '#6B7280' },
@@ -77,4 +77,8 @@ export const theme = createTheme({
   },
   spacing: 8,
   shape: { borderRadius: 12 },
+  // White page and white cards: cards get a divider border instead of a shadow to stay visible.
+  components: {
+    MuiCard: { defaultProps: { variant: 'outlined' } },
+  },
 });
