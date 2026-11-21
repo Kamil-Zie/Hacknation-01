@@ -160,7 +160,7 @@ export function KbwChart({ charts }: KbwChartProps) {
               tickLabelInterval: (_value: string, index: number) => index % labelStep === 0,
             },
           ]}
-          yAxis={[{ id: 'y', label: 'KBW (mm)', valueFormatter: (value: number) => `${value} mm` }]}
+          yAxis={[{ id: 'y', valueFormatter: (value: number) => `${value} mm` }]}
           series={[
             { id: 'p10', dataKey: 'p10', stack: 'norm', showMark: false, label: 'p10' },
             {
