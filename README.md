@@ -209,6 +209,7 @@ Cache działki demo (061409_2.0009.612, pszenica, 2026-05-25) rozgrzany 2026-11-
 - **Hasła:** zapisywane wyłącznie jako skrót `crypto.scrypt`; sesja to token JWT HS256 ważny 7 dni; limit 10 nieudanych logowań na 15 minut.
 - **Sekrety:** `MONGODB_URI` i `JWT_SECRET` tylko w `.env` (poza repozytorium); w produkcji `JWT_SECRET` jest wymagany.
 - **CORS:** API przyjmuje żądania z origin ustawionego w `CORS_ORIGIN`.
+- **Raporty zapisane w koncie** też mają publiczny link (`/report/:id`): kto zna link, zobaczy raport (działka, uprawa, wynik), ale nie zobaczy, do którego gospodarstwa należy ani kto jest jego członkiem. To świadoma decyzja: link służy do udostępniania raportu, np. doradcy (ADR-010 pkt 5, ADR-009 aktualizacja 21:00). Granice działek pochodzą z publicznego rejestru ULDK.
 
 ## 9. Sposób weryfikacji wyników i rekomendacji
 

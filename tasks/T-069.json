@@ -1,0 +1,30 @@
+{
+  "id": "T-069",
+  "title": "Odporność analizy: osobny budżet ULDK, zapis raportu bez 500, listen po connectDb",
+  "description": "Pkt 1, 2, 10 przeglądu: (1) analyses.service.ts: geometria ULDK z własnym limitem, budżet 25 s dla źródeł liczony od otrzymania geometrii (łącznie poniżej limitu frontu); (2) błąd ReportModel.create → log i zwrot raportu z id jak przy braku połączenia, nie 500; (10) server.ts: listen po connectDb z limitem czasu (API wstaje także bez Atlasa).",
+  "type": "bugfix",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "done",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["API-004", "API-005"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Zimny ULDK 9 s nie powoduje timeoutu NASA POWER (test)",
+    "Symulowany błąd zapisu → 201 z raportem, log",
+    "Po restarcie brak okna 503/404 dla świeżych raportów",
+    "Testy backendu zielone"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:00: Nataniel zrobił pkt 1, 2, 10 (oraz 7, 8) w 43da511 [T-DB-011] zanim zadanie powstało; review: Jan.",
+    "coord-1 21:00: z przeglądu backendu Kuby 20261121-2050, przed zamrożeniem 7:00."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

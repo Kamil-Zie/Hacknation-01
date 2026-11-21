@@ -1,0 +1,27 @@
+{
+  "id": "T-070",
+  "title": "Spójność KBW: norma na skali Open-Meteo (decyzja 4b) + review 43da511 Nataniela",
+  "description": "Decyzja 4 (ADR-009 aktualizacja 21:00): wariant (b) – gdy kbwMm jest z Open-Meteo, normKbwMm = kbwMm − anomalyMm (anomalia i percentyl z serii NASA, jak normRootZonePct w ERA5-Land), żeby liczby w kafelku się sumowały; dopisać w limitations. Pkt 7 i 8 zrobił już Nataniel w 43da511 (T-DB-011) – zrób krótki review tego commita.",
+  "type": "bugfix",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["API-004", "DM-013"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Na ERA5: kbwMm − normKbwMm = anomalyMm (±0,1) dla kbw30 i kbw60",
+    "Limitations wspominają przeliczoną normę",
+    "Review 43da511 (T-069) wiadomością do coord-1",
+    "Testy backendu zielone"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": ["coord-1 21:00: z przeglądu backendu Kuby 20261121-2050, przed zamrożeniem 7:00."],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

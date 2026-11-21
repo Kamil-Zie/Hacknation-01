@@ -34,3 +34,8 @@
 - NASA POWER ma wszystkie dane do FAO-56 Penman-Monteith (`T2M_MAX`, `T2M_MIN`, `RH2M`, `WS2M`, `ALLSKY_SFC_SW_DWN`, `PS`), więc klimatologia i zapas liczą ET0 tą samą metodą co Open-Meteo (ERA5). Hargreaves-Samani tylko dla dni bez wilgotności, wiatru albo ciśnienia.
 - Promieniowanie w NASA POWER jest publikowane z ok. 6-dniowym opóźnieniem (reszta ok. 3 dni). Dla tych dni Rs szacujemy z amplitudy temperatury (FAO-56 eq. 50), metoda `penman-monteith-rs-estimated`.
 - Sprawdzenie: Bronowice, czerwiec 2025: PM 132,8 mm, Hargreaves 146,2 mm (Hargreaves zawyżał ET0 o ok. 10%, co zawyżało deficyt i podatność). Test na FAO-56 example 18 (3,9 mm/d).
+
+## Aktualizacja 2026-11-21 21:00 (coord-1, z przeglądu backendu)
+
+- **Norma KBW przy bieżących danych z Open-Meteo:** anomalia (`anomalyMm`) i percentyl pochodzą z serii NASA POWER (bieżące NASA na tle 10 lat NASA), a `normKbwMm` pokazujemy na skali Open-Meteo: `normKbwMm = kbwMm − anomalyMm`. Tak samo jak `normRootZonePct` dla ERA5-Land. Liczby w raporcie się sumują; w ograniczeniach dopisane, że norma jest przeliczona. Wdrożenie: T-070.
+- **GET /analyses/:id dla raportów kont:** zostaje publiczny po id (ADR-010 pkt 5: link = udostępnianie). Po T-066 `accountId` widzi tylko członek. Opisane w README (Bezpieczeństwo i dane osobowe).
