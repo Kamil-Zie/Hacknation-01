@@ -24,7 +24,14 @@ export function ParcelSummaryCard({ parcel }: ParcelSummaryCardProps) {
         </Typography>
         <Box
           component="dl"
-          sx={{ m: 0, display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 1, columnGap: 2 }}
+          sx={{
+            m: 0,
+            display: 'grid',
+            gridTemplateColumns: 'auto minmax(0, 1fr)',
+            gap: 1,
+            columnGap: 2,
+            overflowWrap: 'anywhere',
+          }}
         >
           {rows.map(([label, value]) => (
             <Box key={label} sx={{ display: 'contents' }}>
