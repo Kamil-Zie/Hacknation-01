@@ -21,7 +21,7 @@ export function AppLayout() {
             sx={{ display: 'inline-flex', alignItems: 'center', minHeight: 44 }}
           >
             <Typography variant="h3" component="span">
-              Kropla
+              Kropelka
             </Typography>
           </Link>
           <Typography variant="body1" sx={{ display: { xs: 'none', sm: 'block' }, opacity: 0.9 }}>

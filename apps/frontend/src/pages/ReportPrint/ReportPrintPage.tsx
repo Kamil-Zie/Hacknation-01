@@ -82,7 +82,7 @@ export function ReportPrintPage() {
       <Stack spacing={2.5}>
         {isError && <Alert severity="warning">Nie udało się odświeżyć raportu.</Alert>}
         <Typography variant="overline" color="text.secondary">
-          Kropla – raport wody
+          Kropelka – raport wody
         </Typography>
         <ReportHeader report={data} />
         <ParcelMap

@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
   "project": {
-    "name": "Kropla",
-    "description": "Kropla to webowy asystent wody dla rolnika (zadanie KOWR „Zatrzymaj wodę, chroń plony”). Po numerze działki ewidencyjnej albo kliknięciu na mapie, wyborze uprawy i daty analizy aplikacja na żywo pobiera dane meteo, satelitarne, glebowe, hydrologiczne i przestrzenne, liczy bieżący bilans wodny i podatność na suszę z 10 lat i wydaje raport z przyczynami niedoboru i rekomendacjami w kolejności: retencja, agrotechnika, nawadnianie. Każda rekomendacja ma uzasadnienie w danych, źródła, daty i opisaną niepewność. Raport można zapisać do PDF albo wydrukować.",
+    "name": "Kropelka",
+    "description": "Kropelka to webowy asystent wody dla rolnika (zadanie KOWR „Zatrzymaj wodę, chroń plony”). Po numerze działki ewidencyjnej albo kliknięciu na mapie, wyborze uprawy i daty analizy aplikacja na żywo pobiera dane meteo, satelitarne, glebowe, hydrologiczne i przestrzenne, liczy bieżący bilans wodny i podatność na suszę z 10 lat i wydaje raport z przyczynami niedoboru i rekomendacjami w kolejności: retencja, agrotechnika, nawadnianie. Każda rekomendacja ma uzasadnienie w danych, źródła, daty i opisaną niepewność. Raport można zapisać do PDF albo wydrukować.",
     "goals": [
       "Działa dla dowolnej działki w Polsce po ID TERYT (ULDK GUGiK) albo kliknięciu na mapie, dla daty dzisiejszej lub historycznej z ostatnich 10 lat (tak testuje jury).",
       "Ocenę i rekomendacje liczy aplikacja z pobranych danych (KBW = opad − ETc wg FAO-56, anomalia/percentyl względem 10 lat, retencja gleby z uziarnienia, spadek terenu), bez gotowych tekstów.",
@@ -473,7 +473,7 @@
         },
         {
           "id": "ADR-005",
-          "title": "Stack Kropli: domyślny + mapa, wykres, PDF przez druk, geometria w backendzie",
+          "title": "Stack Kropelki: domyślny + mapa, wykres, PDF przez druk, geometria w backendzie",
           "status": "accepted",
           "date": "2026-11-21",
           "context": "Demo wymaga mapy działki, wykresu bilansu wodnego, PDF i obliczeń na geometrii; brak logowania.",

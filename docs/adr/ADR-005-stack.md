@@ -1,4 +1,4 @@
-# ADR-005: Stack aplikacji Kropla
+# ADR-005: Stack aplikacji Kropelka
 
 - Status: accepted
 - Data: 2026-11-21

@@ -28,7 +28,7 @@
       "consumers": ["UI-S-001"]
     }
   },
-  "_note": "Kropla: brak auth (auth: none). Format błędu: { code, message, details }. Daty jako YYYY-MM-DD (strefa Europe/Warsaw), znaczniki czasu ISO 8601 UTC. Źródła i metodyka: docs/adr/ADR-006-data-sources.md, docs/adr/ADR-007-methodology.md.",
+  "_note": "Kropelka: brak auth (auth: none). Format błędu: { code, message, details }. Daty jako YYYY-MM-DD (strefa Europe/Warsaw), znaczniki czasu ISO 8601 UTC. Źródła i metodyka: docs/adr/ADR-006-data-sources.md, docs/adr/ADR-007-methodology.md.",
   "endpoints": [
     {
       "id": "API-001",

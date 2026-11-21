@@ -9,7 +9,7 @@ import type { SourceResult } from '@/services/sources/types';
 
 const OSM_MAP_URL = 'https://api.openstreetmap.org/api/0.6/map';
 const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
-const USER_AGENT = 'Kropla-Hackathon/1.0';
+const USER_AGENT = 'Kropelka-Hackathon/1.0';
 const RADIUS_M = 1000;
 const METERS_PER_DEGREE = 111320;
 // Whole source budget 12 s: the OSM API gets at most 6 s, the rest is left for the Overpass fallback.
