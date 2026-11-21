@@ -4,7 +4,7 @@
   "description": "API-019 (mock z DM-025, potem prawdziwe API po T-078). Z 'Raport pola': wybór uprawy i daty (użyj komponentów z kroku 2), potem ekran: mapa pola z działkami pokolorowanymi klasą suszy, karta podsumowania (najgorsza klasa, % powierzchni w suszy, średnia wilgotność ważona), tabela/karty działek z linkiem do raportu działki (/report/:id), połączone rekomendacje z listą działek. Postęp liczenia ('Liczymy działkę 2 z 3'). Druk/PDF jak raport działki. Dopisz ekran do contracts/ui.json (UI-S-008).\n\nUX dla wieku 18–99: tekst ≥ 18 px, przyciski ≥ 48 px, kontrast AA, proste słowa, ikony z podpisem.",
   "type": "feature",
   "team": "frontend",
-  "assignee": "frontend-2",
+  "assignee": "coord-1",
   "status": "integration",
   "priority": "medium",
   "depends_on": ["T-073", "T-078"],
@@ -24,7 +24,8 @@
   "notes": [
     "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo.",
     "frontend-2: start 21:40 na mocku API-019/DM-025 (fe-developer).",
-    "frontend-2: 21:55 ekran na mocku (/pole/:fieldId/raport, /pole/demo/raport), FieldMap, druk przez window.print. Czeka na T-078; przełączenie: VITE_MOCK_FIELD_REPORTS=false. Proponowane pola errorMessage (failed) i parcelIds (porady) wysłane do backendu."
+    "frontend-2: 21:55 ekran na mocku (/pole/:fieldId/raport, /pole/demo/raport), FieldMap, druk przez window.print. Czeka na T-078; przełączenie: VITE_MOCK_FIELD_REPORTS=false. Proponowane pola errorMessage (failed) i parcelIds (porady) wysłane do backendu.",
+    "frontend-2 00:30: przekazane coord-1 (decyzja Jakuba). Kod na main na prawdziwym API-019 (f139d79); zostaje test na żywo pola 612+613 po rozgrzaniu cache 611/613 (blokada ULDK)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
