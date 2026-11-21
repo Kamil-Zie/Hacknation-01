@@ -20,7 +20,8 @@
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
     "coord-1: decyzja użytkownika: wilgotność gleby musi być w raporcie. EUMETSAT NO-GO (T-002), więc NASA POWER (sprawdzone na żywo 12:41: 10 lat, 7 parametrów, 1,9 s, bez klucza). Open-Meteo dało 12:40 HTTP 429 (dzienny limit na IP sieci hackathonu).",
-    "Agent: be-api + be-database (kontrakt). Szacunek: 1,5h. Przed T-010 albo razem z nim, bo dzieli logikę zapasu meteo. Silnik (Jan, T-014) czyta DM-015 bez zmian w regułach."
+    "Agent: be-api + be-database (kontrakt). Szacunek: 1,5h. Przed T-010 albo razem z nim, bo dzieli logikę zapasu meteo. Silnik (Jan, T-014) czyta DM-015 bez zmian w regułach.",
+    "Postęp (backend-2): kontrakt 0.2.0 + T-DB-005 (ff98a82). services/sources/nasaPower.source.ts: fetchNasaPowerDaily(lat, lon, analysisDate, signal?, deps?) przez runSource (1 zapytanie, cache), computeSoilMoisture(series, D) → DM-015 bez agreement (liczy silnik), hargreavesEt0, toMeteoFallbackSeries(series, lat). Bronowice 2026-06-10: 0–5 cm 38%, root 35.1%, percentyl 4, dry. Testy na prawdziwym fixture. Zostaje: podpięcie zapasu meteo w T-010 (kryterium 3)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
