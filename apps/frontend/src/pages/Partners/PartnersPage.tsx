@@ -27,7 +27,7 @@ function toError(error: unknown): { code: string; message: string } | null {
 }
 
 export function PartnersPage() {
-  const { token, activeAccountId } = useSessionStore();
+  const { token, activeAccountId, user } = useSessionStore();
   const accountId = activeAccountId ?? '';
   const members = useMembersQuery(activeAccountId, token);
   const parcels = useAccountParcelsQuery(activeAccountId, token);
@@ -97,6 +97,7 @@ export function PartnersPage() {
               member={member}
               parcels={parcelList}
               isLastActive={activeCount <= 1}
+              isSelf={user !== null && member.email.toLowerCase() === user.email.toLowerCase()}
               isRemoving={remove.isPending}
               onRemove={(memberId) => remove.mutate(memberId)}
             />

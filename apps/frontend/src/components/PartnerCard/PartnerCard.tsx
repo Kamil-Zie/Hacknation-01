@@ -38,6 +38,8 @@ export interface PartnerCardProps {
   member: Member;
   parcels: ParcelOverview[];
   isLastActive: boolean;
+  // The signed-in user: API-021 refuses to change own access (CANNOT_RESTRICT_SELF), so no editor or remove
+  isSelf: boolean;
   isRemoving: boolean;
   onRemove: (memberId: string) => void;
 }
@@ -48,6 +50,7 @@ export function PartnerCard({
   member,
   parcels,
   isLastActive,
+  isSelf,
   isRemoving,
   onRemove,
 }: PartnerCardProps) {
@@ -78,6 +81,7 @@ export function PartnerCard({
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography component="span" sx={{ display: 'block', fontWeight: 700 }}>
             {member.name ?? member.email}
+            {isSelf && ' (to Ty)'}
           </Typography>
           {member.name && (
             <Typography
@@ -106,8 +110,8 @@ export function PartnerCard({
       {open && (
         <Stack id={panelId} spacing={2} sx={{ p: 2, pt: 0 }}>
           <Box>
-            <Typography component="h3" variant="h3" sx={{ mb: 0.5 }}>
-              Działki tej osoby
+            <Typography component="h2" variant="h3" sx={{ mb: 0.5 }}>
+              {isSelf ? 'Twoje działki' : 'Działki tej osoby'}
             </Typography>
             {own.length === 0 ? (
               <Typography>Ta osoba nie widzi żadnej działki.</Typography>
@@ -121,14 +125,21 @@ export function PartnerCard({
               </Box>
             )}
           </Box>
-          <ParcelAccessEditor
-            key={`${member.id}:${JSON.stringify(member.parcelIds ?? null)}`}
-            accountId={accountId}
-            token={token}
-            member={member}
-            parcels={parcels}
-          />
-          {confirming ? (
+          {isSelf ? (
+            <Typography color="text.secondary">
+              Swój dostęp zmienisz tylko przez inną osobę, która widzi wszystkie działki.
+            </Typography>
+          ) : (
+            <ParcelAccessEditor
+              // keyed by member only: a parcelIds key remounted the editor after save and hid „Zapisano”
+              key={member.id}
+              accountId={accountId}
+              token={token}
+              member={member}
+              parcels={parcels}
+            />
+          )}
+          {isSelf ? null : confirming ? (
             <Box
               role="group"
               aria-label={`Potwierdź usunięcie: ${member.email}`}
