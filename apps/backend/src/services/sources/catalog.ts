@@ -65,13 +65,13 @@ export const SOURCES: DataSource[] = [
   },
   {
     id: 'nasa_power',
-    name: 'NASA POWER Daily (zapas: reanaliza MERRA-2, meteo i wilgotność gleby)',
+    name: 'NASA POWER Daily (reanaliza MERRA-2: klimatologia 10 lat, zapas meteo i wilgotności)',
     category: 'soil',
-    label: 'Wilgotność gleby',
+    label: 'Historia 10 lat',
     provider: 'NASA Langley Research Center (LaRC) POWER Project',
     url: 'https://power.larc.nasa.gov/',
     license: 'Dane NASA, otwarte; wymagane przypisanie NASA LaRC POWER',
-    resolution: 'siatka ok. 50 km (0,5° × 0,625°), dane dobowe; zapas gdy Open-Meteo zawiedzie',
+    resolution: 'siatka ok. 50 km (0,5° × 0,625°), dane dobowe; 10 lat do percentyla i podatności',
     timeoutMs: 10000,
     attribution:
       'These data were obtained from the NASA Langley Research Center (LaRC) POWER Project funded through the NASA Earth Science/Applied Science Program.',

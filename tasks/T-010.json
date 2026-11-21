@@ -24,7 +24,8 @@
   "notes": [
     "coord-1 13:05 ZMIANA po zrobieniu (ADR-009): Open-Meteo ma pobierać TYLKO okno D−90 dni … D (meteo + ERA5-Land w jednym zapytaniu), nie 10 lat w 2 zakresach. 10 lat bierze nasa_power (T-037). Do poprawki w meteo.source.ts: zakres dat i usunięcie drugiego zakresu.",
     "Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Licencja CC BY 4.0 do DM-005.",
-    "Zrobione (backend-2): services/sources/meteo.source.ts fetchMeteo(lat, lon, D) – archive API, 2 równoległe zakresy, timeout 15 s, daily (opad, temp, ET0) + hourly ERA5-Land soil_moisture 3 warstwy w tym samym zapytaniu, odcięcie > D, cache. Przy statusie innym niż ok/cached zapas NASA POWER (fallback, confidencePenalty 0.05, limitations). Bez forecast past_days (ADR-006 Aktualizacja: archiwum ma dane do dziś). Testy na syntetycznym fixture (Open-Meteo 429, zero zapytań na żywo)."
+    "Zrobione (backend-2): services/sources/meteo.source.ts fetchMeteo(lat, lon, D) – archive API, 2 równoległe zakresy, timeout 15 s, daily (opad, temp, ET0) + hourly ERA5-Land soil_moisture 3 warstwy w tym samym zapytaniu, odcięcie > D, cache. Przy statusie innym niż ok/cached zapas NASA POWER (fallback, confidencePenalty 0.05, limitations). Bez forecast past_days (ADR-006 Aktualizacja: archiwum ma dane do dziś). Testy na syntetycznym fixture (Open-Meteo 429, zero zapytań na żywo).",
+    "ADR-009 (backend-2, 13:20): Open-Meteo tylko D−90…D (meteo + ERA5-Land), NASA POWER zawsze 10 lat równolegle (climatology). fetchMeteo → { current, climatology, nasaSeries, sources z role, limitations, confidencePenalty, dataGaps }. Zapas: current z NASA (fallback=true, −0,05)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

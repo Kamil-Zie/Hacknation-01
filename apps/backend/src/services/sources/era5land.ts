@@ -1,14 +1,10 @@
-// T-037 DM-015 DM-011 era5land: pure ERA5-Land soil moisture (m3/m3 -> % of plot water capacity), 10-year percentile, assessment (ADR-008 v2)
-import { median, percentileOf, round1 } from '@/services/sources/nasaPower.source';
+// T-037 DM-015 DM-011 era5land: ERA5-Land current soil moisture (m3/m3 -> % of plot water capacity); percentile, norm, anomaly and assessment taken from NASA POWER (ADR-009)
+import { round1 } from '@/services/sources/nasaPower.source';
 import type { MeteoDay } from '@/services/sources/meteo.source';
+import type { SoilMoisture } from '@/services/sources/nasaPower.source';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-const HISTORY_YEARS = 10;
-const WINDOW_HALF_DAYS = 15;
 const MEAN_DAYS = 7;
-const MIN_PERCENTILE_SAMPLES = 30;
-const DRY_PERCENTILE = 20;
-const WET_PERCENTILE = 80;
 const DRY_ROOT_PCT = 30;
 const WET_ROOT_PCT = 70;
 // Layer thickness in cm: 0-7, 7-28, 28-100.
@@ -53,6 +49,8 @@ export function computeEra5LandSoilMoisture(
   analysisDate: string,
   thetaFc: number | null,
   thetaWp: number | null,
+  // NASA POWER result (computeSoilMoisture) for the same D: percentile, norm, anomaly, assessment (ADR-009).
+  nasa: SoilMoisture | null = null,
 ): Era5LandOutcome {
   const byDate = new Map(series.map((day) => [day.date, day]));
   const analysis = new Date(`${analysisDate}T00:00:00Z`);
@@ -87,10 +85,10 @@ export function computeEra5LandSoilMoisture(
 
   const rootTheta = rootZoneTheta(theta);
   const rootPct = toPct(rootTheta);
-  const history = historicalRootValues(byDate, analysis);
-  const hasHistory = rootTheta !== null && history.length >= MIN_PERCENTILE_SAMPLES;
-  const percentile = hasHistory && rootTheta !== null ? percentileOf(history, rootTheta) : null;
-  const normPct = hasHistory ? toPct(median(history)) : null;
+  // Never rank ERA5 against the NASA distribution: relative values come whole from NASA.
+  const percentile = nasa?.percentile ?? null;
+  const normPct = nasa?.normRootZonePct ?? null;
+  const anomalyPp = nasa?.anomalyPp ?? null;
 
   return {
     status: 'ok',
@@ -101,8 +99,8 @@ export function computeEra5LandSoilMoisture(
       profilePct: toPct(profileTheta(theta)),
       percentile,
       normRootZonePct: normPct,
-      anomalyPp: rootPct !== null && normPct !== null ? round1(rootPct - normPct) : null,
-      assessment: assess(percentile, rootPct),
+      anomalyPp,
+      assessment: nasa ? nasa.assessment : assess(rootPct),
       observedAt: `${observed.date}T00:00:00.000Z`,
       ageDays: Math.round((analysis.getTime() - observedDate.getTime()) / DAY_MS),
       product: 'ERA5-Land (Copernicus C3S) przez Open-Meteo, 0–100 cm',
@@ -136,40 +134,11 @@ function profileTheta(theta: Layers): number | null {
   return (top * THICKNESS.top + mid * THICKNESS.mid + deep * THICKNESS.deep) / total;
 }
 
-// Daily root-zone theta from the +-15 day window around D in each of the 10 previous years.
-function historicalRootValues(byDate: Map<string, MeteoDay>, analysis: Date): number[] {
-  const values: number[] = [];
-  for (let year = 1; year <= HISTORY_YEARS; year += 1) {
-    const center = new Date(analysis);
-    center.setUTCFullYear(center.getUTCFullYear() - year);
-    for (let offset = -WINDOW_HALF_DAYS; offset <= WINDOW_HALF_DAYS; offset += 1) {
-      const day = byDate.get(toIso(new Date(center.getTime() + offset * DAY_MS)));
-      const value = day
-        ? rootZoneTheta({ top: null, mid: day.sm7to28, deep: day.sm28to100 })
-        : null;
-      if (value !== null) values.push(value);
-    }
-  }
-  return values;
-}
-
-function assess(
-  percentile: number | null,
-  rootPct: number | null,
-): Era5LandSoilMoisture['assessment'] {
-  if (percentile === null && rootPct === null) return 'unknown';
-  if (
-    (percentile !== null && percentile <= DRY_PERCENTILE) ||
-    (rootPct !== null && rootPct <= DRY_ROOT_PCT)
-  ) {
-    return 'dry';
-  }
-  if (
-    (percentile !== null && percentile >= WET_PERCENTILE) ||
-    (rootPct !== null && rootPct >= WET_ROOT_PCT)
-  ) {
-    return 'wet';
-  }
+// Without NASA POWER only the absolute root-zone level is judged.
+function assess(rootPct: number | null): Era5LandSoilMoisture['assessment'] {
+  if (rootPct === null) return 'unknown';
+  if (rootPct <= DRY_ROOT_PCT) return 'dry';
+  if (rootPct >= WET_ROOT_PCT) return 'wet';
   return 'normal';
 }
 

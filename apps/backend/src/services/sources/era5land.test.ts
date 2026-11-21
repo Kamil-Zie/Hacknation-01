@@ -1,4 +1,4 @@
-// T-037 DM-015 era5land tests: layers and units, % of capacity, 7-day mean, percentile and assessment on synthetic data (no network)
+// T-037 DM-015 era5land tests: layers and units, % of capacity, 7-day mean; percentile and assessment come from NASA POWER (ADR-009), no network
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -7,6 +7,7 @@ import { test } from 'vitest';
 
 import { computeEra5LandSoilMoisture } from '@/services/sources/era5land';
 import { parseOpenMeteoResponse } from '@/services/sources/meteo.source';
+import type { SoilMoisture } from '@/services/sources/nasaPower.source';
 import type { MeteoDay } from '@/services/sources/meteo.source';
 
 const DAY_MS = 86_400_000;
@@ -86,41 +87,67 @@ test('root zone is the thickness-weighted mean, profile covers 0-100 cm', () => 
   assert.equal(soilMoisture.profilePct, 62.5);
 });
 
-test('low root zone on a 10-year history is dry with low percentile and negative anomaly', () => {
-  const { soilMoisture } = computeEra5LandSoilMoisture(synthetic(0.2, 0.22), '2026-06-10', FC, WP);
+const NASA: SoilMoisture = {
+  label: 'Wilgotność gleby',
+  valuePct: 38,
+  rootZonePct: 35.1,
+  profilePct: 36,
+  percentile: 4,
+  normRootZonePct: 52.3,
+  anomalyPp: -17.2,
+  assessment: 'dry',
+  observedAt: '2026-06-10T00:00:00.000Z',
+  ageDays: 0,
+  product: 'NASA',
+  collectionId: 'POWER',
+  granuleId: null,
+  resolutionKm: 50,
+  depthLabel: '',
+  distanceKm: null,
+};
+
+test('percentile, norm, anomaly and assessment come from NASA, absolute values stay ERA5-Land', () => {
+  const { soilMoisture } = computeEra5LandSoilMoisture(
+    synthetic(0.33, 0.35),
+    '2026-06-10',
+    FC,
+    WP,
+    NASA,
+  );
   assert.ok(soilMoisture);
-  assert.equal(soilMoisture.percentile, 0);
+  assert.equal(soilMoisture.percentile, 4);
+  assert.equal(soilMoisture.normRootZonePct, 52.3);
+  assert.equal(soilMoisture.anomalyPp, -17.2);
   assert.equal(soilMoisture.assessment, 'dry');
-  assert.ok(soilMoisture.anomalyPp !== null && soilMoisture.anomalyPp < 0);
-  assert.ok(soilMoisture.normRootZonePct !== null);
+  assert.equal(soilMoisture.theta7to28M3, 0.33); // not NASA
+  assert.ok((soilMoisture.rootZonePct ?? 0) > 70);
 });
 
-test('typical value is normal, high value is wet', () => {
-  const normal = computeEra5LandSoilMoisture(synthetic(0.27, 0.29), '2026-06-10', FC, WP);
-  assert.equal(normal.soilMoisture?.assessment, 'normal');
-  const percentile = normal.soilMoisture?.percentile ?? -1;
-  assert.ok(percentile > 20 && percentile < 80);
+test('without NASA relative fields are null and assessment uses the absolute level only', () => {
+  const dry = computeEra5LandSoilMoisture(synthetic(0.12, 0.13), '2026-06-10', FC, WP);
+  assert.equal(dry.soilMoisture?.percentile, null);
+  assert.equal(dry.soilMoisture?.normRootZonePct, null);
+  assert.equal(dry.soilMoisture?.anomalyPp, null);
+  assert.equal(dry.soilMoisture?.assessment, 'dry');
   const wet = computeEra5LandSoilMoisture(synthetic(0.33, 0.35), '2026-06-10', FC, WP);
-  assert.equal(wet.soilMoisture?.percentile, 100);
   assert.equal(wet.soilMoisture?.assessment, 'wet');
 });
 
-test('without theta fc and wp percentages are null but theta values and percentile stay', () => {
+test('without theta fc and wp percentages are null but theta values stay', () => {
   const { soilMoisture } = computeEra5LandSoilMoisture(
     synthetic(0.2, 0.22),
     '2026-06-10',
     null,
     null,
+    NASA,
   );
   assert.ok(soilMoisture);
   assert.equal(soilMoisture.valuePct, null);
   assert.equal(soilMoisture.rootZonePct, null);
-  assert.equal(soilMoisture.normRootZonePct, null);
   assert.equal(soilMoisture.thetaFcM3, null);
   assert.equal(soilMoisture.theta7to28M3, 0.2);
   assert.equal(soilMoisture.theta28to100M3, 0.22);
-  assert.equal(soilMoisture.percentile, 0);
-  assert.equal(soilMoisture.assessment, 'dry');
+  assert.equal(soilMoisture.percentile, 4);
 });
 
 test('series without soil moisture (fallback) gives status missing', () => {

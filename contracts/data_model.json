@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -513,6 +513,12 @@
           "type": "string | null",
           "required": true,
           "note": "dla rolnika, np. Brak bezchmurnego zdjęcia od 2025-04-05"
+        },
+        {
+          "name": "role",
+          "type": "enum(current|climatology|fallback) | null",
+          "required": false,
+          "note": "ADR-009: current = okno bieżące D−90…D z Open-Meteo (meteo, era5land); climatology = 10 lat z NASA POWER (nasa_power: percentyl, anomalia, klasa, podatność); fallback = nasa_power, gdy zastąpiło okno bieżące po awarii Open-Meteo (429/5xx/timeout; wtedy nadal dostarcza też klimatologię). null albo brak dla pozostałych źródeł"
         }
       ],
       "relations": [],

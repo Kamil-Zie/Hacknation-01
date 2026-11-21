@@ -1,4 +1,4 @@
-// T-010 T-037 DM-011 DM-015 meteo source: Open-Meteo archive (ERA5 daily + ERA5-Land hourly soil moisture), 2 parallel ranges, NASA POWER fallback
+// T-010 T-037 DM-011 DM-012 DM-015 meteo source (ADR-009): Open-Meteo archive D-90..D (daily meteo + ERA5-Land soil moisture, one request), NASA POWER 10-year climatology always, NASA fallback for the current window
 import { HttpStatusError, runSource } from '@/services/sources/runSource';
 import type { SourceCacheStore } from '@/services/sources/cache.service';
 import { SHORT_TTL_MS, SOURCE_TTL_MS } from '@/services/sources/catalog';
@@ -21,13 +21,20 @@ const HOURLY_VARIABLES = [
   'soil_moisture_28_to_100cm',
 ];
 const DAY_MS = 24 * 60 * 60 * 1000;
-const HISTORY_YEARS = 10;
-const EXTRA_DAYS_BEFORE = 75;
+const CURRENT_WINDOW_DAYS = 90; // ADR-009: current window D-90..D
 const FRESH_DATA_DAYS = 7;
-const METEO_TIMEOUT_MS = 15000; // ADR-006 update: 20 years in 2 ranges, timeout 15 s
+const METEO_TIMEOUT_MS = 15000; // one 90-day request
 const FALLBACK_CONFIDENCE_PENALTY = 0.05;
 const FALLBACK_LIMITATION =
   'Pogoda i wilgotność gleby z zapasowego źródła NASA POWER (ok. 50 km), ET0 metodą Hargreaves-Samani';
+const SPLIT_LIMITATION =
+  'Stan bieżący (opad, ET0, KBW, wilgotność gleby) pochodzi z Open-Meteo (ERA5 i ERA5-Land, ok. 9 km), a ocena na tle 10 lat (percentyl, anomalia, klasa, podatność) z NASA POWER (ok. 50 km, ET0 metodą Hargreaves-Samani po obu stronach porównania), więc percentyl opisuje region, a nie samą działkę.';
+const NO_CLIMATOLOGY_GAP = {
+  sourceId: 'nasa_power' as const,
+  what: 'Brak wieloletniej klimatologii z NASA POWER (10 lat)',
+  impact:
+    'Nie policzono percentyla, anomalii i podatności wieloletniej; raport pokazuje sam stan bieżący, pewność obniżona',
+};
 
 export type MeteoDay = {
   date: string; // YYYY-MM-DD
@@ -47,14 +54,22 @@ export type MeteoDeps = {
   fetchFn?: typeof fetch; // used for both Open-Meteo and the NASA POWER fallback
 };
 
+export type MeteoDataGap = { sourceId: 'nasa_power'; what: string; impact: string }; // DM-012
+
 export type MeteoOutcome = {
-  series: MeteoDay[]; // never contains days after D
-  source: 'open-meteo' | 'nasa_power' | null; // null when both sources failed
-  fallback: boolean;
+  // Current window D-90..D (never contains days after D): Open-Meteo, or NASA POWER when Open-Meteo failed.
+  current: {
+    series: MeteoDay[];
+    source: 'open-meteo' | 'nasa_power' | null; // null when both sources failed
+    fallback: boolean;
+  };
+  // 10-year NASA POWER series (ET0 Hargreaves) for percentile, anomaly, vulnerability; null without NASA.
+  climatology: { series: MeteoDay[] } | null;
+  nasaSeries: NasaPowerDay[] | null; // raw NASA series for computeSoilMoisture
   confidencePenalty: number; // 0.05 when fallback, else 0
   limitations: string[];
-  sources: SourceResult<null>[]; // meteo, plus nasa_power when the fallback was tried
-  nasaSeries: NasaPowerDay[] | null; // raw NASA series for computeSoilMoisture (fallback only)
+  sources: SourceResult<null>[]; // meteo (role current) and nasa_power (climatology, or fallback)
+  dataGaps: MeteoDataGap[]; // filled when NASA POWER is missing
 };
 
 type OpenMeteoResponse = {
@@ -70,70 +85,73 @@ export async function fetchMeteo(
   deps: MeteoDeps = {},
 ): Promise<MeteoOutcome> {
   const end = new Date(`${analysisDate}T00:00:00Z`);
-  const start = new Date(end);
-  start.setUTCFullYear(start.getUTCFullYear() - HISTORY_YEARS);
-  start.setTime(start.getTime() - EXTRA_DAYS_BEFORE * DAY_MS);
-  const middle = new Date((start.getTime() + end.getTime()) / 2);
+  const start = new Date(end.getTime() - CURRENT_WINDOW_DAYS * DAY_MS);
   const latR = lat.toFixed(2);
   const lonR = lon.toFixed(2);
   const isFresh = end.getTime() > Date.now() - FRESH_DATA_DAYS * DAY_MS;
   const doFetch = deps.fetchFn ?? fetch;
 
-  const requestRange = async (from: Date, to: Date, fetchSignal: AbortSignal) => {
+  const requestWindow = async (fetchSignal: AbortSignal) => {
     const url =
-      `${ARCHIVE_URL}?latitude=${latR}&longitude=${lonR}&start_date=${toIso(from)}&end_date=${toIso(to)}` +
+      `${ARCHIVE_URL}?latitude=${latR}&longitude=${lonR}&start_date=${toIso(start)}&end_date=${toIso(end)}` +
       `&daily=${DAILY_VARIABLES.join(',')}&hourly=${HOURLY_VARIABLES.join(',')}&timezone=${TIMEZONE}`;
     const response = await doFetch(url, { signal: fetchSignal });
     if (!response.ok) throw new HttpStatusError(response.status);
     return parseOpenMeteoResponse((await response.json()) as OpenMeteoResponse, analysisDate);
   };
 
-  const meteo = await runSource<MeteoDay[]>({
-    sourceId: 'meteo',
-    key: `meteo:${latR}:${lonR}:${toIso(start)}:${toIso(end)}`,
-    ttlMs: isFresh ? SHORT_TTL_MS.meteo : SOURCE_TTL_MS.meteo,
-    timeoutMs: METEO_TIMEOUT_MS,
-    signal,
-    cache: deps.cache,
-    fetcher: async (fetchSignal) => {
-      const dayAfterMiddle = new Date(middle.getTime() + DAY_MS);
-      const [first, second] = await Promise.all([
-        requestRange(start, middle, fetchSignal),
-        requestRange(dayAfterMiddle, end, fetchSignal),
-      ]);
-      const series = [...first, ...second];
-      return series.length > 0
-        ? { data: series, dataPeriod: `${toIso(start)}/${toIso(end)}` }
-        : null;
-    },
-  });
+  // Both sources always run in parallel; runSource never throws.
+  const [meteo, nasa] = await Promise.all([
+    runSource<MeteoDay[]>({
+      sourceId: 'meteo',
+      key: `meteo:${latR}:${lonR}:${toIso(start)}:${toIso(end)}`,
+      ttlMs: isFresh ? SHORT_TTL_MS.meteo : SOURCE_TTL_MS.meteo,
+      timeoutMs: METEO_TIMEOUT_MS,
+      signal,
+      cache: deps.cache,
+      fetcher: async (fetchSignal) => {
+        const series = await requestWindow(fetchSignal);
+        return series.length > 0
+          ? { data: series, dataPeriod: `${toIso(start)}/${toIso(end)}` }
+          : null;
+      },
+    }),
+    fetchNasaPowerDaily(lat, lon, analysisDate, signal, {
+      cache: deps.cache,
+      fetchFn: deps.fetchFn,
+    }),
+  ]);
 
-  if ((meteo.status === 'ok' || meteo.status === 'cached') && meteo.data) {
-    return {
-      series: meteo.data,
-      source: 'open-meteo',
-      fallback: false,
-      confidencePenalty: 0,
-      limitations: [],
-      sources: [withoutData(meteo)],
-      nasaSeries: null,
-    };
-  }
-
-  // Fallback: NASA POWER (meteo with Hargreaves-Samani ET0; soil moisture via computeSoilMoisture).
-  const nasa = await fetchNasaPowerDaily(lat, lon, analysisDate, signal, {
-    cache: deps.cache,
-    fetchFn: deps.fetchFn,
-  });
   const nasaSeries = nasa.data ? nasa.data.filter((day) => day.date <= analysisDate) : null;
+  const climatologySeries = nasaSeries ? toMeteoDays(nasaSeries, lat) : null;
+  const meteoOk = (meteo.status === 'ok' || meteo.status === 'cached') && meteo.data;
+  const fromDate = toIso(start);
+
+  const current: MeteoOutcome['current'] = meteoOk
+    ? { series: meteo.data!, source: 'open-meteo', fallback: false }
+    : climatologySeries
+      ? {
+          series: climatologySeries.filter((day) => day.date >= fromDate),
+          source: 'nasa_power',
+          fallback: true,
+        }
+      : { series: [], source: null, fallback: true };
+
+  const limitations: string[] = [];
+  if (current.source === 'nasa_power') limitations.push(FALLBACK_LIMITATION);
+  if (current.source !== null && nasaSeries) limitations.push(SPLIT_LIMITATION);
+
   return {
-    series: nasaSeries ? toMeteoDays(nasaSeries, lat) : [],
-    source: nasaSeries ? 'nasa_power' : null,
-    fallback: true,
-    confidencePenalty: nasaSeries ? FALLBACK_CONFIDENCE_PENALTY : 0,
-    limitations: nasaSeries ? [FALLBACK_LIMITATION] : [],
-    sources: [withoutData(meteo), withoutData(nasa)],
+    current,
+    climatology: climatologySeries ? { series: climatologySeries } : null,
     nasaSeries,
+    confidencePenalty: current.source === 'nasa_power' ? FALLBACK_CONFIDENCE_PENALTY : 0,
+    limitations,
+    sources: [
+      { ...meteo, data: null, role: 'current' },
+      { ...nasa, data: null, role: current.source === 'nasa_power' ? 'fallback' : 'climatology' },
+    ],
+    dataGaps: nasaSeries ? [] : [NO_CLIMATOLOGY_GAP],
   };
 }
 
@@ -202,10 +220,6 @@ function toMeteoDays(series: NasaPowerDay[], lat: number): MeteoDay[] {
       sm28to100: null,
     };
   });
-}
-
-function withoutData<T>(result: SourceResult<T>): SourceResult<null> {
-  return { ...result, data: null };
 }
 
 function toIso(date: Date): string {
