@@ -5,7 +5,7 @@
   "type": "data_update",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "backlog",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-DB-001"],
   "contract_refs": ["DM-002", "DM-005", "DM-015"],
@@ -29,7 +29,8 @@
     "note": ""
   },
   "notes": [
-    "Agent: be-database. Szacunek: 1h. Faza: szkielet. Wspólny seed z T-DB-001 (jeden npm run seed). Blokuje T-017 i T-032."
+    "Agent: be-database. Szacunek: 1h. Faza: szkielet. Wspólny seed z T-DB-001 (jeden npm run seed). Blokuje T-017 i T-032.",
+    "Zamknięte (backend-2): zakres zrealizowany w T-DB-005/006/007 (eumetsat, nasa_power, era5land w enumach sourceId, DM-015 w kontrakcie 0.3.1; Report trzyma osadzone obiekty jako Mixed, więc model nie wymaga zmian). Seed na hacknation OK."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
