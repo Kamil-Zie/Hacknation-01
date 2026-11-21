@@ -1,3 +1,3 @@
 # Claims: frontend-1 (Dawid)
 
-Brak aktywnych rezerwacji. T-007, T-008, T-024, T-025 zakończone 2026-11-21.
+- T-033 · UI-C-006 (panel NDVI/NDMI, wilgotność gleby), DM-013/014/015 · pliki: `src/components/AssessmentSection/AssessmentSection.tsx` tylko po zwolnieniu przez frontend-2 (T-026) albo zmiana robi Jakub; weryfikacja na realnym raporcie po T-031 · od 2026-11-21 14:20
