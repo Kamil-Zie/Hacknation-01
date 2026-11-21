@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-001"],
   "contract_refs": ["UI-S-001", "UI-C-012", "API-004"],
@@ -20,7 +20,9 @@
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
     "Agent: fe-developer. Szacunek: 2h. Faza: szkielet/mock. Dawid i Jakub startują równolegle od tego shellu; uzgodnijcie strukturę api/ w claimach.",
-    "frontend-2: trasy wg contracts/ui.json (/, /parcel/:parcelId, /report/:id, /report/:id/print) zamiast /analiza i /druk/:id z opisu; zmienna VITE_USE_MOCKS wg docs/coding-standard.md."
+    "frontend-2: trasy wg contracts/ui.json (/, /parcel/:parcelId, /report/:id, /report/:id/print) zamiast /analiza i /druk/:id z opisu; zmienna VITE_USE_MOCKS wg docs/coding-standard.md.",
+    "frontend-2: gotowe na mocku (raport demo pod /report/demo, mock TODO(T-003)). Sprawdzone zrzutami 360 i 1920 px: ready, error, start, parcel; typecheck, eslint, build OK. 768/1280 nie sprawdzane osobno (układ płynny).",
+    "frontend-2: Design System w Claude Design: https://claude.ai/artifact/8XZKAvWk7ELr9hQ4S54hDv. Kontrast: droughtModerate #B26A00 i unknown #6B7280 < 4.5:1 jako tekst, water #2A9FD6 2.99:1; StatusBadge ma tekst w text.primary, kolor tylko w ikonie i obrysie."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

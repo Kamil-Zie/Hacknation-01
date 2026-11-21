@@ -12,11 +12,30 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
-  });
+export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
+
+export async function apiFetch<T>(
+  path: string,
+  init?: RequestInit,
+  timeoutMs?: number,
+): Promise<T> {
+  const controller = new AbortController();
+  const timer = timeoutMs ? setTimeout(() => controller.abort(), timeoutMs) : undefined;
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      ...init,
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/json', ...init?.headers },
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new ApiError('TIMEOUT', 'Przekroczono czas oczekiwania na serwer', 0);
+    }
+    throw new ApiError('NETWORK_ERROR', 'Brak połączenia z serwerem', 0);
+  } finally {
+    clearTimeout(timer);
+  }
   if (!response.ok) {
     const body = (await response.json().catch(() => null)) as {
       code?: string;

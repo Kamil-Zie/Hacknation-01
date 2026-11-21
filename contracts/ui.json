@@ -1,7 +1,7 @@
 {
   "owner_team": "frontend",
   "version": "0.1.0",
-  "design_system_url": null,
+  "design_system_url": "https://claude.ai/artifact/8XZKAvWk7ELr9hQ4S54hDv",
   "design_canvas_url": null,
   "design_tokens": {
     "_note": "Bazowe tokeny od architekta; fe-uiux może je dopracować w Design Systemie. Kolory klas suszy zawsze z ikoną i tekstem (nie tylko kolor).",
