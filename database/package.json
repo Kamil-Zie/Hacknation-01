@@ -6,7 +6,8 @@
   "scripts": {
     "seed": "tsx seed.ts",
     "copy-cache": "tsx scripts/copy-cache.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "warm-cache": "tsx scripts/warm-cache.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

@@ -39,7 +39,10 @@ export function rateLimit({ windowMs, max, name }: RateLimitOptions): RequestHan
       return;
     }
     const now = Date.now();
-    const ip = req.ip ?? 'unknown';
+    // Behind Cloudflare Tunnel the real client is in CF-Connecting-IP (the API listens on 127.0.0.1 only,
+    // so the header cannot come from anyone else); without it, req.ip (trust proxy 1).
+    const cfIp = req.headers['cf-connecting-ip'];
+    const ip = (typeof cfIp === 'string' && cfIp) || req.ip || 'unknown';
     let bucket = hits.get(ip);
     if (!bucket || bucket.resetAt <= now) {
       bucket = { count: 0, resetAt: now + windowMs };

@@ -56,16 +56,18 @@ Przy 2–3 działkach: powtarzamy kroki 1–3 i 2:00–2:30 (stan wody i rekomen
 
 ## Działki zapasowe (testowane)
 
-| Działka | Miejsce | Uprawa, data testu | Czas: zimny / z cache | Wynik (zapas NASA, 18:20) |
+| Działka | Miejsce | Uprawa, data testu | Czas: zimny / z cache | Wynik (lokalnie, 22.11 00:25) |
 |---|---|---|---|---|
-| `061409_2.0009.612` | Bronowice, gm. Puławy | pszenica ozima, 2026-05-25 (demo) | 11,5 s / 0,6–1,3 s | umiarkowana (na ERA5: silna) |
-| `302504_5.0029.66` | Środa Wielkopolska | pszenica ozima, 2026-06-10 | 3,6 s / 0,7 s | umiarkowana |
-| `040706_4.0004.15` | Kruszwica | burak cukrowy, 2026-06-10 | 8,4 s / – | brak suszy |
-| `221002_4.0004.136` | Nowy Dwór Gdański | rzepak ozimy, 2026-06-10 | [po T-067] | – |
-| `080906_5.0018.138/3` | Sulechów | jęczmień jary, 2026-06-10 | [po T-067] | – |
-| `161002_4.0241.261` | Głogówek | kukurydza, 2026-06-10 | [po T-067] | – |
+| `061409_2.0009.612` | Bronowice, gm. Puławy | pszenica ozima, 2026-05-25 (demo) | 13,0 s / 0,3 s | susza silna |
+| `302504_5.0029.66` | Środa Wielkopolska | pszenica ozima, 2026-06-10 | 2,8 s / 0,3 s | umiarkowana |
+| `302504_5.0029.66` | Środa Wielkopolska | pszenica ozima, 2023-07-20 (susza wg IUNG) | 1,9 s / 0,3 s | susza silna |
+| `040706_4.0004.15` | Kruszwica | burak cukrowy, 2026-06-10 | 1,2 s / 0,3 s | brak suszy |
+| `040706_4.0004.15` | Kruszwica | burak cukrowy, 2024-05-31 | 2,6 s / 0,3 s | brak suszy |
+| `221002_4.0004.136` | Nowy Dwór Gdański | rzepak ozimy, 2026-06-10 | 2,7 s / 0,3 s | susza silna |
+| `080906_5.0018.138/3` | Sulechów | jęczmień jary, 2026-06-10 | 12,1 s / 1,6 s | umiarkowana |
+| `161002_4.0241.261` | Głogówek | kukurydza, 2026-06-10 | 2,9 s / 0,4 s | brak suszy |
 
-Pomiar lokalny 2026-11-21 18:20 na sieci hackathonu (Open-Meteo 429, zapas NASA). Przy tym limicie część analiz zwracała sporadycznie 502; poprawka w T-067 (Jan). Na prod (bez 429) liczy się ERA5, więc klasy mogą być wyższe, np. Bronowice silna. **Rano przed pokazem powtórzyć pomiar na prod i rozgrzać cache (T-035).**
+Pomiar: `npm run warm-cache` (T-035) na lokalnym API i bazie dev, 2026-11-22 00:25, wszystkie analizy `complete`. Skrypt robi każdą analizę dwa razy (zimny i ciepły cache) z odstępem 6,5 s, bo API przyjmuje 10 analiz na minutę z jednego IP. **Na prod po wdrożeniu i rano przed pokazem:** `npm run warm-cache -- https://api.kamil-zielinski.pl/api/v1`.
 
 Linki do zapisanych raportów: [DO UZUPEŁNIENIA: link do raportu każdej działki, po zapisaniu na prod].
 
