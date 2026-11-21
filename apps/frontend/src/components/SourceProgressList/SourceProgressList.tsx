@@ -36,7 +36,7 @@ export function SourceProgressList({
   const sources = allSources.filter((source) => isVisible(source.id, statuses));
 
   return (
-    <Stack spacing={2} aria-live="polite">
+    <Stack spacing={2}>
       {isFetching && (
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>

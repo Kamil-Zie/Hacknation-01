@@ -65,6 +65,7 @@ export function ParcelPage() {
   const navTimer = useRef<ReturnType<typeof setTimeout>>();
   // Bumped on submit, local timeout and retry, so a late API-004 response is ignored
   const attemptRef = useRef(0);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (parcelQuery.data && !hasStored) setParcel(parcelQuery.data);
@@ -128,6 +129,10 @@ export function ParcelPage() {
   const isLoading =
     !parcelError && (!parcel || cropsQuery.isPending || sourcesQuery.isPending) && !analysisError;
   const showProgress = (isAnalyzing || report !== null) && !analysisError;
+
+  useEffect(() => {
+    if (showProgress) panelRef.current?.focus();
+  }, [showProgress]);
 
   let panel;
   if (parcelError) {
@@ -222,7 +227,10 @@ export function ParcelPage() {
         <Stack spacing={3}>
           <Typography variant="h1">Uprawa, data i analiza</Typography>
           {parcel && <ParcelSummaryCard parcel={parcel} />}
-          {panel}
+          {/* Always-mounted live region; focus moves here after „Analizuj” (T-026 a11y) */}
+          <Box ref={panelRef} tabIndex={-1} aria-live="polite" sx={{ outline: 'none' }}>
+            {panel}
+          </Box>
         </Stack>
       </Container>
       <Box
