@@ -10,7 +10,9 @@ import type { SourceResult } from '@/services/sources/types';
 
 const ULDK_URL = 'https://uldk.gugik.gov.pl/';
 const RESULT_FIELDS = 'geom_wkt,teryt,voivodeship,county,commune,region,parcel';
-const TIMEOUT_MS = 10000;
+// 9 s per attempt (ULDK cold start up to 9 s, T-002) + 1 retry within 20 s; frontend waits 25 s.
+const TIMEOUT_MS = 20000;
+const ATTEMPT_TIMEOUT_MS = 9000;
 
 // DM-003 without fetchedAt (added by the service from the SourceResult).
 export type ParcelData = {
@@ -85,6 +87,7 @@ export function fetchParcelById(
     key: `uldk:id:${id}`,
     fetcher: (s) => fetchUldk({ request: 'GetParcelById', id }, s),
     timeoutMs: TIMEOUT_MS,
+    attemptTimeoutMs: ATTEMPT_TIMEOUT_MS,
     signal,
     cache,
   });
@@ -103,6 +106,7 @@ export function fetchParcelByPoint(
     key: `uldk:xy:${latKey},${lonKey}`,
     fetcher: (s) => fetchUldk({ request: 'GetParcelByXY', xy: `${lonKey},${latKey},4326` }, s),
     timeoutMs: TIMEOUT_MS,
+    attemptTimeoutMs: ATTEMPT_TIMEOUT_MS,
     signal,
     cache,
   });

@@ -12,6 +12,8 @@ export type RunSourceOptions<T> = {
   key: string;
   fetcher: (signal: AbortSignal) => Promise<FetcherResult<T>>;
   timeoutMs?: number;
+  // Optional per-attempt limit: a slow first attempt (cold connection) is cut and retried within timeoutMs.
+  attemptTimeoutMs?: number;
   ttlMs?: number;
   retries?: number;
   // Outer budget (e.g. 25 s analysis limit), combined with the per-source timeout.
@@ -66,7 +68,12 @@ export async function runSource<T>(options: RunSourceOptions<T>): Promise<Source
     const signal = options.signal
       ? AbortSignal.any([timeoutSignal, options.signal])
       : timeoutSignal;
-    const fetched = await fetchWithRetry(options.fetcher, signal, options.retries ?? 1);
+    const fetched = await fetchWithRetry(
+      options.fetcher,
+      signal,
+      options.retries ?? 1,
+      options.attemptTimeoutMs,
+    );
 
     if (!fetched || isEmpty(fetched.data)) {
       // DM-011: for missing, fetchedAt is the moment of the attempt.
@@ -96,14 +103,21 @@ async function fetchWithRetry<T>(
   fetcher: (signal: AbortSignal) => Promise<FetcherResult<T>>,
   signal: AbortSignal,
   retries: number,
+  attemptTimeoutMs?: number,
 ): Promise<FetcherResult<T>> {
   for (let attempt = 0; ; attempt += 1) {
+    const attemptSignal = attemptTimeoutMs
+      ? AbortSignal.any([signal, AbortSignal.timeout(attemptTimeoutMs)])
+      : signal;
     try {
-      return await fetcher(signal);
+      return await fetcher(attemptSignal);
     } catch (error) {
-      if (signal.aborted || isAbort(error) || attempt >= retries || !isRetryable(error)) {
+      // An attempt cut by attemptTimeoutMs (outer signal still alive) is retryable.
+      const attemptTimedOut = !signal.aborted && attemptSignal.aborted;
+      if (signal.aborted || attempt >= retries || (!attemptTimedOut && isAbort(error))) {
         throw error;
       }
+      if (!attemptTimedOut && !isRetryable(error)) throw error;
     }
   }
 }

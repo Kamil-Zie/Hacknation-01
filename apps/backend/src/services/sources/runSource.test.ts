@@ -48,6 +48,29 @@ test('timeout gives status timeout without throwing', async () => {
   assert.equal(result.data, null);
 });
 
+test('slow first attempt is cut by attemptTimeoutMs and the retry succeeds (cold start)', async () => {
+  let calls = 0;
+  const fetcher = (signal: AbortSignal) => {
+    calls += 1;
+    if (calls === 1) {
+      return new Promise<null>((_resolve, reject) => {
+        signal.addEventListener('abort', () => reject(signal.reason));
+      });
+    }
+    return Promise.resolve({ data: { ok: true } });
+  };
+  const result = await runSource({
+    sourceId: 'uldk',
+    key: 'k-cold',
+    fetcher,
+    timeoutMs: 500,
+    attemptTimeoutMs: 50,
+    cache: memoryCache(),
+  });
+  assert.equal(result.status, 'ok');
+  assert.equal(calls, 2);
+});
+
 test('network error is retried once and gives status error', async () => {
   let calls = 0;
   const fetcher = async (): Promise<null> => {
