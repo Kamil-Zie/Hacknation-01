@@ -7,6 +7,7 @@ export const registerBodySchema = z.object({
   email,
   password: z.string().min(8).max(200),
   name: z.string().trim().min(1).max(120),
+  accountName: z.string().trim().min(1).max(120).optional(),
 });
 
 export const loginBodySchema = z.object({

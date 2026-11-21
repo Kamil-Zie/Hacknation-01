@@ -36,9 +36,16 @@ function fakeModel(rows: () => Row[]) {
     findOne: (q: Record<string, unknown>) =>
       Promise.resolve(rows().find((r) => matches(r, q)) ?? null),
     findById: (id: string) => Promise.resolve(rows().find((r) => r._id === id) ?? null),
+    countDocuments: (q: Record<string, unknown>) =>
+      Promise.resolve(rows().filter((r) => matches(r, q)).length),
+    findByIdAndUpdate: (id: string, update: { $set: Record<string, unknown> }) => {
+      const row = rows().find((r) => r._id === id);
+      if (row) Object.assign(row, update.$set);
+      return Promise.resolve(row ?? null);
+    },
     find: (q: Record<string, unknown>) => sortable(rows().filter((r) => matches(r, q))),
     create: (data: Record<string, unknown>) => {
-      const row = { ...data, _id: `id${(db.seq += 1)}` } as Row;
+      const row = { ...data, _id: (db.seq += 1).toString(16).padStart(24, '0') } as Row;
       rows().push(row);
       return Promise.resolve(row);
     },
@@ -107,12 +114,59 @@ test('register returns 201 session, never exposes hash, second time 409 EMAIL_TA
   assert.equal(first.status, 201);
   assert.equal(first.json.user.email, 'jan@example.com');
   assert.deepEqual(first.json.accounts, [
-    { id: first.json.accounts[0].id, name: 'Moje gospodarstwo', memberCount: 1 },
+    { id: first.json.accounts[0].id, name: 'Gospodarstwo Jan Kowalski', memberCount: 1 },
   ]);
   assert.ok(!JSON.stringify(first.json).includes('scrypt$'));
   const second = await post('/auth/register', JAN);
   assert.equal(second.status, 409);
   assert.equal(second.json.code, 'EMAIL_TAKEN');
+});
+
+test('register with accountName names the account accordingly', async () => {
+  const res = await post('/auth/register', {
+    ...JAN,
+    accountName: '  Gospodarstwo Rolne Kowalscy ',
+  });
+  assert.equal(res.status, 201);
+  assert.equal(res.json.accounts[0].name, 'Gospodarstwo Rolne Kowalscy');
+});
+
+async function patchAccount(accountId: string, token: string | null, body: unknown) {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(`${base}/accounts/${accountId}`, {
+    method: 'PATCH',
+    headers,
+    body: JSON.stringify(body),
+  });
+  return { status: res.status, json: (await res.json()) as ReturnType<typeof JSON.parse> };
+}
+
+test('PATCH /accounts/:id renames for a member (visible in /auth/me), 403 stranger, 422 empty, 401 no token', async () => {
+  const jan = await post('/auth/register', JAN);
+  const anna = await post('/auth/register', {
+    email: 'anna@example.com',
+    password: 'tajne-haslo',
+    name: 'Anna Nowak',
+  });
+  const accountId = jan.json.accounts[0].id as string;
+  const ok = await patchAccount(accountId, jan.json.token, { name: ' Kowalscy ' });
+  assert.equal(ok.status, 200);
+  assert.deepEqual(ok.json, { id: accountId, name: 'Kowalscy', memberCount: 1 });
+  const me = await fetch(`${base}/auth/me`, {
+    headers: { Authorization: `Bearer ${jan.json.token as string}` },
+  });
+  assert.equal(
+    ((await me.json()) as { accounts: { name: string }[] }).accounts[0]?.name,
+    'Kowalscy',
+  );
+  const stranger = await patchAccount(accountId, anna.json.token, { name: 'Cudze' });
+  assert.equal(stranger.status, 403);
+  assert.equal(stranger.json.code, 'NOT_A_MEMBER');
+  const empty = await patchAccount(accountId, jan.json.token, { name: '   ' });
+  assert.equal(empty.status, 422);
+  assert.equal(empty.json.code, 'VALIDATION_ERROR');
+  assert.equal((await patchAccount(accountId, null, { name: 'X' })).status, 401);
 });
 
 test('register validates input with 422 VALIDATION_ERROR', async () => {

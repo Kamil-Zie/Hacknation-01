@@ -47,6 +47,11 @@ function toUserDto(user: { _id: unknown; email: string; name: string }): UserDto
   return { id: String(user._id), email: user.email, name: user.name };
 }
 
+function defaultAccountName(userName: string): string {
+  const name = userName.trim();
+  return name ? `Gospodarstwo ${name}`.slice(0, 120) : DEFAULT_ACCOUNT_NAME;
+}
+
 function isDuplicateKey(error: unknown): boolean {
   return typeof error === 'object' && error !== null && (error as { code?: number }).code === 11000;
 }
@@ -68,7 +73,10 @@ export async function register(body: RegisterBody): Promise<SessionDto> {
     { email, status: 'pending' },
     { $set: { userId: user._id, status: 'active' } },
   );
-  const account = await AccountModel.create({ name: DEFAULT_ACCOUNT_NAME, createdAt: new Date() });
+  const account = await AccountModel.create({
+    name: body.accountName ?? defaultAccountName(body.name),
+    createdAt: new Date(),
+  });
   await AccountMemberModel.create({
     accountId: account._id,
     userId: user._id,

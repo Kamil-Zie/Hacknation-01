@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "base_url": "/api/v1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. Wymieniaj tylko błędy, które endpoint naprawdę zwraca w demo.",
@@ -3084,13 +3084,14 @@
       "status": "agreed",
       "method": "POST",
       "path": "/auth/register",
-      "summary": "Rejestracja (ADR-010): tworzy użytkownika i konto „Moje gospodarstwo” z nim jako członkiem; oczekujące zaproszenia (pending) na ten e-mail zamieniają się w członkostwa. Zwraca sesję (token JWT + user + accounts).",
+      "summary": "Rejestracja (ADR-010): tworzy użytkownika i konto gospodarstwa (nazwa z accountName, domyślnie „Gospodarstwo <name>”) z nim jako członkiem; oczekujące zaproszenia (pending) na ten e-mail zamieniają się w członkostwa. Zwraca sesję (token JWT + user + accounts).",
       "auth": "none",
       "request": {
         "body": {
           "email": "string, poprawny e-mail (zapisywany małymi literami)",
           "password": "string, min. 8 znaków",
-          "name": "string, 1–120 znaków"
+          "name": "string, 1–120 znaków",
+          "accountName": "string, opcjonalne, 1–120 znaków po trim; domyślnie „Gospodarstwo <name>” (przycięte do 120)"
         }
       },
       "response": {
@@ -3115,7 +3116,7 @@
           "accounts": [
             {
               "id": "665f0c0ffee0000000000b01",
-              "name": "Moje gospodarstwo",
+              "name": "Gospodarstwo Jan Kowalski",
               "memberCount": 1
             }
           ]
@@ -3431,7 +3432,7 @@
     },
     {
       "id": "API-014",
-      "status": "proposed",
+      "status": "agreed",
       "method": "PATCH",
       "path": "/accounts/:accountId",
       "summary": "Zmiana nazwy konta gospodarstwa (każdy członek, T-056). Zamiast stałej „Moje gospodarstwo” rolnik nadaje prawdziwą nazwę.",
@@ -3449,8 +3450,9 @@
       },
       "errors": [
         "401 UNAUTHORIZED",
-        "403 NOT_A_MEMBER",
-        "422 VALIDATION_ERROR (pusta lub za długa nazwa, zły accountId; details.field)"
+        "403 NOT_A_MEMBER (także gdy konto nie istnieje)",
+        "422 VALIDATION_ERROR (pusta lub za długa nazwa, zły accountId; details.field)",
+        "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
       ],
       "data_refs": ["DM-017", "DM-021"],
       "consumers": [],
@@ -3460,6 +3462,11 @@
           "id": "665f0c0ffee0000000000b01",
           "name": "Gospodarstwo Kowalscy",
           "memberCount": 2
+        },
+        "403": {
+          "code": "NOT_A_MEMBER",
+          "message": "Nie należysz do tego gospodarstwa.",
+          "details": null
         }
       }
     }
