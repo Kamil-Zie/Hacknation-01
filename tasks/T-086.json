@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "integration",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-009", "UI-C-017", "API-020", "API-013", "API-006"],
@@ -21,7 +21,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu."
+    "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu.",
+    "backend-1 ecb9df0: pulpit 6 kafelków + ThreatMap + DashboardTile na main; typecheck, eslint, build OK. Do zrobienia: kontrola wizualna 390/1440 px i axe; usunąć MemberList/FieldList z pulpitu po T-089/T-090 (teraz stuby)."
   ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
