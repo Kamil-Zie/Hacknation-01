@@ -104,6 +104,8 @@ function SourceRow({ source }: { source: SourceStatus }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${source.label}: strona źródła (otwiera się w nowej karcie)`}
+            // 44 px touch target on phones without changing the inline text look (T-068)
+            sx={{ display: 'inline-flex', alignItems: 'center', minHeight: { xs: 44, md: 'auto' } }}
           >
             strona źródła
           </Link>

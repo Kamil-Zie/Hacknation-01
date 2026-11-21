@@ -61,9 +61,22 @@ export function AccountMenu() {
         aria-expanded={anchor ? 'true' : undefined}
         aria-label={`Konto: ${label}`}
         startIcon={<AccountCircleIcon />}
-        sx={{ minHeight: 44, minWidth: 44, maxWidth: { xs: 160, md: 280 } }}
+        sx={{
+          minHeight: 44,
+          minWidth: 44,
+          maxWidth: { xs: 44, sm: 200, md: 280 },
+          // phones: icon only (farm name is in aria-label and in the menu), so long names
+          // like "Gospodarstwo Jan Kowalski" never push the page wider than 390 px (T-068)
+          px: { xs: 0, sm: 1 },
+          '& .MuiButton-startIcon': { mr: { xs: 0, sm: 1 }, ml: { xs: 0, sm: -0.5 } },
+        }}
       >
-        <Typography variant="body1" component="span" noWrap>
+        <Typography
+          variant="body1"
+          component="span"
+          noWrap
+          sx={{ display: { xs: 'none', sm: 'block' } }}
+        >
           {label}
         </Typography>
       </Button>
