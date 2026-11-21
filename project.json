@@ -282,7 +282,7 @@
         "geo": "@turf/turf (powierzchnia, centroid, bbox, odległość do cieku), proj4 (EPSG:4326 ↔ EPSG:2180 i UTM 326xx), wellknown (WKT → GeoJSON)",
         "raster": "geotiff (geotiff.js): odczyt okna bbox z COG Sentinel-2 i GeoTIFF z WCS SoilGrids",
         "netcdf": "h5wasm (netCDF4/HDF5 w WASM z npm, bez narzędzi systemowych) + fflate (rozpakowanie zip granuli EUMETSAT w pamięci); BUFR i EPS Native nieobsługiwane",
-        "eumetsat_client": "bezpośredni REST EUMETSAT Data Store przez fetch (OAuth2 client_credentials, zmienne EUMETSAT_CONSUMER_KEY i EUMETSAT_CONSUMER_SECRET tylko w .env); bez eumdac i bez Pythona. Ryzyko: jeśli kolekcja ASCAT SSM ma wyłącznie BUFR, potrzebny decision_request (Python eumdac to nowe narzędzie systemowe)",
+        "eumetsat_client": "bezpośredni REST EUMETSAT Data Store przez fetch (OAuth2 client_credentials, zmienne EUMETSAT_CONSUMER_KEY i EUMETSAT_CONSUMER_SECRET tylko w .env); bez eumdac, tylko Node.js. Ryzyko: jeśli kolekcja ASCAT SSM ma wyłącznie BUFR, potrzebny decision_request (klient eumdac to nowe narzędzie systemowe)",
         "testing": "Vitest (silnik obliczeń: KBW, percentyle, Saxton-Rawls, reguły rekomendacji)"
       },
       "candidates": {

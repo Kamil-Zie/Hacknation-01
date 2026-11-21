@@ -47,7 +47,8 @@ const segments = cmd.split(/&&|\|\||;|\n|\|(?!\|)/).map((s) => words(s.trim())).
 const targets = new Set(); // absolute paths
 let inlineWrite = false;
 let dir = cwd; // follows `cd` between segments
-const add = (t) => { if (t && !t.startsWith('&') && !/^\/dev\//.test(t)) targets.add(resolve(dir, t.replace(/^~(?=\/)/, process.env.HOME || '~'))); };
+// &1/&2 are descriptors, /dev/* and Windows NUL are not files in the repo
+const add = (t) => { if (t && !t.startsWith('&') && !/^\d+$/.test(t) && !/^\/dev\//.test(t) && !/^nul$/i.test(t)) targets.add(resolve(dir, t.replace(/^~(?=\/)/, process.env.HOME || '~'))); };
 const nonFlags = (ws) => ws.filter((w) => !w.startsWith('-'));
 
 for (let ws of segments) {
