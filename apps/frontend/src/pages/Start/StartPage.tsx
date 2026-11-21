@@ -87,7 +87,9 @@ export function StartPage() {
               ))}
             </Box>
           </Box>
+          {/* key: remount with the picked parcel ID after a map click */}
           <ParcelSearch
+            key={parcel?.id ?? 'empty'}
             defaultValue={parcel?.id}
             isLoading={isLoading}
             error={searchId !== null ? error : null}
