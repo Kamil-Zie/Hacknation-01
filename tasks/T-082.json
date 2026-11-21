@@ -4,7 +4,7 @@
   "description": "Decyzja Kamila 21:30: cache robimy na Synology. ULDK GUGiK ma awarię od ok. 21:15, a baza prod (hacknation_prod) ma pusty source_cache, więc na prod nie zadziała nawet działka demo. Skrypt database/scripts/copy-cache.ts (npm run copy-cache): czyta source_cache z MONGODB_DB=hacknation (tylko odczyt, bez zmian w dev) i robi upsert po kluczu do bazy docelowej (--target-db hacknation_prod, domyślnie odmowa zapisu do 'hacknation'), bez wpisów z expiresAt w przeszłości; opcjonalnie --only uldk,meteo,... Wypisuje liczbę wpisów per sourceId. Instrukcja uruchomienia na Synology (z .env.prod) w docs/deploy.md. Sekret tylko z .env.",
   "type": "chore",
   "team": "backend",
-  "assignee": "backend-2",
+  "assignee": "coord-1",
   "status": "integration",
   "priority": "high",
   "depends_on": ["T-077"],

@@ -4,7 +4,7 @@
   "description": "ADR-011. Model DM-024 (models/field.model.ts, wzór: account.model.ts), trasy wzorem API-014 (accounts). POST: każdą działkę pobierz z ULDK (istniejący serwis + cache), sprawdź sąsiedztwo: graf działek, krawędź gdy min. odległość wierzchołków/odcinków granic ≤ 50 m (własna funkcja w utils/geo.ts, bez nowej biblioteki), pole musi być spójne (każda działka połączona z resztą) – inaczej 422 PARCELS_NOT_ADJACENT z listą. Zapisz parcels (kopie), areaHa, centroid. Tylko członek konta (isMember). Najpierw popraw/zatwierdź kontrakt (status agreed) i wyślij contract_change – frontend startuje na mocku.",
   "type": "feature",
   "team": "backend",
-  "assignee": "backend-2",
+  "assignee": "coord-1",
   "status": "integration",
   "priority": "medium",
   "depends_on": ["T-075"],
