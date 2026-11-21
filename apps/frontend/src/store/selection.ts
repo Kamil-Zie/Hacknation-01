@@ -1,7 +1,7 @@
 // UI-S-001 Zustand store: currently selected parcel (client state only)
 import { create } from 'zustand';
 
-import type { Parcel } from '@/api/parcels';
+import type { Parcel } from '@/api/types';
 
 interface SelectionState {
   parcel: Parcel | null;

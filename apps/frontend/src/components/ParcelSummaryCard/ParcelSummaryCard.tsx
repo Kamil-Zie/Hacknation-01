@@ -1,7 +1,7 @@
 // UI-C-003 ParcelSummaryCard: parcel number, region, commune, county, voivodeship, area
 import { Box, Card, CardContent, Typography } from '@mui/material';
 
-import type { Parcel } from '@/api/parcels';
+import type { Parcel } from '@/api/types';
 
 interface ParcelSummaryCardProps {
   parcel: Parcel;

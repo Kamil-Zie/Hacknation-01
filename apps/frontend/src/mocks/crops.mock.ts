@@ -1,5 +1,6 @@
 // API-003 DM-004 Mock of GET /crops (same shape as contracts/api.json), ~300 ms delay
-import type { Crop, CropCode, CropsResponse } from '@/api/crops';
+import type { CropsResponse } from '@/api/crops';
+import type { Crop, CropCode } from '@/api/types';
 
 const MOCK_DELAY_MS = 300;
 

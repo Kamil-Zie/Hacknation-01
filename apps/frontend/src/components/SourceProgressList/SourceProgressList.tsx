@@ -1,7 +1,8 @@
 // UI-C-005 SourceProgressList: per-source fetch state (spinner -> ok/cached/missing/timeout/error) with indicative progress bar
-import { Box, Chip, CircularProgress, LinearProgress, Stack, Typography } from '@mui/material';
+import { Box, CircularProgress, LinearProgress, Stack, Typography } from '@mui/material';
 
-import type { DataSource, SourceStatus, SourceStatusCode } from '@/api/sources';
+import type { DataSource, SourceStatus } from '@/api/types';
+import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 
 const PROGRESS_TOTAL_MS = 30_000;
 
@@ -11,17 +12,6 @@ interface SourceProgressListProps {
   statuses: SourceStatus[] | null;
   elapsedMs: number;
 }
-
-const STATUS_VIEW: Record<
-  SourceStatusCode,
-  { symbol: string; text: string; color: 'success' | 'info' | 'warning' | 'error' }
-> = {
-  ok: { symbol: '✓', text: 'Pobrano', color: 'success' },
-  cached: { symbol: '↻', text: 'Z pamięci podręcznej', color: 'info' },
-  missing: { symbol: '–', text: 'Brak danych', color: 'warning' },
-  timeout: { symbol: '⏱', text: 'Przekroczono czas', color: 'warning' },
-  error: { symbol: '✕', text: 'Błąd', color: 'error' },
-};
 
 export function SourceProgressList({ sources, statuses, elapsedMs }: SourceProgressListProps) {
   const isFetching = statuses === null;
@@ -55,7 +45,6 @@ export function SourceProgressList({ sources, statuses, elapsedMs }: SourceProgr
       >
         {sources.map((source) => {
           const status = statuses?.find((item) => item.sourceId === source.id);
-          const view = status ? STATUS_VIEW[status.status] : null;
           return (
             <Box
               component="li"
@@ -80,13 +69,8 @@ export function SourceProgressList({ sources, statuses, elapsedMs }: SourceProgr
                   </Typography>
                 )}
               </Box>
-              {view ? (
-                <Chip
-                  size="small"
-                  color={view.color}
-                  variant="outlined"
-                  label={`${view.symbol} ${view.text}`}
-                />
+              {status ? (
+                <StatusBadge kind="source" value={status.status} size="small" />
               ) : (
                 <Stack direction="row" spacing={1} alignItems="center">
                   <CircularProgress size={18} aria-hidden />

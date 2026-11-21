@@ -2,41 +2,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { apiFetch } from '@/api/client';
+import type { DataSource } from '@/api/types';
 import { mockGetSources } from '@/mocks/sources.mock';
-
-export type SourceId =
-  'uldk' | 'meteo' | 'sentinel2' | 'eumetsat' | 'soilgrids' | 'elevation' | 'overpass';
-
-export type SourceCategory = 'spatial' | 'meteo' | 'satellite' | 'soil' | 'terrain' | 'hydro';
-
-export interface DataSource {
-  id: SourceId;
-  name: string;
-  category: SourceCategory;
-  label: string;
-  provider: string;
-  url: string;
-  license: string;
-  resolution: string;
-  timeoutMs: number;
-}
-
-export type SourceStatusCode = 'ok' | 'cached' | 'missing' | 'error' | 'timeout';
-
-export interface SourceStatus {
-  sourceId: SourceId;
-  name: string;
-  label: string;
-  category: SourceCategory;
-  provider: string;
-  url: string;
-  license: string;
-  status: SourceStatusCode;
-  dataPeriod: string | null;
-  fetchedAt: string | null;
-  durationMs: number;
-  message: string | null;
-}
 
 export interface SourcesResponse {
   items: DataSource[];

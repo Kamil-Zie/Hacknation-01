@@ -1,5 +1,6 @@
 // API-006 DM-005 Mock of GET /sources (same shape as contracts/api.json), ~300 ms delay
-import type { DataSource, SourcesResponse } from '@/api/sources';
+import type { SourcesResponse } from '@/api/sources';
+import type { DataSource } from '@/api/types';
 
 const MOCK_DELAY_MS = 300;
 

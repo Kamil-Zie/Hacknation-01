@@ -4,7 +4,7 @@ import { Button, CircularProgress, MenuItem, Stack, TextField } from '@mui/mater
 import { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import type { Crop } from '@/api/crops';
+import type { Crop } from '@/api/types';
 import {
   createAnalysisFormSchema,
   getMinDateIso,
@@ -16,6 +16,7 @@ interface AnalysisFormProps {
   crops: Crop[];
   /** YYYY-MM-DD, defaults to today */
   defaultDate?: string;
+  defaultCropCode?: string;
   isSubmitting?: boolean;
   onSubmit: (values: { cropCode: string; analysisDate: string }) => void;
 }
@@ -23,6 +24,7 @@ interface AnalysisFormProps {
 export function AnalysisForm({
   crops,
   defaultDate,
+  defaultCropCode,
   isSubmitting = false,
   onSubmit,
 }: AnalysisFormProps) {
@@ -33,7 +35,7 @@ export function AnalysisForm({
     formState: { errors },
   } = useForm<AnalysisFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { cropCode: '', analysisDate: defaultDate ?? getTodayIso() },
+    defaultValues: { cropCode: defaultCropCode ?? '', analysisDate: defaultDate ?? getTodayIso() },
   });
 
   return (

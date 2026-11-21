@@ -13,7 +13,7 @@ import {
 import type { LatLngBoundsExpression, LatLngTuple } from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 
-import type { Parcel } from '@/api/parcels';
+import type { Parcel } from '@/api/types';
 
 import 'leaflet/dist/leaflet.css';
 

@@ -2,28 +2,8 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { apiFetch } from '@/api/client';
+import type { Parcel } from '@/api/types';
 import { mockGetParcelById, mockGetParcelByPoint } from '@/mocks/parcels.mock';
-
-export interface ParcelGeometry {
-  type: 'Polygon' | 'MultiPolygon';
-  coordinates: number[][][] | number[][][][];
-}
-
-export interface Parcel {
-  id: string;
-  parcelNumber: string;
-  region: string;
-  commune: string;
-  county: string;
-  voivodeship: string;
-  areaHa: number;
-  centroid: { lat: number; lon: number };
-  /** [minLon, minLat, maxLon, maxLat] */
-  bbox: [number, number, number, number];
-  geometry: ParcelGeometry;
-  source: string;
-  fetchedAt: string;
-}
 
 export const PARCEL_ID_REGEX = /^\d{6}_\d\.\d{4}\..+$/;
 

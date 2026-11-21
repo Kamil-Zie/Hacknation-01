@@ -1,6 +1,6 @@
 // API-001 API-002 DM-003 Mock of parcel endpoints (same shape as contracts/api.json), ~600 ms delay
 import { ApiError } from '@/api/client';
-import type { Parcel } from '@/api/parcels';
+import type { Parcel } from '@/api/types';
 
 const MOCK_DELAY_MS = 600;
 const MAX_NEAREST_DISTANCE_DEG = 0.5;
