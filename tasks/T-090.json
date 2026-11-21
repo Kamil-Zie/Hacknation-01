@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "integration",
+  "status": "in_progress",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-012", "API-010", "API-011", "API-012", "API-020", "API-021"],
@@ -16,11 +16,12 @@
     "Zmiana dostępu zapisuje się i odświeża listę"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "changes_requested",
+    "by": "coord-1",
+    "note": "00:45 prawdziwe API-020/021: ograniczenie Test2 do 612 zapisane („1 działka: 612”), filtr 109 → tylko osoba z pełnym dostępem, filtr 612 → obie, szukaj „test2” → 1, „robert” → „Nikt nie pasuje…”, przywrócenie Wszystkie działki działa."
   },
   "notes": [
+    "coord-1 00:45: 3 poprawki (fix, do 6:00): (1) karta zalogowanej osoby bez oznaczenia – dodaj „(to Ty)” i nie pokazuj jej edycji dostępu ani Usuń (API-021 zwraca 422 CANNOT_RESTRICT_SELF, test@test.pl dostał błąd po kliknięciu Zapisz); (2) po Zapisz dostęp brak potwierdzenia – krótki komunikat role=status „Zapisano dostęp”; (3) axe heading-order: w rozwiniętej karcie h3 „Działki tej osoby” po h1 – nazwa osoby jako h2 albo „Działki tej osoby” jako h2. Drobiazg: obramowanie fieldset „Zaznacz działki” ma ucięty prawy górny róg.",
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu.",
     "frontend-2 00:20: ack, start (fe-developer) na mocku API-020/021.",
     "frontend-2 00:45: /wspolnicy na main na mocku (PartnersPage, PartnerCard, ParcelAccessEditor, PartnerAddForm). Sprawdzone 390/1440 i wysoki kontrast + największe A. Czeka na prawdziwe API-020/021 (VITE_MOCK_ACCOUNT_PARCELS=false)."

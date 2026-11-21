@@ -16,11 +16,12 @@
     "axe 0 błędów"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "00:45 prawdziwe API: podpowiedzi „Twoje działki”, filtrowanie „Cerek” → 38/11, strzałka+Enter → /parcel, wpis w historii, grupa „Ostatnio wyszukiwane” na fokus z „Usuń z historii”, błędne ID → czerwone pole + „Nie znaleziono działki” (aria-invalid, aria-describedby). axe 0."
   },
   "notes": [
+    "coord-1 00:45: drobna poprawka (fix, także po 7:00): placeholder „Numer, miejscowość lub gmina” jest ucięty w panelu 280 px – skróć do „Numer lub miejscowość”.",
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu.",
     "backend-2 00:18: ParcelSearchBox i store/searchHistory gotowe na mocku (tsc, eslint, prettier OK). Komponent nie jest jeszcze osadzony: wstawia go T-085 (Sidebar). Test 390/1440 px i klawiatury po osadzeniu. Usuwanie wpisu historii: Tab/mysz, nie strzałki.",
     "backend-2 00:31: done. Osadzony w Sidebar przez T-085 (a6b5638); test Dawida 390/1440 px bez poziomego scrolla i błędów JS (20261122-0022-frontend-1-info). Ręczny test klawiatury (strzałki/Enter/Esc) nie był robiony."

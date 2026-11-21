@@ -16,11 +16,12 @@
     "axe 0 błędów, 390 i 1440 px"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "00:45 prawdziwe API, 6 działek: >1 ha → 4, +Pszenżyto|Ziemniak → 2 (grupy AND, w grupie OR), +Bronowice → 0 z „Żadna działka nie pasuje”, Wyczyść → 6. Licznik w aria-live. 390 px: „Filtry (0)” zwinięte, bez poziomego przewijania. axe 0 (1440 i 390)."
   },
   "notes": [
+    "coord-1 00:45: bez uwag.",
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu.",
     "backend-2 00:21: MyParcelsPage i ParcelFilters gotowe na mocku (tsc, eslint, prettier OK, Vite kompiluje). Brak testu wizualnego 390/1440 px i axe – do sprawdzenia w przeglądarce.",
     "backend-2 00:31: done. axe-core 4.14 na /dzialki 0 błędów, też w Wysokim kontraście, na prawdziwym API-020 (Kamil, 20261122-0030-coord-1-info)."
