@@ -19,10 +19,14 @@ const shouldUseMocks =
 const accountPath = (accountId: string) => `/accounts/${encodeURIComponent(accountId)}`;
 
 export async function getMembers(accountId: string, token: string): Promise<Member[]> {
+  // pageSize=100 is the contract maximum: lists default to 20 items (backend-2 review)
   if (shouldUseMocks) return mockGetMembers(accountId, token);
-  const data = await apiFetch<{ items: Member[] }>(`${accountPath(accountId)}/members`, {
-    headers: authHeaders(token),
-  });
+  const data = await apiFetch<{ items: Member[] }>(
+    `${accountPath(accountId)}/members?pageSize=100`,
+    {
+      headers: authHeaders(token),
+    },
+  );
   return data.items;
 }
 
@@ -52,9 +56,12 @@ export async function getAccountReports(
   token: string,
 ): Promise<ReportSummary[]> {
   if (shouldUseMocks) return mockGetAccountReports(accountId, token);
-  const data = await apiFetch<{ items: ReportSummary[] }>(`${accountPath(accountId)}/reports`, {
-    headers: authHeaders(token),
-  });
+  const data = await apiFetch<{ items: ReportSummary[] }>(
+    `${accountPath(accountId)}/reports?pageSize=100`,
+    {
+      headers: authHeaders(token),
+    },
+  );
   return data.items;
 }
 
