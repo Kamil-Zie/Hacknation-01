@@ -4,6 +4,7 @@ import express from 'express';
 
 import { env } from '@/config/env';
 import { errorHandler, notFoundHandler } from '@/middleware/errorHandler';
+import { analysesRouter } from '@/routes/analyses.routes';
 import { cropsRouter } from '@/routes/crops.routes';
 import { healthRouter } from '@/routes/health.routes';
 import { parcelsRouter } from '@/routes/parcels.routes';
@@ -17,6 +18,7 @@ export function createApp() {
   app.use('/api/v1', sourcesRouter);
   app.use('/api/v1', parcelsRouter);
   app.use('/api/v1', cropsRouter);
+  app.use('/api/v1', analysesRouter);
   app.use(notFoundHandler);
   app.use(errorHandler);
   return app;

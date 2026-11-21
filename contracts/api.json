@@ -2929,7 +2929,11 @@
       "response": {
         "200": "Report (DM-001)"
       },
-      "errors": ["422 VALIDATION_ERROR (niepoprawny format id)", "404 REPORT_NOT_FOUND"],
+      "errors": [
+        "422 VALIDATION_ERROR (niepoprawny format id)",
+        "404 REPORT_NOT_FOUND",
+        "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast, bez czekania)"
+      ],
       "data_refs": ["DM-001"],
       "consumers": ["UI-S-003", "UI-S-004"],
       "examples": {

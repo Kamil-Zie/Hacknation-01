@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-004", "T-DB-001"],
   "contract_refs": ["API-005", "API-006", "DM-001", "DM-005", "DM-011", "DM-012"],
@@ -18,7 +18,8 @@
   ],
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
-    "Agent: be-api. Szacunek: 1,5h. Faza: 5 źródła/ograniczenia + druk. Moduł limitations podpina orkiestrator (T-017)."
+    "Agent: be-api. Szacunek: 1,5h. Faza: 5 źródła/ograniczenia + druk. Moduł limitations podpina orkiestrator (T-017).",
+    "Zrobione (backend-2): GET /api/v1/analyses/:id (ścieżka z kontraktu API-005; curl: demo 0001/0002 200, nieistniejący 404 REPORT_NOT_FOUND, zły id 422, brak bazy 503 DB_UNAVAILABLE dopisany do kontraktu). services/report/sources.ts: buildSourceStatuses, reportStatus; services/report/limitations.ts: BASE_LIMITATIONS (ADR-007 §11 + ADR-009), buildLimitations. Test integracyjny na bazie pominięty (curl na Atlas zamiast)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
