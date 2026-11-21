@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-023", "T-025"],
   "contract_refs": ["UI-S-001", "UI-S-002", "UI-S-003", "UI-S-004"],
@@ -19,7 +19,8 @@
   "notes": [
     "Agent: fe-uiux, fe-developer. Szacunek: 2h. Faza: 5. Przed zamrożeniem 07:00.",
     "frontend-2: start 13:42 na mockach przed T-025 (decyzja Jakuba); po T-025 powtórka na prawdziwym API (dłuższe teksty, braki danych).",
-    "frontend-2 runda 1 (mocki, zrzuty 360/768/1280/1920 + fe-reviewer): kafelki xs1/sm2/lg3/xl4; projektor xl: większe h1–h3, body, metric, proza max 75ch; druk: tabela źródeł bez ucinania, Accordiony rozwinięte, spis sekcji no-print; StatusBadge zawija etykiety; dolny pasek xs z menu „Więcej”; zoom mapy 44 px; aria-current w spisie, h4 w przyczynach, main w druku; 404 raportu z „Nowa analiza”. Uwagi do ekranów frontend-1 wysłane (20261121-1348-frontend-2-question)."
+    "frontend-2 runda 1 (mocki, zrzuty 360/768/1280/1920 + fe-reviewer): kafelki xs1/sm2/lg3/xl4; projektor xl: większe h1–h3, body, metric, proza max 75ch; druk: tabela źródeł bez ucinania, Accordiony rozwinięte, spis sekcji no-print; StatusBadge zawija etykiety; dolny pasek xs z menu „Więcej”; zoom mapy 44 px; aria-current w spisie, h4 w przyczynach, main w druku; 404 raportu z „Nowa analiza”. Uwagi do ekranów frontend-1 wysłane (20261121-1348-frontend-2-question).",
+    "frontend-2 runda 2 (prawdziwe API, raport 6b019fdb625aef3a55ff27c8, Bronowice 2026-05-25): zrzuty 360/1920 OK; poprawki: własna etykieta podatności, powód braku NDMI przy dostępnej scenie, kartka druku 2 kolumny, KbwChart osadzony (sprawdzony w przeglądarce). Ekrany frontend-1 poprawione przez Dawida (20261121-1356). Ścieżka klawiaturą przejdzona ręcznie przez Jakuba: OK."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
