@@ -4,7 +4,7 @@
   "description": "Wg docs/adr/ADR-008-soil-moisture-era5-land.md (wersja 2). (1) ERA5-Land przez Open-Meteo w TYM SAMYM zapytaniu co meteo (T-010, meteo.source.ts): soil_moisture_0_to_7cm, _7_to_28cm, _28_to_100cm (m³/m³; daily mean jeśli jest, inaczej hourly → średnia dobowa). Wynik jako osobny sourceId era5land w sources[]. Wilgotność względna z TAW/RAW działki (θ−θwp)/(θfc−θwp), średnia 7 dni do D, percentyl względem okna ±15 dni z 10 lat, ocena dry/normal/wet. (2) nasaPower.source.ts tylko jako zapas: przy 429/5xx/timeout Open-Meteo meteo z PRECTOTCORR/T2M/T2M_MAX/T2M_MIN + ET0 Hargreaves-Samani (FAO-56 równ. 52) i wilgotność z GWETTOP/GWETROOT (0–1 → %, -999 = null, D−2); raport oznacza źródło zapasowe w sources i limitations, pewność −0,05. (3) Kontrakt: sourceId era5land i nasa_power w enumach (DM-002, DM-005, DM-010, DM-011, DM-012), DM-015 opisuje produkt ERA5-Land (warstwy, m³/m³ i %, percentyl, data obserwacji, ok. 9 km, flaga fallback), katalog API-006 z licencjami i przypisaniami (Copernicus C3S CC BY 4.0, NASA), examples API-004 z soilMoistureSatellite z era5land. Krok 4.",
   "type": "feature",
   "team": "backend",
-  "assignee": "backend-2",
+  "assignee": "coord-1",
   "status": "in_progress",
   "priority": "critical",
   "depends_on": ["T-004"],
@@ -23,6 +23,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 14:22: PRZEJĘTE przez coord-1 (Kamil), bo backend-2 wyczerpał limit sesji. Kod gotowy; zostaje tylko kryterium 2 (jedno zapytanie Open-Meteo na żywo z hotspotu / prod / po 1:00), razem z rozgrzaniem cache Bronowic na 2026-05-25 (T-035). Wpis w claims/backend-2.md zostaje do zwolnienia przez właściciela.",
     "coord-1 14:10 (w imieniu backend-2): ET0 z NASA POWER metodą FAO-56 Penman-Monteith (Hargreaves tylko przy brakach), kryterium 3 czytać jako 'ET0 Penman-Monteith'. Timeout nasa_power 10 → 20 s, klucz cache nasa_power:v2. Na żywo Bronowice 061409_2.0009.612: 2026-11-21 → 201 w 5,7 s, 2026-07-15 → 201 w 3,0 s; meteo/era5land 429, nasa_power ok (fallback), wilgotność z NASA, podatność wysoka (8/9 sezonów). Testy 205/205. Zostaje tylko kryterium 2 (Open-Meteo na żywo po resecie limitu).",
     "coord-1 13:05 ZMIANA (ADR-009): nasa_power jest teraz źródłem klimatologii 10 lat (zawsze pobierane, 1 zapytanie D−10 lat−75 dni … D) ORAZ zapasem okna bieżącego. Percentyl wilgotności liczony w całości z GWETROOT/GWETTOP NASA (wartość bieżąca NASA vs rozkład NASA); wartość bezwzględna w % z ERA5-Land. W sources[] rola: current / climatology / fallback.",
     "Postęp (backend-2): kontrakt 0.2.0 + T-DB-005 (ff98a82). services/sources/nasaPower.source.ts: fetchNasaPowerDaily(lat, lon, analysisDate, signal?, deps?) przez runSource (1 zapytanie, cache), computeSoilMoisture(series, D) → DM-015 bez agreement (liczy silnik), hargreavesEt0, toMeteoFallbackSeries(series, lat). Bronowice 2026-06-10: 0–5 cm 38%, root 35.1%, percentyl 4, dry. Testy na prawdziwym fixture. Zostaje: podpięcie zapasu meteo w T-010 (kryterium 3).",
