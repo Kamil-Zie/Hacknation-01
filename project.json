@@ -1,10 +1,14 @@
 {
   "schema_version": "1.0",
   "project": {
-    "name": "<UZUPEŁNIJ: nazwa projektu>",
-    "description": "<UZUPEŁNIJ: co budujemy, dla kogo i po co>",
+    "name": "Kropla",
+    "description": "Kropla to webowy asystent wody dla rolnika (zadanie KOWR „Zatrzymaj wodę, chroń plony”). Po numerze działki ewidencyjnej albo kliknięciu na mapie, wyborze uprawy i daty analizy aplikacja na żywo pobiera dane meteo, satelitarne, glebowe, hydrologiczne i przestrzenne, liczy bieżący bilans wodny i podatność na suszę z 10 lat i wydaje raport z przyczynami niedoboru i rekomendacjami w kolejności: retencja, agrotechnika, nawadnianie. Każda rekomendacja ma uzasadnienie w danych, źródła, daty i opisaną niepewność. Raport można zapisać do PDF albo wydrukować.",
     "goals": [
-      "<UZUPEŁNIJ: cel biznesowy nr 1>"
+      "Działa dla dowolnej działki w Polsce po ID TERYT (ULDK GUGiK) albo kliknięciu na mapie, dla daty dzisiejszej lub historycznej z ostatnich 10 lat (tak testuje jury).",
+      "Ocenę i rekomendacje liczy aplikacja z pobranych danych (KBW = opad − ETc wg FAO-56, anomalia/percentyl względem 10 lat, retencja gleby z uziarnienia, spadek terenu), bez gotowych tekstów.",
+      "Rekomendacja dla jednej działki w ≤ 30 s, a przy awarii źródła raport powstaje dalej z jawnym „brak danych”.",
+      "Prosty język dla rolnika bez wiedzy GIS, responsywnie na telefonie i desktopie, bez kont i danych osobowych.",
+      "Komplet zgłoszenia: README z 9 wymaganymi sekcjami (źródła, licencje, ograniczenia, weryfikacja), PDF do 10 slajdów, film do 3 min, przykładowe raporty, repo prywatne do końca wydarzenia."
     ],
     "repository": {
       "type": "monorepo",
@@ -12,29 +16,113 @@
     },
     "language": "pl",
     "concept": {
-      "problem": "<UZUPEŁNIJ: jaki problem rozwiązujemy i czyj>",
-      "target_users": "<UZUPEŁNIJ: dla kogo>",
-      "solution": "<UZUPEŁNIJ: co budujemy, w dwóch zdaniach>",
-      "value_proposition": "<UZUPEŁNIJ: dlaczego to lepsze od tego, co jest>",
+      "problem": "Rolnicy w Polsce coraz częściej tracą plony przez suszę rolniczą. Dane, które mogłyby pomóc (satelita, meteo, gleba, hydrologia, NMT), są rozproszone, wymagają GIS i nie mówią, co zrobić na konkretnej działce. W efekcie decyzje o wodzie (retencja, zabiegi, nawadnianie) zapadają na wyczucie, często od razu jako nawadnianie zamiast zatrzymania wody tam, gdzie spada.",
+      "target_users": "Rolnik z jedną lub kilkoma działkami ewidencyjnymi, bez wiedzy o GIS, teledetekcji i hydrologii, korzystający z telefonu w polu albo z komputera w domu. Pośrednio także doradca rolny ODR i jury KOWR, które testuje działki z całej Polski na zadaną datę.",
+      "solution": "Aplikacja webowa, w której rolnik podaje numer działki (albo klika ją na mapie), wybiera uprawę i datę analizy, a system pobiera na żywo dane z 5 kategorii i liczy bilans wodny działki oraz jej podatność na suszę z 10 lat. Wynikiem jest raport w prostym języku: stan i przyczyny niedoboru, rekomendacje w kolejności retencja → agrotechnika → nawadnianie, każda z uzasadnieniem w danych, źródłami, datami i niepewnością, do zapisania w PDF lub wydruku.",
+      "value_proposition": "Wartość praktyczna (25%): jedna konkretna lista działań dla tej działki i tej uprawy zamiast map i wskaźników. Wiarygodność (25%): metodyka FAO-56 + KBW IUNG, odróżnienie suszy bieżącej od wieloletniej podatności, każda liczba ze źródłem i datą, jawny „brak danych” zamiast pozornej precyzji. Innowacyjność (20%): łączenie Sentinel-2 (NDVI/NDMI) z bilansem wodnym, glebą i spadkiem terenu w jednej ścieżce przyczyna → działanie, gotowe do rozbudowy na gospodarstwo i alerty. Prostota (15%): 3 pola i jeden przycisk, działa na telefonie. Jakość techniczna (15%): wynik w ≤ 30 s, cache w MongoDB, timeouty i fallback na każde źródło, bez kont i danych osobowych.",
       "judging_criteria": [
-        "<UZUPEŁNIJ: kryterium oceny z regulaminu>"
+        "Wartość praktyczna dla rolnika: 25%",
+        "Wykorzystanie danych i wiarygodność rekomendacji (metody zgodne z nauką, dopasowanie do działki, uzasadnienie danymi, jawne ograniczenia i niepewność): 25%",
+        "Innowacyjność i potencjał rozwojowy: 20%",
+        "Prostota obsługi: 15%",
+        "Działający prototyp i jakość techniczna (stabilność, architektura, kod, szybkość ≤ 30 s, bezpieczeństwo, dokumentacja, licencje): 15%"
       ],
       "mvp_scope": {
         "must": [
-          "<UZUPEŁNIJ: bez tego nie ma demo>"
+          "Wskazanie działki: ID TERYT → geometria z ULDK GUGiK (plus kliknięcie na mapie → ID działki z ULDK), działka widoczna na mapie z powierzchnią i gminą.",
+          "Formularz: uprawa z listy (z Kc FAO-56 i krytycznymi fazami) oraz data analizy (dziś lub dowolna z ostatnich 10 lat), bez użycia danych spoza tej daty.",
+          "Silnik oceny na żywo z 5 kategorii danych: meteo (Open-Meteo archive/ERA5: opad, temperatura, ETo), satelita (Sentinel-2 L2A z Earth Search STAC: NDVI/NDMI z maską chmur SCL), gleba (SoilGrids: uziarnienie, SOC → pojemność wodna), przestrzenne (wysokość i spadek z NMT/Open-Meteo elevation, ULDK), hydrologia (cieki i zbiorniki w otoczeniu, np. OSM Overpass/MPHP); KBW = opad − ETc, anomalia i percentyl względem 10 lat, klasa ryzyka bieżącego i wieloletniego.",
+          "Raport generowany z reguł opartych na wynikach: stan niedoboru i przyczyny, rekomendacje retencyjne → agrotechniczne → nawadnianie (opcjonalnie), każda z liczbą-uzasadnieniem, źródła z datami, ograniczenia, niepewność i jawne „brak danych”.",
+          "Eksport raportu do PDF i druk (widok do druku w przeglądarce), czas od kliknięcia do raportu ≤ 30 s."
         ],
-        "should": [],
-        "wont": []
+        "should": [
+          "Zapis raportów w MongoDB z linkiem do ponownego otwarcia (bez kont).",
+          "Cache odpowiedzi źródeł w MongoDB (klucz: działka + data + źródło) dla szybkości i odporności na limity.",
+          "Wykres KBW sezonu na tle 10 lat (mediana, zakres) i miniatura NDVI/NDMI działki.",
+          "Mapa z warstwami: cieki i zbiorniki w otoczeniu, kierunek spadku, wskazanie miejsc na retencję.",
+          "Wiele działek gospodarstwa w jednej sesji (lista w localStorage).",
+          "Tło z IUNG-PIB (kategoria podatności gleb) i EDO (CDI) jako porównanie z naszym wynikiem."
+        ],
+        "wont": [
+          "Logowanie, konta użytkowników i dane osobowe.",
+          "Aplikacja natywna (tylko web, responsywnie).",
+          "Płatne API i usługi wymagające kont komercyjnych.",
+          "Trenowane modele ML (tylko jawne reguły i wzory naukowe; LLM co najwyżej do redakcji tekstu, nigdy do liczenia).",
+          "Prognoza pogody i harmonogram nawadniania dzień po dniu, integracje z czujnikami IoT."
+        ]
       },
       "demo_scenario": [
         {
           "step": 1,
-          "user_action": "<UZUPEŁNIJ: co robi użytkownik>",
-          "result": "<UZUPEŁNIJ: co widzi na ekranie>",
+          "user_action": "Rolnik otwiera aplikację w przeglądarce (telefon albo desktop) bez instalacji i logowania.",
+          "result": "Ekran startowy z jednym polem na numer działki, mapą Polski i krótkim objaśnieniem „Sprawdź wodę na swojej działce”.",
+          "contract_refs": []
+        },
+        {
+          "step": 2,
+          "user_action": "Wpisuje ID działki TERYT (np. 141201_1.0001.123) albo klika swoją działkę na mapie.",
+          "result": "Granica działki z ULDK na mapie, numer, gmina, obręb i powierzchnia; przy błędnym ID czytelny komunikat z podpowiedzią formatu.",
+          "contract_refs": []
+        },
+        {
+          "step": 3,
+          "user_action": "Wybiera uprawę z listy (np. pszenica ozima, kukurydza, ziemniak, rzepak, użytki zielone) i datę analizy (domyślnie dziś, kalendarz do 10 lat wstecz), klika „Analizuj”.",
+          "result": "Pasek postępu z listą źródeł pobieranych na żywo (meteo, satelita, gleba, teren, hydrologia) i statusem każdego (ok / brak danych / z cache).",
+          "contract_refs": []
+        },
+        {
+          "step": 4,
+          "user_action": "Czeka na wynik (≤ 30 s).",
+          "result": "Ocena bieżąca na datę analizy: KBW z ostatnich 30/60 dni względem normy z 10 lat (anomalia, percentyl), NDVI/NDMI z ostatniej bezchmurnej sceny z datą i oceną dla wybranej uprawy, klasa suszy (brak/umiarkowana/silna) z poziomem pewności.",
+          "contract_refs": []
+        },
+        {
+          "step": 5,
+          "user_action": "Przewija do sekcji „Podatność wieloletnia i przyczyny”.",
+          "result": "Ryzyko z 10 lat (w ilu sezonach był deficyt, najbardziej krytyczne miesiące, np. maj–lipiec) oraz lista przyczyn z liczbami: niska retencja gleby (piasek X%, pojemność wodna Y mm), deficyt opadu przy wysokiej temperaturze, spadek terenu Z% → odpływ, wymagania wodne uprawy.",
+          "contract_refs": []
+        },
+        {
+          "step": 6,
+          "user_action": "Przechodzi do „Co zrobić”.",
+          "result": "Rekomendacje policzone dla tej działki w kolejności: retencja krajobrazowa (np. odległość do rowu/cieku, spowolnienie odpływu, strefa buforowa), retencja glebowa i agrotechnika (międzyplony, resztki pożniwne, ograniczona uprawa, materia organiczna), nawadnianie (zasadność, okno terminu, orientacyjna dawka z deficytu); przy każdej „dlaczego” z danymi.",
+          "contract_refs": []
+        },
+        {
+          "step": 7,
+          "user_action": "Rozwija „Źródła i ograniczenia”.",
+          "result": "Tabela źródeł z datą danych i licencją, ograniczenia (rozdzielczość 250 m SoilGrids, ERA5 ok. 9–25 km, chmury), niepewność wyniku i jawnie oznaczone braki danych bez wymyślonych wartości.",
+          "contract_refs": []
+        },
+        {
+          "step": 8,
+          "user_action": "Klika „Pobierz PDF” albo „Drukuj”.",
+          "result": "Plik PDF z pełnym raportem (mapa działki, ocena, przyczyny, rekomendacje, źródła, data analizy i data wygenerowania) albo podgląd wydruku.",
           "contract_refs": []
         }
       ],
-      "risks": []
+      "risks": [
+        {
+          "risk": "Awaria, limit lub wolna odpowiedź zewnętrznego API (ULDK, Open-Meteo, Earth Search, SoilGrids, Overpass), co psuje demo na żywo i limit 30 s.",
+          "mitigation": "Równoległe pobieranie z timeoutem na każde źródło, cache odpowiedzi w MongoDB (działka + data + źródło), rozgrzanie cache dla działek demo przed finałem, raport powstaje dalej z jawnym „brak danych” i obniżoną pewnością."
+        },
+        {
+          "risk": "Chmury nad Sentinel-2: brak bezchmurnej sceny blisko daty analizy, a liczenie NDVI/NDMI z COG może być wolne.",
+          "mitigation": "Szukanie sceny w oknie do 30–45 dni wstecz z filtrem eo:cloud_cover i maską SCL dla pikseli działki, odczyt tylko okna bbox z COG; gdy brak sceny, komunikat z datą ostatniej dostępnej i ocena oparta na meteo i glebie."
+        },
+        {
+          "risk": "Dokładność i rozdzielczość danych (ERA5 kilka km, SoilGrids 250 m, ETo modelowe) daje wynik różny od danych referencyjnych jury (IUNG KBW, IMGW).",
+          "mitigation": "Metodyka zgodna z IUNG (KBW, okresy 60-dniowe) i FAO-56, klasy zamiast fałszywie dokładnych liczb, sekcja niepewności w raporcie, porównanie z IUNG/EDO jako should, opis weryfikacji w README."
+        },
+        {
+          "risk": "Niepewny wybór źródła hydrologii i NMT (MPHP/ISOK/Geoportal WCS bywają ciężkie, bez CORS albo w EPSG:2180).",
+          "mitigation": "Architekt wybiera najprostsze działające źródło (np. OSM Overpass dla cieków i zbiorników, Open-Meteo elevation dla spadku z siatki punktów); Geoportal WCS tylko jeśli zdąży, transformacja układów po stronie backendu."
+        },
+        {
+          "risk": "Zakres za duży na ok. 13 h pracy czterech osób (5 źródeł + silnik reguł + PDF).",
+          "mitigation": "Pionowe plastry w kolejności: ULDK → meteo/KBW → gleba → raport+PDF → satelita → hydrologia/spadek; kontrakt odpowiedzi stały od początku, frontend na mocku; brakujące źródło = „brak danych”, nie blokada demo."
+        }
+      ]
     }
   },
   "technologies": {
@@ -378,8 +466,48 @@
     },
     "glossary": [
       {
-        "term": "<UZUPEŁNIJ: pojęcie domenowe>",
-        "definition": "<UZUPEŁNIJ>"
+        "term": "Działka ewidencyjna (ID TERYT)",
+        "definition": "Działka z ewidencji gruntów, identyfikowana numerem w formacie WWPPGG_R.OOOO.NR (np. 141201_1.0001.123); geometrię zwraca ULDK GUGiK."
+      },
+      {
+        "term": "Data analizy",
+        "definition": "Dzień, na który liczymy ocenę (dziś lub do 10 lat wstecz). Używamy tylko danych dostępnych do tej daty; okno 10 lat liczymy wstecz od niej."
+      },
+      {
+        "term": "KBW (klimatyczny bilans wodny)",
+        "definition": "Opad minus ewapotranspiracja w danym okresie (mm); ujemny oznacza niedobór. Metodyka IUNG-PIB stosuje okresy 60-dniowe."
+      },
+      {
+        "term": "ETo / ETc",
+        "definition": "ETo to ewapotranspiracja wzorcowa (FAO-56 Penman-Monteith), ETc = Kc × ETo to zapotrzebowanie wodne konkretnej uprawy w danej fazie."
+      },
+      {
+        "term": "Kc (współczynnik uprawowy)",
+        "definition": "Mnożnik FAO-56 zależny od uprawy i fazy rozwoju, przeliczający ETo na ETc."
+      },
+      {
+        "term": "Susza bieżąca vs podatność wieloletnia",
+        "definition": "Susza bieżąca to niedobór wody na datę analizy; podatność wieloletnia to częstość i nasilenie niedoborów w 10 latach wynikające z klimatu, gleby i terenu."
+      },
+      {
+        "term": "Anomalia / percentyl",
+        "definition": "Odchylenie wartości (KBW, NDVI) od normy z 10 lat dla tego samego okresu roku i pozycja w rozkładzie tych lat."
+      },
+      {
+        "term": "NDVI / NDMI",
+        "definition": "Wskaźniki z Sentinel-2: NDVI (B08, B04) opisuje kondycję roślinności, NDMI (B08, B11) uwilgotnienie roślin; interpretowane łącznie z uprawą, meteo i glebą."
+      },
+      {
+        "term": "Pojemność wodna gleby (retencja glebowa)",
+        "definition": "Ilość wody dostępnej dla roślin, jaką gleba zatrzymuje w strefie korzeniowej (mm); szacowana z uziarnienia (piasek, ił) i materii organicznej (SoilGrids)."
+      },
+      {
+        "term": "Retencja krajobrazowa",
+        "definition": "Zatrzymanie wody w krajobrazie: oczka, małe zbiorniki, mokradła, zastawki na rowach, strefy buforowe, zadrzewienia (NWRM)."
+      },
+      {
+        "term": "Brak danych",
+        "definition": "Jawny stan pola w raporcie, gdy źródło nie odpowiedziało lub nie ma danych na datę; obniża pewność wyniku, nigdy nie jest zastępowany wartością domyślną."
       }
     ]
   },
