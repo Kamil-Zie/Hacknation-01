@@ -43,6 +43,59 @@ const PLANS: Record<string, Plan> = {
       { name: 'Kukurydza w Głogówku', seed: '161002_4.0241.261', crop: 'maize', neighbours: 2 },
     ],
   },
+  // Parcels below were found with API-002 (by-point) on farmland, 2026-11-22 00:50
+  nataniel: {
+    accountName: 'Gospodarstwo Nataniela – Lubelszczyzna',
+    parcels: [
+      { id: '060404_2.0142.AR_3.255', crop: 'winter_wheat' },
+      { id: '061811_2.0010.AR_1.87/1', crop: 'winter_rapeseed' },
+      { id: '062014_2.0028.425', crop: 'sugar_beet' },
+    ],
+    fields: [
+      {
+        name: 'Pszenica w Brodzicy',
+        seed: '060404_2.0142.AR_3.255',
+        crop: 'winter_wheat',
+        neighbours: 2,
+      },
+      {
+        name: 'Rzepak w Majdanie Górnym',
+        seed: '061811_2.0010.AR_1.87/1',
+        crop: 'winter_rapeseed',
+        neighbours: 1,
+      },
+    ],
+  },
+  kuba: {
+    accountName: 'Gospodarstwo Kuby – Dolny Śląsk i Opolszczyzna',
+    parcels: [
+      { id: '022405_5.0005.294/4', crop: 'winter_wheat' },
+      { id: '160705_5.0005.475/5', crop: 'maize' },
+      { id: '160203_5.0011.904', crop: 'sugar_beet' },
+      { id: '021704_5.0002.29', crop: 'potato' },
+    ],
+    fields: [
+      { name: 'Kukurydza pod Nysą', seed: '160705_5.0005.475/5', crop: 'maize', neighbours: 1 },
+      { name: 'Buraki w Grobnikach', seed: '160203_5.0011.904', crop: 'sugar_beet', neighbours: 2 },
+    ],
+  },
+  kamil: {
+    accountName: 'Gospodarstwo Kamila – Mazowsze i Kujawy',
+    parcels: [
+      { id: '040704_2.0015.4', crop: 'sugar_beet' },
+      { id: '142807_2.0038.40', crop: 'winter_wheat' },
+      { id: '140605_5.0028.4/4', crop: 'spring_barley' },
+    ],
+    fields: [
+      { name: 'Pole w Jarontach', seed: '040704_2.0015.4', crop: 'sugar_beet', neighbours: 2 },
+      {
+        name: 'Pszenica w Antoniewie',
+        seed: '142807_2.0038.40',
+        crop: 'winter_wheat',
+        neighbours: 1,
+      },
+    ],
+  },
 };
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -175,15 +228,21 @@ async function main(): Promise<void> {
         console.log('  analysis', await analyse(api, s.token, s.accountId, id, field.crop));
         parcelIds.push(id);
       }
-      const created = await call(
-        api,
-        `/accounts/${s.accountId}/fields`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ name: field.name, parcelIds: [field.seed, ...near] }),
-        },
-        s.token,
-      );
+      const createField = (ids: string[]) =>
+        call(
+          api,
+          `/accounts/${s.accountId}/fields`,
+          { method: 'POST', body: JSON.stringify({ name: field.name, parcelIds: ids }) },
+          s.token,
+        );
+      let created = await createField([field.seed, ...near]);
+      // Narrow strips: a bbox probe can hit a parcel that touches the seed's bbox but not the parcel.
+      // Fall back to the seed with one neighbour at a time.
+      for (const id of [...near]) {
+        if (created.body.code !== 'PARCELS_NOT_ADJACENT') break;
+        near.splice(0, near.length, id);
+        created = await createField([field.seed, id]);
+      }
       console.log(
         `  field "${field.name}" [${[field.seed, ...near].join(', ')}]: HTTP ${created.status} ${String(created.body.code ?? '')}`,
       );
