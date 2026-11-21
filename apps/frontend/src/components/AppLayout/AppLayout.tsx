@@ -24,7 +24,7 @@ export function AppLayout() {
             to="/"
             color="inherit"
             underline="none"
-            aria-label="Kropla – strona główna"
+            aria-label="Kropelka – strona główna"
             sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5, minHeight: 44 }}
           >
             <OpacityIcon aria-hidden sx={{ fontSize: { xs: 30, md: 36 } }} />
@@ -32,7 +32,7 @@ export function AppLayout() {
               component="span"
               sx={{ fontWeight: 800, fontSize: { xs: '1.5rem', md: '1.75rem' } }}
             >
-              Kropla
+              Kropelka
             </Typography>
             <Typography
               component="span"
