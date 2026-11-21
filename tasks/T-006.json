@@ -11,8 +11,8 @@
   "contract_refs": ["UI-S-001", "UI-C-012", "API-004"],
   "demo_step": 1,
   "acceptance_criteria": [
-    "Trasy /, /analiza, /raport/:id i /druk/:id renderują puste ekrany z nagłówkiem",
-    "VITE_USE_MOCK=true zwraca dane z fixture bez backendu, false woła /api/v1",
+    "Trasy /, /parcel/:parcelId, /report/:id i /report/:id/print (wg contracts/ui.json) renderują ekrany z nagłówkiem",
+    "VITE_USE_MOCKS=true zwraca dane z fixture bez backendu, false woła /api/v1",
     "StatusBadge pokazuje stany ok, cache, missing, timeout, error z kolorem i tekstem (nie tylko kolor)",
     "Układ działa responsywnie na 360, 768, 1280 i 1920 px (bez poziomego scrolla)",
     "Brak warningów lint, komentarz z ID kontraktu na początku plików"
