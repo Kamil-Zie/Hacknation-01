@@ -3,7 +3,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Alert,
   Button,
+  Checkbox,
   CircularProgress,
+  FormControlLabel,
   Stack,
   TextField,
   ToggleButton,
@@ -42,7 +44,7 @@ export function AuthForm({
     formState: { errors },
   } = useForm<AuthFormValues>({
     resolver: zodResolver(isRegister ? registerSchema : loginSchema),
-    defaultValues: { email: '', password: '', name: '', accountName: '' },
+    defaultValues: { email: '', password: '', name: '', accountName: '', rememberMe: true },
   });
 
   useEffect(() => {
@@ -70,7 +72,11 @@ export function AuthForm({
                 name: values.name ?? '',
                 ...(values.accountName?.trim() ? { accountName: values.accountName.trim() } : {}),
               }
-            : { email: values.email, password: values.password },
+            : {
+                email: values.email,
+                password: values.password,
+                rememberMe: values.rememberMe ?? true,
+              },
         ),
       )}
     >
@@ -165,6 +171,32 @@ export function AuthForm({
             />
           )}
         />
+        {!isRegister && (
+          <Controller
+            name="rememberMe"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                label="Zapamiętaj mnie"
+                disabled={isLoading}
+                sx={{
+                  minHeight: 48,
+                  m: 0,
+                  '& .MuiFormControlLabel-label': { fontSize: '1.125rem' },
+                }}
+                control={
+                  <Checkbox
+                    checked={field.value ?? true}
+                    onChange={(event) => field.onChange(event.target.checked)}
+                    inputRef={field.ref}
+                    onBlur={field.onBlur}
+                    sx={{ p: 1.5, '& .MuiSvgIcon-root': { fontSize: 32 } }}
+                  />
+                }
+              />
+            )}
+          />
+        )}
         {showAlert && <Alert severity="error">{error.message}</Alert>}
         <Button
           type="submit"

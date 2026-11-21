@@ -1,4 +1,4 @@
-// UI-C-015 AccountMenu: header login button or account menu (switch account, account name link to /konto, logout); verifies session via API-009
+// UI-C-015 AccountMenu: header login button or account menu (switch account, account name link to /konto, Mój profil link to /konto/profil, logout); verifies session via API-009
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Box, Button, Divider, ListSubheader, Menu, MenuItem, Typography } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
@@ -81,7 +81,14 @@ export function AccountMenu() {
         </Typography>
       </Button>
       <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={() => setAnchor(null)}>
-        <ListSubheader sx={{ lineHeight: '32px' }}>{user.email}</ListSubheader>
+        <ListSubheader sx={{ lineHeight: 1.4, py: 1, color: 'text.primary' }}>
+          <Typography component="span" sx={{ display: 'block', fontWeight: 700 }}>
+            {user.name}
+          </Typography>
+          <Typography component="span" variant="body2" sx={{ display: 'block' }}>
+            {user.email}
+          </Typography>
+        </ListSubheader>
         {accounts.map((account) => (
           <MenuItem
             key={account.id}
@@ -106,7 +113,15 @@ export function AccountMenu() {
         >
           {active ? `Panel: ${active.name}` : 'Panel gospodarstwa'}
         </MenuItem>
-        <MenuItem sx={{ minHeight: 44 }} onClick={handleLogout}>
+        <MenuItem
+          component={RouterLink}
+          to="/konto/profil"
+          sx={{ minHeight: 48 }}
+          onClick={() => setAnchor(null)}
+        >
+          Mój profil
+        </MenuItem>
+        <MenuItem sx={{ minHeight: 48 }} onClick={handleLogout}>
           Wyloguj
         </MenuItem>
       </Menu>

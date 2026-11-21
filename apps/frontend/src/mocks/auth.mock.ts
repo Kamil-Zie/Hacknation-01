@@ -1,4 +1,4 @@
-// API-007 API-008 API-009 Mock of auth endpoints and shared in-memory account store (persisted in localStorage), ~500 ms delay
+// API-007 API-008 API-009 API-015 Mock of auth endpoints and shared in-memory account store (persisted in localStorage), ~500 ms delay
 import { ApiError } from '@/api/client';
 import type {
   Account,
@@ -7,6 +7,7 @@ import type {
   RegisterRequest,
   ReportSummary,
   Session,
+  UpdateProfileRequest,
   User,
 } from '@/api/types';
 
@@ -252,4 +253,36 @@ export async function mockGetMe(token: string): Promise<{ user: User; accounts: 
   await mockDelay();
   const user = requireUser(token);
   return { user: toUser(user), accounts: accountsOfUser(user) };
+}
+
+export async function mockUpdateProfile(token: string, body: UpdateProfileRequest): Promise<User> {
+  await mockDelay();
+  const user = requireUser(token);
+  const email = body.email === undefined ? user.email : normalizeEmail(body.email);
+  const emailChanged = email !== user.email;
+  if (body.name !== undefined && !body.name.trim()) {
+    throw new ApiError('VALIDATION_ERROR', 'Podaj imię', 422, { field: 'name' });
+  }
+  if (body.newPassword !== undefined && body.newPassword.length < MIN_PASSWORD_LENGTH) {
+    throw new ApiError('VALIDATION_ERROR', 'Hasło za krótkie', 422, { field: 'newPassword' });
+  }
+  if ((emailChanged || body.newPassword) && body.currentPassword !== user.password) {
+    throw new ApiError('INVALID_CREDENTIALS', 'Nieprawidłowe obecne hasło', 401);
+  }
+  if (emailChanged && getStore().users.some((item) => item.email === email)) {
+    throw new ApiError('EMAIL_TAKEN', 'Konto z tym adresem e-mail już istnieje', 409);
+  }
+  for (const account of getStore().accounts) {
+    for (const member of account.members) {
+      if (member.email === user.email) {
+        member.email = email;
+        if (body.name !== undefined) member.name = body.name.trim();
+      }
+    }
+  }
+  user.email = email;
+  if (body.name !== undefined) user.name = body.name.trim();
+  if (body.newPassword) user.password = body.newPassword;
+  saveStore();
+  return toUser(user);
 }

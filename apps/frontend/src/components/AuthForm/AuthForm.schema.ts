@@ -9,6 +9,7 @@ export const loginSchema = z.object({
   password,
   name: z.string().optional(),
   accountName: z.string().optional(),
+  rememberMe: z.boolean().optional(),
 });
 
 export const registerSchema = z.object({
@@ -23,4 +24,5 @@ export interface AuthFormValues {
   password: string;
   name?: string;
   accountName?: string;
+  rememberMe?: boolean;
 }

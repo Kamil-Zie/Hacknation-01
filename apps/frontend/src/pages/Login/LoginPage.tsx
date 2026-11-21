@@ -34,14 +34,17 @@ export function LoginPage() {
         ? { code: 'NETWORK_ERROR', message: 'Nie udało się połączyć. Spróbuj ponownie.' }
         : null;
 
-  const handleSuccess = (session: Session) => {
-    setSession(session);
+  const handleSuccess = (session: Session, rememberMe = true) => {
+    setSession(session, rememberMe);
     navigate(next, { replace: true });
   };
 
   const handleSubmit = (values: LoginRequest | RegisterRequest) => {
-    if ('name' in values) registerMutation.mutate(values, { onSuccess: handleSuccess });
-    else loginMutation.mutate(values, { onSuccess: handleSuccess });
+    if ('name' in values) registerMutation.mutate(values, { onSuccess: (s) => handleSuccess(s) });
+    else
+      loginMutation.mutate(values, {
+        onSuccess: (s) => handleSuccess(s, values.rememberMe ?? true),
+      });
   };
 
   const handleModeChange = (value: AuthMode) => {
