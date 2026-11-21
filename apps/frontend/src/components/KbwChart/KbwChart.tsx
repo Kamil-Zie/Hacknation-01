@@ -63,7 +63,8 @@ export function KbwChart({ charts }: KbwChartProps) {
   const lastSeriesDate =
     [...rows].reverse().find((row) => row.kbw !== null)?.date ?? rows[rows.length - 1].date;
   const cutoff = toTime(lastSeriesDate) - (windowDays - 1) * DAY_MS;
-  const visible = windowDays === 60 ? rows : rows.filter((row) => toTime(row.date) >= cutoff);
+  // Live API sends 90 daily points (T-038), so both windows cut from the last series date
+  const visible = rows.filter((row) => toTime(row.date) >= cutoff);
   const lastRow = [...visible].reverse().find((row) => row.kbw !== null);
 
   let summary = 'Brak wartości KBW w wybranym oknie.';
@@ -90,7 +91,9 @@ export function KbwChart({ charts }: KbwChartProps) {
   const ariaLabel = `Wykres klimatycznego bilansu wodnego z ostatnich ${windowDays} dni, trend ${trend}. ${summary}`;
 
   const dates = visible.map((row) => row.date);
-  const labelStep = isNarrow ? 3 : 2;
+  // ~5 date labels on phones, ~9 on wider screens, whatever the point density (weekly mock vs daily API)
+  const labelStep = Math.max(1, Math.ceil(visible.length / (isNarrow ? 5 : 9)));
+  const showSeriesMarks = visible.length <= 20;
   const hidden = { display: 'none' };
 
   return (
@@ -177,7 +180,7 @@ export function KbwChart({ charts }: KbwChartProps) {
             {
               id: 'kbw',
               dataKey: 'kbw',
-              showMark: true,
+              showMark: showSeriesMarks,
               connectNulls: true,
               label: 'KBW (bieżący sezon)',
               color: theme.palette.primary.main,
