@@ -15,8 +15,15 @@
     "Po rozgrzaniu analiza każdej z nich trwa < 10 s, a zimna < 30 s (zmierzone i zapisane)",
     "Skrypt nie zmienia danych poza source_cache i reports i nie wymaga seeda"
   ],
-  "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: coord-devops. Szacunek: 1h. Faza: 7+. Powtórzyć tuż przed prezentacją."],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 14:20: data demo zmieniona na 2026-05-25 (Sentinel-2: 10.06 cirrus nad Bronowicami). Rozgrzać cache: 061409_2.0009.612 na 2026-05-25 i na dzień pitchu.",
+    "Agent: coord-devops. Szacunek: 1h. Faza: 7+. Powtórzyć tuż przed prezentacją."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
