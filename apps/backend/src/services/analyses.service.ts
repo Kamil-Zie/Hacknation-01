@@ -20,6 +20,8 @@ import type { Recommendation } from '@/services/engine/recommendations';
 import type { VulnerabilityResult } from '@/services/engine/vulnerability';
 import { fetchElevation } from '@/services/sources/elevation.source';
 import type { ElevationData } from '@/services/sources/elevation.source';
+import { fetchHydrology } from '@/services/sources/overpass.source';
+import type { HydroData } from '@/services/sources/overpass.source';
 import { fetchMeteo } from '@/services/sources/meteo.source';
 import type { MeteoOutcome } from '@/services/sources/meteo.source';
 import { fetchSoilGrids } from '@/services/sources/soilgrids.source';
@@ -95,6 +97,7 @@ export const defaultAnalysesDeps: AnalysesDeps = {
     soilgrids: ({ parcel, signal }) =>
       fetchSoilGrids(parcel.centroid.lat, parcel.centroid.lon, signal),
     elevation: ({ parcel, signal }) => fetchElevation(parcel, signal),
+    overpass: ({ parcel, signal }) => fetchHydrology(parcel, signal),
   },
   saveReport: async (report) => {
     // No database connection: return the report without saving (no waiting for mongoose buffering).
@@ -133,6 +136,11 @@ function terrainFrom(result: SourceResult<unknown>): ElevationData | null {
   return isUsable(result) && data && typeof data.slopePct === 'number' ? data : null;
 }
 
+function hydroFrom(result: SourceResult<unknown>): HydroData | null {
+  const data = result.data as HydroData | null;
+  return isUsable(result) && data && typeof data.hasReservoirWithin1km === 'boolean' ? data : null;
+}
+
 export async function createAnalysis(
   body: CreateAnalysisBody,
   deps: AnalysesDeps = defaultAnalysesDeps,
@@ -159,6 +167,7 @@ export async function createAnalysis(
   );
 
   // 3-5. Engine.
+  const hydro = hydroFrom(run.extras.overpass);
   const engine = computeEngine({
     crop,
     analysisDate: body.analysisDate,
@@ -166,9 +175,10 @@ export async function createAnalysis(
     meteo: run.meteo,
     soilLayers: soilLayersFrom(run.extras.soilgrids),
     terrain: terrainFrom(run.extras.elevation),
+    hydro,
     available: {
       sentinel2: run.extras.sentinel2.status === 'ok' || run.extras.sentinel2.status === 'cached',
-      hydrology: run.extras.overpass.status === 'ok' || run.extras.overpass.status === 'cached',
+      hydrology: hydro !== null,
     },
   });
 

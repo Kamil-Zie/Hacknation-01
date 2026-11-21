@@ -26,6 +26,7 @@ import type { SoilWaterBalance } from '@/services/engine/water-demand';
 import { computeEra5LandSoilMoisture } from '@/services/sources/era5land';
 import type { Era5LandSoilMoisture } from '@/services/sources/era5land';
 import type { ElevationData } from '@/services/sources/elevation.source';
+import type { HydroData } from '@/services/sources/overpass.source';
 import type { MeteoDay, MeteoOutcome } from '@/services/sources/meteo.source';
 import { computeSoilMoisture, round1 } from '@/services/sources/nasaPower.source';
 import type { SoilMoisture } from '@/services/sources/nasaPower.source';
@@ -70,6 +71,7 @@ export type EngineInput = {
   // Indicators decided by the source statuses (the rest is derived from the engine results).
   available: Pick<Record<IndicatorKey, boolean>, 'sentinel2' | 'hydrology'>;
   terrain: ElevationData | null;
+  hydro: HydroData | null;
 };
 
 export type EngineFlags = {
@@ -196,7 +198,8 @@ export function computeEngine(input: EngineInput): EngineOutput {
     rawMm: capacity?.rawMm ?? null,
     depletionMm: soilWater?.depletionMm ?? null,
     terrain,
-    hydro: null,
+    // HydroData fields match RecommendationsHydro; nearestDitchDistanceM is already the minimum over ditches and watercourses.
+    hydro: input.hydro,
     etc7DayMeanMm: etcMean(current.series, analysisDate, kc),
   });
 

@@ -10,6 +10,7 @@ import type { AnalysesDeps, ReportDto } from '@/services/analyses.service';
 import type { SoilLayer } from '@/services/engine/soil';
 import type { CachedEntry, SourceCacheStore } from '@/services/sources/cache.service';
 import type { ElevationData } from '@/services/sources/elevation.source';
+import type { HydroData } from '@/services/sources/overpass.source';
 import { fetchMeteo, parseOpenMeteoResponse } from '@/services/sources/meteo.source';
 import type { parsePowerResponse } from '@/services/sources/nasaPower.source';
 import type { SourceId, SourceResult } from '@/services/sources/types';
@@ -46,6 +47,26 @@ const ELEVATION: ElevationData = {
   slopePct: 4,
   aspect: 'południe',
   lowestPoint: { lat: 51.43, lon: 21.92 },
+};
+const HYDRO: HydroData = {
+  radiusM: 1000,
+  counts: {
+    river: 0,
+    stream: 1,
+    canal: 0,
+    ditch: 1,
+    drain: 0,
+    water: 0,
+    reservoir: 0,
+    wetland: 0,
+  },
+  nearestDitchDistanceM: 812,
+  nearestDitchPoint: { lat: 51.44, lon: 21.93 },
+  nearestDitchType: 'stream',
+  nearestWatercourseName: 'Klikawka',
+  nearestReservoirDistanceM: null,
+  hasReservoirWithin1km: false,
+  hasWetlandWithin1km: false,
 };
 const EXAMPLE_KEYS = [
   'analysisDate',
@@ -127,7 +148,7 @@ function makeDeps(
       sentinel2: okSource('sentinel2'),
       soilgrids: okSource('soilgrids', SOIL_LAYERS),
       elevation: okSource('elevation', ELEVATION),
-      overpass: okSource('overpass'),
+      overpass: okSource('overpass', HYDRO),
     },
     saveReport: async (report) => {
       saved.push(report);
@@ -272,8 +293,48 @@ test('SoilGrids error: no soilWater, no soil in vulnerability, data gap soilgrid
   assert.ok(gapIds(report).includes('soilgrids'));
 });
 
-test('default deps register SoilGrids and elevation fetchers only', () => {
-  assert.deepEqual(Object.keys(defaultAnalysesDeps.fetchers).sort(), ['elevation', 'soilgrids']);
+test('default deps register SoilGrids, elevation and overpass fetchers only', () => {
+  assert.deepEqual(Object.keys(defaultAnalysesDeps.fetchers).sort(), [
+    'elevation',
+    'overpass',
+    'soilgrids',
+  ]);
+});
+
+test('hydrology feeds R-LAND-01 for a ditch within 300 m when vulnerability is at least medium', async () => {
+  const { deps } = makeDeps();
+  deps.fetchers = {
+    ...deps.fetchers,
+    overpass: okSource('overpass', { ...HYDRO, nearestDitchDistanceM: 200 }),
+  };
+  const report = await createAnalysis(BODY, deps);
+  assert.ok(['medium', 'high'].includes(report.vulnerability.vulnerabilityClass));
+  const ditch = report.recommendations.find((rec) => rec.ruleId === 'R-LAND-01');
+  assert.ok(ditch);
+  assert.deepEqual(ditch.location, HYDRO.nearestDitchPoint);
+  assert.ok(ditch.evidence.some((item) => item.sourceId === 'overpass'));
+  const far = await createAnalysis(BODY, makeDeps().deps);
+  assert.ok(!far.recommendations.some((rec) => rec.ruleId === 'R-LAND-01'));
+});
+
+test('hydrology error: no R-LAND-01 or R-LAND-03, data gap overpass, partial', async () => {
+  const { deps } = makeDeps();
+  deps.fetchers = {
+    ...deps.fetchers,
+    overpass: async () => ({
+      sourceId: 'overpass',
+      status: 'error',
+      data: null,
+      message: 'Źródło zwróciło błąd',
+      fetchedAt: null,
+      dataPeriod: null,
+      durationMs: 1,
+    }),
+  };
+  const report = await createAnalysis(BODY, deps);
+  assert.equal(report.status, 'partial');
+  assert.ok(gapIds(report).includes('overpass'));
+  assert.ok(!report.recommendations.some((rec) => ['R-LAND-01', 'R-LAND-03'].includes(rec.ruleId)));
 });
 
 test('no parcel geometry gives 502 UPSTREAM_UNAVAILABLE, unknown parcel gives 404', async () => {
