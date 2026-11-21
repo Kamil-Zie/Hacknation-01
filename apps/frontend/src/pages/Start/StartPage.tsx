@@ -8,6 +8,8 @@ import { useParcelByPointMutation, useParcelQuery } from '@/api/parcels';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ParcelSearch } from '@/components/ParcelSearch/ParcelSearch';
 import { ParcelSummaryCard } from '@/components/ParcelSummaryCard/ParcelSummaryCard';
+import { RecentParcels } from '@/components/RecentParcels/RecentParcels';
+import { useRecentParcelsStore } from '@/store/recentParcels';
 import { useSelectionStore } from '@/store/selection';
 
 const STEPS = ['Wskaż działkę', 'Wybierz uprawę i datę', 'Zobacz raport o wodzie'];
@@ -41,9 +43,16 @@ export function StartPage() {
   const searchQuery = useParcelQuery(searchId);
   const pickMutation = useParcelByPointMutation();
 
+  const recentParcels = useRecentParcelsStore((state) => state.items);
+  const addRecentParcel = useRecentParcelsStore((state) => state.add);
+
   useEffect(() => {
     if (searchQuery.data) setParcel(searchQuery.data);
   }, [searchQuery.data, setParcel]);
+
+  useEffect(() => {
+    if (parcel) addRecentParcel(parcel);
+  }, [parcel, addRecentParcel]);
 
   function handleSearch(parcelId: string) {
     pickMutation.reset();
@@ -97,6 +106,11 @@ export function StartPage() {
             isLoading={isLoading}
             error={searchId !== null ? error : null}
             onSearch={handleSearch}
+          />
+          <RecentParcels
+            items={recentParcels}
+            currentId={parcel?.id ?? null}
+            onSelect={handleSearch}
           />
           {parcel && <ParcelSummaryCard parcel={parcel} />}
           <Button
