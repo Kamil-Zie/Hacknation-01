@@ -500,12 +500,12 @@
         },
         {
           "id": "ADR-008",
-          "title": "Wilgotność gleby z NASA POWER zamiast EUMETSAT, NASA POWER jako zapas meteo",
+          "title": "Wilgotność gleby z ERA5-Land (Copernicus), NASA POWER tylko jako zapas",
           "status": "accepted",
           "date": "2026-11-21",
-          "context": "Wilgotność gleby musi być w raporcie, EUMETSAT ASCAT bez danych po 2025-07-15; Open-Meteo dało HTTP 429 (limit dzienny na IP sieci hackathonu).",
-          "decision": "Źródło nasa_power (MERRA-2): GWETTOP/GWETROOT/GWETPROF z percentylem 10 lat do DM-015; przy 429/5xx/timeout Open-Meteo meteo z NASA POWER z ET0 Hargreaves-Samani. Szczegóły: docs/adr/ADR-008-soil-moisture-nasa-power.md.",
-          "consequences": "Wilgotność gleby w każdym raporcie (siatka ok. 50 km, opisana w ograniczeniach), meteo nie zależy od jednego dostawcy."
+          "context": "Wilgotność gleby musi być w raporcie, EUMETSAT ASCAT bez danych po 2025-07-15, zespół preferuje źródła europejskie; Open-Meteo dało HTTP 429 (limit dzienny na IP sieci hackathonu).",
+          "decision": "Źródło era5land: ERA5-Land soil_moisture 0–7/7–28/28–100 cm z Open-Meteo w tym samym zapytaniu co meteo, percentyl 10 lat do DM-015. nasa_power (MERRA-2) tylko jako zapas meteo i wilgotności przy 429/5xx/timeout. ESA CCI SM i CLMS SSM 1 km w planie rozwoju. Szczegóły: docs/adr/ADR-008-soil-moisture-era5-land.md.",
+          "consequences": "Wilgotność gleby w każdym raporcie z europejskiego źródła ok. 9 km, spójnego z bilansem wodnym; meteo i wilgotność nie zależą od jednego dostawcy z limitem na IP."
         }
       ]
     },

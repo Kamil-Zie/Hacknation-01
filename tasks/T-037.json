@@ -1,7 +1,7 @@
 {
   "id": "T-037",
-  "title": "Źródło nasa_power: wilgotność gleby (DM-015) z percentylem 10 lat i zapas meteo przy 429 Open-Meteo",
-  "description": "Wg docs/adr/ADR-008. services/sources/nasaPower.source.ts: NASA POWER daily point (community=AG), parametry GWETTOP, GWETROOT, GWETPROF, PRECTOTCORR, T2M, T2M_MAX, T2M_MIN; -999 = null; jedno zapytanie D−10 lat−75 dni .. D. Wilgotność: średnia 7 dni do D (ostatni ważny dzień ≤ D), percentyl względem okna ±15 dni z 10 lat, ocena dry/normal/wet. Kontrakt: sourceId nasa_power w enumach (DM-002, DM-005, DM-010, DM-011, DM-012), DM-015 opisuje produkt NASA POWER (warstwy, %, percentyl, data obserwacji, rozdzielczość ok. 50 km), katalog API-006 z licencją i przypisaniem NASA, examples API-004 z soilMoistureSatellite z nasa_power. Zapas meteo: gdy meteo (Open-Meteo) da 429/5xx/timeout, seria opad/temp z NASA POWER, ET0 Hargreaves-Samani (FAO-56 równ. 52). Krok 4.",
+  "title": "Wilgotność gleby z ERA5-Land (era5land, DM-015) z percentylem 10 lat + NASA POWER jako zapas meteo i wilgotności",
+  "description": "Wg docs/adr/ADR-008-soil-moisture-era5-land.md (wersja 2). (1) ERA5-Land przez Open-Meteo w TYM SAMYM zapytaniu co meteo (T-010, meteo.source.ts): soil_moisture_0_to_7cm, _7_to_28cm, _28_to_100cm (m³/m³; daily mean jeśli jest, inaczej hourly → średnia dobowa). Wynik jako osobny sourceId era5land w sources[]. Wilgotność względna z TAW/RAW działki (θ−θwp)/(θfc−θwp), średnia 7 dni do D, percentyl względem okna ±15 dni z 10 lat, ocena dry/normal/wet. (2) nasaPower.source.ts tylko jako zapas: przy 429/5xx/timeout Open-Meteo meteo z PRECTOTCORR/T2M/T2M_MAX/T2M_MIN + ET0 Hargreaves-Samani (FAO-56 równ. 52) i wilgotność z GWETTOP/GWETROOT (0–1 → %, -999 = null, D−2); raport oznacza źródło zapasowe w sources i limitations, pewność −0,05. (3) Kontrakt: sourceId era5land i nasa_power w enumach (DM-002, DM-005, DM-010, DM-011, DM-012), DM-015 opisuje produkt ERA5-Land (warstwy, m³/m³ i %, percentyl, data obserwacji, ok. 9 km, flaga fallback), katalog API-006 z licencjami i przypisaniami (Copernicus C3S CC BY 4.0, NASA), examples API-004 z soilMoistureSatellite z era5land. Krok 4.",
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
@@ -11,17 +11,18 @@
   "contract_refs": ["API-004", "API-006", "DM-002", "DM-005", "DM-011", "DM-015"],
   "demo_step": 4,
   "acceptance_criteria": [
-    "Dla 061409_2.0009.612 i dowolnej daty z 10 lat zwraca wilgotność 0–5 cm i strefy korzeniowej w %, datę obserwacji, percentyl i ocenę dry/normal/wet w ≤ 3 s (drugi raz z cache)",
-    "Dla D = dziś bierze ostatni ważny dzień (D−2) i podaje jego datę; wartości -999 nigdy nie trafiają do obliczeń",
-    "Gdy Open-Meteo zwraca 429 (test na stubie), meteo ma serię z NASA POWER z ET0 Hargreaves-Samani, a raport podaje źródło i metodę w sources i limitations",
-    "Kontrakty (api.json, data_model.json) mają nasa_power i zaktualizowane DM-015, examples API-004 zgodne; zadanie T-DB w tym samym commicie",
-    "Wiadomość contract_change do frontendu (etykieta 'Wilgotność gleby' = nasa_power, eumetsat już nie pokazywany jako wilgotność)"
+    "Dla 061409_2.0009.612 i dowolnej daty z 10 lat raport ma wilgotność 0–7 cm i strefy korzeniowej (m³/m³ i % pojemności), datę obserwacji, percentyl i ocenę dry/normal/wet ze źródła era5land, bez dodatkowego wywołania Open-Meteo ponad zapytanie meteo",
+    "Nazwy zmiennych i zasięg dat ERA5-Land w Open-Meteo sprawdzone na żywo jednym ręcznym zapytaniem (po resecie limitu albo z innej sieci), wynik w notes",
+    "Gdy Open-Meteo zwraca 429 (test na stubie, bez prawdziwych wywołań), meteo i wilgotność pochodzą z NASA POWER (ET0 Hargreaves-Samani), sources i limitations to mówią, pewność obniżona o 0,05; wartości -999 nigdy nie trafiają do obliczeń",
+    "Kontrakty (api.json, data_model.json) mają era5land i nasa_power oraz zaktualizowane DM-015, examples API-004 zgodne; zadanie T-DB w tym samym commicie",
+    "Wiadomość contract_change do frontendu (etykieta 'Wilgotność gleby' = era5land, nasa_power jako zapas, eumetsat bez etykiety wilgotności)"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
-    "coord-1: decyzja użytkownika: wilgotność gleby musi być w raporcie. EUMETSAT NO-GO (T-002), więc NASA POWER (sprawdzone na żywo 12:41: 10 lat, 7 parametrów, 1,9 s, bez klucza). Open-Meteo dało 12:40 HTTP 429 (dzienny limit na IP sieci hackathonu).",
-    "Agent: be-api + be-database (kontrakt). Szacunek: 1,5h. Przed T-010 albo razem z nim, bo dzieli logikę zapasu meteo. Silnik (Jan, T-014) czyta DM-015 bez zmian w regułach.",
-    "Postęp (backend-2): kontrakt 0.2.0 + T-DB-005 (ff98a82). services/sources/nasaPower.source.ts: fetchNasaPowerDaily(lat, lon, analysisDate, signal?, deps?) przez runSource (1 zapytanie, cache), computeSoilMoisture(series, D) → DM-015 bez agreement (liczy silnik), hargreavesEt0, toMeteoFallbackSeries(series, lat). Bronowice 2026-06-10: 0–5 cm 38%, root 35.1%, percentyl 4, dry. Testy na prawdziwym fixture. Zostaje: podpięcie zapasu meteo w T-010 (kryterium 3)."
+    "Postęp (backend-2): kontrakt 0.2.0 + T-DB-005 (ff98a82). services/sources/nasaPower.source.ts: fetchNasaPowerDaily(lat, lon, analysisDate, signal?, deps?) przez runSource (1 zapytanie, cache), computeSoilMoisture(series, D) → DM-015 bez agreement (liczy silnik), hargreavesEt0, toMeteoFallbackSeries(series, lat). Bronowice 2026-06-10: 0–5 cm 38%, root 35.1%, percentyl 4, dry. Testy na prawdziwym fixture. Zostaje: podpięcie zapasu meteo w T-010 (kryterium 3).",
+    "coord-1 12:55: ZMIANA zakresu na decyzję użytkownika (preferencja źródeł europejskich): źródło główne wilgotności = ERA5-Land (Copernicus C3S, ok. 9 km), NASA POWER (ok. 50 km) tylko jako zapas. Już napisany nasaPower.source.ts zostaje, zmienia się tylko jego rola. ADR-008 wersja 2.",
+    "coord-1 12:41: NASA POWER sprawdzone na żywo (10 lat, 7 parametrów, 1,9 s, bez klucza). Open-Meteo dało 12:40 HTTP 429 (dzienny limit na IP sieci hackathonu) — zero zapytań do Open-Meteo w testach, fixtures.",
+    "Agent: be-api + be-database (kontrakt). Szacunek: 1,5h. Razem z T-010 (to samo zapytanie Open-Meteo). Silnik (Jan, T-014) czyta DM-015 bez zmian w regułach; przeliczenie na % wymaga TAW z T-012."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
