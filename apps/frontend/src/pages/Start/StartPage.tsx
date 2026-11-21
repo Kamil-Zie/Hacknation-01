@@ -143,9 +143,14 @@ export function StartPage() {
         component="section"
         aria-label="Mapa"
         sx={{
-          position: 'relative',
+          position: { xs: 'relative', md: 'sticky' },
           minWidth: 0,
           minHeight: { xs: 480, md: 560 },
+          // md+: fit the viewport under header + stepper so the "Wybrana działka" buttons are
+          // never below the fold on a 1920×1080 projector (map used to stretch to the left column)
+          height: { md: 'calc(100vh - 248px)' },
+          alignSelf: { md: 'start' },
+          top: { md: 16 },
           display: 'flex',
           border: 1,
           borderColor: 'kropla.line',
