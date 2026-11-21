@@ -1,3 +1,3 @@
 # Claims: backend-2 (Nataniel)
 
-Brak aktywnych rezerwacji.
+- T-004 · API-006, DM-002, DM-005, DM-011 · apps/backend/src/services/sources/** (types, cache.service, runSource, catalog), sources.routes/controller · od 2026-11-21 12:32
