@@ -16,8 +16,13 @@
     "Timeout 10 s i błąd sieci dają status timeout/error, nie wyjątek; drugi call jest z cache",
     "Test na zapisanej odpowiedzi Open-Meteo sprawdza mapowanie pól i jednostki (mm, °C)"
   ],
-  "review": { "status": "pending", "by": null, "note": "" },
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
   "notes": [
+    "coord-1 13:05 ZMIANA po zrobieniu (ADR-009): Open-Meteo ma pobierać TYLKO okno D−90 dni … D (meteo + ERA5-Land w jednym zapytaniu), nie 10 lat w 2 zakresach. 10 lat bierze nasa_power (T-037). Do poprawki w meteo.source.ts: zakres dat i usunięcie drugiego zakresu.",
     "Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Licencja CC BY 4.0 do DM-005.",
     "Zrobione (backend-2): services/sources/meteo.source.ts fetchMeteo(lat, lon, D) – archive API, 2 równoległe zakresy, timeout 15 s, daily (opad, temp, ET0) + hourly ERA5-Land soil_moisture 3 warstwy w tym samym zapytaniu, odcięcie > D, cache. Przy statusie innym niż ok/cached zapas NASA POWER (fallback, confidencePenalty 0.05, limitations). Bez forecast past_days (ADR-006 Aktualizacja: archiwum ma dane do dziś). Testy na syntetycznym fixture (Open-Meteo 429, zero zapytań na żywo)."
   ],
