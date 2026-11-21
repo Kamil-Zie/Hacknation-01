@@ -5,7 +5,7 @@
   "type": "integration",
   "team": "frontend",
   "assignee": "frontend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-005", "T-007"],
   "contract_refs": ["API-001", "API-002", "DM-003", "UI-S-001"],
