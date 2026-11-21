@@ -23,8 +23,8 @@ const ERROR_MESSAGES: Record<string, string> = {
 function toError(error: unknown): { code: string; message: string } | null {
   if (!error) return null;
   if (error instanceof ApiError) {
-    const hint = typeof error.details?.hint === 'string' ? ` ${error.details.hint}` : '';
-    const message = ERROR_MESSAGES[error.code] ?? `${error.message}.${hint}`;
+    // ParcelSearch always shows the format hint, so do not append details.hint here
+    const message = ERROR_MESSAGES[error.code] ?? error.message;
     return { code: error.code, message };
   }
   return {

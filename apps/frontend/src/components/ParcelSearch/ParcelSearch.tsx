@@ -31,7 +31,7 @@ export function ParcelSearch({
     event.preventDefault();
     const trimmed = value.trim();
     if (!PARCEL_ID_REGEX.test(trimmed)) {
-      setValidationError(`Niepoprawny numer działki. ${FORMAT_HINT}`);
+      setValidationError('Niepoprawny numer działki.');
       return;
     }
     setValidationError(null);
@@ -50,8 +50,10 @@ export function ParcelSearch({
           }}
           error={errorMessage !== null}
           helperText={errorMessage ? `${errorMessage} (${FORMAT_HINT})` : FORMAT_HINT}
-          inputProps={{ 'aria-describedby': helperId }}
-          FormHelperTextProps={{ id: helperId, role: errorMessage ? 'alert' : undefined }}
+          slotProps={{
+            htmlInput: { 'aria-describedby': helperId },
+            formHelperText: { id: helperId, role: errorMessage ? 'alert' : undefined },
+          }}
           placeholder={EXAMPLE_ID}
           fullWidth
           autoComplete="off"
