@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-004", "T-002"],
   "contract_refs": ["API-004", "DM-002", "DM-005", "DM-013", "DM-011"],
@@ -23,7 +23,10 @@
   },
   "notes": [
     "coord-1 13:35: przeniesione z backend-1 na backend-2 (Jan robi T-017 i T-031, Sentinel-2 był najdłuższą ścieżką). Źródło budujesz niezależnie od orkiestratora, jak pozostałe (runSource), Jan podpina je w T-031.",
-    "Agent: be-api. Szacunek: 1,5h. Faza: 6 Sentinel-2. Ryzyko średnie/wysokie, wyniki T-002."
+    "Agent: be-api. Szacunek: 1,5h. Faza: 6 Sentinel-2. Ryzyko średnie/wysokie, wyniki T-002.",
+    "backend-1 15:10: przejęte z powrotem (Nataniel przy T-030, moja kolejka pusta).",
+    "WYNIK: services/sources/sentinel2.source.ts: searchScenes(geometry, D, signal?) i fetchSentinel2Scenes(parcel, D, signal?, deps) przez runSource (cache sentinel2:<id>:<D>). Na żywo Bronowice: D=2026-06-10 10 scen w 2,3 s (najnowsza 2026-06-09, chmury 34,7%, EPSG 32634, scale 0.0001 offset -0.1); D=2016-12-01 2 sceny (2016-11-26, offset 0); D<2016-11-01 missing z zakresem archiwum bez zapytania. Testy na fixture STAC, backend 168/168.",
+    "Do T-028: scena ma epsg i assety red/nir/nir08/swir16/scl z href, scale, offset; wybór sceny po jakości pikseli (≥ 60% ważnych, maks. 3 próby) robi T-028. Niepodpięte do orkiestratora (T-031)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
