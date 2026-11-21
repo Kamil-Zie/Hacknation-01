@@ -1,5 +1,5 @@
 // UI-C-002 ParcelMap: Leaflet map of Poland (OSM), parcel boundary from GeoJSON, click to pick a parcel
-import { Alert, Box, LinearProgress } from '@mui/material';
+import { Alert, Box, LinearProgress, useTheme } from '@mui/material';
 import { useEffect } from 'react';
 import {
   CircleMarker,
@@ -19,7 +19,6 @@ import 'leaflet/dist/leaflet.css';
 
 const POLAND_CENTER: LatLngTuple = [52.0, 19.4];
 const POLAND_ZOOM = 6;
-const PARCEL_STYLE = { color: '#1F6FB2', weight: 3, fillColor: '#1F6FB2', fillOpacity: 0.15 };
 
 const DEFAULT_HEIGHT: MapHeight = { xs: '50vh', md: '60vh', lg: '100%' };
 const DEFAULT_MIN_HEIGHT = 280;
@@ -77,6 +76,13 @@ export function ParcelMap({
   errorMessage = null,
   onPick,
 }: ParcelMapProps) {
+  const theme = useTheme();
+  const parcelStyle = {
+    color: theme.palette.parcel.stroke,
+    weight: 3,
+    fillColor: theme.palette.parcel.fill,
+    fillOpacity: 1, // alpha is already in the rgba fill token
+  };
   return (
     <Box
       role="region"
@@ -106,7 +112,7 @@ export function ParcelMap({
           <GeoJSON
             key={parcel.id}
             data={parcel.geometry as unknown as GeoJsonObject}
-            style={PARCEL_STYLE}
+            style={parcelStyle}
           />
         )}
         <FitToParcel parcel={parcel} />
