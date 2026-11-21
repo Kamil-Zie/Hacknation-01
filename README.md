@@ -4,9 +4,54 @@ Aplikacja webowa dla rolnika (zadanie KOWR „Zatrzymaj wodę, chroń plony”).
 
 **Wynik i rekomendacje oblicza aplikacja z pobranych danych, według jawnych reguł (ADR-007). Nie robi tego model AI i nie wyświetlamy gotowych, wcześniej przygotowanych rekomendacji.**
 
-- Prototyp: https://app.kamil-zielinski.pl (wdrożenie w toku)
+- Prototyp: https://app.kamil-zielinski.pl (instrukcja dla jury niżej)
 - Repozytorium jest prywatne i pozostaje niepubliczne co najmniej do końca wydarzenia; dostęp dla jury według instrukcji Platformy konkursowej.
 - Dane demo: działka `061409_2.0009.612` (Bronowice, gm. Puławy), pszenica ozima, data analizy 2026-05-25.
+
+## Dla jury: jak najszybciej sprawdzić Kropelkę
+
+### Wariant A: w przeglądarce, bez instalacji (zalecany)
+
+1. Otwórz **https://app.kamil-zielinski.pl** (Chrome, Edge, Firefox, Safari, Opera; komputer lub telefon). Bez logowania.
+2. Wpisz numer działki ewidencyjnej w formacie TERYT, np. `061409_2.0009.612`, i naciśnij Enter. Możesz też przybliżyć mapę i kliknąć działkę.
+3. Kliknij **„Podgląd tej działki”**, żeby zobaczyć obrys z ULDK, potem **„To moja działka – dalej”**.
+4. Wybierz uprawę i **datę analizy** (dziś lub dowolny dzień z ostatnich 10 lat), kliknij **„Pokaż raport o wodzie”**.
+5. Raport pojawia się zwykle po 8–20 s (ta sama działka, uprawa i data drugi raz: poniżej 1 s). Zawiera stan wody, przyczyny, rekomendacje, źródła z datami, pewność i braki danych.
+6. **„Pobierz PDF”** albo **„Drukuj”** w raporcie: wersja do druku (w oknie druku można wybrać „Zapisz jako PDF”). Raport ma stały link, który można skopiować z paska adresu.
+7. Kolejna działka: **„Dodaj działkę”** w nagłówku.
+
+Działki, na których sprawdzaliśmy wyniki (porównanie z IUNG-PIB w sekcji 9):
+
+| Działka | Miejsce | Uprawa, data |
+|---|---|---|
+| `061409_2.0009.612` | Bronowice, gm. Puławy | pszenica ozima, 2026-05-25 |
+| `302504_5.0029.66` | Środa Wielkopolska | pszenica ozima, 2023-07-20 |
+| `040706_4.0004.15` | Kruszwica | burak cukrowy, 2024-05-31 |
+| `221002_4.0004.136` | Nowy Dwór Gdański | rzepak ozimy, 2023-07-10 |
+
+Konto gospodarstwa jest opcjonalne (przycisk „Zaloguj” → „Załóż konto”, dowolny e-mail, hasło min. 8 znaków); analiza działa bez niego.
+
+### Wariant B: lokalnie na własnym komputerze (ok. 5 minut)
+
+Potrzebne: **Node.js 20.19+** (z npm 10+), **git** i baza **MongoDB**: darmowy klaster MongoDB Atlas M0 (ok. 3 min rejestracji na mongodb.com) albo lokalny MongoDB Community (`mongodb://localhost:27017`). Bez Dockera i bez kluczy API do źródeł danych.
+
+```bash
+git clone <adres repozytorium> kropelka
+cd kropelka
+cp .env.example .env        # Windows (PowerShell/cmd): copy .env.example .env
+# w .env wpisz MONGODB_URI (Atlas albo mongodb://localhost:27017) i MONGODB_DB=kropelka
+npm install
+npm run dev
+```
+
+Otwórz **http://localhost:5173** (API: http://localhost:3000/api/v1/health powinno zwrócić `"db":"connected"`). Dalej jak w wariancie A. Bazy nie trzeba wypełniać: kolekcje i cache tworzą się same przy pierwszej analizie.
+
+### Gdy coś wygląda nie tak
+
+- **„Dane zapasowe NASA POWER” w raporcie:** darmowe Open-Meteo ogranicza liczbę zapytań z jednego adresu IP (sieci wspólne, np. na wydarzeniu). Aplikacja sama przechodzi na NASA POWER i pisze to w ograniczeniach; wynik jest wtedy ostrożniejszy (sekcja 9).
+- **„Brak danych” przy satelicie:** chmury nad działką (`CLOUD_COVER`) albo brak zdjęcia w oknie czasu. Raport mówi to wprost i obniża pewność, zamiast zgadywać.
+- **Pierwsza analiza dłuższa:** pobieranie 10 lat danych; limit całej analizy to 25 s. Ponowienie po kilku sekundach zwykle trwa poniżej 1 s.
+- **Błędny numer działki:** komunikat podpowiada format; można też kliknąć działkę na mapie.
 
 ## 1. Instrukcja uruchomienia
 

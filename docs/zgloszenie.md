@@ -60,3 +60,12 @@ Korzyści dla rolnika:
 - dokumentacja README według wymagań KOWR, prezentacja i scenariusz pokazu.
 
 **Do końca wydarzenia planujemy:** wdrożenie produkcyjne z publicznym linkiem dla jury, poprawki bezpieczeństwa przed produkcją (limity zapytań, nagłówki, CORS), od 7:00 zamrożenie funkcji i tylko poprawki błędów, rozgrzanie cache i pomiar czasu na produkcji, raporty PDF z przykładowych działek, film do 3 minut i próbę pokazu na żywo.
+
+## Instrukcja dla jury (do wklejenia, skrót README „Dla jury”)
+
+1. Otwórz https://app.kamil-zielinski.pl (bez instalacji i logowania, komputer lub telefon).
+2. Wpisz numer działki TERYT (np. 061409_2.0009.612) albo kliknij działkę na mapie → „Podgląd tej działki” → „To moja działka – dalej”.
+3. Wybierz uprawę i datę analizy (dziś lub dowolna z ostatnich 10 lat) → „Pokaż raport o wodzie”. Raport po ok. 8–20 s.
+4. „Pobierz PDF” albo „Drukuj” zapisuje raport; „Dodaj działkę” w nagłówku zaczyna kolejną analizę.
+
+Uruchomienie lokalne (ok. 5 min, Node.js 20.19+, git, darmowy MongoDB Atlas M0 lub lokalny MongoDB): `cp .env.example .env` (uzupełnić MONGODB_URI), `npm install`, `npm run dev`, potem http://localhost:5173. Szczegóły i rozwiązywanie problemów: README, sekcja „Dla jury”.
