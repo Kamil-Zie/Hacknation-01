@@ -23,6 +23,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 17:45: LICENSE (MIT, Zespół HackNation), README: koszty i skalowalność (KOWR 5.4/5.5), bezpieczeństwo i dane osobowe (5.6), podstawy naukowe z bibliografią załącznika; docs/zgloszenie.md (tekst do HackTribe, opis 1411 znaków). Zostaje: link repo w zgloszenie.md, ceny Open-Meteo/Atlas do potwierdzenia, wynik porównania z IUNG.",
     "coord-1 17:00: README draft (coord-docs) na main; stary README przeniesiony do docs/hacknation-workflow.md (linki poprawione). Otwarte TODO: licencje zależności + licencja kodu (sekcja 7), koszty skalowania (8), porównanie z IUNG/EDO (9). Kryterium 'czysty klon' do sprawdzenia.",
     "Agent: coord-docs. Szacunek: 2h. Faza: draft 20:00. Punkt 9 uzupełnić po T-036; finalizacja po zamrożeniu."
   ],

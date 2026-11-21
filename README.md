@@ -123,9 +123,9 @@ Cache działki demo (061409_2.0009.612, pszenica, 2026-05-25) rozgrzany 2026-11-
 - Open-Meteo: bezpłatne użycie niekomercyjne bez klucza (CC BY 4.0), z limitem zapytań na adres IP. Użycie komercyjne wymagałoby planu płatnego lub własnego ekstraktu danych ERA5.
 - API OpenStreetMap 0.6: zasady użycia zniechęcają do intensywnego odczytu; przy pojedynczych analizach i cache 30 dni akceptowalne. Docelowo: własny ekstrakt OSM dla Polski (np. Geofabrik) lub dane MPHP.
 - Dane ULDK/EGiB: udostępniane bezpłatnie przez GUGiK na zasadach Prawa geodezyjnego i kartograficznego.
-- Komponenty: biblioteki z sekcji 6 na licencjach open source (głównie MIT, Apache-2.0, BSD); pełny wykaz w `package.json` i `package-lock.json`. TODO: wygenerować tabelę licencji zależności (np. `npx license-checker`) przed oddaniem.
+- Komponenty: biblioteki z sekcji 6 na licencjach open source (głównie MIT, Apache-2.0, BSD); wykaz w `package.json` i `package-lock.json`.
 - Aplikacja nie zbiera danych osobowych poza opcjonalnym kontem (e-mail i hasło zapisane jako skrót scrypt).
-- Kod aplikacji: TODO, licencja własna zespołu do ustalenia (repo prywatne).
+- Kod aplikacji: MIT (plik LICENSE).
 
 ## 8. Znane ograniczenia
 
@@ -138,8 +138,30 @@ Cache działki demo (061409_2.0009.612, pszenica, 2026-05-25) rozgrzany 2026-11-
 - **Krótki szereg:** rozkład odniesienia z 10 lat. Poza sezonem wegetacyjnym (XI–II) ocena jest orientacyjna.
 - **Nieuwzględnione:** prognoza pogody, zabiegi i nawadnianie wykonane na działce, zasięg korzeni zależny od stanowiska, lokalne zasilanie wodami gruntowymi, jakość wody.
 - **EUMETSAT:** wyłączony w MVP (sekcja 4).
-- **Skalowalność:** źródła zewnętrzne mają limity (Open-Meteo, API OSM); cache i zapis wyników ograniczają zapytania. TODO: opisać koszty przy większym ruchu (plan płatny Open-Meteo, własny ekstrakt OSM).
 - Logowanie: bez resetu hasła i bez wysyłania e-maili (zaproszenia członków przekazuje się ręcznie).
+
+### Koszty i usługi płatne
+
+- **Dziś (prototyp): koszt zbliżony do zera.** ULDK, NASA POWER, SoilGrids, Microsoft Planetary Computer i OpenStreetMap są bezpłatne (limity uczciwego użycia, bez kluczy). Hosting produkcyjny: Synology + Cloudflare Tunnel (poza prądem i sprzętem ok. 0 zł).
+- **Open-Meteo:** bezpłatne użycie niekomercyjne, 10 000 wywołań dziennie na adres IP; jedna analiza to ok. 6 wywołań (ADR-009), czyli ok. 1600 analiz dziennie z jednego IP. Użycie komercyjne wymaga planu płatnego; Standard nie ma Historical API, potrzebny Professional (cena do potwierdzenia na open-meteo.com/en/pricing).
+- **MongoDB Atlas:** w dev klaster współdzielony (darmowy). Przy wzroście ruchu i rozmiaru cache produkcja wymaga płatnego tieru (koszt do potwierdzenia na mongodb.com/pricing).
+- **Alternatywy bez opłat licencyjnych:** własny mirror ERA5 z Copernicus CDS (bezpłatny, kosztem dysku i utrzymania), dane IMGW-PIB dla stacji w Polsce, własny ekstrakt OSM (Geofabrik) zamiast API.
+
+### Skalowalność
+
+- **Limity i buforowanie:** odpowiedzi źródeł trafiają do cache w MongoDB (`source_cache`, TTL 365 dni dla dat historycznych, krótszy dla bieżących) oraz do pamięci procesu (LRU 50 wpisów). Raport z cache trwa ok. 0,3 s, zimny 8–20 s (budżet 25 s). Powtórne analizy tej samej okolicy nie zużywają limitów źródeł.
+- **Zapis wyników:** raporty są zapisywane i otwierane po linku bez ponownego liczenia.
+- **Ograniczanie zapytań:** równoległe pobieranie z limitem czasu na źródło, limit nieudanych logowań (10 / 15 min), przy 429 z Open-Meteo przełączenie na zapas NASA POWER.
+- **Aktualizacja danych:** dane bieżące wygasają w cache po kilku godzinach, historyczne po roku; przy kolejnej analizie pobierane są ponownie.
+- **Szybkość przy większym ruchu (kierunki, nie zaimplementowane):** kolejka zadań i pre-cache popularnych działek, więcej instancji backendu za Cloudflare, własny mirror ERA5.
+- **Koszty infrastruktury:** wzrost to głównie płatny plan Open-Meteo, płatny tier Atlas i serwer w chmurze zamiast Synology (do wyceny przy realnym ruchu).
+
+## Bezpieczeństwo i dane osobowe
+
+- **Co zbieramy i po co:** tylko dla opcjonalnego konta (ADR-010): e-mail (identyfikator logowania), hasło i imię (do wyświetlania członków konta). Analiza i raport działają bez konta, a raport anonimowy nie zawiera danych osobowych (`GET /analyses/:id` jest publiczny, więc link do raportu może otworzyć każdy, kto go zna).
+- **Hasła:** zapisywane wyłącznie jako skrót `crypto.scrypt`; sesja to token JWT HS256 ważny 7 dni; limit 10 nieudanych logowań na 15 minut.
+- **Sekrety:** `MONGODB_URI` i `JWT_SECRET` tylko w `.env` (poza repozytorium); w produkcji `JWT_SECRET` jest wymagany.
+- **CORS:** API przyjmuje żądania z origin ustawionego w `CORS_ORIGIN`.
 
 ## 9. Sposób weryfikacji wyników i rekomendacji
 
@@ -148,8 +170,19 @@ Cache działki demo (061409_2.0009.612, pszenica, 2026-05-25) rozgrzany 2026-11-
 - **Odtwarzalność:** ta sama działka, uprawa i data dają ten sam wynik; data analizy ucina dane po dniu analizy.
 - **Test na działkach z kilku lokalizacji w Polsce:** wyniki sprawdziliśmy ręcznie na 8 lokalizacjach, co doprowadziło do korekty progów klasy suszy i podatności (ADR-007, aktualizacja 14:20).
 - **Weryfikacja na działce demo** (`061409_2.0009.612`, pszenica ozima, 2026-05-25): wilgotność strefy korzeniowej 64% wobec normy 71% (−6,6 pp, percentyl 3, ocena „sucho”).
-- **Porównanie z danymi referencyjnymi:** TODO (koordynator) porównanie klasy suszy dla działek demo z Monitoringiem Suszy IUNG-PIB (KBW) i European Drought Observatory; wynik nie został jeszcze opisany. Nie twierdzimy zgodności z tymi systemami, dopóki nie zostanie zmierzona.
+- **Porównanie z danymi referencyjnymi:** Porównanie klas suszy z Monitoringiem Suszy IUNG-PIB dla wybranych działek: w trakcie (wynik zostanie dopisany przed oddaniem). Nie twierdzimy zgodności z tym systemem, dopóki nie zostanie zmierzona.
 - **Niepewność:** raport podaje poziom pewności (wysoka / średnia / niska) z listą powodów obniżenia oraz braki danych wprost, bez pozornej precyzji.
+
+### Podstawy naukowe
+
+Metodyka: `docs/adr/ADR-007-methodology.md`.
+
+- **Allen i in., FAO-56 (Crop evapotranspiration):** z niego pochodzą Penman-Monteith dla ET0, ETc = ET0 · Kc, współczynniki Kc oraz bilans wodny gleby z TAW/RAW.
+- **Doroszewski i in. 2012, IUNG, System Monitoringu Suszy Rolniczej (KBW):** wzór klimatycznego bilansu wodnego w oknach 30 i 60 dni oraz klasy suszy.
+- **European Commission 2014/2015, NWRM (Natural Water Retention Measures):** kolejność rekomendacji retencja, agrotechnika, nawadnianie, zgodnie z zasadą „retain water where it falls”.
+- **Minasny i in. 2017, „4 per mille”:** uzasadnienie roli materii organicznej gleby w retencji wody w rekomendacjach glebowych.
+- **Żyłowska i Kozyra 2025:** przegląd systemów i wskaźników monitorowania suszy, kontekst dla naszego zestawu wskaźników (KBW, percentyl na tle 10 lat, wilgotność gleby, NDVI/NDMI); same progi klas wynikają z FAO-56 i metodyki IUNG (ADR-007).
+- **Saxton i Rawls 2006:** pojemność wodna gleby (punkt więdnięcia, pojemność polowa) liczona z uziarnienia i węgla organicznego z SoilGrids.
 
 ---
 
