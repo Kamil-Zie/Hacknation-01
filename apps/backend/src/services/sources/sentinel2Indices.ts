@@ -8,6 +8,8 @@ import proj4 from 'proj4';
 import { getCrop } from '@/services/engine/crops';
 import { assessSatellite } from '@/services/engine/satellite';
 import type { SatelliteObservation } from '@/services/engine/satellite';
+import { mongoSourceCache } from '@/services/sources/cache.service';
+import type { SourceCacheStore } from '@/services/sources/cache.service';
 import { runSource } from '@/services/sources/runSource';
 import type { SourceResult, SourceStatusValue } from '@/services/sources/types';
 import { SHORT_TTL_MS } from '@/services/sources/catalog';
@@ -473,9 +475,19 @@ export async function fetchSatellite(
   }
   let failure: Failure | null = null;
   const isFresh = Date.now() - Date.parse(analysisDate) < FRESH_DAYS * DAY_MS;
+  // Plan B results (NDVI only, NDMI null because of the time budget) are not cached, so a later
+  // analysis can still read NDMI; v2 key drops NDVI-only entries cached before this rule (T-031).
+  const baseCache = deps.cache ?? mongoSourceCache;
+  const cache: SourceCacheStore = {
+    get: baseCache.get,
+    set: async (key, sourceId, payload, ttlMs, dataPeriod) => {
+      if ((payload as SatelliteStats | null)?.ndmi === null) return;
+      await baseCache.set(key, sourceId, payload, ttlMs, dataPeriod);
+    },
+  };
   const result = await runSource({
     sourceId: 'sentinel2',
-    key: `sentinel2-stats:${parcel.id}:${analysisDate}`,
+    key: `sentinel2-stats:v2:${parcel.id}:${analysisDate}`,
     fetcher: async (s) => {
       const found = await findStats(parcel, analysisDate, s, deps);
       if ('failure' in found) {
@@ -487,7 +499,7 @@ export async function fetchSatellite(
     ttlMs: isFresh ? SHORT_TTL_MS.sentinel2 : undefined,
     retries: 0,
     signal,
-    cache: deps.cache,
+    cache,
   });
 
   const { data: stats, ...rest } = result;

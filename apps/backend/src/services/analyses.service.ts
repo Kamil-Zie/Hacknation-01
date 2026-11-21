@@ -203,6 +203,16 @@ export async function createAnalysis(
   // 6. Sources, gaps, limitations, status.
   const sources = buildSources(uldk, run, engine.flags.isSoilMoistureFromEra5);
   const dataGaps = buildDataGaps(sources, engine.flags);
+  // Scene read but NDMI not computed (Plan B time budget or failed NDMI bands): explicit gap for the UI.
+  if (satellite && satellite.ndmi === null) {
+    const reason = sources.find((s) => s.sourceId === 'sentinel2')?.message;
+    dataGaps.push({
+      sourceId: 'sentinel2',
+      what: reason ? `Brak wskaźnika NDMI (${reason})` : 'Brak wskaźnika NDMI',
+      impact:
+        'Nie oceniono wilgotności roślin ze zdjęcia; ocena satelitarna opiera się tylko na NDVI',
+    });
+  }
   const limitations = [
     ...LIMITATIONS_BEFORE_SPLIT,
     ...(engine.flags.omClipped

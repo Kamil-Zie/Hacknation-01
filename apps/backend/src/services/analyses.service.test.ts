@@ -332,6 +332,25 @@ test('Sentinel-2 ok: assessment.satellite filled, NDMI below feeds causes, repor
   assert.ok(withDryVegetation.causes.some((cause) => cause.code === 'low_vegetation_moisture'));
 });
 
+test('Sentinel-2 Plan B (NDVI only): satellite kept, explicit NDMI data gap with the reason', async () => {
+  const { deps } = makeDeps();
+  const ndviOnly = { ...SATELLITE, ndmi: null, ndmiAssessment: 'unknown' as const };
+  deps.fetchers = {
+    ...deps.fetchers,
+    sentinel2: async () => ({
+      ...(await okSource('sentinel2', ndviOnly)()),
+      message: 'Plan B: budżet czasu na odczyt zdjęcia wyczerpany, policzono tylko NDVI',
+    }),
+  };
+  const report = await createAnalysis(BODY, deps);
+
+  assert.equal(report.assessment.satellite?.ndmi, null);
+  const gap = report.dataGaps.find((item) => item.sourceId === 'sentinel2');
+  assert.ok(gap);
+  assert.match(gap.what, /NDMI/);
+  assert.match(gap.what, /Plan B/);
+});
+
 test('Sentinel-2 missing (cirrus): satellite null, data gap with the source message, partial', async () => {
   const { deps } = makeDeps();
   deps.fetchers = {
