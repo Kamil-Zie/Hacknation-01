@@ -13,9 +13,27 @@ interface SourceProgressListProps {
   elapsedMs: number;
 }
 
-export function SourceProgressList({ sources, statuses, elapsedMs }: SourceProgressListProps) {
+// Optional / fallback sources (coord decision 20261121-1251): eumetsat is always missing and
+// lives only in data gaps; nasa_power appears only when it actually served as the fallback
+const HIDDEN_WHILE_FETCHING = new Set(['eumetsat', 'nasa_power']);
+const SHOWN_ONLY_WHEN_USED = new Set(['nasa_power']);
+
+function isVisible(sourceId: string, statuses: SourceStatus[] | null): boolean {
+  if (sourceId === 'eumetsat') return false;
+  if (statuses === null) return !HIDDEN_WHILE_FETCHING.has(sourceId);
+  if (!SHOWN_ONLY_WHEN_USED.has(sourceId)) return true;
+  const status = statuses.find((item) => item.sourceId === sourceId)?.status;
+  return status === 'ok' || status === 'cached';
+}
+
+export function SourceProgressList({
+  sources: allSources,
+  statuses,
+  elapsedMs,
+}: SourceProgressListProps) {
   const isFetching = statuses === null;
   const progress = Math.min(100, (elapsedMs / PROGRESS_TOTAL_MS) * 100);
+  const sources = allSources.filter((source) => isVisible(source.id, statuses));
 
   return (
     <Stack spacing={2} aria-live="polite">
