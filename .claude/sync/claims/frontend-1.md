@@ -1,7 +1,3 @@
 # Claims: frontend-1 (Dawid)
 
-Pliki frontend-2 oddane Jakubowi (wrócił, T-081: router, RequireAuth, Login, Account).
-
-- T-071 · `src/pages/Start/StartPage.tsx`, `src/components/{ParcelSearch,ParcelMap,MapLayerToggle}/**` · od 2026-11-21 21:20
-- T-072 · `src/components/{AnalysisForm,CropIcon}/**`, `src/pages/Parcel/**`, `src/utils/cropCategories.ts` (nowy) · od 2026-11-21 21:20
-- T-079 · później (po T-071 i T-077)
+- T-079 · Pola: `src/api/fields.ts`, `src/mocks/fields.mock.ts`, `src/api/types.ts` (tylko nowe typy Field na końcu), `src/components/{FieldList,FieldMap}/**`, `src/pages/FieldCreate/**`, `contracts/ui.json` (UI-S-007); trasa /pole/nowe i osadzenie FieldList w Panelu – prośba do frontend-2 (T-081) · od 2026-11-21 21:55
