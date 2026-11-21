@@ -1,0 +1,28 @@
+{
+  "id": "T-038",
+  "title": "Wypełnij charts w raporcie (seria KBW60 90 dni + pasmo klimatologii p10/p50/p90 z NASA) dla wykresu T-020",
+  "description": "Orkiestrator wypełnia report.charts zgodnie z DM-001/DM-006, bez zmiany kontraktu: kbw60Series (90 dni okna bieżącego, ERA5 albo zapas NASA) i kbw60Climatology (p10/p50/p90 z NASA POWER dla tych samych dni roku, ADR-009). Krok 4 demo: wykres KBW na ekranie raportu (UI-C-011).",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-017", "T-031"],
+  "contract_refs": ["API-004", "DM-001", "DM-006"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "POST /analyses dla 061409_2.0009.612 na 2026-05-25 zwraca charts z kbw60Series (ok. 90 punktów) i kbw60Climatology (p10/p50/p90), zgodne z DM-006",
+    "Przy zapasie NASA i bez NASA (climatology null) charts nie wywraca raportu: seria bez pasma albo charts null + dataGap",
+    "Test jednostkowy na fixture + jeden test na żywo, handoff do frontend-1 (T-020)"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 14:55: przydział po decision_request 20261121-1427 (backend-1). Szacunek 45 min. Potem: be-tester na całej ścieżce demo (POST, GET po id, błąd źródła, brak bazy)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
