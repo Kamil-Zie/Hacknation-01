@@ -1,9 +1,10 @@
 // UI-S-001 Start i wybór działki (krok 1 z 3): search by TERYT ID / address / GPS or map click, selected parcel card, next step button
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import TouchAppOutlinedIcon from '@mui/icons-material/TouchAppOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ApiError } from '@/api/client';
 import { useParcelByPointMutation, useParcelQuery } from '@/api/parcels';
@@ -23,6 +24,7 @@ function toError(error: unknown): { code: string; message: string; canRetry: boo
 
 export function StartPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const parcel = useSelectionStore((state) => state.parcel);
   const setParcel = useSelectionStore((state) => state.setParcel);
   const setIsExample = useSelectionStore((state) => state.setIsExample);
@@ -31,6 +33,16 @@ export function StartPage() {
   const searchQuery = useParcelQuery(searchId);
   const pickMutation = useParcelByPointMutation();
   const [focus, setFocus] = useState<{ lat: number; lon: number } | null>(null);
+  const [focusKey, setFocusKey] = useState(0);
+
+  // T-058 "Dodaj działkę" navigates here with a reset stamp: forget the previous search
+  const resetStamp = (location.state as { resetAt?: number } | null)?.resetAt;
+  useEffect(() => {
+    if (resetStamp) {
+      setSearchId(null);
+      setFocus(null);
+    }
+  }, [resetStamp]);
 
   const recentParcels = useRecentParcelsStore((state) => state.items);
   const addRecentParcel = useRecentParcelsStore((state) => state.add);
@@ -66,7 +78,15 @@ export function StartPage() {
     setIsExample(false);
     setSearchId(null);
     lastPoint.current = { lat, lon };
-    pickMutation.mutate({ lat, lon }, { onSuccess: setParcel });
+    pickMutation.mutate(
+      { lat, lon },
+      {
+        onSuccess: (picked) => {
+          setParcel(picked);
+          setFocusKey((key) => key + 1);
+        },
+      },
+    );
   }
 
   // T-051: repeat the last failed request (search by ID or map click)
@@ -136,6 +156,7 @@ export function StartPage() {
         <ParcelMap
           parcel={parcel}
           focus={focus}
+          focusKey={focusKey}
           height="100%"
           isLoading={isLoading}
           errorMessage={searchId === null ? (error?.message ?? null) : null}
@@ -217,15 +238,30 @@ export function StartPage() {
                   {parcel.commune} · {parcel.areaHa.toLocaleString('pl-PL')} ha
                 </Typography>
               </Box>
-              <Button
-                variant="contained"
-                size="large"
-                endIcon={<ArrowForwardIcon aria-hidden />}
-                onClick={() => navigate(`/parcel/${encodeURIComponent(parcel.id)}`)}
-                sx={{ minHeight: 64, px: 3.5, fontSize: '1.3125rem', flexGrow: { xs: 1, sm: 0 } }}
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={1.5}
+                sx={{ width: { xs: '100%', sm: 'auto' } }}
               >
-                To moja działka – dalej
-              </Button>
+                <Button
+                  variant="contained"
+                  size="large"
+                  endIcon={<ArrowForwardIcon aria-hidden />}
+                  onClick={() => navigate(`/parcel/${encodeURIComponent(parcel.id)}`)}
+                  sx={{ minHeight: 64, px: 3.5, fontSize: '1.3125rem' }}
+                >
+                  To moja działka – dalej
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  startIcon={<VisibilityOutlinedIcon aria-hidden />}
+                  onClick={() => setFocusKey((key) => key + 1)}
+                  sx={{ minHeight: 48, px: 2.5, fontSize: '1.125rem' }}
+                >
+                  Podgląd tej działki
+                </Button>
+              </Stack>
             </Box>
           </Box>
         )}

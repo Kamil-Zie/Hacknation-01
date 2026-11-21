@@ -1,6 +1,6 @@
 // UI-C-002 ParcelMap: Leaflet map of Poland (OSM), parcel boundary from GeoJSON, click to pick a parcel
 import { Alert, Box, LinearProgress, useTheme } from '@mui/material';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   CircleMarker,
   GeoJSON,
@@ -22,6 +22,7 @@ const POLAND_ZOOM = 6;
 
 const DEFAULT_HEIGHT: MapHeight = { xs: '50vh', md: '60vh', lg: '100%' };
 const DEFAULT_MIN_HEIGHT = 280;
+const HIGHLIGHT_MS = 1500;
 
 type MapHeight =
   string | number | Partial<Record<'xs' | 'sm' | 'md' | 'lg' | 'xl', string | number>>;
@@ -32,6 +33,8 @@ interface ParcelMapProps {
   height?: MapHeight;
   /** Centers the map on a searched place (address search); a new object re-centers again */
   focus?: { lat: number; lon: number; zoom?: number } | null;
+  /** Changing the value re-fits the map to the parcel and briefly highlights its boundary (0 = never) */
+  focusKey?: number;
   markers?: { lat: number; lon: number; label: string }[];
   isInteractive?: boolean;
   isLoading?: boolean;
@@ -46,7 +49,7 @@ function ClickHandler({ onPick }: { onPick?: (lat: number, lon: number) => void 
   return null;
 }
 
-function FitToParcel({ parcel }: { parcel: Parcel | null }) {
+function FitToParcel({ parcel, focusKey }: { parcel: Parcel | null; focusKey: number }) {
   const map = useMap();
   useEffect(() => {
     // Recompute size and re-fit after mount and on every container resize,
@@ -69,7 +72,7 @@ function FitToParcel({ parcel }: { parcel: Parcel | null }) {
     const observer = new ResizeObserver(() => fit());
     observer.observe(map.getContainer());
     return () => observer.disconnect();
-  }, [map, parcel]);
+  }, [map, parcel, focusKey]);
   return null;
 }
 
@@ -85,6 +88,7 @@ export function ParcelMap({
   parcel,
   height,
   focus = null,
+  focusKey = 0,
   markers,
   isInteractive = true,
   isLoading = false,
@@ -92,9 +96,16 @@ export function ParcelMap({
   onPick,
 }: ParcelMapProps) {
   const theme = useTheme();
+  const [isHighlighted, setIsHighlighted] = useState(false);
+  useEffect(() => {
+    if (!focusKey) return;
+    setIsHighlighted(true);
+    const timer = window.setTimeout(() => setIsHighlighted(false), HIGHLIGHT_MS);
+    return () => window.clearTimeout(timer);
+  }, [focusKey]);
   const parcelStyle = {
     color: theme.palette.parcel.stroke,
-    weight: 3,
+    weight: isHighlighted ? 8 : 3,
     fillColor: theme.palette.parcel.fill,
     fillOpacity: 1, // alpha is already in the rgba fill token
   };
@@ -136,7 +147,7 @@ export function ParcelMap({
             style={parcelStyle}
           />
         )}
-        <FitToParcel parcel={parcel} />
+        <FitToParcel parcel={parcel} focusKey={focusKey} />
         <FocusPlace focus={focus} />
         {markers?.map((marker) => (
           <CircleMarker
