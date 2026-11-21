@@ -63,6 +63,8 @@ export function ParcelPage() {
   const [elapsedMs, setElapsedMs] = useState(0);
   const [localError, setLocalError] = useState<unknown>(null);
   const navTimer = useRef<ReturnType<typeof setTimeout>>();
+  // Bumped on submit, local timeout and retry, so a late API-004 response is ignored
+  const attemptRef = useRef(0);
 
   useEffect(() => {
     if (parcelQuery.data && !hasStored) setParcel(parcelQuery.data);
@@ -80,6 +82,7 @@ export function ParcelPage() {
 
   useEffect(() => {
     if (isAnalyzing && elapsedMs > MAX_ANALYSIS_MS) {
+      attemptRef.current += 1;
       setLocalError(new ApiError('TIMEOUT', 'Przekroczono czas analizy', 0));
     }
   }, [isAnalyzing, elapsedMs]);
@@ -90,6 +93,8 @@ export function ParcelPage() {
     // Guard against a fast double click sending two POST API-004
     if (!parcelId || mutation.isPending) return;
     clearTimeout(navTimer.current);
+    attemptRef.current += 1;
+    const attempt = attemptRef.current;
     setValues(formValues);
     setLocalError(null);
     mutation.mutate(
@@ -100,6 +105,7 @@ export function ParcelPage() {
       },
       {
         onSuccess: (created) => {
+          if (attempt !== attemptRef.current) return;
           setReport(created);
           navTimer.current = setTimeout(
             () => navigate(`/report/${encodeURIComponent(created.id)}`),
@@ -111,6 +117,7 @@ export function ParcelPage() {
   }
 
   function handleRetry() {
+    attemptRef.current += 1;
     mutation.reset();
     setLocalError(null);
     setReport(null);
