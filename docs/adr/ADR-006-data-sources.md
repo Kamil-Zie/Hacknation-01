@@ -88,3 +88,10 @@ Pełne wyniki: `tasks/T-002.json → notes`. Zmiany względem tabeli wyżej (obo
 - `soilgrids`: brak danych = 0 bez deklaracji nodata (pomijamy zera, powiększamy okno). proj4 nie obsługuje `+proj=igh`, potrzebna własna projekcja Goode Homolosine.
 - `overpass`: z sieci zespołu (dwie niezależne maszyny) wszystkie serwery Overpass dają timeout. Do rozstrzygnięcia w T-030 (timebox 30 min): powtórka z innej sieci (telefon) i z prod; w razie braku dostępu hydrologia = missing + dataGap, a spadek z `elevation` zostaje.
 - `eumetsat`: **NO-GO dla MVP.** SOMO25/SOMO12 nie mają granul po 2025-07-15, starsze są w formacie `.nat` (EPS native), H SAF nie ma w Data Store. Źródło zostaje w kontrakcie jako opcjonalne, zawsze `missing` + dataGap, bez wpływu na status raportu (decyzja 20261121-1208). T-032 przeniesione do `mvp_scope.wont`.
+
+## Aktualizacja 2026-11-21 13:40: hydrologia z API OpenStreetMap 0.6 (T-030)
+
+- Overpass (overpass-api.de, private.coffee, kumi) nie łączy się z sieci hackathonu (timeout także na `/api/status`, DNS działa).
+- Źródło `overpass` (sourceId bez zmian, zgodnie z kontraktem) pobiera teraz `https://api.openstreetmap.org/api/0.6/map?bbox=…` (±1 km od centroidu, ok. 2,7 s, ok. 1,8 MB XML), parsowanie po stronie serwera, w cache tylko podsumowanie (cieki, rowy, zbiorniki, odległości) z TTL 30 dni. Overpass zostaje jako zapas, gdy blokada zniknie.
+- Katalog (API-006): nazwa „OpenStreetMap (API 0.6, zapas Overpass)”, licencja ODbL bez zmian.
+- Ryzyko: zasady użycia API OSM 0.6 zniechęcają do intensywnego odczytu. Przy pojedynczych analizach, cache 30 dni i rozgrzaniu działek demo (T-035) akceptowalne; w README (skalowalność) jako docelowe rozwiązanie: własny ekstrakt OSM (Geofabrik) dla Polski albo MPHP.
