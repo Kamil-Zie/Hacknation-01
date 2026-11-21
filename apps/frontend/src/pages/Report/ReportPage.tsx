@@ -6,13 +6,11 @@ import { useReportQuery } from '@/api/analyses';
 import { AssessmentSection } from '@/components/AssessmentSection/AssessmentSection';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ReportHeader } from '@/components/ReportHeader/ReportHeader';
+import { RecommendationList } from '@/components/RecommendationList/RecommendationList';
 import { ReportSectionNav } from '@/components/ReportSectionNav/ReportSectionNav';
+import { VulnerabilityCauses } from '@/components/VulnerabilityCauses/VulnerabilityCauses';
 
-const PLACEHOLDERS = [
-  { id: 'podatnosc', title: 'Podatność i przyczyny' },
-  { id: 'co-zrobic', title: 'Co zrobić' },
-  { id: 'zrodla', title: 'Źródła i ograniczenia' },
-];
+const PLACEHOLDERS = [{ id: 'zrodla', title: 'Źródła i ograniczenia' }];
 
 export function ReportPage() {
   const { id } = useParams<{ id: string }>();
@@ -63,6 +61,9 @@ export function ReportPage() {
         <ParcelMap
           parcel={data.parcel}
           isInteractive={false}
+          markers={data.recommendations.flatMap((r) =>
+            r.location ? [{ lat: r.location.lat, lon: r.location.lon, label: r.title }] : [],
+          )}
           height={{ xs: 240, md: '40vh', lg: 300 }}
         />
         <ReportSectionNav />
@@ -74,6 +75,8 @@ export function ReportPage() {
           analysisDate={data.analysisDate}
           dataGaps={data.dataGaps}
         />
+        <VulnerabilityCauses vulnerability={data.vulnerability} causes={data.causes} />
+        <RecommendationList recommendations={data.recommendations} dataGaps={data.dataGaps} />
         {PLACEHOLDERS.map((section) => (
           <Card
             key={section.id}

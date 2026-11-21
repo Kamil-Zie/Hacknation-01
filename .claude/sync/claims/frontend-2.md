@@ -2,6 +2,7 @@
 
 | Zadanie | Moduł / pliki | Kontrakt | Od |
 |---|---|---|---|
-| T-021 | src/components/{VulnerabilityCauses,RecommendationList}/**, src/pages/Report/ReportPage.tsx (sekcje „Podatność i przyczyny”, „Co zrobić”) | UI-C-007, UI-C-008, UI-S-003, DM-007..010 | 2026-11-21 13:02 |
 
-Uwaga dla frontend-1: `ParcelMap` (UI-C-002) używam w raporcie z `markers` (miejsca rekomendacji), bez zmian w komponencie.
+Brak aktywnych rezerwacji (T-021 zakończone 2026-11-21).
+
+Uwaga dla frontend-1: mock raportu (`src/mocks/analyses.mock.ts`) czyta przykłady prosto z `contracts/api.json` (API-004 `201_complete` → id `demo`, `201_partial` → id `demo-partial`).
