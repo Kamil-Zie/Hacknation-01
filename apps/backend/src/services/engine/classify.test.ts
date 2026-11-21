@@ -47,6 +47,27 @@ describe('classifyDrought', () => {
     expect(result.droughtClass).toBe('moderate');
   });
 
+  it('returns moderate for Dr > RAW at percentile 41', () => {
+    const result = classifyDrought({
+      kbw60: kbw60(41),
+      soilWater: { depletionMm: 60, rawMm: 52 },
+      analysisDate: summer,
+    });
+    expect(result.droughtClass).toBe('moderate');
+  });
+
+  it('returns none for Dr > RAW at percentile 60 and keeps the stress in evidence', () => {
+    const result = classifyDrought({
+      kbw60: kbw60(60),
+      soilWater: { depletionMm: 60, rawMm: 52 },
+      analysisDate: summer,
+    });
+    expect(result.droughtClass).toBe('none');
+    const stress = result.evidence.find((e) => e.label.startsWith('Deficyt wody w glebie'));
+    expect(stress?.value).toBe(60);
+    expect(stress?.note).toContain('bieżący stres wodny');
+  });
+
   it('returns severe for Dr > RAW at percentile 25', () => {
     const result = classifyDrought({
       kbw60: kbw60(25),

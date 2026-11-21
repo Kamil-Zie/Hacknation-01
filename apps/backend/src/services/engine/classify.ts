@@ -45,6 +45,9 @@ export type ClassifyResult = {
 const SEVERE_PERCENTILE = 10;
 const SEVERE_WITH_DEPLETION_PERCENTILE = 30;
 const MODERATE_PERCENTILE = 30;
+// Coordinator decision 2026-11-21 14:20 (ADR-007 §6): Dr > RAW alone gives moderate only at percentile <= 50;
+// above that it stays in evidence as current plant water stress and the class comes from the percentile.
+const MODERATE_WITH_DEPLETION_PERCENTILE = 50;
 
 const LABELS: Record<DroughtClass, string> = {
   none: 'Brak suszy',
@@ -81,7 +84,10 @@ export function classifyDrought(input: ClassifyInput): ClassifyResult {
     (depletionExceedsRaw && percentile <= SEVERE_WITH_DEPLETION_PERCENTILE)
   ) {
     droughtClass = 'severe';
-  } else if (percentile <= MODERATE_PERCENTILE || depletionExceedsRaw) {
+  } else if (
+    percentile <= MODERATE_PERCENTILE ||
+    (depletionExceedsRaw && percentile <= MODERATE_WITH_DEPLETION_PERCENTILE)
+  ) {
     droughtClass = 'moderate';
   }
 
@@ -104,7 +110,10 @@ export function classifyDrought(input: ClassifyInput): ClassifyResult {
       unit: 'mm',
       sourceId: 'engine',
       dataDate: analysisDate,
-      note: `Próg RAW: ${soilWater.rawMm} mm`,
+      note:
+        depletionExceedsRaw && droughtClass === 'none'
+          ? `Próg RAW: ${soilWater.rawMm} mm; bieżący stres wodny rośliny, ale wynik na tle 10 lat jest typowy (percentyl ${percentile}), więc nie zmienia klasy`
+          : `Próg RAW: ${soilWater.rawMm} mm`,
     });
   }
 
