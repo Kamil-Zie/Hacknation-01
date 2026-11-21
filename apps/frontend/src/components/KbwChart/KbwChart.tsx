@@ -196,22 +196,23 @@ export function KbwChart({ charts }: KbwChartProps) {
       <Stack
         component="ul"
         direction="row"
-        spacing={2}
+        spacing={1.5}
         useFlexGap
-        sx={{ listStyle: 'none', m: 0, p: 0, flexWrap: 'wrap' }}
+        sx={{ listStyle: 'none', m: 0, p: 0, flexWrap: 'wrap', columnGap: 2 }}
         aria-label="Legenda wykresu"
       >
-        <Typography component="li" variant="caption">
-          <strong>Linia ciągła gruba:</strong> KBW bieżącego sezonu
+        {/* Short labels with line glyphs: fits ~2 lines on 360 px (frontend-2 review) */}
+        <Typography component="li" variant="caption" sx={{ whiteSpace: 'nowrap' }}>
+          <strong aria-hidden>━</strong> KBW sezonu (linia ciągła)
         </Typography>
-        <Typography component="li" variant="caption">
-          <strong>Linia przerywana:</strong> mediana normy z 10 lat
+        <Typography component="li" variant="caption" sx={{ whiteSpace: 'nowrap' }}>
+          <strong aria-hidden>┅</strong> mediana 10 lat (przerywana)
         </Typography>
-        <Typography component="li" variant="caption">
-          <strong>Jasne pasmo:</strong> zakres p10–p90 normy
+        <Typography component="li" variant="caption" sx={{ whiteSpace: 'nowrap' }}>
+          <strong aria-hidden>▒</strong> pasmo p10–p90
         </Typography>
-        <Typography component="li" variant="caption">
-          <strong>Linia pozioma:</strong> KBW = 0 mm
+        <Typography component="li" variant="caption" sx={{ whiteSpace: 'nowrap' }}>
+          <strong aria-hidden>─</strong> 0 mm
         </Typography>
       </Stack>
 
