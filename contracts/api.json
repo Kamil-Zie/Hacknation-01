@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "base_url": "/api/v1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. Wymieniaj tylko błędy, które endpoint naprawdę zwraca w demo.",
@@ -32,10 +32,10 @@
   "endpoints": [
     {
       "id": "API-001",
-      "status": "proposed",
+      "status": "agreed",
       "method": "GET",
       "path": "/parcels/:parcelId",
-      "summary": "Działka po identyfikatorze TERYT (proxy ULDK GetParcelById, geometria EPSG:4326, cache 30 dni)",
+      "summary": "Działka po identyfikatorze TERYT (proxy ULDK GetParcelById, geometria EPSG:4326, cache 30 dni) Przykładowe ID demo: 061409_2.0009.612. ID z ukośnikiem (np. 061401_1.0001.691/9) w ścieżce jako %2F.",
       "auth": "none",
       "request": {
         "params": {
@@ -55,7 +55,7 @@
     },
     {
       "id": "API-002",
-      "status": "proposed",
+      "status": "agreed",
       "method": "GET",
       "path": "/parcels/by-point",
       "summary": "Działka w klikniętym punkcie mapy (proxy ULDK GetParcelByXY, srid 4326)",
@@ -79,7 +79,7 @@
     },
     {
       "id": "API-003",
-      "status": "proposed",
+      "status": "agreed",
       "method": "GET",
       "path": "/crops",
       "summary": "Lista upraw z Kc FAO-56 i fazami krytycznymi (stała tabela z kodu, bez bazy)",
@@ -1012,10 +1012,10 @@
     },
     {
       "id": "API-004",
-      "status": "proposed",
+      "status": "agreed",
       "method": "POST",
       "path": "/analyses",
-      "summary": "Uruchamia analizę na żywo (6 źródeł równolegle, w tym EUMETSAT ASCAT jako assessment.soilMoistureSatellite; brak klucza EUMETSAT = null + dataGap, timeouty, cache), liczy ocenę, podatność, przyczyny i rekomendacje, zapisuje raport i go zwraca. Budżet ≤ 25 s po stronie serwera; awaria źródła nie przerywa analizy (status 'partial' + dataGaps).",
+      "summary": "Uruchamia analizę na żywo (źródła równolegle: uldk, meteo, sentinel2, nasa_power, soilgrids, elevation, overpass; wilgotność gleby z NASA POWER jako assessment.soilMoistureSatellite; eumetsat jest opcjonalny i zawsze missing, więc zostaje wpis w dataGaps, ale nie zmienia statusu raportu; timeouty, cache), liczy ocenę, podatność, przyczyny i rekomendacje, zapisuje raport i go zwraca. Budżet ≤ 25 s po stronie serwera; awaria źródła obowiązkowego nie przerywa analizy (status 'partial' + dataGaps).",
       "auth": "none",
       "request": {
         "body": {
@@ -1054,27 +1054,27 @@
         "201_complete": {
           "id": "6740a1f3c2e4b5a1d8f90a11",
           "parcel": {
-            "id": "300302_2.0008.215/3",
-            "parcelNumber": "215/3",
-            "region": "Racot",
-            "commune": "Kościan",
-            "county": "kościański",
-            "voivodeship": "wielkopolskie",
-            "areaHa": 4.5,
+            "id": "061409_2.0009.612",
+            "parcelNumber": "612",
+            "region": "Bronowice",
+            "commune": "Puławy",
+            "county": "puławski",
+            "voivodeship": "lubelskie",
+            "areaHa": 0.55,
             "centroid": {
-              "lat": 52.1001,
-              "lon": 16.7816
+              "lat": 51.439565,
+              "lon": 21.928256
             },
-            "bbox": [16.78, 52.099, 16.7831, 52.1011],
+            "bbox": [21.9261326, 51.4390432, 21.9303777, 51.4400859],
             "geometry": {
               "type": "Polygon",
               "coordinates": [
                 [
-                  [16.78, 52.0991],
-                  [16.7829, 52.099],
-                  [16.7831, 52.101],
-                  [16.7802, 52.1011],
-                  [16.78, 52.0991]
+                  [21.9261326, 51.4391987],
+                  [21.9262105, 51.4390432],
+                  [21.9303777, 51.4399319],
+                  [21.9303048, 51.4400859],
+                  [21.9261326, 51.4391987]
                 ]
               ]
             },
@@ -1094,11 +1094,11 @@
             "confidence": "high",
             "confidenceScore": 1,
             "confidenceReasons": [
-              "Dostępnych jest 7 z 7 źródeł danych",
+              "Dostępnych jest 7 z 7 wymaganych źródeł danych (opcjonalny EUMETSAT jest niedostępny i nie obniża pewności)",
               "Zdjęcie Sentinel-2 jest świeże (4 dni) i dobrej jakości (92% ważnych pikseli)",
-              "Satelitarna wilgotność gleby (EUMETSAT) i NDMI zgadzają się z wynikiem bilansu wodnego (+0,05, wynik ograniczony do 1,0)"
+              "Wilgotność gleby z NASA POWER (percentyl 4) i NDMI zgadzają się z wynikiem bilansu wodnego (+0,05, wynik ograniczony do 1,0)"
             ],
-            "summary": "W ostatnich 60 dniach klimatyczny bilans wodny wynosi −137 mm, czyli jest gorszy niż w 92% porównywalnych okresów z 10 lat (percentyl 8). Pszenica ozima jest w fazie krytycznej (kłoszenie i kwitnienie), a pomiary satelitarne wilgotności gleby i roślin to potwierdzają.",
+            "summary": "W ostatnich 60 dniach klimatyczny bilans wodny wynosi −137 mm, czyli jest gorszy niż w 92% porównywalnych okresów z 10 lat (percentyl 8). Pszenica ozima jest w fazie krytycznej (kłoszenie i kwitnienie), a dane o wilgotności gleby (NASA POWER, percentyl 4) i zdjęcie satelitarne roślin to potwierdzają.",
             "kbw30": {
               "days": 30,
               "from": "2026-05-12",
@@ -1130,8 +1130,8 @@
               "normTmaxC": 20.8
             },
             "soilWater": {
-              "tawMm": 84,
-              "rawMm": 46.2,
+              "tawMm": 96,
+              "rawMm": 52.8,
               "depletionMm": 61.5,
               "isStressed": true
             },
@@ -1142,11 +1142,11 @@
               "isCritical": true
             },
             "satellite": {
-              "sceneId": "S2C_33UXU_20260606_0_L2A",
+              "sceneId": "S2C_34UEC_20260606_0_L2A",
               "sceneDate": "2026-06-06",
               "ageDays": 4,
               "validPixelFraction": 0.92,
-              "validPixels": 414,
+              "validPixels": 51,
               "ndvi": 0.61,
               "ndmi": 0.11,
               "ndviAssessment": "below",
@@ -1157,20 +1157,26 @@
                 "ndmiMin": 0.16,
                 "ndmiMax": 0.4
               },
-              "thumbnailUrl": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/33/U/XU/2026/6/S2C_33UXU_20260606_0_L2A/L2A_PVI.tif"
+              "thumbnailUrl": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/34/U/EC/2026/6/S2C_34UEC_20260606_0_L2A/L2A_PVI.tif"
             },
             "soilMoistureSatellite": {
-              "valuePct": 24,
+              "label": "Wilgotność gleby",
+              "valuePct": 38,
+              "rootZonePct": 35.1,
+              "profilePct": 35.9,
+              "percentile": 4,
+              "normRootZonePct": 42,
+              "anomalyPp": -6.9,
               "assessment": "dry",
               "agreement": "confirms",
-              "observedAt": "2026-06-09T19:42:10.000Z",
-              "ageDays": 1,
-              "product": "ASCAT SSM 25 km NRT (Metop-B)",
-              "collectionId": "EO:EUM:DAT:METOP:SOMO25",
-              "granuleId": "W_XX-EUMETSAT-Darmstadt,SURFACE+SATELLITE,METOPB+ASCAT_C_EUMP_20260609194210_75321_eps_o_250_ssm_l2.nc",
-              "resolutionKm": 25,
-              "depthLabel": "warstwa powierzchniowa (kilka cm)",
-              "distanceKm": 9.6
+              "observedAt": "2026-06-10T00:00:00.000Z",
+              "ageDays": 0,
+              "product": "NASA POWER daily, MERRA-2 (GWETTOP, GWETROOT, GWETPROF)",
+              "collectionId": "POWER daily point AG: GWETTOP,GWETROOT,GWETPROF",
+              "granuleId": null,
+              "resolutionKm": 50,
+              "depthLabel": "0–5 cm i strefa korzeniowa (ok. 1 m)",
+              "distanceKm": null
             },
             "evidence": [
               {
@@ -1203,7 +1209,7 @@
                 "unit": "mm",
                 "sourceId": "engine",
                 "dataDate": "2026-06-10",
-                "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 46,2 mm"
+                "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 52,8 mm"
               },
               {
                 "label": "NDMI (wilgotność roślin)",
@@ -1214,12 +1220,20 @@
                 "note": "oczekiwany zakres dla czerwca 0.16–0.4"
               },
               {
-                "label": "Wilgotność powierzchni gleby (satelita)",
-                "value": 24,
+                "label": "Wilgotność gleby, strefa korzeniowa",
+                "value": 35.1,
                 "unit": "%",
-                "sourceId": "eumetsat",
-                "dataDate": "2026-06-09",
-                "note": "ASCAT, warstwa kilku cm, siatka 25 km; wartość orientacyjna"
+                "sourceId": "nasa_power",
+                "dataDate": "2026-06-10",
+                "note": "średnia 7 dni; percentyl 4 na tle tych samych dni z 10 lat (mediana 42,0%); siatka ok. 50 km, wartość regionalna"
+              },
+              {
+                "label": "Wilgotność gleby, warstwa 0–5 cm",
+                "value": 38,
+                "unit": "%",
+                "sourceId": "nasa_power",
+                "dataDate": "2026-06-10",
+                "note": "średnia 7 dni; warstwa powierzchniowa, mediana z 10 lat 51%"
               }
             ]
           },
@@ -1264,9 +1278,9 @@
               }
             ],
             "soil": {
-              "sandPct": 70,
-              "siltPct": 23,
-              "clayPct": 7,
+              "sandPct": 60,
+              "siltPct": 27,
+              "clayPct": 13,
               "socPct": 1.1,
               "category": "light",
               "categoryLabel": "Gleba lekka"
@@ -1279,7 +1293,7 @@
                 "unit": "z 10",
                 "sourceId": "engine",
                 "dataDate": "2016–2025",
-                "note": "sezon z deficytem: 60-dniowy KBW poniżej −46,2 mm (próg stresu gleby)"
+                "note": "sezon z deficytem: 60-dniowy KBW poniżej −52,8 mm (próg stresu gleby)"
               },
               {
                 "label": "Miesiące krytyczne",
@@ -1341,29 +1355,30 @@
             {
               "code": "low_soil_retention",
               "title": "Gleba słabo trzyma wodę",
-              "description": "Gleba ma 70% piasku i zatrzymuje tylko 84 mm wody użytecznej dla roślin w strefie korzeni.",
+              "description": "Gleba ma 60% piasku i zatrzymuje tylko 96 mm wody użytecznej dla roślin w strefie korzeni.",
               "severity": "high",
               "evidence": [
                 {
                   "label": "Zawartość piasku",
-                  "value": 70,
+                  "value": 60,
                   "unit": "%",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                  "dataDate": "2020",
+                  "note": "SoilGrids 2.0 (wersja produktu z 2020), model 250 m"
                 },
                 {
                   "label": "Węgiel organiczny w glebie",
                   "value": 1.1,
                   "unit": "%",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                  "dataDate": "2020"
                 },
                 {
                   "label": "Pojemność wodna gleby (TAW)",
-                  "value": 84,
+                  "value": 96,
                   "unit": "mm",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)",
+                  "dataDate": "2020",
                   "note": "do głębokości korzeni, metoda Saxton i Rawls 2006"
                 }
               ]
@@ -1379,22 +1394,22 @@
                   "value": 2.4,
                   "unit": "%",
                   "sourceId": "elevation",
-                  "dataDate": "Copernicus DEM GLO-90"
+                  "dataDate": "2021"
                 },
                 {
                   "label": "Kierunek spadku",
                   "value": "południe",
                   "unit": null,
                   "sourceId": "elevation",
-                  "dataDate": "Copernicus DEM GLO-90"
+                  "dataDate": "2021"
                 },
                 {
                   "label": "Różnica wysokości na działce",
                   "value": 5.2,
                   "unit": "m",
                   "sourceId": "elevation",
-                  "dataDate": "Copernicus DEM GLO-90",
-                  "note": "od 86,1 do 91,3 m n.p.m."
+                  "dataDate": "2021",
+                  "note": "od 127,4 do 132,6 m n.p.m."
                 }
               ]
             },
@@ -1473,8 +1488,8 @@
               "when": "poza sezonem wegetacji, najlepiej jesienią",
               "why": "Rów jest 180 m od działki (limit reguły: 300 m), a podatność na suszę jest wysoka (6 z 10 sezonów z deficytem).",
               "location": {
-                "lat": 52.0974,
-                "lon": 16.7815
+                "lat": 51.438,
+                "lon": 21.9283
               },
               "irrigation": null,
               "evidence": [
@@ -1506,8 +1521,8 @@
               "when": "jesień lub wczesna wiosna",
               "why": "Spadek terenu wynosi 2,4% (próg reguły: 2%), a woda spływa na południe.",
               "location": {
-                "lat": 52.0991,
-                "lon": 16.7815
+                "lat": 51.4394,
+                "lon": 21.9283
               },
               "irrigation": null,
               "evidence": [
@@ -1516,14 +1531,14 @@
                   "value": 2.4,
                   "unit": "%",
                   "sourceId": "elevation",
-                  "dataDate": "Copernicus DEM GLO-90"
+                  "dataDate": "2021"
                 },
                 {
                   "label": "Kierunek spadku",
                   "value": "południe",
                   "unit": null,
                   "sourceId": "elevation",
-                  "dataDate": "Copernicus DEM GLO-90"
+                  "dataDate": "2021"
                 }
               ]
             },
@@ -1536,16 +1551,16 @@
               "action": "Stosuj obornik lub kompost i przyoruj słomę, aby gleba lepiej zatrzymywała wodę.",
               "where": "cała działka",
               "when": "po zbiorze, jesienią",
-              "why": "Gleba zatrzymuje tylko 84 mm wody (próg: 100 mm), a węgla organicznego jest 1,1% (próg: 1,5%).",
+              "why": "Gleba zatrzymuje tylko 96 mm wody (próg: 100 mm), a węgla organicznego jest 1,1% (próg: 1,5%).",
               "location": null,
               "irrigation": null,
               "evidence": [
                 {
                   "label": "Pojemność wodna gleby (TAW)",
-                  "value": 84,
+                  "value": 96,
                   "unit": "mm",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)",
+                  "dataDate": "2020",
                   "note": "do głębokości korzeni, metoda Saxton i Rawls 2006"
                 },
                 {
@@ -1553,7 +1568,7 @@
                   "value": 1.1,
                   "unit": "%",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                  "dataDate": "2020"
                 }
               ]
             },
@@ -1595,7 +1610,7 @@
               "action": "Nie zostawiaj odkrytej gleby po żniwach. Resztki słomy i mulcz zmniejszają parowanie z gleby.",
               "where": "cała działka",
               "when": "po zbiorze",
-              "why": "Susza jest silna (percentyl KBW 60 dni: 8), a gleba lekka (70% piasku).",
+              "why": "Susza jest silna (percentyl KBW 60 dni: 8), a gleba lekka (60% piasku).",
               "location": null,
               "irrigation": null,
               "evidence": [
@@ -1609,10 +1624,11 @@
                 },
                 {
                   "label": "Zawartość piasku",
-                  "value": 70,
+                  "value": 60,
                   "unit": "%",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                  "dataDate": "2020",
+                  "note": "SoilGrids 2.0 (wersja produktu z 2020), model 250 m"
                 }
               ]
             },
@@ -1625,16 +1641,17 @@
               "action": "Przejdź na uprawę uproszczoną (bez głębokiego odwracania skiby), aby nie osuszać gleby.",
               "where": "cała działka",
               "when": "przed siewem następnej uprawy",
-              "why": "Gleba jest lekka (70% piasku), a podatność na suszę wysoka (6 z 10 sezonów).",
+              "why": "Gleba jest lekka (60% piasku), a podatność na suszę wysoka (6 z 10 sezonów).",
               "location": null,
               "irrigation": null,
               "evidence": [
                 {
                   "label": "Zawartość piasku",
-                  "value": 70,
+                  "value": 60,
                   "unit": "%",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                  "dataDate": "2020",
+                  "note": "SoilGrids 2.0 (wersja produktu z 2020), model 250 m"
                 },
                 {
                   "label": "Sezony z deficytem wody",
@@ -1673,16 +1690,16 @@
               "order": 8,
               "priority": "high",
               "title": "Nawadnianie jest uzasadnione",
-              "action": "Podaj jedną dawkę ok. 46 mm netto (62 mm brutto, deszczownia), najlepiej rano lub wieczorem. Pobór wody powyżej 5 m³/dobę wymaga zgody wodnoprawnej (Prawo wodne).",
+              "action": "Podaj jedną dawkę ok. 53 mm netto (70 mm brutto, deszczownia), najlepiej rano lub wieczorem. Pobór wody powyżej 5 m³/dobę wymaga zgody wodnoprawnej (Prawo wodne).",
               "where": "cała działka",
               "when": "w ciągu najbliższych 3–5 dni",
-              "why": "Susza jest silna, pszenica jest w fazie krytycznej (czerwiec), a deficyt wody w glebie (61,5 mm) przekracza próg stresu (46,2 mm).",
+              "why": "Susza jest silna, pszenica jest w fazie krytycznej (czerwiec), a deficyt wody w glebie (61,5 mm) przekracza próg stresu (52,8 mm).",
               "location": null,
               "irrigation": {
                 "isJustified": true,
-                "netDoseMm": 46.2,
-                "grossDoseMm": 61.6,
-                "doseM3PerHa": 616,
+                "netDoseMm": 52.8,
+                "grossDoseMm": 70.4,
+                "doseM3PerHa": 704,
                 "window": "najbliższe 3–5 dni, rano lub wieczorem",
                 "nextCheckInDays": 9
               },
@@ -1693,11 +1710,11 @@
                   "unit": "mm",
                   "sourceId": "engine",
                   "dataDate": "2026-06-10",
-                  "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 46,2 mm"
+                  "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 52,8 mm"
                 },
                 {
                   "label": "Próg stresu wodnego (RAW)",
-                  "value": 46.2,
+                  "value": 52.8,
                   "unit": "mm",
                   "sourceId": "engine",
                   "dataDate": "2026-06-10"
@@ -1757,18 +1774,32 @@
               "message": "Zdjęcie z 2026-06-06, 92% ważnych pikseli działki"
             },
             {
+              "sourceId": "nasa_power",
+              "name": "NASA POWER Daily (reanaliza MERRA-2, wilgotność gleby)",
+              "label": "Wilgotność gleby",
+              "category": "soil",
+              "provider": "NASA Langley Research Center (LaRC) POWER Project",
+              "url": "https://power.larc.nasa.gov/",
+              "license": "Dane NASA, otwarte; wymagane przypisanie NASA LaRC POWER",
+              "status": "ok",
+              "dataPeriod": "2016-03-27–2026-06-10",
+              "fetchedAt": "2026-11-21T10:14:28.350Z",
+              "durationMs": 1390,
+              "message": "Obserwacja z 2026-06-10 (średnia 7 dni), siatka ok. 50 km"
+            },
+            {
               "sourceId": "eumetsat",
               "name": "EUMETSAT ASCAT SSM (Data Store)",
-              "label": "Satelita (wilgotność gleby)",
+              "label": "Satelita ASCAT (opcjonalne)",
               "category": "satellite",
               "provider": "EUMETSAT / H SAF",
               "url": "https://data.eumetsat.int/",
               "license": "Polityka danych EUMETSAT / H SAF (do potwierdzenia)",
-              "status": "ok",
-              "dataPeriod": "2026-06-09",
-              "fetchedAt": "2026-11-21T10:14:31.700Z",
-              "durationMs": 5120,
-              "message": "Obserwacja ASCAT z 2026-06-09, punkt siatki 9,6 km od działki"
+              "status": "missing",
+              "dataPeriod": null,
+              "fetchedAt": null,
+              "durationMs": 0,
+              "message": "Źródło opcjonalne, brak dostępu do danych (nie wpływa na wynik)"
             },
             {
               "sourceId": "soilgrids",
@@ -1815,7 +1846,7 @@
           ],
           "limitations": [
             "Dane pogodowe ERA5 pochodzą z siatki 9–25 km, więc opad na samej działce może się różnić od podanego.",
-            "Wilgotność gleby z satelity ASCAT (12,5–25 km) dotyczy tylko kilku górnych centymetrów i obejmuje wiele działek naraz; nie opisuje strefy korzeni.",
+            "Wilgotność gleby pochodzi z reanalizy NASA POWER (MERRA-2) o siatce ok. 50 km, więc opisuje region wokół działki, a nie samą działkę; ocena (sucho, normalnie, mokro) to percentyl względem tych samych dni z 10 lat.",
             "Dane glebowe SoilGrids (250 m) to model, a nie pomiar na działce.",
             "Model terenu ma rozdzielczość 90 m i wygładza drobne nierówności.",
             "Zdjęcia Sentinel-2 mają rozdzielczość 10–20 m, a chmury mogą wydłużać czas od ostatniego użytecznego zdjęcia.",
@@ -1823,7 +1854,13 @@
             "Normę wyznaczono z 10 lat, to krótki szereg.",
             "Raport nie zawiera prognozy pogody ani danych o zabiegach i nawadnianiu na działce."
           ],
-          "dataGaps": [],
+          "dataGaps": [
+            {
+              "sourceId": "eumetsat",
+              "what": "Brak niezależnego odczytu radarowego wilgotności gleby (EUMETSAT ASCAT, źródło opcjonalne)",
+              "impact": "Brak. Wilgotność gleby pochodzi z NASA POWER, a pewność i status raportu nie zmieniają się"
+            }
+          ],
           "charts": {
             "kbw60Series": [
               {
@@ -1948,27 +1985,27 @@
         "201_partial": {
           "id": "6740a1f3c2e4b5a1d8f90a12",
           "parcel": {
-            "id": "300302_2.0008.215/3",
-            "parcelNumber": "215/3",
-            "region": "Racot",
-            "commune": "Kościan",
-            "county": "kościański",
-            "voivodeship": "wielkopolskie",
-            "areaHa": 4.5,
+            "id": "061409_2.0009.612",
+            "parcelNumber": "612",
+            "region": "Bronowice",
+            "commune": "Puławy",
+            "county": "puławski",
+            "voivodeship": "lubelskie",
+            "areaHa": 0.55,
             "centroid": {
-              "lat": 52.1001,
-              "lon": 16.7816
+              "lat": 51.439565,
+              "lon": 21.928256
             },
-            "bbox": [16.78, 52.099, 16.7831, 52.1011],
+            "bbox": [21.9261326, 51.4390432, 21.9303777, 51.4400859],
             "geometry": {
               "type": "Polygon",
               "coordinates": [
                 [
-                  [16.78, 52.0991],
-                  [16.7829, 52.099],
-                  [16.7831, 52.101],
-                  [16.7802, 52.1011],
-                  [16.78, 52.0991]
+                  [21.9261326, 51.4391987],
+                  [21.9262105, 51.4390432],
+                  [21.9303777, 51.4399319],
+                  [21.9303048, 51.4400859],
+                  [21.9261326, 51.4391987]
                 ]
               ]
             },
@@ -1985,14 +2022,14 @@
             "droughtClass": "severe",
             "droughtClassLabel": "Susza silna",
             "isOutOfSeason": false,
-            "confidence": "medium",
-            "confidenceScore": 0.75,
+            "confidence": "high",
+            "confidenceScore": 0.85,
             "confidenceReasons": [
-              "Brak zdjęcia satelitarnego Sentinel-2 bez chmur z ostatnich 45 dni: nie sprawdzono stanu roślin (−0,15)",
-              "Brak satelitarnej wilgotności gleby EUMETSAT, bo nie skonfigurowano klucza (−0,10)",
-              "Pozostałe źródła (pogoda, gleba, teren, woda, działka) są dostępne, więc wynik opiera się na bilansie wodnym i glebie"
+              "Nie pobrano zdjęcia Sentinel-2 (przekroczony czas odpowiedzi): nie sprawdzono stanu roślin (−0,15)",
+              "Wilgotność gleby z NASA POWER (percentyl 4) potwierdza bilans wodny, ale bez NDMI nie ma premii za zgodność danych satelitarnych",
+              "Pozostałe źródła (pogoda, wilgotność gleby, gleba, teren, woda, działka) są dostępne, więc wynik opiera się na bilansie wodnym, glebie i wilgotności gleby"
             ],
-            "summary": "W ostatnich 60 dniach klimatyczny bilans wodny wynosi −137 mm, czyli jest gorszy niż w 92% porównywalnych okresów z 10 lat (percentyl 8). Pszenica ozima jest w fazie krytycznej (kłoszenie i kwitnienie), ale brakuje danych satelitarnych, więc wynik jest mniej pewny.",
+            "summary": "W ostatnich 60 dniach klimatyczny bilans wodny wynosi −137 mm, czyli jest gorszy niż w 92% porównywalnych okresów z 10 lat (percentyl 8). Pszenica ozima jest w fazie krytycznej (kłoszenie i kwitnienie), a dane o wilgotności gleby (NASA POWER, percentyl 4) to potwierdzają, ale brakuje zdjęcia satelitarnego, więc stan roślin nie został sprawdzony.",
             "kbw30": {
               "days": 30,
               "from": "2026-05-12",
@@ -2024,8 +2061,8 @@
               "normTmaxC": 20.8
             },
             "soilWater": {
-              "tawMm": 84,
-              "rawMm": 46.2,
+              "tawMm": 96,
+              "rawMm": 52.8,
               "depletionMm": 61.5,
               "isStressed": true
             },
@@ -2036,7 +2073,25 @@
               "isCritical": true
             },
             "satellite": null,
-            "soilMoistureSatellite": null,
+            "soilMoistureSatellite": {
+              "label": "Wilgotność gleby",
+              "valuePct": 38,
+              "rootZonePct": 35.1,
+              "profilePct": 35.9,
+              "percentile": 4,
+              "normRootZonePct": 42,
+              "anomalyPp": -6.9,
+              "assessment": "dry",
+              "agreement": "confirms",
+              "observedAt": "2026-06-10T00:00:00.000Z",
+              "ageDays": 0,
+              "product": "NASA POWER daily, MERRA-2 (GWETTOP, GWETROOT, GWETPROF)",
+              "collectionId": "POWER daily point AG: GWETTOP,GWETROOT,GWETPROF",
+              "granuleId": null,
+              "resolutionKm": 50,
+              "depthLabel": "0–5 cm i strefa korzeniowa (ok. 1 m)",
+              "distanceKm": null
+            },
             "evidence": [
               {
                 "label": "KBW 60 dni",
@@ -2068,7 +2123,23 @@
                 "unit": "mm",
                 "sourceId": "engine",
                 "dataDate": "2026-06-10",
-                "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 46,2 mm"
+                "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 52,8 mm"
+              },
+              {
+                "label": "Wilgotność gleby, strefa korzeniowa",
+                "value": 35.1,
+                "unit": "%",
+                "sourceId": "nasa_power",
+                "dataDate": "2026-06-10",
+                "note": "średnia 7 dni; percentyl 4 na tle tych samych dni z 10 lat (mediana 42,0%); siatka ok. 50 km, wartość regionalna"
+              },
+              {
+                "label": "Wilgotność gleby, warstwa 0–5 cm",
+                "value": 38,
+                "unit": "%",
+                "sourceId": "nasa_power",
+                "dataDate": "2026-06-10",
+                "note": "średnia 7 dni; warstwa powierzchniowa, mediana z 10 lat 51%"
               }
             ]
           },
@@ -2113,9 +2184,9 @@
               }
             ],
             "soil": {
-              "sandPct": 70,
-              "siltPct": 23,
-              "clayPct": 7,
+              "sandPct": 60,
+              "siltPct": 27,
+              "clayPct": 13,
               "socPct": 1.1,
               "category": "light",
               "categoryLabel": "Gleba lekka"
@@ -2128,7 +2199,7 @@
                 "unit": "z 10",
                 "sourceId": "engine",
                 "dataDate": "2016–2025",
-                "note": "sezon z deficytem: 60-dniowy KBW poniżej −46,2 mm (próg stresu gleby)"
+                "note": "sezon z deficytem: 60-dniowy KBW poniżej −52,8 mm (próg stresu gleby)"
               },
               {
                 "label": "Miesiące krytyczne",
@@ -2190,29 +2261,30 @@
             {
               "code": "low_soil_retention",
               "title": "Gleba słabo trzyma wodę",
-              "description": "Gleba ma 70% piasku i zatrzymuje tylko 84 mm wody użytecznej dla roślin w strefie korzeni.",
+              "description": "Gleba ma 60% piasku i zatrzymuje tylko 96 mm wody użytecznej dla roślin w strefie korzeni.",
               "severity": "high",
               "evidence": [
                 {
                   "label": "Zawartość piasku",
-                  "value": 70,
+                  "value": 60,
                   "unit": "%",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                  "dataDate": "2020",
+                  "note": "SoilGrids 2.0 (wersja produktu z 2020), model 250 m"
                 },
                 {
                   "label": "Węgiel organiczny w glebie",
                   "value": 1.1,
                   "unit": "%",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                  "dataDate": "2020"
                 },
                 {
                   "label": "Pojemność wodna gleby (TAW)",
-                  "value": 84,
+                  "value": 96,
                   "unit": "mm",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)",
+                  "dataDate": "2020",
                   "note": "do głębokości korzeni, metoda Saxton i Rawls 2006"
                 }
               ]
@@ -2228,22 +2300,22 @@
                   "value": 2.4,
                   "unit": "%",
                   "sourceId": "elevation",
-                  "dataDate": "Copernicus DEM GLO-90"
+                  "dataDate": "2021"
                 },
                 {
                   "label": "Kierunek spadku",
                   "value": "południe",
                   "unit": null,
                   "sourceId": "elevation",
-                  "dataDate": "Copernicus DEM GLO-90"
+                  "dataDate": "2021"
                 },
                 {
                   "label": "Różnica wysokości na działce",
                   "value": 5.2,
                   "unit": "m",
                   "sourceId": "elevation",
-                  "dataDate": "Copernicus DEM GLO-90",
-                  "note": "od 86,1 do 91,3 m n.p.m."
+                  "dataDate": "2021",
+                  "note": "od 127,4 do 132,6 m n.p.m."
                 }
               ]
             },
@@ -2291,8 +2363,8 @@
               "when": "poza sezonem wegetacji, najlepiej jesienią",
               "why": "Rów jest 180 m od działki (limit reguły: 300 m), a podatność na suszę jest wysoka (6 z 10 sezonów z deficytem).",
               "location": {
-                "lat": 52.0974,
-                "lon": 16.7815
+                "lat": 51.438,
+                "lon": 21.9283
               },
               "irrigation": null,
               "evidence": [
@@ -2324,8 +2396,8 @@
               "when": "jesień lub wczesna wiosna",
               "why": "Spadek terenu wynosi 2,4% (próg reguły: 2%), a woda spływa na południe.",
               "location": {
-                "lat": 52.0991,
-                "lon": 16.7815
+                "lat": 51.4394,
+                "lon": 21.9283
               },
               "irrigation": null,
               "evidence": [
@@ -2334,14 +2406,14 @@
                   "value": 2.4,
                   "unit": "%",
                   "sourceId": "elevation",
-                  "dataDate": "Copernicus DEM GLO-90"
+                  "dataDate": "2021"
                 },
                 {
                   "label": "Kierunek spadku",
                   "value": "południe",
                   "unit": null,
                   "sourceId": "elevation",
-                  "dataDate": "Copernicus DEM GLO-90"
+                  "dataDate": "2021"
                 }
               ]
             },
@@ -2354,16 +2426,16 @@
               "action": "Stosuj obornik lub kompost i przyoruj słomę, aby gleba lepiej zatrzymywała wodę.",
               "where": "cała działka",
               "when": "po zbiorze, jesienią",
-              "why": "Gleba zatrzymuje tylko 84 mm wody (próg: 100 mm), a węgla organicznego jest 1,1% (próg: 1,5%).",
+              "why": "Gleba zatrzymuje tylko 96 mm wody (próg: 100 mm), a węgla organicznego jest 1,1% (próg: 1,5%).",
               "location": null,
               "irrigation": null,
               "evidence": [
                 {
                   "label": "Pojemność wodna gleby (TAW)",
-                  "value": 84,
+                  "value": 96,
                   "unit": "mm",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)",
+                  "dataDate": "2020",
                   "note": "do głębokości korzeni, metoda Saxton i Rawls 2006"
                 },
                 {
@@ -2371,7 +2443,7 @@
                   "value": 1.1,
                   "unit": "%",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                  "dataDate": "2020"
                 }
               ]
             },
@@ -2413,7 +2485,7 @@
               "action": "Nie zostawiaj odkrytej gleby po żniwach. Resztki słomy i mulcz zmniejszają parowanie z gleby.",
               "where": "cała działka",
               "when": "po zbiorze",
-              "why": "Susza jest silna (percentyl KBW 60 dni: 8), a gleba lekka (70% piasku).",
+              "why": "Susza jest silna (percentyl KBW 60 dni: 8), a gleba lekka (60% piasku).",
               "location": null,
               "irrigation": null,
               "evidence": [
@@ -2427,10 +2499,11 @@
                 },
                 {
                   "label": "Zawartość piasku",
-                  "value": 70,
+                  "value": 60,
                   "unit": "%",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                  "dataDate": "2020",
+                  "note": "SoilGrids 2.0 (wersja produktu z 2020), model 250 m"
                 }
               ]
             },
@@ -2443,16 +2516,17 @@
               "action": "Przejdź na uprawę uproszczoną (bez głębokiego odwracania skiby), aby nie osuszać gleby.",
               "where": "cała działka",
               "when": "przed siewem następnej uprawy",
-              "why": "Gleba jest lekka (70% piasku), a podatność na suszę wysoka (6 z 10 sezonów).",
+              "why": "Gleba jest lekka (60% piasku), a podatność na suszę wysoka (6 z 10 sezonów).",
               "location": null,
               "irrigation": null,
               "evidence": [
                 {
                   "label": "Zawartość piasku",
-                  "value": 70,
+                  "value": 60,
                   "unit": "%",
                   "sourceId": "soilgrids",
-                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                  "dataDate": "2020",
+                  "note": "SoilGrids 2.0 (wersja produktu z 2020), model 250 m"
                 },
                 {
                   "label": "Sezony z deficytem wody",
@@ -2491,16 +2565,16 @@
               "order": 8,
               "priority": "high",
               "title": "Nawadnianie jest uzasadnione",
-              "action": "Podaj jedną dawkę ok. 46 mm netto (62 mm brutto, deszczownia), najlepiej rano lub wieczorem. Pobór wody powyżej 5 m³/dobę wymaga zgody wodnoprawnej (Prawo wodne).",
+              "action": "Podaj jedną dawkę ok. 53 mm netto (70 mm brutto, deszczownia), najlepiej rano lub wieczorem. Pobór wody powyżej 5 m³/dobę wymaga zgody wodnoprawnej (Prawo wodne).",
               "where": "cała działka",
               "when": "w ciągu najbliższych 3–5 dni",
-              "why": "Susza jest silna, pszenica jest w fazie krytycznej (czerwiec), a deficyt wody w glebie (61,5 mm) przekracza próg stresu (46,2 mm).",
+              "why": "Susza jest silna, pszenica jest w fazie krytycznej (czerwiec), a deficyt wody w glebie (61,5 mm) przekracza próg stresu (52,8 mm).",
               "location": null,
               "irrigation": {
                 "isJustified": true,
-                "netDoseMm": 46.2,
-                "grossDoseMm": 61.6,
-                "doseM3PerHa": 616,
+                "netDoseMm": 52.8,
+                "grossDoseMm": 70.4,
+                "doseM3PerHa": 704,
                 "window": "najbliższe 3–5 dni, rano lub wieczorem",
                 "nextCheckInDays": 9
               },
@@ -2511,11 +2585,11 @@
                   "unit": "mm",
                   "sourceId": "engine",
                   "dataDate": "2026-06-10",
-                  "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 46,2 mm"
+                  "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 52,8 mm"
                 },
                 {
                   "label": "Próg stresu wodnego (RAW)",
-                  "value": 46.2,
+                  "value": 52.8,
                   "unit": "mm",
                   "sourceId": "engine",
                   "dataDate": "2026-06-10"
@@ -2568,16 +2642,30 @@
               "provider": "ESA Copernicus / Element 84 Earth Search",
               "url": "https://earth-search.aws.element84.com/v1",
               "license": "Copernicus Sentinel (wolna licencja); katalog CC0",
-              "status": "missing",
+              "status": "timeout",
               "dataPeriod": null,
-              "fetchedAt": "2026-11-21T10:14:30.100Z",
-              "durationMs": 3410,
-              "message": "Brak bezchmurnego zdjęcia od 2026-04-26 (najnowsza scena z 2026-06-03 ma 81% zachmurzenia)"
+              "fetchedAt": "2026-11-21T10:19:50.100Z",
+              "durationMs": 15000,
+              "message": "Źródło nie odpowiedziało na czas"
+            },
+            {
+              "sourceId": "nasa_power",
+              "name": "NASA POWER Daily (reanaliza MERRA-2, wilgotność gleby)",
+              "label": "Wilgotność gleby",
+              "category": "soil",
+              "provider": "NASA Langley Research Center (LaRC) POWER Project",
+              "url": "https://power.larc.nasa.gov/",
+              "license": "Dane NASA, otwarte; wymagane przypisanie NASA LaRC POWER",
+              "status": "ok",
+              "dataPeriod": "2016-03-27–2026-06-10",
+              "fetchedAt": "2026-11-21T10:19:28.350Z",
+              "durationMs": 1390,
+              "message": "Obserwacja z 2026-06-10 (średnia 7 dni), siatka ok. 50 km"
             },
             {
               "sourceId": "eumetsat",
               "name": "EUMETSAT ASCAT SSM (Data Store)",
-              "label": "Satelita (wilgotność gleby)",
+              "label": "Satelita ASCAT (opcjonalne)",
               "category": "satellite",
               "provider": "EUMETSAT / H SAF",
               "url": "https://data.eumetsat.int/",
@@ -2586,7 +2674,7 @@
               "dataPeriod": null,
               "fetchedAt": null,
               "durationMs": 0,
-              "message": "Brak klucza EUMETSAT, źródło pominięte"
+              "message": "Źródło opcjonalne, brak dostępu do danych (nie wpływa na wynik)"
             },
             {
               "sourceId": "soilgrids",
@@ -2633,6 +2721,7 @@
           ],
           "limitations": [
             "Dane pogodowe ERA5 pochodzą z siatki 9–25 km, więc opad na samej działce może się różnić od podanego.",
+            "Wilgotność gleby pochodzi z reanalizy NASA POWER (MERRA-2) o siatce ok. 50 km, więc opisuje region wokół działki, a nie samą działkę; ocena (sucho, normalnie, mokro) to percentyl względem tych samych dni z 10 lat.",
             "Dane glebowe SoilGrids (250 m) to model, a nie pomiar na działce.",
             "Model terenu ma rozdzielczość 90 m i wygładza drobne nierówności.",
             "Mapa rowów i cieków z OpenStreetMap może być niekompletna.",
@@ -2642,13 +2731,13 @@
           "dataGaps": [
             {
               "sourceId": "sentinel2",
-              "what": "Brak bezchmurnego zdjęcia Sentinel-2 z ostatnich 45 dni",
+              "what": "Zdjęcie Sentinel-2 nie zostało pobrane (przekroczony czas odpowiedzi)",
               "impact": "Nie policzono NDVI i NDMI, więc nie sprawdzono stanu roślin; pewność obniżona o 0,15"
             },
             {
               "sourceId": "eumetsat",
-              "what": "Brak satelitarnej wilgotności gleby EUMETSAT (brak klucza)",
-              "impact": "Brak niezależnego potwierdzenia wilgotności powierzchni gleby; pewność obniżona o 0,10"
+              "what": "Brak niezależnego odczytu radarowego wilgotności gleby (EUMETSAT ASCAT, źródło opcjonalne)",
+              "impact": "Brak. Wilgotność gleby pochodzi z NASA POWER, a pewność i status raportu nie zmieniają się"
             }
           ],
           "charts": {
@@ -2772,11 +2861,12 @@
           "durationMs": 5730,
           "createdAt": "2026-11-21T10:19:41.198Z"
         }
-      }
+      },
+      "examples_note": "Przykłady dotyczą głównej działki demo 061409_2.0009.612 (obręb Bronowice, gm. Puławy, lubelskie, pole uprawne, 0,55 ha). Rzeczywiste: geometria, numer, obręb, gmina, powiat i województwo (ULDK), powierzchnia i centroid (turf), piasek 60% i ił 13% (SoilGrids, T-002) oraz wilgotność gleby z NASA POWER dla 2026-06-10 (GWETTOP 38,0%, GWETROOT 35,1%, GWETPROF 35,9%, percentyl strefy korzeniowej 4 na tle 310 dni z 10 lat). Ilustracyjne (nie odpytywane): pogoda, KBW, Sentinel-2, spadek terenu i wysokości, rowy OSM, pojemność wodna TAW i próg RAW. 201_complete: eumetsat missing + wpis w dataGaps, status nadal complete. 201_partial: sentinel2 timeout, status partial. Pomocnicza działka 061401_1.0001.691/9 (Miasto Puławy, zabudowa): SoilGrids zwraca 0, więc gleba = missing + dataGap (bez pełnego przykładu); służy do testu ukośnika w ID (w ścieżce %2F, np. GET /parcels/061401_1.0001.691%2F9) i ścieżki dataGaps."
     },
     {
       "id": "API-005",
-      "status": "proposed",
+      "status": "agreed",
       "method": "GET",
       "path": "/analyses/:id",
       "summary": "Zapisany raport po id (link do ponownego otwarcia i widok druku), bez ponownego liczenia",
@@ -2798,10 +2888,10 @@
     },
     {
       "id": "API-006",
-      "status": "proposed",
+      "status": "agreed",
       "method": "GET",
       "path": "/sources",
-      "summary": "Katalog źródeł danych (uldk, meteo, sentinel2, eumetsat, soilgrids, elevation, overpass: nazwa, kategoria, dostawca, licencja, rozdzielczość) do listy postępu w kroku 3 i tabeli źródeł; stała z kodu",
+      "summary": "Katalog źródeł danych (uldk, meteo, sentinel2, nasa_power, eumetsat, soilgrids, elevation, overpass: nazwa, kategoria, dostawca, licencja, rozdzielczość, przypisanie) do listy postępu w kroku 3 i tabeli źródeł; stała z kodu. nasa_power = wilgotność gleby (etykieta \"Wilgotność gleby\"), eumetsat = opcjonalne, zawsze missing",
       "auth": "none",
       "request": {},
       "response": {
@@ -2824,7 +2914,7 @@
               "url": "https://uldk.gugik.gov.pl/",
               "license": "Dane PZGiK/EGiB, bezpłatne (Prawo geodezyjne i kartograficzne)",
               "resolution": "działka ewidencyjna (geometria wektorowa)",
-              "timeoutMs": 8000
+              "timeoutMs": 10000
             },
             {
               "id": "meteo",
@@ -2849,10 +2939,22 @@
               "timeoutMs": 15000
             },
             {
+              "id": "nasa_power",
+              "name": "NASA POWER Daily (reanaliza MERRA-2, wilgotność gleby)",
+              "category": "soil",
+              "label": "Wilgotność gleby",
+              "provider": "NASA Langley Research Center (LaRC) POWER Project",
+              "url": "https://power.larc.nasa.gov/",
+              "license": "Dane NASA, otwarte; wymagane przypisanie NASA LaRC POWER",
+              "resolution": "siatka ok. 50 km (0,5° × 0,625°), dane dobowe",
+              "timeoutMs": 10000,
+              "attribution": "These data were obtained from the NASA Langley Research Center (LaRC) POWER Project funded through the NASA Earth Science/Applied Science Program."
+            },
+            {
               "id": "eumetsat",
               "name": "EUMETSAT ASCAT SSM (Data Store)",
               "category": "satellite",
-              "label": "Satelita (wilgotność gleby)",
+              "label": "Satelita ASCAT (opcjonalne)",
               "provider": "EUMETSAT / H SAF",
               "url": "https://data.eumetsat.int/",
               "license": "Polityka danych EUMETSAT / H SAF (do potwierdzenia)",

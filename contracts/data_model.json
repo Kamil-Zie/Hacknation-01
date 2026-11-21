@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -29,16 +29,21 @@
       "indexes": []
     }
   },
-  "_note": "Kolekcje Mongo: tylko DM-001 (reports) i DM-002 (source_cache). DM-003..DM-005 to DTO i stałe z kodu (storage: dto/code), DM-006..DM-015 to obiekty osadzone w DM-001 (storage: embedded). Metodyka: docs/adr/ADR-007-methodology.md.",
+  "_note": "Kolekcje Mongo: tylko DM-001 (reports) i DM-002 (source_cache). DM-003..DM-005 to DTO i stałe z kodu (storage: dto/code), DM-006..DM-015 to obiekty osadzone w DM-001 (storage: embedded). Metodyka: docs/adr/ADR-007-methodology.md. Wersja 0.2.0: wszystkie encje agreed; źródło nasa_power (wilgotność gleby, ADR-008) w enumach sourceId, eumetsat zostaje opcjonalny i zawsze missing (ADR-006 Aktualizacja); DM-015 opisuje NASA POWER (zmiany zgodne wstecz: nowe pola opcjonalne/nullable).",
   "entities": [
     {
       "id": "DM-001",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Report",
       "storage": "collection: reports",
       "description": "Zapisany raport analizy działki na datę analizy; zwracany przez API-004 i API-005. Brak danych = null + wpis w dataGaps, nigdy wartość domyślna.",
       "fields": [
-        { "name": "id", "type": "objectId", "required": true },
+        {
+          "name": "id",
+          "type": "objectId",
+          "required": true,
+          "note": "w JSON API jako string (24 znaki hex), pole nazywa się id (nie _id); Mongoose mapuje _id na id przy serializacji"
+        },
         {
           "name": "parcel",
           "type": "Ref<DM-003>",
@@ -51,7 +56,7 @@
           "name": "status",
           "type": "enum(complete|partial)",
           "required": true,
-          "note": "partial gdy choć jedno źródło ma status error|timeout|missing"
+          "note": "partial tylko gdy choć jedno źródło OBOWIĄZKOWE (uldk, meteo, sentinel2, nasa_power, soilgrids, elevation, overpass) ma status error|timeout|missing. eumetsat jest opcjonalny i zawsze missing: nie zmienia statusu, ale zostaje wpis w dataGaps"
         },
         { "name": "assessment", "type": "Ref<DM-006>", "required": true },
         { "name": "vulnerability", "type": "Ref<DM-007>", "required": true },
@@ -62,9 +67,19 @@
           "required": true,
           "note": "kolejność: retention_landscape, retention_soil, agrotechnics, irrigation; pusta, gdy ocena i podatność = unknown"
         },
-        { "name": "sources", "type": "Ref<DM-011>[]", "required": true },
+        {
+          "name": "sources",
+          "type": "Ref<DM-011>[]",
+          "required": true,
+          "note": "wszystkie 8 źródeł z katalogu (DM-005), także eumetsat (missing)"
+        },
         { "name": "limitations", "type": "string[]", "required": true },
-        { "name": "dataGaps", "type": "Ref<DM-012>[]", "required": true },
+        {
+          "name": "dataGaps",
+          "type": "Ref<DM-012>[]",
+          "required": true,
+          "note": "wpis dla każdego źródła ze statusem error|timeout|missing, także dla opcjonalnego eumetsat (zawsze missing)"
+        },
         {
           "name": "charts",
           "type": "object { kbw60Series: { date: string, kbwMm: number }[], kbw60Climatology: { date: string, p10: number, p50: number, p90: number }[] } | null",
@@ -89,7 +104,7 @@
     },
     {
       "id": "DM-002",
-      "status": "proposed",
+      "status": "agreed",
       "name": "SourceCache",
       "storage": "collection: source_cache",
       "description": "Cache przetworzonych odpowiedzi źródeł (statystyki, nie rastry). Klucz: sourceId + parametry (zaokrąglony punkt/ID działki + zakres dat). TTL per źródło wg ADR-006.",
@@ -102,7 +117,7 @@
         },
         {
           "name": "sourceId",
-          "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)",
+          "type": "enum(uldk|meteo|sentinel2|nasa_power|eumetsat|soilgrids|elevation|overpass)",
           "required": true
         },
         {
@@ -123,7 +138,7 @@
     },
     {
       "id": "DM-003",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Parcel",
       "storage": "dto (z ULDK, cache w DM-002, kopia osadzona w DM-001)",
       "description": "Działka ewidencyjna z ULDK GUGiK, geometria GeoJSON EPSG:4326; powierzchnia i centroid liczone turf-em.",
@@ -132,12 +147,17 @@
           "name": "id",
           "type": "string(60)",
           "required": true,
-          "note": "pełny TERYT, np. 141201_1.0001.123"
+          "note": "pełny TERYT, np. 061409_2.0009.612; numery z ukośnikiem (np. 061401_1.0001.691/9) w ścieżce API jako %2F"
         },
         { "name": "parcelNumber", "type": "string(30)", "required": true },
         { "name": "region", "type": "string(120)", "required": true, "note": "obręb ewidencyjny" },
         { "name": "commune", "type": "string(120)", "required": true, "note": "gmina" },
-        { "name": "county", "type": "string(120)", "required": true, "note": "powiat" },
+        {
+          "name": "county",
+          "type": "string(120)",
+          "required": true,
+          "note": "powiat bez prefiksu 'powiat' (ULDK zwraca 'powiat puławski', w polu: 'puławski')"
+        },
         { "name": "voivodeship", "type": "string(60)", "required": true },
         { "name": "areaHa", "type": "number", "required": true },
         { "name": "centroid", "type": "object { lat: number, lon: number }", "required": true },
@@ -151,7 +171,7 @@
     },
     {
       "id": "DM-004",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Crop",
       "storage": "code: apps/backend/src/services/engine/crops.ts",
       "description": "Uprawa z parametrami FAO-56 i oczekiwanymi zakresami NDVI/NDMI per miesiąc (tabela ADR-007 §2, §5).",
@@ -175,7 +195,8 @@
         {
           "name": "stages",
           "type": "object { code: string, name: string, from: string MM-DD, to: string MM-DD, isCritical: boolean }[]",
-          "required": true
+          "required": true,
+          "note": "gdy from > to (porównanie tekstowe MM-DD, np. 10-01 > 03-31), faza przechodzi przez przełom roku (np. spoczynek zimowy od 10-01 do 03-31 następnego roku)"
         },
         {
           "name": "criticalPeriodLabel",
@@ -186,7 +207,8 @@
         {
           "name": "expectedIndices",
           "type": "object { month: integer, ndviMin: number, ndviMax: number, ndmiMin: number, ndmiMax: number }[]",
-          "required": true
+          "required": true,
+          "note": "dokładnie 12 wpisów, po jednym na miesiąc (month 1–12)"
         },
         {
           "name": "reference",
@@ -200,14 +222,14 @@
     },
     {
       "id": "DM-005",
-      "status": "proposed",
+      "status": "agreed",
       "name": "DataSource",
       "storage": "code: apps/backend/src/services/sources/catalog.ts",
       "description": "Katalog źródeł danych (API-006, README sekcje 4–7).",
       "fields": [
         {
           "name": "id",
-          "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)",
+          "type": "enum(uldk|meteo|sentinel2|nasa_power|eumetsat|soilgrids|elevation|overpass)",
           "required": true
         },
         {
@@ -225,7 +247,7 @@
           "name": "label",
           "type": "string(40)",
           "required": true,
-          "note": "prosta etykieta dla rolnika: Działka, Pogoda, Satelita (rośliny), Satelita (wilgotność gleby), Gleba, Teren, Woda w okolicy"
+          "note": "prosta etykieta dla rolnika: Działka, Pogoda, Satelita (rośliny), Wilgotność gleby (nasa_power), Satelita ASCAT (opcjonalne) (eumetsat, nie pokazywać jako wilgotność gleby), Gleba, Teren, Woda w okolicy"
         },
         { "name": "provider", "type": "string(80)", "required": true },
         { "name": "url", "type": "string", "required": true },
@@ -236,14 +258,20 @@
           "required": true,
           "note": "np. siatka 9–25 km"
         },
-        { "name": "timeoutMs", "type": "integer", "required": true }
+        { "name": "timeoutMs", "type": "integer", "required": true },
+        {
+          "name": "attribution",
+          "type": "string | null",
+          "required": false,
+          "note": "wymagane przypisanie źródła, gdy licencja je nakłada (nasa_power: tekst NASA LaRC POWER wg ADR-008); frontend pokazuje je w tabeli źródeł i stopce raportu"
+        }
       ],
       "relations": [],
       "indexes": []
     },
     {
       "id": "DM-006",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Assessment",
       "storage": "embedded in DM-001",
       "description": "Ocena bieżąca na datę analizy (krok 4).",
@@ -283,7 +311,7 @@
           "name": "soilMoistureSatellite",
           "type": "Ref<DM-015> | null",
           "required": true,
-          "note": "ASCAT SSM z EUMETSAT; null + wpis w dataGaps (sourceId eumetsat), gdy brak klucza, granuli lub timeout; tylko wpływ na pewność (ADR-007 §5a)"
+          "note": "wilgotność gleby z NASA POWER (sourceId nasa_power, ADR-008); null + wpis w dataGaps (sourceId nasa_power), gdy źródło ma status error|timeout|missing; potwierdza lub przeczy klasie suszy, wpływa na pewność, nie zmienia klasy (ADR-007 §5a). eumetsat nie jest już źródłem tego pola"
         },
         { "name": "evidence", "type": "Ref<DM-010>[]", "required": true }
       ],
@@ -292,7 +320,7 @@
     },
     {
       "id": "DM-007",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Vulnerability",
       "storage": "embedded in DM-001",
       "description": "Podatność wieloletnia z 10 sezonów przed rokiem analizy (krok 5).",
@@ -313,7 +341,7 @@
           "name": "monthly",
           "type": "object { month: integer, deficitFrequency: number, medianKbwMm: number }[]",
           "required": true,
-          "note": "IV–IX"
+          "note": "IV–IX; deficitFrequency 0–1 = udział sezonów z deficytem w danym miesiącu (np. 0.6 = 6 z 10 lat)"
         },
         {
           "name": "soil",
@@ -328,7 +356,7 @@
     },
     {
       "id": "DM-008",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Cause",
       "storage": "embedded in DM-001",
       "description": "Przyczyna niedoboru wody wykryta regułą (ADR-007 §8).",
@@ -353,18 +381,29 @@
     },
     {
       "id": "DM-009",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Recommendation",
       "storage": "embedded in DM-001",
       "description": "Rekomendacja policzona regułą R-* (ADR-007 §9); zawsze z uzasadnieniem w danych.",
       "fields": [
-        { "name": "ruleId", "type": "string(12)", "required": true, "note": "np. R-LAND-01" },
+        {
+          "name": "ruleId",
+          "type": "string(12)",
+          "required": true,
+          "note": "np. R-LAND-01, R-SOIL-01, R-AGRO-01, R-IRR-01 (kolejne reguły nawadniania R-IRR-02..); maks. 12 znaków"
+        },
         {
           "name": "category",
           "type": "enum(retention_landscape|retention_soil|agrotechnics|irrigation)",
-          "required": true
+          "required": true,
+          "note": "4 kategorie w tej kolejności wyświetlania: retention_landscape, retention_soil, agrotechnics, irrigation"
         },
-        { "name": "order", "type": "integer", "required": true },
+        {
+          "name": "order",
+          "type": "integer",
+          "required": true,
+          "note": "kolejność w całej liście, rosnąco od 1"
+        },
         { "name": "priority", "type": "enum(high|medium|low)", "required": true },
         { "name": "title", "type": "string(100)", "required": true },
         { "name": "action", "type": "string", "required": true, "note": "co zrobić" },
@@ -386,7 +425,7 @@
           "name": "irrigation",
           "type": "object { isJustified: boolean, netDoseMm: number | null, grossDoseMm: number | null, doseM3PerHa: number | null, window: string | null, nextCheckInDays: number | null } | null",
           "required": true,
-          "note": "tylko dla category=irrigation"
+          "note": "tylko dla category=irrigation, w pozostałych null. netDoseMm = dawka netto (mm); grossDoseMm = dawka brutto (netto / efektywność nawadniania); doseM3PerHa = dawka BRUTTO w m³/ha (z uwzględnieniem efektywności, = grossDoseMm × 10)"
         },
         { "name": "evidence", "type": "Ref<DM-010>[]", "required": true, "note": "min. 1 element" }
       ],
@@ -395,7 +434,7 @@
     },
     {
       "id": "DM-010",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Evidence",
       "storage": "embedded",
       "description": "Jedna wartość-dowód z jednostką, źródłem i datą danych.",
@@ -410,7 +449,7 @@
         { "name": "unit", "type": "string(20) | null", "required": true },
         {
           "name": "sourceId",
-          "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass|engine)",
+          "type": "enum(uldk|meteo|sentinel2|nasa_power|eumetsat|soilgrids|elevation|overpass|engine)",
           "required": true,
           "note": "engine = wartość wyliczona z kilku źródeł"
         },
@@ -418,7 +457,7 @@
           "name": "dataDate",
           "type": "string(40)",
           "required": true,
-          "note": "data lub okres danych, np. 2025-04-01–2025-05-30"
+          "note": "data lub okres danych, np. 2025-04-01–2025-05-30; źródła statyczne (soilgrids, elevation): rok wersji produktu (SoilGrids 2.0 = 2020); overpass: data odczytu OSM; źródło missing: patrz DM-011"
         },
         { "name": "note", "type": "string | null", "required": false }
       ],
@@ -427,14 +466,14 @@
     },
     {
       "id": "DM-011",
-      "status": "proposed",
+      "status": "agreed",
       "name": "SourceStatus",
       "storage": "embedded in DM-001",
       "description": "Status źródła w tej analizie (krok 3 i 7).",
       "fields": [
         {
           "name": "sourceId",
-          "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)",
+          "type": "enum(uldk|meteo|sentinel2|nasa_power|eumetsat|soilgrids|elevation|overpass)",
           "required": true
         },
         { "name": "name", "type": "string(80)", "required": true },
@@ -452,9 +491,14 @@
           "name": "dataPeriod",
           "type": "string(40) | null",
           "required": true,
-          "note": "np. 2015-03-08–2025-05-20 albo data sceny 2025-05-14"
+          "note": "np. 2015-03-08–2025-05-20 albo data sceny 2025-05-14. Źródła statyczne (soilgrids, elevation, overpass) i źródło ze statusem missing: null (dataDate wersji produktu jest w DM-010)"
         },
-        { "name": "fetchedAt", "type": "datetime | null", "required": true },
+        {
+          "name": "fetchedAt",
+          "type": "datetime | null",
+          "required": true,
+          "note": "chwila pobrania albo odczytu z cache; dla missing chwila próby (null tylko gdy próby nie było, np. eumetsat)"
+        },
         { "name": "durationMs", "type": "integer", "required": true },
         {
           "name": "message",
@@ -468,21 +512,21 @@
     },
     {
       "id": "DM-012",
-      "status": "proposed",
+      "status": "agreed",
       "name": "DataGap",
       "storage": "embedded in DM-001",
       "description": "Jawny brak danych i jego wpływ na wynik.",
       "fields": [
         {
           "name": "sourceId",
-          "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)",
+          "type": "enum(uldk|meteo|sentinel2|nasa_power|eumetsat|soilgrids|elevation|overpass)",
           "required": true
         },
         {
           "name": "what",
           "type": "string",
           "required": true,
-          "note": "np. Brak danych glebowych SoilGrids"
+          "note": "np. Brak danych glebowych SoilGrids; wpis także dla opcjonalnego eumetsat (zawsze missing, bez wpływu na status i pewność)"
         },
         {
           "name": "impact",
@@ -496,7 +540,7 @@
     },
     {
       "id": "DM-013",
-      "status": "proposed",
+      "status": "agreed",
       "name": "WaterBalanceWindow",
       "storage": "embedded in DM-006",
       "description": "KBW = Σ(P − ETc) dla okna n dni kończącego się w dacie analizy, na tle 10 lat (70 próbek, ADR-007 §3).",
@@ -525,7 +569,7 @@
     },
     {
       "id": "DM-014",
-      "status": "proposed",
+      "status": "agreed",
       "name": "SatelliteObservation",
       "storage": "embedded in DM-006",
       "description": "NDVI/NDMI działki z ostatniej ważnej sceny Sentinel-2 L2A ≤ data analizy, interpretowane dla uprawy i miesiąca.",
@@ -556,16 +600,52 @@
     },
     {
       "id": "DM-015",
-      "status": "proposed",
+      "status": "agreed",
       "name": "SatelliteSoilMoisture",
       "storage": "embedded in DM-006",
-      "description": "Wilgotność powierzchniowej warstwy gleby z ASCAT (EUMETSAT Data Store / H SAF), najnowsza obserwacja w oknie D−3…D dla centroidu działki. Wartość orientacyjna, nie zmienia klasy suszy (ADR-006, ADR-007 §5a).",
+      "description": "Wilgotność gleby z NASA POWER (źródło nasa_power, reanaliza MERRA-2, ADR-008) dla centroidu działki: warstwa 0–5 cm (GWETTOP), strefa korzeniowa ok. 1 m (GWETROOT) i cały profil (GWETPROF), jako wilgotność względna w % (0 = sucho, 100 = nasycenie). Wartość = średnia z 7 dni do daty analizy (gdy data to dziś albo wczoraj, ostatni ważny dzień, zwykle D−2; -999 = brak, nigdy nie trafia do obliczeń). Percentyl i anomalia dotyczą strefy korzeniowej względem okna ±15 dni wokół daty analizy z 10 poprzednich lat. Ocena: dry przy percentylu ≤ 20 lub strefie korzeniowej ≤ 30%, wet przy percentylu ≥ 80 lub ≥ 70%, inaczej normal. Rozdzielczość ok. 50 km, więc wartość opisuje region, nie samą działkę. Potwierdza lub przeczy klasie suszy, nie zmienia jej (ADR-007 §5a). W UI etykieta 'Wilgotność gleby'. Nazwa encji zostaje (zgodność wstecz).",
       "fields": [
+        {
+          "name": "label",
+          "type": "string(40)",
+          "required": false,
+          "note": "etykieta dla rolnika, zawsze 'Wilgotność gleby'"
+        },
         {
           "name": "valuePct",
           "type": "number 0–100",
           "required": true,
-          "note": "% saturacji (degree of saturation)"
+          "note": "wilgotność warstwy 0–5 cm w % (GWETTOP × 100, średnia 7 dni); jak dawniej: warstwa powierzchniowa"
+        },
+        {
+          "name": "rootZonePct",
+          "type": "number 0–100 | null",
+          "required": false,
+          "note": "wilgotność strefy korzeniowej w % (GWETROOT × 100, średnia 7 dni); główny wskaźnik oceny"
+        },
+        {
+          "name": "profilePct",
+          "type": "number 0–100 | null",
+          "required": false,
+          "note": "wilgotność całego profilu w % (GWETPROF × 100, średnia 7 dni)"
+        },
+        {
+          "name": "percentile",
+          "type": "number 0–100 | null",
+          "required": false,
+          "note": "percentyl strefy korzeniowej na tle tych samych dni (okno ±15 dni, ok. 310 wartości dobowych z 10 lat); im niżej, tym sucho"
+        },
+        {
+          "name": "normRootZonePct",
+          "type": "number 0–100 | null",
+          "required": false,
+          "note": "mediana wilgotności strefy korzeniowej z tego samego okna 10 lat, w %"
+        },
+        {
+          "name": "anomalyPp",
+          "type": "number | null",
+          "required": false,
+          "note": "rootZonePct − normRootZonePct w punktach procentowych (ujemna = suchsze niż zwykle)"
         },
         { "name": "assessment", "type": "enum(dry|normal|wet|unknown)", "required": true },
         {
@@ -574,38 +654,53 @@
           "required": true,
           "note": "zgodność z klasą suszy z KBW"
         },
-        { "name": "observedAt", "type": "datetime", "required": true },
-        { "name": "ageDays", "type": "integer", "required": true },
+        {
+          "name": "observedAt",
+          "type": "datetime",
+          "required": true,
+          "note": "dzień obserwacji (ostatni dzień średniej 7 dni) jako północ UTC, np. 2026-06-10T00:00:00.000Z; dane dobowe, bez godziny"
+        },
+        {
+          "name": "ageDays",
+          "type": "integer",
+          "required": true,
+          "note": "dni od obserwacji do daty analizy (0 dla dat historycznych; 2 dla analizy z dzisiejszą datą, bo ostatni ważny dzień to D−2)"
+        },
         {
           "name": "product",
           "type": "string(80)",
           "required": true,
-          "note": "np. ASCAT SSM 25 km NRT (Metop-B)"
+          "note": "np. NASA POWER daily, MERRA-2 (GWETTOP, GWETROOT, GWETPROF)"
         },
         {
           "name": "collectionId",
           "type": "string(60)",
           "required": true,
-          "note": "np. EO:EUM:DAT:METOP:SOMO25 (do weryfikacji)"
+          "note": "np. POWER daily point AG: GWETTOP,GWETROOT,GWETPROF"
         },
-        { "name": "granuleId", "type": "string(160)", "required": true },
+        {
+          "name": "granuleId",
+          "type": "string(160) | null",
+          "required": true,
+          "note": "null dla nasa_power (brak granul); pole zostaje dla zgodności wstecz"
+        },
         {
           "name": "resolutionKm",
           "type": "number",
           "required": true,
-          "note": "12.5 albo 25 zależnie od produktu"
+          "note": "ok. 50 dla NASA POWER (siatka 0,5° × 0,625°)"
         },
         {
           "name": "depthLabel",
           "type": "string(40)",
           "required": true,
-          "note": "warstwa powierzchniowa (kilka cm)"
+          "note": "np. 0–5 cm i strefa korzeniowa (ok. 1 m)"
         },
         {
           "name": "distanceKm",
-          "type": "number",
+          "type": "number | null",
           "required": true,
-          "note": "odległość punktu siatki od centroidu działki (maks. 20)"
+          "note": "null dla nasa_power (API nie podaje punktu siatki); pole zostaje dla zgodności wstecz"
         }
       ],
       "relations": [],

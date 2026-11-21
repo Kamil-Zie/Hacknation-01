@@ -1,0 +1,36 @@
+{
+  "id": "T-DB-005",
+  "title": "[DATA] Contract 0.2.0: agreed, nasa_power source, DM-015 NASA POWER, notes",
+  "description": "Obowiązkowe zadanie update danych po zmianie w bazie. Zmienione pliki: apps/backend/src/models/SourceCache.model.ts, contracts/data_model.json.",
+  "type": "data_update",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "done",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["DM-001", "DM-002", "DM-005", "DM-010", "DM-011", "DM-012", "DM-015"],
+  "data_change": {
+    "changed_files": ["apps/backend/src/models/SourceCache.model.ts", "contracts/data_model.json"],
+    "data_model_version": "0.2.0",
+    "breaking": false,
+    "created_by": "backend-2"
+  },
+  "acceptance_criteria": [
+    "contracts/data_model.json opisuje nowy stan i ma podbite version",
+    "Model/schemat w kodzie zgadza się z contracts/data_model.json",
+    "Seed w database/ zaktualizowany pod nowy model, idempotentny, z realistycznymi danymi demo",
+    "npm run seed przechodzi na wspólnej bazie dev w MongoDB Atlas (hacknation) bez błędów",
+    "Wysłana wiadomość contract_change (lub breaking_change) do frontendu, żeby zaktualizował mocki",
+    "Przy najbliższym wdrożeniu baza prod (hacknation_prod) odtworzona tym samym seedem (robi koordynator / coord-devops)"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "Zrobione (backend-2): kontrakt 0.2.0 (agreed, noty z decyzji 1224/1228/1234, nasa_power w enumach, DM-015 NASA POWER, DM-005.attribution), SourceCache.sourceId + nasa_power, examples API-004 na 061409_2.0009.612. npm run seed na hacknation OK: raporty demo 665f...0001/0002 z nową działką."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

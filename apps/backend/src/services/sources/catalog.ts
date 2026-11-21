@@ -11,6 +11,7 @@ export type DataSource = {
   license: string;
   resolution: string;
   timeoutMs: number;
+  attribution?: string;
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -25,7 +26,7 @@ export const SOURCES: DataSource[] = [
     url: 'https://uldk.gugik.gov.pl/',
     license: 'Dane PZGiK/EGiB, bezpłatne (Prawo geodezyjne i kartograficzne)',
     resolution: 'działka ewidencyjna (geometria wektorowa)',
-    timeoutMs: 8000,
+    timeoutMs: 10000,
   },
   {
     id: 'meteo',
@@ -50,10 +51,23 @@ export const SOURCES: DataSource[] = [
     timeoutMs: 15000,
   },
   {
+    id: 'nasa_power',
+    name: 'NASA POWER Daily (reanaliza MERRA-2, wilgotność gleby)',
+    category: 'soil',
+    label: 'Wilgotność gleby',
+    provider: 'NASA Langley Research Center (LaRC) POWER Project',
+    url: 'https://power.larc.nasa.gov/',
+    license: 'Dane NASA, otwarte; wymagane przypisanie NASA LaRC POWER',
+    resolution: 'siatka ok. 50 km (0,5° × 0,625°), dane dobowe',
+    timeoutMs: 10000,
+    attribution:
+      'These data were obtained from the NASA Langley Research Center (LaRC) POWER Project funded through the NASA Earth Science/Applied Science Program.',
+  },
+  {
     id: 'eumetsat',
     name: 'EUMETSAT ASCAT SSM (Data Store)',
     category: 'satellite',
-    label: 'Satelita (wilgotność gleby)',
+    label: 'Satelita ASCAT (opcjonalne)',
     provider: 'EUMETSAT / H SAF',
     url: 'https://data.eumetsat.int/',
     license: 'Polityka danych EUMETSAT / H SAF (do potwierdzenia)',
@@ -100,6 +114,7 @@ export const SOURCE_TTL_MS: Record<SourceId, number> = {
   uldk: 30 * DAY_MS,
   meteo: 365 * DAY_MS,
   sentinel2: 365 * DAY_MS,
+  nasa_power: 365 * DAY_MS,
   eumetsat: 365 * DAY_MS,
   soilgrids: 365 * DAY_MS,
   elevation: 365 * DAY_MS,
@@ -109,6 +124,7 @@ export const SOURCE_TTL_MS: Record<SourceId, number> = {
 export const SHORT_TTL_MS = {
   meteo: 6 * 60 * 60 * 1000,
   sentinel2: DAY_MS,
+  nasa_power: 6 * 60 * 60 * 1000,
 };
 
 export function getSourceTimeoutMs(sourceId: SourceId): number {

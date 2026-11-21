@@ -8,7 +8,16 @@ const sourceCacheSchema = new Schema(
     sourceId: {
       type: String,
       required: true,
-      enum: ['uldk', 'meteo', 'sentinel2', 'eumetsat', 'soilgrids', 'elevation', 'overpass'],
+      enum: [
+        'uldk',
+        'meteo',
+        'sentinel2',
+        'nasa_power',
+        'eumetsat',
+        'soilgrids',
+        'elevation',
+        'overpass',
+      ],
     },
     payload: { type: Schema.Types.Mixed, required: true },
     dataPeriod: { type: String, required: false, maxlength: 40, default: null },

@@ -70,6 +70,23 @@ test('4xx is not retried', async () => {
   assert.equal(calls, 1);
 });
 
+test('eumetsat is always missing and the fetcher is never called', async () => {
+  let calls = 0;
+  const result = await runSource({
+    sourceId: 'eumetsat',
+    key: 'k6',
+    fetcher: async () => {
+      calls += 1;
+      return { data: { value: 1 } };
+    },
+    cache: memoryCache(),
+  });
+  assert.equal(result.status, 'missing');
+  assert.equal(result.data, null);
+  assert.equal(result.fetchedAt, null);
+  assert.equal(calls, 0);
+});
+
 test('null result gives status missing and is not cached', async () => {
   const cache = memoryCache();
   const result = await runSource({

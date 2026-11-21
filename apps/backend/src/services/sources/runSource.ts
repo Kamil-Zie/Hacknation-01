@@ -30,6 +30,7 @@ export class HttpStatusError extends Error {
 const MSG_TIMEOUT = 'Źródło nie odpowiedziało na czas';
 const MSG_MISSING = 'Brak danych ze źródła';
 const MSG_ERROR = 'Źródło zwróciło błąd';
+const MSG_EUMETSAT = 'Źródło opcjonalne, brak dostępu do danych (nie wpływa na wynik)';
 
 export async function runSource<T>(options: RunSourceOptions<T>): Promise<SourceResult<T>> {
   const startedAt = Date.now();
@@ -44,6 +45,11 @@ export async function runSource<T>(options: RunSourceOptions<T>): Promise<Source
     durationMs: Date.now() - startedAt,
     ...partial,
   });
+
+  // EUMETSAT is optional and unavailable (ADR-006 update, T-002): no fetcher call, no cache, fetchedAt stays null.
+  if (sourceId === 'eumetsat') {
+    return build({ status: 'missing', message: MSG_EUMETSAT });
+  }
 
   try {
     const cached = await cache.get(key);
@@ -63,7 +69,8 @@ export async function runSource<T>(options: RunSourceOptions<T>): Promise<Source
     const fetched = await fetchWithRetry(options.fetcher, signal, options.retries ?? 1);
 
     if (!fetched || isEmpty(fetched.data)) {
-      return build({ status: 'missing', message: MSG_MISSING });
+      // DM-011: for missing, fetchedAt is the moment of the attempt.
+      return build({ status: 'missing', message: MSG_MISSING, fetchedAt: new Date() });
     }
     const dataPeriod = fetched.dataPeriod ?? null;
     await cache.set(

@@ -3,6 +3,7 @@ export const SOURCE_IDS = [
   'uldk',
   'meteo',
   'sentinel2',
+  'nasa_power',
   'eumetsat',
   'soilgrids',
   'elevation',
