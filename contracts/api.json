@@ -3751,7 +3751,7 @@
     },
     {
       "id": "API-019",
-      "status": "proposed",
+      "status": "agreed",
       "method": "POST",
       "path": "/fields/:fieldId/analyses",
       "summary": "Raport zbiorczy pola (T-078): analiza każdej działki (API-004, cache źródeł, równolegle max 3) i podsumowanie ważone powierzchnią. Raporty działek zapisane w historii konta.",
@@ -3768,15 +3768,22 @@
       "response": {
         "201": "FieldReport (DM-025)"
       },
+      "response_notes": [
+        "Działka, która się nie policzyła: parcels[].status = failed, reportId = null, droughtClass = unknown, rootZonePct i deficitMm = null; areaHa z kopii w polu.",
+        "summary.severeAreaPct, moderateAreaPct i wartości ważone liczone z powierzchni działek policzonych (bez failed), zaokrąglone do 0,1.",
+        "recommendations: Recommendation (DM-009) z dodatkowym polem parcelIds: string[] (działki, których dotyczy), jedna pozycja na ruleId, kolejność order.",
+        "Działki liczone max 3 naraz; działki, których nie zaczęto w 15 s, dostają failed. Pole 2–3 działek: jeden czas analizy (ok. 8–25 s)."
+      ],
       "errors": [
         "401 UNAUTHORIZED",
+        "429 RATE_LIMITED (4 raporty pola na minutę z IP)",
         "403 NOT_A_MEMBER",
         "503 DB_UNAVAILABLE",
         "404 FIELD_NOT_FOUND",
         "422 VALIDATION_ERROR",
         "502 UPSTREAM_UNAVAILABLE (gdy żadna działka się nie policzyła)"
       ],
-      "data_refs": ["DM-024", "DM-025", "DM-007"],
+      "data_refs": ["DM-024", "DM-025", "DM-009"],
       "consumers": [],
       "consumers_planned": ["UI-S-006"]
     }
