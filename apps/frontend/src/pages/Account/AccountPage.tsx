@@ -1,44 +1,19 @@
-// UI-S-009 T-086 Dashboard: account header, tiles with ThreatMap (UI-C-017), parcels, drought, advice, reports, sources; members and fields stay until T-089/T-090 pages are filled
+// UI-S-009 T-086 Dashboard: account header, tiles with ThreatMap (UI-C-017), parcels, drought, advice, reports, sources (members live on /wspolnicy, fields on /pola)
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Link,
-  MenuItem,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Link, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
-import {
-  useAccountReportsQuery,
-  useAddMemberMutation,
-  useMembersQuery,
-  useRemoveMemberMutation,
-  useRenameAccountMutation,
-} from '@/api/accounts';
+import { useAccountReportsQuery, useRenameAccountMutation } from '@/api/accounts';
 import { useAccountParcelsQuery } from '@/api/accountParcels';
 import { useReportQuery } from '@/api/analyses';
-import { ApiError } from '@/api/client';
 import { useSources } from '@/api/sources';
 import type { DroughtClass, ParcelOverview, Recommendation } from '@/api/types';
 import { DashboardTile } from '@/components/DashboardTile/DashboardTile';
-import { FieldList } from '@/components/FieldList/FieldList';
-import { MemberList } from '@/components/MemberList/MemberList';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { DROUGHT_WORDS, ThreatMap } from '@/components/ThreatMap/ThreatMap';
 import { useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
-
-function toError(error: unknown): { code: string; message: string } | null {
-  if (!error) return null;
-  if (error instanceof ApiError) return { code: error.code, message: error.message };
-  return { code: 'NETWORK_ERROR', message: 'Nie udało się połączyć. Spróbuj ponownie.' };
-}
 
 // retention first, then agrotechnics, then irrigation
 const CATEGORY_ORDER: Record<Recommendation['category'], number> = {
@@ -72,9 +47,6 @@ export function AccountPage() {
   const navigate = useNavigate();
   const { token, accounts, activeAccountId, setActiveAccount } = useSessionStore();
   const accountId = activeAccountId ?? '';
-  const members = useMembersQuery(activeAccountId, token);
-  const add = useAddMemberMutation(accountId, token ?? '');
-  const remove = useRemoveMemberMutation(accountId, token ?? '');
   const rename = useRenameAccountMutation(accountId, token ?? '');
   const reports = useAccountReportsQuery(activeAccountId, token);
   const parcels = useAccountParcelsQuery(activeAccountId, token);
@@ -323,43 +295,6 @@ export function AccountPage() {
             ))}
           </Box>
         </DashboardTile>
-      </Box>
-      {/* Until /wspolnicy (T-090) and /pola (T-089) are filled in, members and fields stay here */}
-      <Box
-        sx={{
-          display: 'grid',
-          gap: 3,
-          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
-          alignItems: 'start',
-        }}
-      >
-        <Card component="section" aria-labelledby="czlonkowie-title">
-          <CardContent>
-            <Stack spacing={2}>
-              <Typography id="czlonkowie-title" variant="h2" component="h2">
-                Członkowie
-              </Typography>
-              <MemberList
-                members={members.data ?? []}
-                isLoading={members.isPending}
-                error={toError(members.error)}
-                isAdding={add.isPending}
-                addError={toError(add.error)}
-                removingId={remove.isPending ? (remove.variables ?? null) : null}
-                removeError={toError(remove.error)}
-                onAdd={(email) => add.mutate(email)}
-                onRemove={(memberId) => remove.mutate(memberId)}
-                onRetry={() => void members.refetch()}
-              />
-            </Stack>
-          </CardContent>
-        </Card>
-        {/* T-079 Moje pola (FieldList has its own heading and actions) */}
-        <Card component="section" id="moje-pola">
-          <CardContent>
-            <FieldList />
-          </CardContent>
-        </Card>
       </Box>
     </Stack>
   );
