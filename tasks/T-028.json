@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-027", "T-011"],
   "contract_refs": ["API-004", "DM-013", "DM-014", "DM-002", "DM-004"],
@@ -24,7 +24,8 @@
   },
   "notes": [
     "coord-1 13:35: przeniesione z backend-1 na backend-2 (Jan robi T-017 i T-031, Sentinel-2 był najdłuższą ścieżką). Źródło budujesz niezależnie od orkiestratora, jak pozostałe (runSource), Jan podpina je w T-031.",
-    "Agent: be-api. Szacunek: 2h. Faza: 6 Sentinel-2. Licencja Copernicus + katalog CC0."
+    "Agent: be-api. Szacunek: 2h. Faza: 6 Sentinel-2. Licencja Copernicus + katalog CC0.",
+    "Zrobione (backend-2): sources/sentinel2Indices.ts fetchSatellite(parcel, D, cropCode, signal?) → SourceResult<SatelliteObservation> (DM-014), engine/satellite.ts assessSatellite. SCL najpierw (odrzuca zachmurzone sceny bez pobierania kanałów), maks. 3 sceny, ≥ 60% ważnych pikseli (SCL 4, 5), < 4 piksele → missing, Plan B: NDMI po NDVI z terminem 12 s. Mediana wg ADR-007 §5 (średnia była zawyżona przez ciemne piksele). Bronowice: D=2026-06-10 → missing (cirrus, sceny 32%/0%/25% ważnych pikseli); D=2026-05-25 → NDVI 0,577, NDMI 0,168, below. Sieć do bucketa S2 ok. 50 KB/s na połączenie, pełny odczyt ok. 12–14 s – zmierzyć na prod. decision_request do koordynatora: data demo / klasa SCL 10."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
