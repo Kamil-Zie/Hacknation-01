@@ -1,0 +1,40 @@
+{
+  "id": "T-DB-015",
+  "title": "[DATA] Script copy-cache: source_cache dev → prod (T-082), no model change",
+  "description": "Obowiązkowe zadanie update danych po zmianie w bazie. Zmienione pliki: database/package.json, database/tsconfig.json, database/scripts/copy-cache.ts.",
+  "type": "data_update",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "done",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["DM-002"],
+  "data_change": {
+    "changed_files": [
+      "database/package.json",
+      "database/tsconfig.json",
+      "database/scripts/copy-cache.ts"
+    ],
+    "data_model_version": "0.5.2",
+    "breaking": false,
+    "created_by": "backend-2"
+  },
+  "acceptance_criteria": [
+    "contracts/data_model.json opisuje nowy stan i ma podbite version",
+    "Model/schemat w kodzie zgadza się z contracts/data_model.json",
+    "Seed w database/ zaktualizowany pod nowy model, idempotentny, z realistycznymi danymi demo",
+    "npm run seed przechodzi na wspólnej bazie dev w MongoDB Atlas (hacknation) bez błędów",
+    "Wysłana wiadomość contract_change (lub breaking_change) do frontendu, żeby zaktualizował mocki",
+    "Przy najbliższym wdrożeniu baza prod (hacknation_prod) odtworzona tym samym seedem (robi koordynator / coord-devops)"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "Zrobione (backend-2): tylko nowy skrypt database/scripts/copy-cache.ts (+ npm run copy-cache, tsconfig include scripts/). Bez zmian modelu, kontraktu i seeda; dev tylko do odczytu."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

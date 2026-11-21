@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "seed": "tsx seed.ts",
+    "copy-cache": "tsx scripts/copy-cache.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
