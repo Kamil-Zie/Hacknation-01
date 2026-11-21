@@ -16,6 +16,10 @@ export function App() {
         styles={(t) => ({
           // Static map on the print sheet: no zoom buttons (ParcelMap keeps them even when not interactive).
           '.print-sheet .leaflet-control-zoom': { display: 'none' },
+          // The A4 sheet is ~210 mm wide whatever the screen: metric tiles always in 2 columns there.
+          '.print-sheet .metric-grid': {
+            gridTemplateColumns: 'repeat(2, minmax(0, 1fr)) !important',
+          },
           '.leaflet-control-zoom a': { width: 44, height: 44, lineHeight: '44px', fontSize: 22 },
           '@media print': {
             '.leaflet-control-zoom': { display: 'none !important' },

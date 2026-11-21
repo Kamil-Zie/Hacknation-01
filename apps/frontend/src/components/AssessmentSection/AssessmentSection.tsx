@@ -7,10 +7,12 @@ import type {
   Assessment,
   DataGap,
   IndexAssessment,
+  Report,
   SatelliteObservation,
   SourceId,
   WaterBalanceWindow,
 } from '@/api/types';
+import { KbwChart } from '@/components/KbwChart/KbwChart';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { formatDate, formatNumber, formatSigned } from '@/utils/format';
 
@@ -19,6 +21,8 @@ interface AssessmentSectionProps {
   cropName: string;
   analysisDate: string;
   dataGaps: DataGap[];
+  /** UI-C-011 KbwChart data (frontend-1); null shows the chart's own "no data" message */
+  charts: Report['charts'];
 }
 
 const INDEX_LABEL: Record<IndexAssessment, string> = {
@@ -192,6 +196,7 @@ export function AssessmentSection({
   cropName,
   analysisDate,
   dataGaps,
+  charts,
 }: AssessmentSectionProps) {
   const gapFor = (sourceId: SourceId) => dataGaps.find((gap) => gap.sourceId === sourceId);
   const { soilWater, soilMoistureSatellite: sm, cropStage } = assessment;
@@ -242,6 +247,7 @@ export function AssessmentSection({
           )}
 
           <Box
+            className="metric-grid"
             sx={{
               display: 'grid',
               gap: 2,
@@ -349,6 +355,8 @@ export function AssessmentSection({
               {cropStage.isCritical && <Line>Okres krytyczny dla wody</Line>}
             </MetricTile>
           </Box>
+
+          <KbwChart charts={charts} />
 
           {assessment.evidence.length > 0 && (
             <Box component="details">

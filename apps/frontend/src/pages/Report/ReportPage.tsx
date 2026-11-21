@@ -88,6 +88,7 @@ export function ReportPage() {
           cropName={data.crop.name}
           analysisDate={data.analysisDate}
           dataGaps={data.dataGaps}
+          charts={data.charts ?? null}
         />
         <VulnerabilityCauses vulnerability={data.vulnerability} causes={data.causes} />
         <RecommendationList recommendations={data.recommendations} dataGaps={data.dataGaps} />
