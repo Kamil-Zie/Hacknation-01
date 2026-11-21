@@ -212,7 +212,11 @@ test('soil moisture: current values from ERA5-Land, percentile and assessment fr
   assert.ok(soilMoisture);
   assert.equal(soilMoisture.theta0to7M3, 0.248); // ERA5-Land
   assert.equal(soilMoisture.percentile, nasa.percentile); // NASA
-  assert.equal(soilMoisture.normRootZonePct, nasa.normRootZonePct);
   assert.equal(soilMoisture.anomalyPp, nasa.anomalyPp);
+  // Norm is shifted to the ERA5-Land scale (current minus NASA anomaly), not copied from NASA.
+  if (soilMoisture.rootZonePct !== null && nasa.anomalyPp !== null) {
+    const expected = Math.min(100, Math.max(0, soilMoisture.rootZonePct - nasa.anomalyPp));
+    assert.ok(Math.abs((soilMoisture.normRootZonePct ?? -1) - expected) < 0.11);
+  }
   assert.equal(soilMoisture.assessment, nasa.assessment);
 });

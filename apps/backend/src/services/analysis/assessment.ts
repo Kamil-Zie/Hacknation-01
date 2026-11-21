@@ -36,7 +36,7 @@ import type { VulnerabilityResult } from '@/services/engine/vulnerability';
 import { computeSoilWaterBalance } from '@/services/engine/water-demand';
 import type { SoilWaterBalance } from '@/services/engine/water-demand';
 import type { SatelliteObservation } from '@/services/engine/satellite';
-import { computeEra5LandSoilMoisture } from '@/services/sources/era5land';
+import { computeEra5LandSoilMoisture, ERA5_LAND_SOIL } from '@/services/sources/era5land';
 import type { Era5LandSoilMoisture } from '@/services/sources/era5land';
 import type { ElevationData } from '@/services/sources/elevation.source';
 import type { HydroData } from '@/services/sources/overpass.source';
@@ -364,8 +364,8 @@ function computeMoisture(
     const era = computeEra5LandSoilMoisture(
       meteo.current.series,
       analysisDate,
-      capacity?.fieldCapacity ?? null,
-      capacity?.wiltingPoint ?? null,
+      ERA5_LAND_SOIL.fieldCapacity, // model soil, not the plot's SoilGrids values
+      ERA5_LAND_SOIL.wiltingPoint,
       nasa,
     );
     if (era.soilMoisture) return era.soilMoisture;

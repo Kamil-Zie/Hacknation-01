@@ -52,3 +52,9 @@
 - Wilgotność gleby w każdym raporcie, z europejskiego źródła o siatce ok. 9 km, spójnego z bilansem wodnym (ten sam ERA5).
 - Ograniczenie: to reanaliza (model z asymilacją obserwacji), nie bezpośredni pomiar satelitarny; raport mówi to wprost, a lokalność dają SoilGrids (250 m) i Sentinel-2 (10–20 m).
 - Meteo i wilgotność nie zależą od jednego dostawcy z limitem na IP (zapas NASA POWER).
+
+## Aktualizacja 2026-11-21 15:10 (coord-1): skala procentowa ERA5-Land
+
+- Pierwszy test na żywo z działającym Open-Meteo (inne IP) pokazał 100% pojemności przy ocenie „sucho”. Przyczyna: m³/m³ z ERA5-Land (model H-TESSEL ma własną glebę) dzielone przez pojemność polową i punkt więdnięcia działki z SoilGrids (Bronowice: θ 0,276 vs FC 0,189).
+- Od teraz % liczymy na stałych gleby modelu (IFS Cy45r1, tekstura „medium”: FC 0,347, WP 0,151 m³/m³). Norma w % = bieżący % − anomalia NASA (pp), więc bieżąca wartość, norma i anomalia są w jednej skali. Percentyl i ocena nadal w całości z NASA (ADR-009).
+- Bronowice 2026-05-25: strefa korzeniowa 64%, norma 71%, −6,6 pp, percentyl 3, „sucho”. Bilans wiadra (TAW/RAW z SoilGrids) bez zmian.

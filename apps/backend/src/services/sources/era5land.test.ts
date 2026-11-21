@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 
 import { test } from 'vitest';
 
-import { computeEra5LandSoilMoisture } from '@/services/sources/era5land';
+import { computeEra5LandSoilMoisture, ERA5_LAND_SOIL } from '@/services/sources/era5land';
 import { parseOpenMeteoResponse } from '@/services/sources/meteo.source';
 import type { SoilMoisture } from '@/services/sources/nasaPower.source';
 import type { MeteoDay } from '@/services/sources/meteo.source';
@@ -116,8 +116,12 @@ test('percentile, norm, anomaly and assessment come from NASA, absolute values s
   );
   assert.ok(soilMoisture);
   assert.equal(soilMoisture.percentile, 4);
-  assert.equal(soilMoisture.normRootZonePct, 52.3);
   assert.equal(soilMoisture.anomalyPp, -17.2);
+  // Norm on the ERA5-Land scale: current root-zone % minus the NASA anomaly.
+  assert.ok(soilMoisture.rootZonePct !== null && soilMoisture.normRootZonePct !== null);
+  assert.ok(
+    Math.abs(soilMoisture.normRootZonePct - Math.min(100, soilMoisture.rootZonePct + 17.2)) < 0.11,
+  );
   assert.equal(soilMoisture.assessment, 'dry');
   assert.equal(soilMoisture.theta7to28M3, 0.33); // not NASA
   assert.ok((soilMoisture.rootZonePct ?? 0) > 70);
@@ -161,4 +165,15 @@ test('series without soil moisture (fallback) gives status missing', () => {
     soilMoisture: null,
     status: 'missing',
   });
+});
+
+test('Bronowice 2026-05-25 live values: model soil constants keep ERA5-Land below 100%', () => {
+  const { soilMoisture } = computeEra5LandSoilMoisture(
+    synthetic(0.279, 0.276),
+    '2026-06-10',
+    ERA5_LAND_SOIL.fieldCapacity,
+    ERA5_LAND_SOIL.wiltingPoint,
+  );
+  assert.ok(soilMoisture && soilMoisture.rootZonePct !== null);
+  assert.ok(soilMoisture.rootZonePct > 55 && soilMoisture.rootZonePct < 75);
 });

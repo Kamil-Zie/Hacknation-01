@@ -9,6 +9,10 @@ const DRY_ROOT_PCT = 30;
 const WET_ROOT_PCT = 70;
 // Layer thickness in cm: 0-7, 7-28, 28-100.
 const THICKNESS = { top: 7, mid: 21, deep: 72 };
+// ERA5-Land runs on its own soil (H-TESSEL, IFS Cy45r1 Part IV table 8.9, "medium" texture):
+// its m3/m3 must be scaled with the model's own field capacity and wilting point, never with
+// SoilGrids/Saxton-Rawls values of the plot (different soil, e.g. 0.276 vs plot FC 0.189 -> 100%).
+export const ERA5_LAND_SOIL = { fieldCapacity: 0.347, wiltingPoint: 0.151 };
 
 // DM-015 without `agreement` (decided by the engine against the KBW class).
 export type Era5LandSoilMoisture = {
@@ -87,8 +91,12 @@ export function computeEra5LandSoilMoisture(
   const rootPct = toPct(rootTheta);
   // Never rank ERA5 against the NASA distribution: relative values come whole from NASA.
   const percentile = nasa?.percentile ?? null;
-  const normPct = nasa?.normRootZonePct ?? null;
   const anomalyPp = nasa?.anomalyPp ?? null;
+  // Norm on the same (ERA5-Land) scale as rootPct: current minus the NASA anomaly in pp.
+  const normPct =
+    rootPct !== null && anomalyPp !== null
+      ? round1(Math.min(100, Math.max(0, rootPct - anomalyPp)))
+      : null;
 
   return {
     status: 'ok',
