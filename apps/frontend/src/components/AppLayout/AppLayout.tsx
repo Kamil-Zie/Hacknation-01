@@ -4,6 +4,7 @@ import { AppBar, Box, Container, Link, Toolbar, Typography } from '@mui/material
 import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 
 import { AccountMenu } from '@/components/AccountMenu/AccountMenu';
+import { AppNav, ReportBackButton } from '@/components/AppNav/AppNav';
 import { StepNav } from '@/components/StepNav/StepNav';
 
 export function AppLayout() {
@@ -41,6 +42,7 @@ export function AppLayout() {
               Woda na Twojej działce
             </Typography>
           </Link>
+          <AppNav />
           <AccountMenu />
         </Toolbar>
       </AppBar>
@@ -54,6 +56,7 @@ export function AppLayout() {
           px: { xs: 2, md: 4 },
         }}
       >
+        <ReportBackButton />
         <Outlet />
       </Container>
     </Box>
