@@ -238,6 +238,15 @@ test('eumetsat is always missing but does not make the report partial', async ()
   assert.deepEqual(gapIds(report), ['eumetsat']);
 });
 
+test('T-070: on ERA5 the KBW tile adds up (kbwMm - normKbwMm = anomalyMm) and limitations explain the norm', async () => {
+  const report = await createAnalysis(BODY, makeDeps().deps);
+  for (const window of [report.assessment.kbw30, report.assessment.kbw60]) {
+    assert.ok(window);
+    assert.ok(Math.abs(window.kbwMm - window.normKbwMm - window.anomalyMm) <= 0.11);
+  }
+  assert.ok(report.limitations.some((text) => text.includes('Normę KBW pokazano')));
+});
+
 test('Open-Meteo 503 with working NASA fallback: not partial, data gap, replaced message, lower confidence', async () => {
   const complete = await createAnalysis(BODY, makeDeps().deps);
   const { deps, saved } = makeDeps({ archiveStatus: 503 });

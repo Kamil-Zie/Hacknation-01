@@ -28,7 +28,7 @@ const FALLBACK_CONFIDENCE_PENALTY = 0.05;
 const FALLBACK_LIMITATION =
   'Pogoda i wilgotność gleby z zapasowego źródła NASA POWER (ok. 50 km, dane do ok. 3 dni wstecz), ET0 metodą FAO-56 Penman-Monteith (dla ostatnich dni bez pomiaru promieniowania szacowanego z temperatur)';
 const SPLIT_LIMITATION =
-  'Stan bieżący (opad, ET0, KBW, wilgotność gleby) pochodzi z Open-Meteo (ERA5 i ERA5-Land, ok. 9 km), a ocena na tle 10 lat (percentyl, anomalia, klasa, podatność) z NASA POWER (ok. 50 km, ET0 metodą FAO-56 Penman-Monteith po obu stronach porównania), więc percentyl opisuje region, a nie samą działkę.';
+  'Stan bieżący (opad, ET0, KBW, wilgotność gleby) pochodzi z Open-Meteo (ERA5 i ERA5-Land, ok. 9 km), a ocena na tle 10 lat (percentyl, anomalia, klasa, podatność) z NASA POWER (ok. 50 km, ET0 metodą FAO-56 Penman-Monteith po obu stronach porównania), więc percentyl opisuje region, a nie samą działkę. Normę KBW pokazano jako bieżący KBW minus anomalia z NASA POWER, żeby obie wartości były na tej samej skali.';
 const NO_CLIMATOLOGY_GAP = {
   sourceId: 'nasa_power' as const,
   what: 'Brak wieloletniej klimatologii z NASA POWER (10 lat)',

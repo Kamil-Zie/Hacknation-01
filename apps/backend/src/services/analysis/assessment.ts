@@ -275,8 +275,9 @@ function computeCapacity(layers: SoilLayer[] | null, crop: Crop): SoilWaterCapac
   return computeSoilWater(layers, crop.rootDepthM, crop.depletionFraction).result;
 }
 
-// ADR-009 point 3: current values from the current series, norm, anomaly, percentile and
-// norms from NASA POWER (anomalyMm stays NASA minus NASA norm, one source on both sides).
+// ADR-009 point 3: current values from the current series, anomaly, percentile and norms from
+// NASA POWER (anomalyMm stays NASA minus NASA norm). T-070 decision 4b: normKbwMm is shifted to
+// the current scale (kbwMm minus anomalyMm), so the tile adds up, like normRootZonePct for ERA5-Land.
 function composeWindow(
   nasa: WaterBalanceWindow | null,
   current: CurrentWindow | null,
@@ -290,6 +291,7 @@ function composeWindow(
     et0Mm: current.et0Mm,
     etcMm: current.etcMm,
     kbwMm: current.kbwMm,
+    normKbwMm: Math.round((current.kbwMm - nasa.anomalyMm) * 10) / 10,
     meanTmaxC: current.meanTmaxC ?? nasa.meanTmaxC,
   };
 }

@@ -5,7 +5,7 @@
   "type": "bugfix",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "ready",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["API-004", "DM-013"],
@@ -21,7 +21,10 @@
     "by": null,
     "note": ""
   },
-  "notes": ["coord-1 21:00: z przeglądu backendu Kuby 20261121-2050, przed zamrożeniem 7:00."],
+  "notes": [
+    "coord-1 21:00: z przeglądu backendu Kuby 20261121-2050, przed zamrożeniem 7:00.",
+    "WYNIK (backend-1): composeWindow na ERA5 ustawia normKbwMm = kbwMm minus anomalyMm (anomalia i percentyl z NASA bez zmian), zdanie o przeliczonej normie w SPLIT_LIMITATION (meteo.source.ts), test T-070 w analyses.service.test.ts. Testy 305/305. Review 43da511 wysłany do coord-1."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
