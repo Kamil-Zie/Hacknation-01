@@ -155,7 +155,10 @@ function IndexTile({
       <MetricTile
         title={title}
         missing={{
-          reason: gap?.impact ?? 'Brak bezchmurnego zdjęcia satelitarnego z ostatnich tygodni.',
+          // Scene exists but this one index is missing: say so instead of "no clear scene".
+          reason: satellite
+            ? `Wskaźnika ${kind.toUpperCase()} nie udało się policzyć dla zdjęcia z ${formatDate(satellite.sceneDate)}.`
+            : (gap?.impact ?? 'Brak bezchmurnego zdjęcia satelitarnego z ostatnich tygodni.'),
         }}
       />
     );
