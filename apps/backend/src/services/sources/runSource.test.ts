@@ -107,6 +107,66 @@ test('network error is retried once and gives status error', async () => {
   assert.equal(calls, 2);
 });
 
+test('T-067: retryDelayMs waits between attempts and retries 5xx and 429 until success', async () => {
+  let calls = 0;
+  const callTimes: number[] = [];
+  const fetcher = async () => {
+    calls += 1;
+    callTimes.push(Date.now());
+    if (calls === 1) throw new HttpStatusError(503);
+    if (calls === 2) throw new HttpStatusError(429);
+    return { data: { ok: true } };
+  };
+  const result = await runSource({
+    sourceId: 'uldk',
+    key: 'k-backoff',
+    fetcher,
+    retries: 2,
+    retryDelayMs: 20,
+    cache: memoryCache(),
+  });
+  assert.equal(result.status, 'ok');
+  assert.equal(calls, 3);
+  assert.ok(callTimes[1]! - callTimes[0]! >= 15, 'first pause ~20 ms');
+  assert.ok(callTimes[2]! - callTimes[1]! >= 35, 'second pause ~40 ms (doubled)');
+});
+
+test('T-067: without retryDelayMs a 429 is not retried (unchanged default)', async () => {
+  let calls = 0;
+  const fetcher = async (): Promise<null> => {
+    calls += 1;
+    throw new HttpStatusError(429);
+  };
+  const result = await runSource({
+    sourceId: 'meteo',
+    key: 'k-429',
+    fetcher,
+    cache: memoryCache(),
+  });
+  assert.equal(result.reasonCode, 'RATE_LIMIT');
+  assert.equal(calls, 1);
+});
+
+test('T-067: the pause before a retry is cut by the outer budget', async () => {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), 30);
+  const fetcher = async (): Promise<null> => {
+    throw new HttpStatusError(503);
+  };
+  const startedAt = Date.now();
+  const result = await runSource({
+    sourceId: 'uldk',
+    key: 'k-budget',
+    fetcher,
+    retries: 2,
+    retryDelayMs: 5000,
+    signal: controller.signal,
+    cache: memoryCache(),
+  });
+  assert.equal(result.status, 'timeout');
+  assert.ok(Date.now() - startedAt < 1000);
+});
+
 test('4xx is not retried', async () => {
   let calls = 0;
   const fetcher = async (): Promise<null> => {

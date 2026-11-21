@@ -16,6 +16,8 @@ export type RunSourceOptions<T> = {
   attemptTimeoutMs?: number;
   ttlMs?: number;
   retries?: number;
+  // T-067: base delay before a retry (doubles each attempt); also makes HTTP 429 retryable. Unset = immediate retry.
+  retryDelayMs?: number;
   // Outer budget (e.g. 25 s analysis limit), combined with the per-source timeout.
   signal?: AbortSignal;
   cache?: SourceCacheStore;
@@ -73,6 +75,7 @@ export async function runSource<T>(options: RunSourceOptions<T>): Promise<Source
       signal,
       options.retries ?? 1,
       options.attemptTimeoutMs,
+      options.retryDelayMs,
     );
 
     if (!fetched || isEmpty(fetched.data)) {
@@ -93,8 +96,8 @@ export async function runSource<T>(options: RunSourceOptions<T>): Promise<Source
       logger.warn(`source ${sourceId} timeout`);
       return build({ status: 'timeout', message: MSG_TIMEOUT, reasonCode: 'TIMEOUT' });
     }
-    // Log only the error name: messages may contain URLs with keys.
-    logger.warn(`source ${sourceId} failed: ${error instanceof Error ? error.name : 'unknown'}`);
+    // Log the error kind only (HTTP status or network error code), never the message: it may contain URLs with keys.
+    logger.warn(`source ${sourceId} failed: ${errorKind(error)}`);
     const reasonCode =
       error instanceof HttpStatusError && error.status === 429 ? 'RATE_LIMIT' : 'UPSTREAM_ERROR';
     return build({ status: 'error', message: MSG_ERROR, reasonCode });
@@ -106,6 +109,7 @@ async function fetchWithRetry<T>(
   signal: AbortSignal,
   retries: number,
   attemptTimeoutMs?: number,
+  retryDelayMs?: number,
 ): Promise<FetcherResult<T>> {
   for (let attempt = 0; ; attempt += 1) {
     const attemptSignal = attemptTimeoutMs
@@ -119,13 +123,41 @@ async function fetchWithRetry<T>(
       if (signal.aborted || attempt >= retries || (!attemptTimedOut && isAbort(error))) {
         throw error;
       }
-      if (!attemptTimedOut && !isRetryable(error)) throw error;
+      if (!attemptTimedOut && !isRetryable(error, retryDelayMs !== undefined)) throw error;
+      if (retryDelayMs) await delay(retryDelayMs * 2 ** attempt, signal);
     }
   }
 }
 
-function isRetryable(error: unknown): boolean {
-  return !(error instanceof HttpStatusError) || error.status >= 500;
+function isRetryable(error: unknown, withBackoff: boolean): boolean {
+  if (!(error instanceof HttpStatusError)) return true;
+  return error.status >= 500 || (withBackoff && error.status === 429);
+}
+
+// Waits before a retry; rejects with the abort reason when the outer budget ends first.
+function delay(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal.aborted) {
+      reject(signal.reason);
+      return;
+    }
+    const timer = setTimeout(() => {
+      signal.removeEventListener('abort', onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      clearTimeout(timer);
+      reject(signal.reason);
+    };
+    signal.addEventListener('abort', onAbort, { once: true });
+  });
+}
+
+function errorKind(error: unknown): string {
+  if (error instanceof HttpStatusError) return `HTTP ${error.status}`;
+  if (!(error instanceof Error)) return 'unknown';
+  const cause = (error as { cause?: { code?: unknown } }).cause;
+  return typeof cause?.code === 'string' ? `${error.name} (${cause.code})` : error.name;
 }
 
 function isAbort(error: unknown): boolean {

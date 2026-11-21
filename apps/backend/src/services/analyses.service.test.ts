@@ -101,9 +101,12 @@ function memoryCache(): SourceCacheStore {
 }
 
 // Stub of Open-Meteo archive and NASA POWER HTTP APIs, backed by the fixtures.
-function stubFetch(archiveStatus: number, nasaOk: boolean): typeof fetch {
+function stubFetch(archiveStatus: number, nasaOk: boolean, nasaFailFirst = 0): typeof fetch {
+  let nasaCalls = 0;
   return (async (url: string) => {
     if (url.includes('power.larc.nasa.gov')) {
+      nasaCalls += 1;
+      if (nasaCalls <= nasaFailFirst) return { ok: false, status: 503 };
       return nasaOk
         ? { ok: true, status: 200, json: async () => NASA }
         : { ok: false, status: 503 };
@@ -155,11 +158,16 @@ function makeDeps(
   options: {
     archiveStatus?: number;
     nasaOk?: boolean;
+    nasaFailFirst?: number;
     parcel?: 'ok' | 'missing' | 'error' | 'timeout';
   } = {},
 ) {
   const saved: unknown[] = [];
-  const fetchFn = stubFetch(options.archiveStatus ?? 200, options.nasaOk ?? true);
+  const fetchFn = stubFetch(
+    options.archiveStatus ?? 200,
+    options.nasaOk ?? true,
+    options.nasaFailFirst ?? 0,
+  );
   const cache = memoryCache();
   const deps: AnalysesDeps = {
     fetchParcel: async () => parcelResult(options.parcel ?? 'ok'),
@@ -249,6 +257,16 @@ test('Open-Meteo 503 with working NASA fallback: not partial, data gap, replaced
   assert.equal(report.assessment.droughtClass, 'moderate');
   assert.ok(report.assessment.kbw60);
   assert.equal(saved.length, 1);
+});
+
+test('T-067: Open-Meteo 429 and first NASA attempt 503 -> NASA retry succeeds -> 201 with weather', async () => {
+  const { deps } = makeDeps({ archiveStatus: 429, nasaFailFirst: 1 });
+  const report = await createAnalysis(BODY, deps);
+
+  assert.equal(report.sources.find((s) => s.sourceId === 'nasa_power')?.status, 'ok');
+  assert.equal(report.sources.find((s) => s.sourceId === 'meteo')?.reasonCode, 'RATE_LIMIT');
+  assert.ok(report.assessment.kbw60, 'weather from the NASA retry');
+  assert.notEqual(report.assessment.droughtClass, 'unknown');
 });
 
 test('NASA POWER failing: no percentile, class unknown, data gap, report still returned', async () => {

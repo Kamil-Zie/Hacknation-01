@@ -106,6 +106,10 @@ export async function fetchNasaPowerDaily(
     // v2: request has RH2M, WS2M, ALLSKY_SFC_SW_DWN, PS for Penman-Monteith (v1 entries lack them)
     key: `nasa_power:v2:${latR}:${lonR}:${startCompact}:${endCompact}`,
     ttlMs: isFresh ? SHORT_TTL_MS.nasa_power : SOURCE_TTL_MS.nasa_power,
+    // T-067: NASA is the fallback when Open-Meteo gives 429, so a transient 5xx/429/network error gets
+    // 2 retries with 0.5 s and 1 s pauses inside its 20 s timeout and the 25 s analysis budget.
+    retries: 2,
+    retryDelayMs: 500,
     signal,
     cache: deps.cache,
     fetcher: async (fetchSignal) => {

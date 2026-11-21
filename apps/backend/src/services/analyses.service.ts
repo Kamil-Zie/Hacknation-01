@@ -128,7 +128,10 @@ function requireParcel(result: SourceResult<ParcelData>): ParcelData & { fetched
     throw new AppError('UPSTREAM_TIMEOUT', 'Usługa ULDK GUGiK nie odpowiedziała na czas', 504);
   }
   if (!result.data) {
-    throw new AppError('UPSTREAM_UNAVAILABLE', 'Usługa ULDK GUGiK nie odpowiada', 502);
+    // T-067: the cause travels with the error (RATE_LIMIT / UPSTREAM_ERROR) so the UI and logs can tell them apart.
+    throw new AppError('UPSTREAM_UNAVAILABLE', 'Usługa ULDK GUGiK nie odpowiada', 502, {
+      reasonCode: result.reasonCode ?? 'UPSTREAM_ERROR',
+    });
   }
   return { ...result.data, fetchedAt: (result.fetchedAt ?? new Date()).toISOString() };
 }

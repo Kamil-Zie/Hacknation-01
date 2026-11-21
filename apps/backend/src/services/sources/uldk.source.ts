@@ -13,6 +13,10 @@ const RESULT_FIELDS = 'geom_wkt,teryt,voivodeship,county,commune,region,parcel';
 // 9 s per attempt (ULDK cold start up to 9 s, T-002) + 1 retry within 20 s; frontend waits 25 s.
 const TIMEOUT_MS = 20000;
 const ATTEMPT_TIMEOUT_MS = 9000;
+// T-067: fast failures (network reset, 5xx, 429 on the hackathon network) were retried immediately and gave 502
+// after ~2 s; now 2 retries with 0.6 s and 1.2 s pauses, still inside the 20 s budget.
+const RETRIES = 2;
+const RETRY_DELAY_MS = 600;
 
 // DM-003 without fetchedAt (added by the service from the SourceResult).
 export type ParcelData = {
@@ -88,6 +92,8 @@ export function fetchParcelById(
     fetcher: (s) => fetchUldk({ request: 'GetParcelById', id }, s),
     timeoutMs: TIMEOUT_MS,
     attemptTimeoutMs: ATTEMPT_TIMEOUT_MS,
+    retries: RETRIES,
+    retryDelayMs: RETRY_DELAY_MS,
     signal,
     cache,
   });
@@ -107,6 +113,8 @@ export function fetchParcelByPoint(
     fetcher: (s) => fetchUldk({ request: 'GetParcelByXY', xy: `${lonKey},${latKey},4326` }, s),
     timeoutMs: TIMEOUT_MS,
     attemptTimeoutMs: ATTEMPT_TIMEOUT_MS,
+    retries: RETRIES,
+    retryDelayMs: RETRY_DELAY_MS,
     signal,
     cache,
   });
