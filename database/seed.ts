@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 
 import { AccountModel } from '../apps/backend/src/models/Account.model';
 import { AccountMemberModel } from '../apps/backend/src/models/AccountMember.model';
+import { FieldModel } from '../apps/backend/src/models/Field.model';
 import { UserModel } from '../apps/backend/src/models/User.model';
 import { ReportModel } from '../apps/backend/src/models/Report.model';
 import { SourceCacheModel } from '../apps/backend/src/models/SourceCache.model';
@@ -58,6 +59,7 @@ async function main(): Promise<void> {
     UserModel.syncIndexes(),
     AccountModel.syncIndexes(),
     AccountMemberModel.syncIndexes(),
+    FieldModel.syncIndexes(),
   ]);
   const reports = loadDemoReports();
   for (const report of reports) {

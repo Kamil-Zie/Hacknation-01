@@ -3591,15 +3591,15 @@
             {
               "id": "061409_2.0009.612",
               "parcelNumber": "612",
-              "commune": "Bronowice",
-              "region": "0009",
+              "commune": "Puławy",
+              "region": "Bronowice",
               "areaHa": 2.41
             },
             {
               "id": "061409_2.0009.613",
               "parcelNumber": "613",
-              "commune": "Bronowice",
-              "region": "0009",
+              "commune": "Puławy",
+              "region": "Bronowice",
               "areaHa": 1.87
             }
           ],
@@ -3672,15 +3672,15 @@
                 {
                   "id": "061409_2.0009.612",
                   "parcelNumber": "612",
-                  "commune": "Bronowice",
-                  "region": "0009",
+                  "commune": "Puławy",
+                  "region": "Bronowice",
                   "areaHa": 2.41
                 },
                 {
                   "id": "061409_2.0009.613",
                   "parcelNumber": "613",
-                  "commune": "Bronowice",
-                  "region": "0009",
+                  "commune": "Puławy",
+                  "region": "Bronowice",
                   "areaHa": 1.87
                 }
               ],
