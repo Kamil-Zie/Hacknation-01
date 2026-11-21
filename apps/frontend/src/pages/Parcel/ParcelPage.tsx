@@ -208,7 +208,8 @@ export function ParcelPage() {
       sx={{
         display: 'flex',
         flexDirection: { xs: 'column', lg: 'row' },
-        minHeight: { lg: '100vh' },
+        // AppLayout: 56 px header + 2 × 32 px main padding, so the map fits a 1280×720 projector
+        minHeight: { lg: 'calc(100vh - 120px)' },
         overflowX: 'hidden',
       }}
     >
