@@ -12,7 +12,10 @@ export const notFoundHandler: RequestHandler = (req, _res, next) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof AppError) {
-    res.status(err.status).json({ code: err.code, message: err.message, details: err.details });
+    // details: null (not undefined), so the { code, message, details } shape survives JSON serialization.
+    res
+      .status(err.status)
+      .json({ code: err.code, message: err.message, details: err.details ?? null });
     return;
   }
   if (err instanceof ZodError) {
@@ -26,5 +29,5 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     return;
   }
   logger.error(err instanceof Error ? (err.stack ?? err.message) : String(err));
-  res.status(500).json({ code: 'INTERNAL_ERROR', message: 'Błąd serwera' });
+  res.status(500).json({ code: 'INTERNAL_ERROR', message: 'Błąd serwera', details: null });
 };
