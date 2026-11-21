@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "ready",
+  "status": "in_progress",
   "priority": "critical",
   "depends_on": ["T-001"],
   "contract_refs": ["UI-S-001", "UI-C-012", "API-004"],
@@ -19,7 +19,8 @@
   ],
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
-    "Agent: fe-developer. Szacunek: 2h. Faza: szkielet/mock. Dawid i Jakub startują równolegle od tego shellu; uzgodnijcie strukturę api/ w claimach."
+    "Agent: fe-developer. Szacunek: 2h. Faza: szkielet/mock. Dawid i Jakub startują równolegle od tego shellu; uzgodnijcie strukturę api/ w claimach.",
+    "frontend-2: trasy wg contracts/ui.json (/, /parcel/:parcelId, /report/:id, /report/:id/print) zamiast /analiza i /druk/:id z opisu; zmienna VITE_USE_MOCKS wg docs/coding-standard.md."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
