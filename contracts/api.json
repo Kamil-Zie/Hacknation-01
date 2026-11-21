@@ -3036,7 +3036,7 @@
               "url": "https://maps.isric.org/",
               "license": "CC BY 4.0",
               "resolution": "250 m",
-              "timeoutMs": 8000
+              "timeoutMs": 20000
             },
             {
               "id": "elevation",

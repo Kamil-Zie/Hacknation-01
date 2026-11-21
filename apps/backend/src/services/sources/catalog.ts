@@ -96,7 +96,8 @@ export const SOURCES: DataSource[] = [
     url: 'https://maps.isric.org/',
     license: 'CC BY 4.0',
     resolution: '250 m',
-    timeoutMs: 8000,
+    // 15 WCS requests (3 properties x 5 depths), cold ~7 s; T-013
+    timeoutMs: 20000,
   },
   {
     id: 'elevation',
