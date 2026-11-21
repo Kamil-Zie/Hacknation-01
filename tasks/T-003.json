@@ -5,7 +5,7 @@
   "type": "contract",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": [],
   "contract_refs": [
@@ -35,7 +35,8 @@
   ],
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
-    "Agent: be-api. Szacunek: 1,5h. Faza: szkielet. Zmiana tylko w polach przykładów; jeśli ruszasz model, wymagane T-DB."
+    "Agent: be-api. Szacunek: 1,5h. Faza: szkielet. Zmiana tylko w polach przykładów; jeśli ruszasz model, wymagane T-DB.",
+    "Zrobione (backend-2): examples w API-003 (200, 7 upraw), API-004 (201_complete, 201_partial), API-005 (200, odwołanie), API-006 (200, 7 źródeł). Działka demo 300302_2.0008.215/3 (Racot) orientacyjna, do podmiany po T-002. analysisDate 2026-06-10 (faza krytyczna pszenicy). Uwagi do kontraktu wysłane w ack na contract_proposal 20261121-1145."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

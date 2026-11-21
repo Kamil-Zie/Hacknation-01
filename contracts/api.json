@@ -92,7 +92,923 @@
       },
       "errors": ["500 INTERNAL_SERVER_ERROR"],
       "data_refs": ["DM-004"],
-      "consumers": ["UI-S-002"]
+      "consumers": ["UI-S-002"],
+      "examples": {
+        "200": {
+          "items": [
+            {
+              "code": "winter_wheat",
+              "name": "Pszenica ozima",
+              "kcIni": 0.4,
+              "kcMid": 1.15,
+              "kcEnd": 0.3,
+              "rootDepthM": 1.2,
+              "depletionFraction": 0.55,
+              "stages": [
+                {
+                  "code": "autumn_dormancy",
+                  "name": "Jesień i spoczynek zimowy",
+                  "from": "10-01",
+                  "to": "03-31",
+                  "isCritical": false
+                },
+                {
+                  "code": "tillering",
+                  "name": "Krzewienie wiosenne",
+                  "from": "04-01",
+                  "to": "04-30",
+                  "isCritical": false
+                },
+                {
+                  "code": "stem_elongation",
+                  "name": "Strzelanie w źdźbło",
+                  "from": "05-01",
+                  "to": "05-20",
+                  "isCritical": true
+                },
+                {
+                  "code": "heading_flowering",
+                  "name": "Kłoszenie i kwitnienie",
+                  "from": "05-21",
+                  "to": "06-20",
+                  "isCritical": true
+                },
+                {
+                  "code": "grain_filling",
+                  "name": "Nalewanie i dojrzewanie ziarna",
+                  "from": "06-21",
+                  "to": "07-31",
+                  "isCritical": false
+                }
+              ],
+              "criticalPeriodLabel": "strzelanie w źdźbło – kwitnienie (maj–czerwiec)",
+              "expectedIndices": [
+                {
+                  "month": 1,
+                  "ndviMin": 0.28,
+                  "ndviMax": 0.52,
+                  "ndmiMin": 0,
+                  "ndmiMax": 0.24
+                },
+                {
+                  "month": 2,
+                  "ndviMin": 0.28,
+                  "ndviMax": 0.52,
+                  "ndmiMin": 0,
+                  "ndmiMax": 0.24
+                },
+                {
+                  "month": 3,
+                  "ndviMin": 0.38,
+                  "ndviMax": 0.62,
+                  "ndmiMin": 0.03,
+                  "ndmiMax": 0.27
+                },
+                {
+                  "month": 4,
+                  "ndviMin": 0.56,
+                  "ndviMax": 0.8,
+                  "ndmiMin": 0.1,
+                  "ndmiMax": 0.34
+                },
+                {
+                  "month": 5,
+                  "ndviMin": 0.68,
+                  "ndviMax": 0.92,
+                  "ndmiMin": 0.18,
+                  "ndmiMax": 0.42
+                },
+                {
+                  "month": 6,
+                  "ndviMin": 0.65,
+                  "ndviMax": 0.89,
+                  "ndmiMin": 0.16,
+                  "ndmiMax": 0.4
+                },
+                {
+                  "month": 7,
+                  "ndviMin": 0.33,
+                  "ndviMax": 0.57,
+                  "ndmiMin": -0.04,
+                  "ndmiMax": 0.2
+                },
+                {
+                  "month": 8,
+                  "ndviMin": 0.1,
+                  "ndviMax": 0.34,
+                  "ndmiMin": -0.12,
+                  "ndmiMax": 0.12
+                },
+                {
+                  "month": 9,
+                  "ndviMin": 0.13,
+                  "ndviMax": 0.37,
+                  "ndmiMin": -0.1,
+                  "ndmiMax": 0.14
+                },
+                {
+                  "month": 10,
+                  "ndviMin": 0.23,
+                  "ndviMax": 0.47,
+                  "ndmiMin": -0.04,
+                  "ndmiMax": 0.2
+                },
+                {
+                  "month": 11,
+                  "ndviMin": 0.33,
+                  "ndviMax": 0.57,
+                  "ndmiMin": 0,
+                  "ndmiMax": 0.24
+                },
+                {
+                  "month": 12,
+                  "ndviMin": 0.3,
+                  "ndviMax": 0.54,
+                  "ndmiMin": 0,
+                  "ndmiMax": 0.24
+                }
+              ],
+              "reference": "FAO-56 Allen i in. 1998, Tab. 12 i 22"
+            },
+            {
+              "code": "spring_barley",
+              "name": "Jęczmień jary",
+              "kcIni": 0.3,
+              "kcMid": 1.15,
+              "kcEnd": 0.25,
+              "rootDepthM": 1,
+              "depletionFraction": 0.55,
+              "stages": [
+                {
+                  "code": "sowing_emergence",
+                  "name": "Siew i wschody",
+                  "from": "03-25",
+                  "to": "04-30",
+                  "isCritical": false
+                },
+                {
+                  "code": "tillering",
+                  "name": "Krzewienie",
+                  "from": "05-01",
+                  "to": "05-15",
+                  "isCritical": false
+                },
+                {
+                  "code": "stem_elongation_heading",
+                  "name": "Strzelanie w źdźbło i kłoszenie",
+                  "from": "05-16",
+                  "to": "06-15",
+                  "isCritical": true
+                },
+                {
+                  "code": "grain_filling",
+                  "name": "Nalewanie i dojrzewanie ziarna",
+                  "from": "06-16",
+                  "to": "07-25",
+                  "isCritical": false
+                }
+              ],
+              "criticalPeriodLabel": "strzelanie w źdźbło – kłoszenie (maj–czerwiec)",
+              "expectedIndices": [
+                {
+                  "month": 1,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.07,
+                  "ndmiMax": 0.17
+                },
+                {
+                  "month": 2,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.07,
+                  "ndmiMax": 0.17
+                },
+                {
+                  "month": 3,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 4,
+                  "ndviMin": 0.18,
+                  "ndviMax": 0.42,
+                  "ndmiMin": -0.04,
+                  "ndmiMax": 0.2
+                },
+                {
+                  "month": 5,
+                  "ndviMin": 0.48,
+                  "ndviMax": 0.72,
+                  "ndmiMin": 0.08,
+                  "ndmiMax": 0.32
+                },
+                {
+                  "month": 6,
+                  "ndviMin": 0.63,
+                  "ndviMax": 0.87,
+                  "ndmiMin": 0.16,
+                  "ndmiMax": 0.4
+                },
+                {
+                  "month": 7,
+                  "ndviMin": 0.38,
+                  "ndviMax": 0.62,
+                  "ndmiMin": -0.02,
+                  "ndmiMax": 0.22
+                },
+                {
+                  "month": 8,
+                  "ndviMin": 0.1,
+                  "ndviMax": 0.34,
+                  "ndmiMin": -0.12,
+                  "ndmiMax": 0.12
+                },
+                {
+                  "month": 9,
+                  "ndviMin": 0.1,
+                  "ndviMax": 0.34,
+                  "ndmiMin": -0.12,
+                  "ndmiMax": 0.12
+                },
+                {
+                  "month": 10,
+                  "ndviMin": 0.13,
+                  "ndviMax": 0.37,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 11,
+                  "ndviMin": 0.08,
+                  "ndviMax": 0.32,
+                  "ndmiMin": -0.07,
+                  "ndmiMax": 0.17
+                },
+                {
+                  "month": 12,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.07,
+                  "ndmiMax": 0.17
+                }
+              ],
+              "reference": "FAO-56 Allen i in. 1998, Tab. 12 i 22"
+            },
+            {
+              "code": "maize",
+              "name": "Kukurydza na ziarno",
+              "kcIni": 0.3,
+              "kcMid": 1.2,
+              "kcEnd": 0.6,
+              "rootDepthM": 1.2,
+              "depletionFraction": 0.55,
+              "stages": [
+                {
+                  "code": "sowing_emergence",
+                  "name": "Siew i wschody",
+                  "from": "04-25",
+                  "to": "05-31",
+                  "isCritical": false
+                },
+                {
+                  "code": "vegetative",
+                  "name": "Wzrost wegetatywny",
+                  "from": "06-01",
+                  "to": "07-05",
+                  "isCritical": false
+                },
+                {
+                  "code": "tasseling_flowering",
+                  "name": "Wiechowanie i kwitnienie",
+                  "from": "07-06",
+                  "to": "08-05",
+                  "isCritical": true
+                },
+                {
+                  "code": "grain_filling",
+                  "name": "Nalewanie ziarna",
+                  "from": "08-06",
+                  "to": "08-31",
+                  "isCritical": true
+                },
+                {
+                  "code": "maturation",
+                  "name": "Dojrzewanie",
+                  "from": "09-01",
+                  "to": "10-10",
+                  "isCritical": false
+                }
+              ],
+              "criticalPeriodLabel": "wiechowanie – nalewanie ziarna (lipiec–sierpień)",
+              "expectedIndices": [
+                {
+                  "month": 1,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 2,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 3,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 4,
+                  "ndviMin": 0.08,
+                  "ndviMax": 0.32,
+                  "ndmiMin": -0.08,
+                  "ndmiMax": 0.16
+                },
+                {
+                  "month": 5,
+                  "ndviMin": 0.18,
+                  "ndviMax": 0.42,
+                  "ndmiMin": -0.04,
+                  "ndmiMax": 0.2
+                },
+                {
+                  "month": 6,
+                  "ndviMin": 0.43,
+                  "ndviMax": 0.67,
+                  "ndmiMin": 0.08,
+                  "ndmiMax": 0.32
+                },
+                {
+                  "month": 7,
+                  "ndviMin": 0.7,
+                  "ndviMax": 0.94,
+                  "ndmiMin": 0.2,
+                  "ndmiMax": 0.44
+                },
+                {
+                  "month": 8,
+                  "ndviMin": 0.68,
+                  "ndviMax": 0.92,
+                  "ndmiMin": 0.18,
+                  "ndmiMax": 0.42
+                },
+                {
+                  "month": 9,
+                  "ndviMin": 0.48,
+                  "ndviMax": 0.72,
+                  "ndmiMin": 0.08,
+                  "ndmiMax": 0.32
+                },
+                {
+                  "month": 10,
+                  "ndviMin": 0.18,
+                  "ndviMax": 0.42,
+                  "ndmiMin": -0.04,
+                  "ndmiMax": 0.2
+                },
+                {
+                  "month": 11,
+                  "ndviMin": 0.06,
+                  "ndviMax": 0.3,
+                  "ndmiMin": -0.08,
+                  "ndmiMax": 0.16
+                },
+                {
+                  "month": 12,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                }
+              ],
+              "reference": "FAO-56 Allen i in. 1998, Tab. 12 i 22"
+            },
+            {
+              "code": "potato",
+              "name": "Ziemniak",
+              "kcIni": 0.5,
+              "kcMid": 1.15,
+              "kcEnd": 0.75,
+              "rootDepthM": 0.5,
+              "depletionFraction": 0.35,
+              "stages": [
+                {
+                  "code": "planting_emergence",
+                  "name": "Sadzenie i wschody",
+                  "from": "04-20",
+                  "to": "05-25",
+                  "isCritical": false
+                },
+                {
+                  "code": "vegetative",
+                  "name": "Wzrost wegetatywny",
+                  "from": "05-26",
+                  "to": "06-10",
+                  "isCritical": false
+                },
+                {
+                  "code": "tuber_initiation",
+                  "name": "Zawiązywanie bulw",
+                  "from": "06-11",
+                  "to": "07-05",
+                  "isCritical": true
+                },
+                {
+                  "code": "tuber_bulking",
+                  "name": "Przyrost bulw",
+                  "from": "07-06",
+                  "to": "08-20",
+                  "isCritical": true
+                },
+                {
+                  "code": "maturation",
+                  "name": "Dojrzewanie",
+                  "from": "08-21",
+                  "to": "09-15",
+                  "isCritical": false
+                }
+              ],
+              "criticalPeriodLabel": "zawiązywanie i przyrost bulw (czerwiec–sierpień)",
+              "expectedIndices": [
+                {
+                  "month": 1,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 2,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 3,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 4,
+                  "ndviMin": 0.06,
+                  "ndviMax": 0.3,
+                  "ndmiMin": -0.08,
+                  "ndmiMax": 0.16
+                },
+                {
+                  "month": 5,
+                  "ndviMin": 0.23,
+                  "ndviMax": 0.47,
+                  "ndmiMin": -0.02,
+                  "ndmiMax": 0.22
+                },
+                {
+                  "month": 6,
+                  "ndviMin": 0.53,
+                  "ndviMax": 0.77,
+                  "ndmiMin": 0.13,
+                  "ndmiMax": 0.37
+                },
+                {
+                  "month": 7,
+                  "ndviMin": 0.68,
+                  "ndviMax": 0.92,
+                  "ndmiMin": 0.2,
+                  "ndmiMax": 0.44
+                },
+                {
+                  "month": 8,
+                  "ndviMin": 0.6,
+                  "ndviMax": 0.84,
+                  "ndmiMin": 0.16,
+                  "ndmiMax": 0.4
+                },
+                {
+                  "month": 9,
+                  "ndviMin": 0.33,
+                  "ndviMax": 0.57,
+                  "ndmiMin": 0.03,
+                  "ndmiMax": 0.27
+                },
+                {
+                  "month": 10,
+                  "ndviMin": 0.08,
+                  "ndviMax": 0.32,
+                  "ndmiMin": -0.07,
+                  "ndmiMax": 0.17
+                },
+                {
+                  "month": 11,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 12,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                }
+              ],
+              "reference": "FAO-56 Allen i in. 1998, Tab. 12 i 22"
+            },
+            {
+              "code": "winter_rapeseed",
+              "name": "Rzepak ozimy",
+              "kcIni": 0.35,
+              "kcMid": 1.1,
+              "kcEnd": 0.35,
+              "rootDepthM": 1.2,
+              "depletionFraction": 0.6,
+              "stages": [
+                {
+                  "code": "autumn_dormancy",
+                  "name": "Jesień i spoczynek zimowy",
+                  "from": "08-25",
+                  "to": "03-14",
+                  "isCritical": false
+                },
+                {
+                  "code": "spring_growth",
+                  "name": "Wznowienie wegetacji i wzrost pędu",
+                  "from": "03-15",
+                  "to": "04-05",
+                  "isCritical": false
+                },
+                {
+                  "code": "budding",
+                  "name": "Pąkowanie",
+                  "from": "04-06",
+                  "to": "04-20",
+                  "isCritical": true
+                },
+                {
+                  "code": "flowering",
+                  "name": "Kwitnienie",
+                  "from": "04-21",
+                  "to": "05-20",
+                  "isCritical": true
+                },
+                {
+                  "code": "pod_ripening",
+                  "name": "Dojrzewanie łuszczyn",
+                  "from": "05-21",
+                  "to": "07-15",
+                  "isCritical": false
+                }
+              ],
+              "criticalPeriodLabel": "pąkowanie – kwitnienie (kwiecień–maj)",
+              "expectedIndices": [
+                {
+                  "month": 1,
+                  "ndviMin": 0.28,
+                  "ndviMax": 0.52,
+                  "ndmiMin": -0.02,
+                  "ndmiMax": 0.22
+                },
+                {
+                  "month": 2,
+                  "ndviMin": 0.28,
+                  "ndviMax": 0.52,
+                  "ndmiMin": -0.02,
+                  "ndmiMax": 0.22
+                },
+                {
+                  "month": 3,
+                  "ndviMin": 0.38,
+                  "ndviMax": 0.62,
+                  "ndmiMin": 0.02,
+                  "ndmiMax": 0.26
+                },
+                {
+                  "month": 4,
+                  "ndviMin": 0.58,
+                  "ndviMax": 0.82,
+                  "ndmiMin": 0.12,
+                  "ndmiMax": 0.36
+                },
+                {
+                  "month": 5,
+                  "ndviMin": 0.66,
+                  "ndviMax": 0.9,
+                  "ndmiMin": 0.16,
+                  "ndmiMax": 0.4
+                },
+                {
+                  "month": 6,
+                  "ndviMin": 0.43,
+                  "ndviMax": 0.67,
+                  "ndmiMin": 0,
+                  "ndmiMax": 0.24
+                },
+                {
+                  "month": 7,
+                  "ndviMin": 0.18,
+                  "ndviMax": 0.42,
+                  "ndmiMin": -0.1,
+                  "ndmiMax": 0.14
+                },
+                {
+                  "month": 8,
+                  "ndviMin": 0.1,
+                  "ndviMax": 0.34,
+                  "ndmiMin": -0.12,
+                  "ndmiMax": 0.12
+                },
+                {
+                  "month": 9,
+                  "ndviMin": 0.16,
+                  "ndviMax": 0.4,
+                  "ndmiMin": -0.1,
+                  "ndmiMax": 0.14
+                },
+                {
+                  "month": 10,
+                  "ndviMin": 0.33,
+                  "ndviMax": 0.57,
+                  "ndmiMin": 0,
+                  "ndmiMax": 0.24
+                },
+                {
+                  "month": 11,
+                  "ndviMin": 0.36,
+                  "ndviMax": 0.6,
+                  "ndmiMin": 0.02,
+                  "ndmiMax": 0.26
+                },
+                {
+                  "month": 12,
+                  "ndviMin": 0.3,
+                  "ndviMax": 0.54,
+                  "ndmiMin": -0.02,
+                  "ndmiMax": 0.22
+                }
+              ],
+              "reference": "FAO-56 Allen i in. 1998, Tab. 12 i 22"
+            },
+            {
+              "code": "sugar_beet",
+              "name": "Burak cukrowy",
+              "kcIni": 0.35,
+              "kcMid": 1.2,
+              "kcEnd": 0.7,
+              "rootDepthM": 0.9,
+              "depletionFraction": 0.55,
+              "stages": [
+                {
+                  "code": "sowing_emergence",
+                  "name": "Siew i wschody",
+                  "from": "04-01",
+                  "to": "05-10",
+                  "isCritical": false
+                },
+                {
+                  "code": "leaf_growth",
+                  "name": "Rozwój liści",
+                  "from": "05-11",
+                  "to": "06-30",
+                  "isCritical": false
+                },
+                {
+                  "code": "canopy_root_growth",
+                  "name": "Zwarcie rzędów i przyrost korzeni",
+                  "from": "07-01",
+                  "to": "08-31",
+                  "isCritical": true
+                },
+                {
+                  "code": "sugar_accumulation",
+                  "name": "Gromadzenie cukru",
+                  "from": "09-01",
+                  "to": "10-20",
+                  "isCritical": false
+                }
+              ],
+              "criticalPeriodLabel": "zwarcie rzędów – przyrost korzeni (lipiec–sierpień)",
+              "expectedIndices": [
+                {
+                  "month": 1,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 2,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 3,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                },
+                {
+                  "month": 4,
+                  "ndviMin": 0.06,
+                  "ndviMax": 0.3,
+                  "ndmiMin": -0.08,
+                  "ndmiMax": 0.16
+                },
+                {
+                  "month": 5,
+                  "ndviMin": 0.23,
+                  "ndviMax": 0.47,
+                  "ndmiMin": -0.02,
+                  "ndmiMax": 0.22
+                },
+                {
+                  "month": 6,
+                  "ndviMin": 0.5,
+                  "ndviMax": 0.74,
+                  "ndmiMin": 0.1,
+                  "ndmiMax": 0.34
+                },
+                {
+                  "month": 7,
+                  "ndviMin": 0.7,
+                  "ndviMax": 0.94,
+                  "ndmiMin": 0.2,
+                  "ndmiMax": 0.44
+                },
+                {
+                  "month": 8,
+                  "ndviMin": 0.72,
+                  "ndviMax": 0.95,
+                  "ndmiMin": 0.22,
+                  "ndmiMax": 0.46
+                },
+                {
+                  "month": 9,
+                  "ndviMin": 0.66,
+                  "ndviMax": 0.9,
+                  "ndmiMin": 0.18,
+                  "ndmiMax": 0.42
+                },
+                {
+                  "month": 10,
+                  "ndviMin": 0.38,
+                  "ndviMax": 0.62,
+                  "ndmiMin": 0.06,
+                  "ndmiMax": 0.3
+                },
+                {
+                  "month": 11,
+                  "ndviMin": 0.08,
+                  "ndviMax": 0.32,
+                  "ndmiMin": -0.07,
+                  "ndmiMax": 0.17
+                },
+                {
+                  "month": 12,
+                  "ndviMin": 0.05,
+                  "ndviMax": 0.27,
+                  "ndmiMin": -0.09,
+                  "ndmiMax": 0.15
+                }
+              ],
+              "reference": "FAO-56 Allen i in. 1998, Tab. 12 i 22"
+            },
+            {
+              "code": "grassland",
+              "name": "Użytki zielone",
+              "kcIni": 0.4,
+              "kcMid": 1,
+              "kcEnd": 0.85,
+              "rootDepthM": 0.6,
+              "depletionFraction": 0.6,
+              "stages": [
+                {
+                  "code": "spring_growth",
+                  "name": "Wzrost wiosenny",
+                  "from": "03-20",
+                  "to": "04-30",
+                  "isCritical": false
+                },
+                {
+                  "code": "regrowth_after_cuts",
+                  "name": "Odrost po pokosach",
+                  "from": "05-01",
+                  "to": "08-31",
+                  "isCritical": true
+                },
+                {
+                  "code": "autumn_growth",
+                  "name": "Wzrost jesienny",
+                  "from": "09-01",
+                  "to": "10-31",
+                  "isCritical": false
+                }
+              ],
+              "criticalPeriodLabel": "odrost po pokosach (maj–sierpień)",
+              "expectedIndices": [
+                {
+                  "month": 1,
+                  "ndviMin": 0.33,
+                  "ndviMax": 0.57,
+                  "ndmiMin": 0,
+                  "ndmiMax": 0.24
+                },
+                {
+                  "month": 2,
+                  "ndviMin": 0.33,
+                  "ndviMax": 0.57,
+                  "ndmiMin": 0,
+                  "ndmiMax": 0.24
+                },
+                {
+                  "month": 3,
+                  "ndviMin": 0.38,
+                  "ndviMax": 0.62,
+                  "ndmiMin": 0.03,
+                  "ndmiMax": 0.27
+                },
+                {
+                  "month": 4,
+                  "ndviMin": 0.53,
+                  "ndviMax": 0.77,
+                  "ndmiMin": 0.1,
+                  "ndmiMax": 0.34
+                },
+                {
+                  "month": 5,
+                  "ndviMin": 0.66,
+                  "ndviMax": 0.9,
+                  "ndmiMin": 0.18,
+                  "ndmiMax": 0.42
+                },
+                {
+                  "month": 6,
+                  "ndviMin": 0.66,
+                  "ndviMax": 0.9,
+                  "ndmiMin": 0.18,
+                  "ndmiMax": 0.42
+                },
+                {
+                  "month": 7,
+                  "ndviMin": 0.6,
+                  "ndviMax": 0.84,
+                  "ndmiMin": 0.14,
+                  "ndmiMax": 0.38
+                },
+                {
+                  "month": 8,
+                  "ndviMin": 0.58,
+                  "ndviMax": 0.82,
+                  "ndmiMin": 0.12,
+                  "ndmiMax": 0.36
+                },
+                {
+                  "month": 9,
+                  "ndviMin": 0.56,
+                  "ndviMax": 0.8,
+                  "ndmiMin": 0.12,
+                  "ndmiMax": 0.36
+                },
+                {
+                  "month": 10,
+                  "ndviMin": 0.5,
+                  "ndviMax": 0.74,
+                  "ndmiMin": 0.08,
+                  "ndmiMax": 0.32
+                },
+                {
+                  "month": 11,
+                  "ndviMin": 0.4,
+                  "ndviMax": 0.64,
+                  "ndmiMin": 0.04,
+                  "ndmiMax": 0.28
+                },
+                {
+                  "month": 12,
+                  "ndviMin": 0.34,
+                  "ndviMax": 0.58,
+                  "ndmiMin": 0,
+                  "ndmiMax": 0.24
+                }
+              ],
+              "reference": "FAO-56 Allen i in. 1998, Tab. 12 i 22"
+            }
+          ]
+        }
+      }
     },
     {
       "id": "API-004",
@@ -133,7 +1049,1730 @@
         "DM-014",
         "DM-015"
       ],
-      "consumers": ["UI-S-002", "UI-S-003"]
+      "consumers": ["UI-S-002", "UI-S-003"],
+      "examples": {
+        "201_complete": {
+          "id": "6740a1f3c2e4b5a1d8f90a11",
+          "parcel": {
+            "id": "300302_2.0008.215/3",
+            "parcelNumber": "215/3",
+            "region": "Racot",
+            "commune": "Kościan",
+            "county": "kościański",
+            "voivodeship": "wielkopolskie",
+            "areaHa": 4.5,
+            "centroid": {
+              "lat": 52.1001,
+              "lon": 16.7816
+            },
+            "bbox": [16.78, 52.099, 16.7831, 52.1011],
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [16.78, 52.0991],
+                  [16.7829, 52.099],
+                  [16.7831, 52.101],
+                  [16.7802, 52.1011],
+                  [16.78, 52.0991]
+                ]
+              ]
+            },
+            "source": "ULDK GUGiK",
+            "fetchedAt": "2026-11-21T10:14:25.612Z"
+          },
+          "crop": {
+            "code": "winter_wheat",
+            "name": "Pszenica ozima"
+          },
+          "analysisDate": "2026-06-10",
+          "status": "complete",
+          "assessment": {
+            "droughtClass": "severe",
+            "droughtClassLabel": "Susza silna",
+            "isOutOfSeason": false,
+            "confidence": "high",
+            "confidenceScore": 1,
+            "confidenceReasons": [
+              "Dostępnych jest 7 z 7 źródeł danych",
+              "Zdjęcie Sentinel-2 jest świeże (4 dni) i dobrej jakości (92% ważnych pikseli)",
+              "Satelitarna wilgotność gleby (EUMETSAT) i NDMI zgadzają się z wynikiem bilansu wodnego (+0,05, wynik ograniczony do 1,0)"
+            ],
+            "summary": "W ostatnich 60 dniach klimatyczny bilans wodny wynosi −137 mm, czyli jest gorszy niż w 92% porównywalnych okresów z 10 lat (percentyl 8). Pszenica ozima jest w fazie krytycznej (kłoszenie i kwitnienie), a pomiary satelitarne wilgotności gleby i roślin to potwierdzają.",
+            "kbw30": {
+              "days": 30,
+              "from": "2026-05-12",
+              "to": "2026-06-10",
+              "precipitationMm": 18.2,
+              "et0Mm": 123,
+              "etcMm": 140.2,
+              "kbwMm": -122,
+              "normKbwMm": -88.2,
+              "anomalyMm": -33.8,
+              "percentile": 11,
+              "precipitationNormPct": 40,
+              "meanTmaxC": 26.1,
+              "normTmaxC": 23.4
+            },
+            "kbw60": {
+              "days": 60,
+              "from": "2026-04-12",
+              "to": "2026-06-10",
+              "precipitationMm": 71.4,
+              "et0Mm": 213.8,
+              "etcMm": 208.6,
+              "kbwMm": -137.2,
+              "normKbwMm": -96.4,
+              "anomalyMm": -40.8,
+              "percentile": 8,
+              "precipitationNormPct": 68,
+              "meanTmaxC": 22.9,
+              "normTmaxC": 20.8
+            },
+            "soilWater": {
+              "tawMm": 84,
+              "rawMm": 46.2,
+              "depletionMm": 61.5,
+              "isStressed": true
+            },
+            "cropStage": {
+              "code": "heading_flowering",
+              "name": "Kłoszenie i kwitnienie",
+              "kc": 1.15,
+              "isCritical": true
+            },
+            "satellite": {
+              "sceneId": "S2C_33UXU_20260606_0_L2A",
+              "sceneDate": "2026-06-06",
+              "ageDays": 4,
+              "validPixelFraction": 0.92,
+              "validPixels": 414,
+              "ndvi": 0.61,
+              "ndmi": 0.11,
+              "ndviAssessment": "below",
+              "ndmiAssessment": "below",
+              "expected": {
+                "ndviMin": 0.65,
+                "ndviMax": 0.89,
+                "ndmiMin": 0.16,
+                "ndmiMax": 0.4
+              },
+              "thumbnailUrl": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/33/U/XU/2026/6/S2C_33UXU_20260606_0_L2A/L2A_PVI.tif"
+            },
+            "soilMoistureSatellite": {
+              "valuePct": 24,
+              "assessment": "dry",
+              "agreement": "confirms",
+              "observedAt": "2026-06-09T19:42:10.000Z",
+              "ageDays": 1,
+              "product": "ASCAT SSM 25 km NRT (Metop-B)",
+              "collectionId": "EO:EUM:DAT:METOP:SOMO25",
+              "granuleId": "W_XX-EUMETSAT-Darmstadt,SURFACE+SATELLITE,METOPB+ASCAT_C_EUMP_20260609194210_75321_eps_o_250_ssm_l2.nc",
+              "resolutionKm": 25,
+              "depthLabel": "warstwa powierzchniowa (kilka cm)",
+              "distanceKm": 9.6
+            },
+            "evidence": [
+              {
+                "label": "KBW 60 dni",
+                "value": -137.2,
+                "unit": "mm",
+                "sourceId": "engine",
+                "dataDate": "2026-04-12–2026-06-10",
+                "note": "opad 71,4 mm minus ETc 208,6 mm"
+              },
+              {
+                "label": "KBW 30 dni",
+                "value": -122,
+                "unit": "mm",
+                "sourceId": "engine",
+                "dataDate": "2026-05-12–2026-06-10",
+                "note": "opad 18,2 mm minus ETc 140,2 mm"
+              },
+              {
+                "label": "Percentyl KBW 60 dni",
+                "value": 8,
+                "unit": "%",
+                "sourceId": "engine",
+                "dataDate": "2026-04-12–2026-06-10",
+                "note": "na tle 70 próbek z 10 lat; im niżej, tym suchsza sytuacja"
+              },
+              {
+                "label": "Deficyt wody w glebie",
+                "value": 61.5,
+                "unit": "mm",
+                "sourceId": "engine",
+                "dataDate": "2026-06-10",
+                "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 46,2 mm"
+              },
+              {
+                "label": "NDMI (wilgotność roślin)",
+                "value": 0.11,
+                "unit": null,
+                "sourceId": "sentinel2",
+                "dataDate": "2026-06-06",
+                "note": "oczekiwany zakres dla czerwca 0.16–0.4"
+              },
+              {
+                "label": "Wilgotność powierzchni gleby (satelita)",
+                "value": 24,
+                "unit": "%",
+                "sourceId": "eumetsat",
+                "dataDate": "2026-06-09",
+                "note": "ASCAT, warstwa kilku cm, siatka 25 km; wartość orientacyjna"
+              }
+            ]
+          },
+          "vulnerability": {
+            "vulnerabilityClass": "high",
+            "vulnerabilityLabel": "Wysoka podatność na suszę",
+            "yearsAnalyzed": 10,
+            "seasonsWithDeficit": 6,
+            "deficitYears": [2018, 2019, 2020, 2022, 2023, 2025],
+            "criticalMonths": [5, 6, 7],
+            "criticalMonthsLabel": "maj–lipiec",
+            "monthly": [
+              {
+                "month": 4,
+                "deficitFrequency": 0.3,
+                "medianKbwMm": -14
+              },
+              {
+                "month": 5,
+                "deficitFrequency": 0.6,
+                "medianKbwMm": -31.5
+              },
+              {
+                "month": 6,
+                "deficitFrequency": 0.7,
+                "medianKbwMm": -42
+              },
+              {
+                "month": 7,
+                "deficitFrequency": 0.6,
+                "medianKbwMm": -38.5
+              },
+              {
+                "month": 8,
+                "deficitFrequency": 0.4,
+                "medianKbwMm": -22
+              },
+              {
+                "month": 9,
+                "deficitFrequency": 0.2,
+                "medianKbwMm": -6.5
+              }
+            ],
+            "soil": {
+              "sandPct": 70,
+              "siltPct": 23,
+              "clayPct": 7,
+              "socPct": 1.1,
+              "category": "light",
+              "categoryLabel": "Gleba lekka"
+            },
+            "summary": "W 6 z 10 ostatnich sezonów (2018, 2019, 2020, 2022, 2023, 2025) wody brakowało w okresie wegetacji. Najczęściej dzieje się to od maja do lipca, czyli w czasie, gdy pszenica potrzebuje jej najwięcej.",
+            "evidence": [
+              {
+                "label": "Sezony z deficytem wody",
+                "value": 6,
+                "unit": "z 10",
+                "sourceId": "engine",
+                "dataDate": "2016–2025",
+                "note": "sezon z deficytem: 60-dniowy KBW poniżej −46,2 mm (próg stresu gleby)"
+              },
+              {
+                "label": "Miesiące krytyczne",
+                "value": "maj–lipiec",
+                "unit": null,
+                "sourceId": "engine",
+                "dataDate": "2016–2025",
+                "note": "deficyt w co najmniej połowie lat"
+              },
+              {
+                "label": "Mediana KBW w czerwcu",
+                "value": -42,
+                "unit": "mm",
+                "sourceId": "meteo",
+                "dataDate": "2016–2025"
+              }
+            ]
+          },
+          "causes": [
+            {
+              "code": "precip_deficit_heat",
+              "title": "Mało deszczu i upał",
+              "description": "W ostatnich 60 dniach spadło 71 mm deszczu, czyli 68% normy z 10 lat, a w ostatnich 30 dniach temperatura maksymalna była średnio o 2,7 °C wyższa niż zwykle (26,1 °C wobec 23,4 °C).",
+              "severity": "high",
+              "evidence": [
+                {
+                  "label": "Opad 60 dni",
+                  "value": 71.4,
+                  "unit": "mm",
+                  "sourceId": "meteo",
+                  "dataDate": "2026-04-12–2026-06-10",
+                  "note": "68% mediany opadu z 10 lat (104,5 mm)"
+                },
+                {
+                  "label": "Opad jako % normy 60 dni",
+                  "value": 68,
+                  "unit": "%",
+                  "sourceId": "meteo",
+                  "dataDate": "2026-04-12–2026-06-10"
+                },
+                {
+                  "label": "Średnia temperatura maksymalna 30 dni",
+                  "value": 26.1,
+                  "unit": "°C",
+                  "sourceId": "meteo",
+                  "dataDate": "2026-05-12–2026-06-10",
+                  "note": "norma z 10 lat: 23,4 °C"
+                },
+                {
+                  "label": "ETc 60 dni",
+                  "value": 208.6,
+                  "unit": "mm",
+                  "sourceId": "engine",
+                  "dataDate": "2026-04-12–2026-06-10",
+                  "note": "ET0 213,8 mm × Kc uprawy (FAO-56)"
+                }
+              ]
+            },
+            {
+              "code": "low_soil_retention",
+              "title": "Gleba słabo trzyma wodę",
+              "description": "Gleba ma 70% piasku i zatrzymuje tylko 84 mm wody użytecznej dla roślin w strefie korzeni.",
+              "severity": "high",
+              "evidence": [
+                {
+                  "label": "Zawartość piasku",
+                  "value": 70,
+                  "unit": "%",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                },
+                {
+                  "label": "Węgiel organiczny w glebie",
+                  "value": 1.1,
+                  "unit": "%",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                },
+                {
+                  "label": "Pojemność wodna gleby (TAW)",
+                  "value": 84,
+                  "unit": "mm",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)",
+                  "note": "do głębokości korzeni, metoda Saxton i Rawls 2006"
+                }
+              ]
+            },
+            {
+              "code": "surface_runoff",
+              "title": "Woda spływa po stoku",
+              "description": "Działka ma spadek 2,4% w kierunku południowym (5,2 m różnicy wysokości), więc część deszczu spływa, zamiast wsiąknąć.",
+              "severity": "medium",
+              "evidence": [
+                {
+                  "label": "Spadek terenu",
+                  "value": 2.4,
+                  "unit": "%",
+                  "sourceId": "elevation",
+                  "dataDate": "Copernicus DEM GLO-90"
+                },
+                {
+                  "label": "Kierunek spadku",
+                  "value": "południe",
+                  "unit": null,
+                  "sourceId": "elevation",
+                  "dataDate": "Copernicus DEM GLO-90"
+                },
+                {
+                  "label": "Różnica wysokości na działce",
+                  "value": 5.2,
+                  "unit": "m",
+                  "sourceId": "elevation",
+                  "dataDate": "Copernicus DEM GLO-90",
+                  "note": "od 86,1 do 91,3 m n.p.m."
+                }
+              ]
+            },
+            {
+              "code": "crop_water_demand",
+              "title": "Pszenica potrzebuje teraz najwięcej wody",
+              "description": "Pszenica ozima jest w fazie kłoszenia i kwitnienia (faza krytyczna). W ostatnich 30 dniach zużyła 140 mm wody, a spadło tylko 18 mm deszczu.",
+              "severity": "high",
+              "evidence": [
+                {
+                  "label": "Współczynnik uprawy Kc",
+                  "value": 1.15,
+                  "unit": null,
+                  "sourceId": "engine",
+                  "dataDate": "2026-06-10",
+                  "note": "faza kłoszenia i kwitnienia, pszenica ozima"
+                },
+                {
+                  "label": "ETc 30 dni",
+                  "value": 140.2,
+                  "unit": "mm",
+                  "sourceId": "engine",
+                  "dataDate": "2026-05-12–2026-06-10"
+                },
+                {
+                  "label": "Opad 30 dni",
+                  "value": 18.2,
+                  "unit": "mm",
+                  "sourceId": "meteo",
+                  "dataDate": "2026-05-12–2026-06-10",
+                  "note": "40% mediany opadu z 10 lat"
+                }
+              ]
+            },
+            {
+              "code": "low_vegetation_moisture",
+              "title": "Rośliny mają za mało wody w liściach",
+              "description": "Wilgotność roślin (NDMI 0,11) jest poniżej zakresu typowego dla pszenicy w czerwcu (0.16–0.4), według zdjęcia satelitarnego z 6 czerwca.",
+              "severity": "medium",
+              "evidence": [
+                {
+                  "label": "NDMI (wilgotność roślin)",
+                  "value": 0.11,
+                  "unit": null,
+                  "sourceId": "sentinel2",
+                  "dataDate": "2026-06-06",
+                  "note": "oczekiwany zakres dla czerwca 0.16–0.4"
+                },
+                {
+                  "label": "Data zdjęcia satelitarnego",
+                  "value": "2026-06-06",
+                  "unit": null,
+                  "sourceId": "sentinel2",
+                  "dataDate": "2026-06-06",
+                  "note": "zdjęcie sprzed 4 dni"
+                },
+                {
+                  "label": "Oczekiwany NDMI dla pszenicy w czerwcu",
+                  "value": "0.16–0.4",
+                  "unit": null,
+                  "sourceId": "engine",
+                  "dataDate": "tabela FAO-56/ADR-007"
+                }
+              ]
+            }
+          ],
+          "recommendations": [
+            {
+              "ruleId": "R-LAND-01",
+              "category": "retention_landscape",
+              "order": 1,
+              "priority": "high",
+              "title": "Spowolnij odpływ wody w pobliskim rowie",
+              "action": "Zamontuj zastawkę lub próg piętrzący w rowie melioracyjnym, aby woda zostawała dłużej w okolicy działki i podnosiła wilgotność gleby. Przed pracami uzgodnij to ze spółką wodną lub zarządcą rowu.",
+              "where": "rów melioracyjny ok. 180 m na południe od granicy działki",
+              "when": "poza sezonem wegetacji, najlepiej jesienią",
+              "why": "Rów jest 180 m od działki (limit reguły: 300 m), a podatność na suszę jest wysoka (6 z 10 sezonów z deficytem).",
+              "location": {
+                "lat": 52.0974,
+                "lon": 16.7815
+              },
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Odległość do najbliższego rowu",
+                  "value": 180,
+                  "unit": "m",
+                  "sourceId": "overpass",
+                  "dataDate": "OSM 2026-11-21",
+                  "note": "rów melioracyjny na południe od działki"
+                },
+                {
+                  "label": "Sezony z deficytem wody",
+                  "value": 6,
+                  "unit": "z 10",
+                  "sourceId": "engine",
+                  "dataDate": "2016–2025"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-LAND-02",
+              "category": "retention_landscape",
+              "order": 2,
+              "priority": "medium",
+              "title": "Posadź pas zadrzewień lub zieleni na dole stoku",
+              "action": "Wprowadź pas krzewów, drzew lub trwałej trawy, który zatrzyma spływającą wodę i ograniczy wiatr suszący glebę.",
+              "where": "wzdłuż południowej granicy działki (w dół spadku)",
+              "when": "jesień lub wczesna wiosna",
+              "why": "Spadek terenu wynosi 2,4% (próg reguły: 2%), a woda spływa na południe.",
+              "location": {
+                "lat": 52.0991,
+                "lon": 16.7815
+              },
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Spadek terenu",
+                  "value": 2.4,
+                  "unit": "%",
+                  "sourceId": "elevation",
+                  "dataDate": "Copernicus DEM GLO-90"
+                },
+                {
+                  "label": "Kierunek spadku",
+                  "value": "południe",
+                  "unit": null,
+                  "sourceId": "elevation",
+                  "dataDate": "Copernicus DEM GLO-90"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-SOIL-01",
+              "category": "retention_soil",
+              "order": 3,
+              "priority": "high",
+              "title": "Zwiększ ilość próchnicy w glebie",
+              "action": "Stosuj obornik lub kompost i przyoruj słomę, aby gleba lepiej zatrzymywała wodę.",
+              "where": "cała działka",
+              "when": "po zbiorze, jesienią",
+              "why": "Gleba zatrzymuje tylko 84 mm wody (próg: 100 mm), a węgla organicznego jest 1,1% (próg: 1,5%).",
+              "location": null,
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Pojemność wodna gleby (TAW)",
+                  "value": 84,
+                  "unit": "mm",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)",
+                  "note": "do głębokości korzeni, metoda Saxton i Rawls 2006"
+                },
+                {
+                  "label": "Węgiel organiczny w glebie",
+                  "value": 1.1,
+                  "unit": "%",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-SOIL-02",
+              "category": "retention_soil",
+              "order": 4,
+              "priority": "medium",
+              "title": "Wysiej międzyplon po zbiorze pszenicy",
+              "action": "Po żniwach wysiej międzyplon (np. facelię, gorczycę), który osłoni glebę i doda jej materii organicznej.",
+              "where": "cała działka",
+              "when": "bezpośrednio po zbiorze, do początku września",
+              "why": "Podatność na suszę jest wysoka (6 z 10 sezonów z deficytem), a pszenica jest zbierana latem.",
+              "location": null,
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Sezony z deficytem wody",
+                  "value": 6,
+                  "unit": "z 10",
+                  "sourceId": "engine",
+                  "dataDate": "2016–2025"
+                },
+                {
+                  "label": "Uprawa",
+                  "value": "pszenica ozima (zbiór latem)",
+                  "unit": null,
+                  "sourceId": "engine",
+                  "dataDate": "2026-06-10"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-AGRO-01",
+              "category": "agrotechnics",
+              "order": 5,
+              "priority": "medium",
+              "title": "Zostaw resztki pożniwne i mulcz",
+              "action": "Nie zostawiaj odkrytej gleby po żniwach. Resztki słomy i mulcz zmniejszają parowanie z gleby.",
+              "where": "cała działka",
+              "when": "po zbiorze",
+              "why": "Susza jest silna (percentyl KBW 60 dni: 8), a gleba lekka (70% piasku).",
+              "location": null,
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Percentyl KBW 60 dni",
+                  "value": 8,
+                  "unit": "%",
+                  "sourceId": "engine",
+                  "dataDate": "2026-04-12–2026-06-10",
+                  "note": "na tle 70 próbek z 10 lat; im niżej, tym suchsza sytuacja"
+                },
+                {
+                  "label": "Zawartość piasku",
+                  "value": 70,
+                  "unit": "%",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-AGRO-02",
+              "category": "agrotechnics",
+              "order": 6,
+              "priority": "medium",
+              "title": "Ogranicz głęboką orkę przed siewem",
+              "action": "Przejdź na uprawę uproszczoną (bez głębokiego odwracania skiby), aby nie osuszać gleby.",
+              "where": "cała działka",
+              "when": "przed siewem następnej uprawy",
+              "why": "Gleba jest lekka (70% piasku), a podatność na suszę wysoka (6 z 10 sezonów).",
+              "location": null,
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Zawartość piasku",
+                  "value": 70,
+                  "unit": "%",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                },
+                {
+                  "label": "Sezony z deficytem wody",
+                  "value": 6,
+                  "unit": "z 10",
+                  "sourceId": "engine",
+                  "dataDate": "2016–2025"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-AGRO-04",
+              "category": "agrotechnics",
+              "order": 7,
+              "priority": "low",
+              "title": "Pilnuj wilgotności w miesiącach krytycznych",
+              "action": "W maju, czerwcu i lipcu sprawdzaj regularnie stan roślin i wilgotność gleby oraz planuj zabiegi z wyprzedzeniem.",
+              "where": null,
+              "when": "maj–lipiec każdego roku",
+              "why": "W tej lokalizacji deficyt wody występuje najczęściej od maja do lipca (w co najmniej 50% lat).",
+              "location": null,
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Miesiące krytyczne",
+                  "value": "maj–lipiec",
+                  "unit": null,
+                  "sourceId": "engine",
+                  "dataDate": "2016–2025"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-IRR-01",
+              "category": "irrigation",
+              "order": 8,
+              "priority": "high",
+              "title": "Nawadnianie jest uzasadnione",
+              "action": "Podaj jedną dawkę ok. 46 mm netto (62 mm brutto, deszczownia), najlepiej rano lub wieczorem. Pobór wody powyżej 5 m³/dobę wymaga zgody wodnoprawnej (Prawo wodne).",
+              "where": "cała działka",
+              "when": "w ciągu najbliższych 3–5 dni",
+              "why": "Susza jest silna, pszenica jest w fazie krytycznej (czerwiec), a deficyt wody w glebie (61,5 mm) przekracza próg stresu (46,2 mm).",
+              "location": null,
+              "irrigation": {
+                "isJustified": true,
+                "netDoseMm": 46.2,
+                "grossDoseMm": 61.6,
+                "doseM3PerHa": 616,
+                "window": "najbliższe 3–5 dni, rano lub wieczorem",
+                "nextCheckInDays": 9
+              },
+              "evidence": [
+                {
+                  "label": "Deficyt wody w glebie",
+                  "value": 61.5,
+                  "unit": "mm",
+                  "sourceId": "engine",
+                  "dataDate": "2026-06-10",
+                  "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 46,2 mm"
+                },
+                {
+                  "label": "Próg stresu wodnego (RAW)",
+                  "value": 46.2,
+                  "unit": "mm",
+                  "sourceId": "engine",
+                  "dataDate": "2026-06-10"
+                },
+                {
+                  "label": "Współczynnik uprawy Kc",
+                  "value": 1.15,
+                  "unit": null,
+                  "sourceId": "engine",
+                  "dataDate": "2026-06-10",
+                  "note": "faza kłoszenia i kwitnienia, pszenica ozima"
+                }
+              ]
+            }
+          ],
+          "sources": [
+            {
+              "sourceId": "uldk",
+              "name": "ULDK GUGiK (Usługa Lokalizacji Działek Katastralnych)",
+              "label": "Działka",
+              "category": "spatial",
+              "provider": "GUGiK (Główny Urząd Geodezji i Kartografii)",
+              "url": "https://uldk.gugik.gov.pl/",
+              "license": "Dane PZGiK/EGiB, bezpłatne (Prawo geodezyjne i kartograficzne)",
+              "status": "ok",
+              "dataPeriod": null,
+              "fetchedAt": "2026-11-21T10:14:25.612Z",
+              "durationMs": 412,
+              "message": null
+            },
+            {
+              "sourceId": "meteo",
+              "name": "Open-Meteo Historical (ERA5)",
+              "label": "Pogoda",
+              "category": "meteo",
+              "provider": "Open-Meteo (dane ERA5, Copernicus/ECMWF)",
+              "url": "https://open-meteo.com/en/docs/historical-weather-api",
+              "license": "CC BY 4.0",
+              "status": "ok",
+              "dataPeriod": "2016-03-27–2026-06-10",
+              "fetchedAt": "2026-11-21T10:14:27.004Z",
+              "durationMs": 1380,
+              "message": null
+            },
+            {
+              "sourceId": "sentinel2",
+              "name": "Sentinel-2 L2A (Earth Search STAC)",
+              "label": "Satelita (rośliny)",
+              "category": "satellite",
+              "provider": "ESA Copernicus / Element 84 Earth Search",
+              "url": "https://earth-search.aws.element84.com/v1",
+              "license": "Copernicus Sentinel (wolna licencja); katalog CC0",
+              "status": "ok",
+              "dataPeriod": "2026-06-06",
+              "fetchedAt": "2026-11-21T10:14:32.870Z",
+              "durationMs": 6240,
+              "message": "Zdjęcie z 2026-06-06, 92% ważnych pikseli działki"
+            },
+            {
+              "sourceId": "eumetsat",
+              "name": "EUMETSAT ASCAT SSM (Data Store)",
+              "label": "Satelita (wilgotność gleby)",
+              "category": "satellite",
+              "provider": "EUMETSAT / H SAF",
+              "url": "https://data.eumetsat.int/",
+              "license": "Polityka danych EUMETSAT / H SAF (do potwierdzenia)",
+              "status": "ok",
+              "dataPeriod": "2026-06-09",
+              "fetchedAt": "2026-11-21T10:14:31.700Z",
+              "durationMs": 5120,
+              "message": "Obserwacja ASCAT z 2026-06-09, punkt siatki 9,6 km od działki"
+            },
+            {
+              "sourceId": "soilgrids",
+              "name": "SoilGrids 2.0 (ISRIC, WCS)",
+              "label": "Gleba",
+              "category": "soil",
+              "provider": "ISRIC – World Soil Information",
+              "url": "https://maps.isric.org/",
+              "license": "CC BY 4.0",
+              "status": "ok",
+              "dataPeriod": null,
+              "fetchedAt": "2026-11-21T10:14:29.450Z",
+              "durationMs": 3870,
+              "message": null
+            },
+            {
+              "sourceId": "elevation",
+              "name": "Copernicus DEM GLO-90 (Open-Meteo Elevation)",
+              "label": "Teren",
+              "category": "terrain",
+              "provider": "ESA Copernicus / Open-Meteo",
+              "url": "https://open-meteo.com/en/docs/elevation-api",
+              "license": "Copernicus DEM (ESA, z atrybucją); Open-Meteo CC BY 4.0",
+              "status": "ok",
+              "dataPeriod": null,
+              "fetchedAt": "2026-11-21T10:14:26.220Z",
+              "durationMs": 640,
+              "message": null
+            },
+            {
+              "sourceId": "overpass",
+              "name": "OpenStreetMap Overpass API",
+              "label": "Woda w okolicy",
+              "category": "hydro",
+              "provider": "OpenStreetMap contributors (Overpass API)",
+              "url": "https://overpass-api.de/",
+              "license": "ODbL 1.0, © OpenStreetMap contributors",
+              "status": "ok",
+              "dataPeriod": null,
+              "fetchedAt": "2026-11-21T10:14:27.740Z",
+              "durationMs": 2150,
+              "message": null
+            }
+          ],
+          "limitations": [
+            "Dane pogodowe ERA5 pochodzą z siatki 9–25 km, więc opad na samej działce może się różnić od podanego.",
+            "Wilgotność gleby z satelity ASCAT (12,5–25 km) dotyczy tylko kilku górnych centymetrów i obejmuje wiele działek naraz; nie opisuje strefy korzeni.",
+            "Dane glebowe SoilGrids (250 m) to model, a nie pomiar na działce.",
+            "Model terenu ma rozdzielczość 90 m i wygładza drobne nierówności.",
+            "Zdjęcia Sentinel-2 mają rozdzielczość 10–20 m, a chmury mogą wydłużać czas od ostatniego użytecznego zdjęcia.",
+            "Mapa rowów i cieków z OpenStreetMap może być niekompletna.",
+            "Normę wyznaczono z 10 lat, to krótki szereg.",
+            "Raport nie zawiera prognozy pogody ani danych o zabiegach i nawadnianiu na działce."
+          ],
+          "dataGaps": [],
+          "charts": {
+            "kbw60Series": [
+              {
+                "date": "2026-04-01",
+                "kbwMm": 18.4
+              },
+              {
+                "date": "2026-04-08",
+                "kbwMm": 12.1
+              },
+              {
+                "date": "2026-04-15",
+                "kbwMm": 3.6
+              },
+              {
+                "date": "2026-04-22",
+                "kbwMm": -9.8
+              },
+              {
+                "date": "2026-04-29",
+                "kbwMm": -27.5
+              },
+              {
+                "date": "2026-05-06",
+                "kbwMm": -48.2
+              },
+              {
+                "date": "2026-05-13",
+                "kbwMm": -71
+              },
+              {
+                "date": "2026-05-20",
+                "kbwMm": -94.3
+              },
+              {
+                "date": "2026-05-27",
+                "kbwMm": -112.6
+              },
+              {
+                "date": "2026-06-03",
+                "kbwMm": -126.8
+              },
+              {
+                "date": "2026-06-10",
+                "kbwMm": -137.2
+              }
+            ],
+            "kbw60Climatology": [
+              {
+                "date": "2026-04-01",
+                "p10": 8,
+                "p50": 22,
+                "p90": 37
+              },
+              {
+                "date": "2026-04-08",
+                "p10": 0.5,
+                "p50": 15.5,
+                "p90": 31.5
+              },
+              {
+                "date": "2026-04-15",
+                "p10": -9,
+                "p50": 7,
+                "p90": 25
+              },
+              {
+                "date": "2026-04-22",
+                "p10": -21.5,
+                "p50": -3.5,
+                "p90": 16.5
+              },
+              {
+                "date": "2026-04-29",
+                "p10": -37,
+                "p50": -17,
+                "p90": 6
+              },
+              {
+                "date": "2026-05-06",
+                "p10": -55,
+                "p50": -33,
+                "p90": -6
+              },
+              {
+                "date": "2026-05-13",
+                "p10": -74.5,
+                "p50": -49.5,
+                "p90": -18.5
+              },
+              {
+                "date": "2026-05-20",
+                "p10": -91,
+                "p50": -64,
+                "p90": -30
+              },
+              {
+                "date": "2026-05-27",
+                "p10": -107,
+                "p50": -78,
+                "p90": -42
+              },
+              {
+                "date": "2026-06-03",
+                "p10": -118.5,
+                "p50": -88.5,
+                "p90": -51.5
+              },
+              {
+                "date": "2026-06-10",
+                "p10": -127,
+                "p50": -96.4,
+                "p90": -58
+              }
+            ]
+          },
+          "methodologyVersion": "kropla-1.0",
+          "computedAt": "2026-11-21T10:14:33.215Z",
+          "durationMs": 6912,
+          "createdAt": "2026-11-21T10:14:33.402Z"
+        },
+        "201_partial": {
+          "id": "6740a1f3c2e4b5a1d8f90a12",
+          "parcel": {
+            "id": "300302_2.0008.215/3",
+            "parcelNumber": "215/3",
+            "region": "Racot",
+            "commune": "Kościan",
+            "county": "kościański",
+            "voivodeship": "wielkopolskie",
+            "areaHa": 4.5,
+            "centroid": {
+              "lat": 52.1001,
+              "lon": 16.7816
+            },
+            "bbox": [16.78, 52.099, 16.7831, 52.1011],
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [16.78, 52.0991],
+                  [16.7829, 52.099],
+                  [16.7831, 52.101],
+                  [16.7802, 52.1011],
+                  [16.78, 52.0991]
+                ]
+              ]
+            },
+            "source": "ULDK GUGiK",
+            "fetchedAt": "2026-11-21T10:19:35.480Z"
+          },
+          "crop": {
+            "code": "winter_wheat",
+            "name": "Pszenica ozima"
+          },
+          "analysisDate": "2026-06-10",
+          "status": "partial",
+          "assessment": {
+            "droughtClass": "severe",
+            "droughtClassLabel": "Susza silna",
+            "isOutOfSeason": false,
+            "confidence": "medium",
+            "confidenceScore": 0.75,
+            "confidenceReasons": [
+              "Brak zdjęcia satelitarnego Sentinel-2 bez chmur z ostatnich 45 dni: nie sprawdzono stanu roślin (−0,15)",
+              "Brak satelitarnej wilgotności gleby EUMETSAT, bo nie skonfigurowano klucza (−0,10)",
+              "Pozostałe źródła (pogoda, gleba, teren, woda, działka) są dostępne, więc wynik opiera się na bilansie wodnym i glebie"
+            ],
+            "summary": "W ostatnich 60 dniach klimatyczny bilans wodny wynosi −137 mm, czyli jest gorszy niż w 92% porównywalnych okresów z 10 lat (percentyl 8). Pszenica ozima jest w fazie krytycznej (kłoszenie i kwitnienie), ale brakuje danych satelitarnych, więc wynik jest mniej pewny.",
+            "kbw30": {
+              "days": 30,
+              "from": "2026-05-12",
+              "to": "2026-06-10",
+              "precipitationMm": 18.2,
+              "et0Mm": 123,
+              "etcMm": 140.2,
+              "kbwMm": -122,
+              "normKbwMm": -88.2,
+              "anomalyMm": -33.8,
+              "percentile": 11,
+              "precipitationNormPct": 40,
+              "meanTmaxC": 26.1,
+              "normTmaxC": 23.4
+            },
+            "kbw60": {
+              "days": 60,
+              "from": "2026-04-12",
+              "to": "2026-06-10",
+              "precipitationMm": 71.4,
+              "et0Mm": 213.8,
+              "etcMm": 208.6,
+              "kbwMm": -137.2,
+              "normKbwMm": -96.4,
+              "anomalyMm": -40.8,
+              "percentile": 8,
+              "precipitationNormPct": 68,
+              "meanTmaxC": 22.9,
+              "normTmaxC": 20.8
+            },
+            "soilWater": {
+              "tawMm": 84,
+              "rawMm": 46.2,
+              "depletionMm": 61.5,
+              "isStressed": true
+            },
+            "cropStage": {
+              "code": "heading_flowering",
+              "name": "Kłoszenie i kwitnienie",
+              "kc": 1.15,
+              "isCritical": true
+            },
+            "satellite": null,
+            "soilMoistureSatellite": null,
+            "evidence": [
+              {
+                "label": "KBW 60 dni",
+                "value": -137.2,
+                "unit": "mm",
+                "sourceId": "engine",
+                "dataDate": "2026-04-12–2026-06-10",
+                "note": "opad 71,4 mm minus ETc 208,6 mm"
+              },
+              {
+                "label": "KBW 30 dni",
+                "value": -122,
+                "unit": "mm",
+                "sourceId": "engine",
+                "dataDate": "2026-05-12–2026-06-10",
+                "note": "opad 18,2 mm minus ETc 140,2 mm"
+              },
+              {
+                "label": "Percentyl KBW 60 dni",
+                "value": 8,
+                "unit": "%",
+                "sourceId": "engine",
+                "dataDate": "2026-04-12–2026-06-10",
+                "note": "na tle 70 próbek z 10 lat; im niżej, tym suchsza sytuacja"
+              },
+              {
+                "label": "Deficyt wody w glebie",
+                "value": 61.5,
+                "unit": "mm",
+                "sourceId": "engine",
+                "dataDate": "2026-06-10",
+                "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 46,2 mm"
+              }
+            ]
+          },
+          "vulnerability": {
+            "vulnerabilityClass": "high",
+            "vulnerabilityLabel": "Wysoka podatność na suszę",
+            "yearsAnalyzed": 10,
+            "seasonsWithDeficit": 6,
+            "deficitYears": [2018, 2019, 2020, 2022, 2023, 2025],
+            "criticalMonths": [5, 6, 7],
+            "criticalMonthsLabel": "maj–lipiec",
+            "monthly": [
+              {
+                "month": 4,
+                "deficitFrequency": 0.3,
+                "medianKbwMm": -14
+              },
+              {
+                "month": 5,
+                "deficitFrequency": 0.6,
+                "medianKbwMm": -31.5
+              },
+              {
+                "month": 6,
+                "deficitFrequency": 0.7,
+                "medianKbwMm": -42
+              },
+              {
+                "month": 7,
+                "deficitFrequency": 0.6,
+                "medianKbwMm": -38.5
+              },
+              {
+                "month": 8,
+                "deficitFrequency": 0.4,
+                "medianKbwMm": -22
+              },
+              {
+                "month": 9,
+                "deficitFrequency": 0.2,
+                "medianKbwMm": -6.5
+              }
+            ],
+            "soil": {
+              "sandPct": 70,
+              "siltPct": 23,
+              "clayPct": 7,
+              "socPct": 1.1,
+              "category": "light",
+              "categoryLabel": "Gleba lekka"
+            },
+            "summary": "W 6 z 10 ostatnich sezonów (2018, 2019, 2020, 2022, 2023, 2025) wody brakowało w okresie wegetacji. Najczęściej dzieje się to od maja do lipca, czyli w czasie, gdy pszenica potrzebuje jej najwięcej.",
+            "evidence": [
+              {
+                "label": "Sezony z deficytem wody",
+                "value": 6,
+                "unit": "z 10",
+                "sourceId": "engine",
+                "dataDate": "2016–2025",
+                "note": "sezon z deficytem: 60-dniowy KBW poniżej −46,2 mm (próg stresu gleby)"
+              },
+              {
+                "label": "Miesiące krytyczne",
+                "value": "maj–lipiec",
+                "unit": null,
+                "sourceId": "engine",
+                "dataDate": "2016–2025",
+                "note": "deficyt w co najmniej połowie lat"
+              },
+              {
+                "label": "Mediana KBW w czerwcu",
+                "value": -42,
+                "unit": "mm",
+                "sourceId": "meteo",
+                "dataDate": "2016–2025"
+              }
+            ]
+          },
+          "causes": [
+            {
+              "code": "precip_deficit_heat",
+              "title": "Mało deszczu i upał",
+              "description": "W ostatnich 60 dniach spadło 71 mm deszczu, czyli 68% normy z 10 lat, a w ostatnich 30 dniach temperatura maksymalna była średnio o 2,7 °C wyższa niż zwykle (26,1 °C wobec 23,4 °C).",
+              "severity": "high",
+              "evidence": [
+                {
+                  "label": "Opad 60 dni",
+                  "value": 71.4,
+                  "unit": "mm",
+                  "sourceId": "meteo",
+                  "dataDate": "2026-04-12–2026-06-10",
+                  "note": "68% mediany opadu z 10 lat (104,5 mm)"
+                },
+                {
+                  "label": "Opad jako % normy 60 dni",
+                  "value": 68,
+                  "unit": "%",
+                  "sourceId": "meteo",
+                  "dataDate": "2026-04-12–2026-06-10"
+                },
+                {
+                  "label": "Średnia temperatura maksymalna 30 dni",
+                  "value": 26.1,
+                  "unit": "°C",
+                  "sourceId": "meteo",
+                  "dataDate": "2026-05-12–2026-06-10",
+                  "note": "norma z 10 lat: 23,4 °C"
+                },
+                {
+                  "label": "ETc 60 dni",
+                  "value": 208.6,
+                  "unit": "mm",
+                  "sourceId": "engine",
+                  "dataDate": "2026-04-12–2026-06-10",
+                  "note": "ET0 213,8 mm × Kc uprawy (FAO-56)"
+                }
+              ]
+            },
+            {
+              "code": "low_soil_retention",
+              "title": "Gleba słabo trzyma wodę",
+              "description": "Gleba ma 70% piasku i zatrzymuje tylko 84 mm wody użytecznej dla roślin w strefie korzeni.",
+              "severity": "high",
+              "evidence": [
+                {
+                  "label": "Zawartość piasku",
+                  "value": 70,
+                  "unit": "%",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                },
+                {
+                  "label": "Węgiel organiczny w glebie",
+                  "value": 1.1,
+                  "unit": "%",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                },
+                {
+                  "label": "Pojemność wodna gleby (TAW)",
+                  "value": 84,
+                  "unit": "mm",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)",
+                  "note": "do głębokości korzeni, metoda Saxton i Rawls 2006"
+                }
+              ]
+            },
+            {
+              "code": "surface_runoff",
+              "title": "Woda spływa po stoku",
+              "description": "Działka ma spadek 2,4% w kierunku południowym (5,2 m różnicy wysokości), więc część deszczu spływa, zamiast wsiąknąć.",
+              "severity": "medium",
+              "evidence": [
+                {
+                  "label": "Spadek terenu",
+                  "value": 2.4,
+                  "unit": "%",
+                  "sourceId": "elevation",
+                  "dataDate": "Copernicus DEM GLO-90"
+                },
+                {
+                  "label": "Kierunek spadku",
+                  "value": "południe",
+                  "unit": null,
+                  "sourceId": "elevation",
+                  "dataDate": "Copernicus DEM GLO-90"
+                },
+                {
+                  "label": "Różnica wysokości na działce",
+                  "value": 5.2,
+                  "unit": "m",
+                  "sourceId": "elevation",
+                  "dataDate": "Copernicus DEM GLO-90",
+                  "note": "od 86,1 do 91,3 m n.p.m."
+                }
+              ]
+            },
+            {
+              "code": "crop_water_demand",
+              "title": "Pszenica potrzebuje teraz najwięcej wody",
+              "description": "Pszenica ozima jest w fazie kłoszenia i kwitnienia (faza krytyczna). W ostatnich 30 dniach zużyła 140 mm wody, a spadło tylko 18 mm deszczu.",
+              "severity": "high",
+              "evidence": [
+                {
+                  "label": "Współczynnik uprawy Kc",
+                  "value": 1.15,
+                  "unit": null,
+                  "sourceId": "engine",
+                  "dataDate": "2026-06-10",
+                  "note": "faza kłoszenia i kwitnienia, pszenica ozima"
+                },
+                {
+                  "label": "ETc 30 dni",
+                  "value": 140.2,
+                  "unit": "mm",
+                  "sourceId": "engine",
+                  "dataDate": "2026-05-12–2026-06-10"
+                },
+                {
+                  "label": "Opad 30 dni",
+                  "value": 18.2,
+                  "unit": "mm",
+                  "sourceId": "meteo",
+                  "dataDate": "2026-05-12–2026-06-10",
+                  "note": "40% mediany opadu z 10 lat"
+                }
+              ]
+            }
+          ],
+          "recommendations": [
+            {
+              "ruleId": "R-LAND-01",
+              "category": "retention_landscape",
+              "order": 1,
+              "priority": "high",
+              "title": "Spowolnij odpływ wody w pobliskim rowie",
+              "action": "Zamontuj zastawkę lub próg piętrzący w rowie melioracyjnym, aby woda zostawała dłużej w okolicy działki i podnosiła wilgotność gleby. Przed pracami uzgodnij to ze spółką wodną lub zarządcą rowu.",
+              "where": "rów melioracyjny ok. 180 m na południe od granicy działki",
+              "when": "poza sezonem wegetacji, najlepiej jesienią",
+              "why": "Rów jest 180 m od działki (limit reguły: 300 m), a podatność na suszę jest wysoka (6 z 10 sezonów z deficytem).",
+              "location": {
+                "lat": 52.0974,
+                "lon": 16.7815
+              },
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Odległość do najbliższego rowu",
+                  "value": 180,
+                  "unit": "m",
+                  "sourceId": "overpass",
+                  "dataDate": "OSM 2026-11-21",
+                  "note": "rów melioracyjny na południe od działki"
+                },
+                {
+                  "label": "Sezony z deficytem wody",
+                  "value": 6,
+                  "unit": "z 10",
+                  "sourceId": "engine",
+                  "dataDate": "2016–2025"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-LAND-02",
+              "category": "retention_landscape",
+              "order": 2,
+              "priority": "medium",
+              "title": "Posadź pas zadrzewień lub zieleni na dole stoku",
+              "action": "Wprowadź pas krzewów, drzew lub trwałej trawy, który zatrzyma spływającą wodę i ograniczy wiatr suszący glebę.",
+              "where": "wzdłuż południowej granicy działki (w dół spadku)",
+              "when": "jesień lub wczesna wiosna",
+              "why": "Spadek terenu wynosi 2,4% (próg reguły: 2%), a woda spływa na południe.",
+              "location": {
+                "lat": 52.0991,
+                "lon": 16.7815
+              },
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Spadek terenu",
+                  "value": 2.4,
+                  "unit": "%",
+                  "sourceId": "elevation",
+                  "dataDate": "Copernicus DEM GLO-90"
+                },
+                {
+                  "label": "Kierunek spadku",
+                  "value": "południe",
+                  "unit": null,
+                  "sourceId": "elevation",
+                  "dataDate": "Copernicus DEM GLO-90"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-SOIL-01",
+              "category": "retention_soil",
+              "order": 3,
+              "priority": "high",
+              "title": "Zwiększ ilość próchnicy w glebie",
+              "action": "Stosuj obornik lub kompost i przyoruj słomę, aby gleba lepiej zatrzymywała wodę.",
+              "where": "cała działka",
+              "when": "po zbiorze, jesienią",
+              "why": "Gleba zatrzymuje tylko 84 mm wody (próg: 100 mm), a węgla organicznego jest 1,1% (próg: 1,5%).",
+              "location": null,
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Pojemność wodna gleby (TAW)",
+                  "value": 84,
+                  "unit": "mm",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)",
+                  "note": "do głębokości korzeni, metoda Saxton i Rawls 2006"
+                },
+                {
+                  "label": "Węgiel organiczny w glebie",
+                  "value": 1.1,
+                  "unit": "%",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-SOIL-02",
+              "category": "retention_soil",
+              "order": 4,
+              "priority": "medium",
+              "title": "Wysiej międzyplon po zbiorze pszenicy",
+              "action": "Po żniwach wysiej międzyplon (np. facelię, gorczycę), który osłoni glebę i doda jej materii organicznej.",
+              "where": "cała działka",
+              "when": "bezpośrednio po zbiorze, do początku września",
+              "why": "Podatność na suszę jest wysoka (6 z 10 sezonów z deficytem), a pszenica jest zbierana latem.",
+              "location": null,
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Sezony z deficytem wody",
+                  "value": 6,
+                  "unit": "z 10",
+                  "sourceId": "engine",
+                  "dataDate": "2016–2025"
+                },
+                {
+                  "label": "Uprawa",
+                  "value": "pszenica ozima (zbiór latem)",
+                  "unit": null,
+                  "sourceId": "engine",
+                  "dataDate": "2026-06-10"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-AGRO-01",
+              "category": "agrotechnics",
+              "order": 5,
+              "priority": "medium",
+              "title": "Zostaw resztki pożniwne i mulcz",
+              "action": "Nie zostawiaj odkrytej gleby po żniwach. Resztki słomy i mulcz zmniejszają parowanie z gleby.",
+              "where": "cała działka",
+              "when": "po zbiorze",
+              "why": "Susza jest silna (percentyl KBW 60 dni: 8), a gleba lekka (70% piasku).",
+              "location": null,
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Percentyl KBW 60 dni",
+                  "value": 8,
+                  "unit": "%",
+                  "sourceId": "engine",
+                  "dataDate": "2026-04-12–2026-06-10",
+                  "note": "na tle 70 próbek z 10 lat; im niżej, tym suchsza sytuacja"
+                },
+                {
+                  "label": "Zawartość piasku",
+                  "value": 70,
+                  "unit": "%",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-AGRO-02",
+              "category": "agrotechnics",
+              "order": 6,
+              "priority": "medium",
+              "title": "Ogranicz głęboką orkę przed siewem",
+              "action": "Przejdź na uprawę uproszczoną (bez głębokiego odwracania skiby), aby nie osuszać gleby.",
+              "where": "cała działka",
+              "when": "przed siewem następnej uprawy",
+              "why": "Gleba jest lekka (70% piasku), a podatność na suszę wysoka (6 z 10 sezonów).",
+              "location": null,
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Zawartość piasku",
+                  "value": 70,
+                  "unit": "%",
+                  "sourceId": "soilgrids",
+                  "dataDate": "SoilGrids 2.0 (dane statyczne)"
+                },
+                {
+                  "label": "Sezony z deficytem wody",
+                  "value": 6,
+                  "unit": "z 10",
+                  "sourceId": "engine",
+                  "dataDate": "2016–2025"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-AGRO-04",
+              "category": "agrotechnics",
+              "order": 7,
+              "priority": "low",
+              "title": "Pilnuj wilgotności w miesiącach krytycznych",
+              "action": "W maju, czerwcu i lipcu sprawdzaj regularnie stan roślin i wilgotność gleby oraz planuj zabiegi z wyprzedzeniem.",
+              "where": null,
+              "when": "maj–lipiec każdego roku",
+              "why": "W tej lokalizacji deficyt wody występuje najczęściej od maja do lipca (w co najmniej 50% lat).",
+              "location": null,
+              "irrigation": null,
+              "evidence": [
+                {
+                  "label": "Miesiące krytyczne",
+                  "value": "maj–lipiec",
+                  "unit": null,
+                  "sourceId": "engine",
+                  "dataDate": "2016–2025"
+                }
+              ]
+            },
+            {
+              "ruleId": "R-IRR-01",
+              "category": "irrigation",
+              "order": 8,
+              "priority": "high",
+              "title": "Nawadnianie jest uzasadnione",
+              "action": "Podaj jedną dawkę ok. 46 mm netto (62 mm brutto, deszczownia), najlepiej rano lub wieczorem. Pobór wody powyżej 5 m³/dobę wymaga zgody wodnoprawnej (Prawo wodne).",
+              "where": "cała działka",
+              "when": "w ciągu najbliższych 3–5 dni",
+              "why": "Susza jest silna, pszenica jest w fazie krytycznej (czerwiec), a deficyt wody w glebie (61,5 mm) przekracza próg stresu (46,2 mm).",
+              "location": null,
+              "irrigation": {
+                "isJustified": true,
+                "netDoseMm": 46.2,
+                "grossDoseMm": 61.6,
+                "doseM3PerHa": 616,
+                "window": "najbliższe 3–5 dni, rano lub wieczorem",
+                "nextCheckInDays": 9
+              },
+              "evidence": [
+                {
+                  "label": "Deficyt wody w glebie",
+                  "value": 61.5,
+                  "unit": "mm",
+                  "sourceId": "engine",
+                  "dataDate": "2026-06-10",
+                  "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 46,2 mm"
+                },
+                {
+                  "label": "Próg stresu wodnego (RAW)",
+                  "value": 46.2,
+                  "unit": "mm",
+                  "sourceId": "engine",
+                  "dataDate": "2026-06-10"
+                },
+                {
+                  "label": "Współczynnik uprawy Kc",
+                  "value": 1.15,
+                  "unit": null,
+                  "sourceId": "engine",
+                  "dataDate": "2026-06-10",
+                  "note": "faza kłoszenia i kwitnienia, pszenica ozima"
+                }
+              ]
+            }
+          ],
+          "sources": [
+            {
+              "sourceId": "uldk",
+              "name": "ULDK GUGiK (Usługa Lokalizacji Działek Katastralnych)",
+              "label": "Działka",
+              "category": "spatial",
+              "provider": "GUGiK (Główny Urząd Geodezji i Kartografii)",
+              "url": "https://uldk.gugik.gov.pl/",
+              "license": "Dane PZGiK/EGiB, bezpłatne (Prawo geodezyjne i kartograficzne)",
+              "status": "ok",
+              "dataPeriod": null,
+              "fetchedAt": "2026-11-21T10:19:25.612Z",
+              "durationMs": 412,
+              "message": null
+            },
+            {
+              "sourceId": "meteo",
+              "name": "Open-Meteo Historical (ERA5)",
+              "label": "Pogoda",
+              "category": "meteo",
+              "provider": "Open-Meteo (dane ERA5, Copernicus/ECMWF)",
+              "url": "https://open-meteo.com/en/docs/historical-weather-api",
+              "license": "CC BY 4.0",
+              "status": "ok",
+              "dataPeriod": "2016-03-27–2026-06-10",
+              "fetchedAt": "2026-11-21T10:19:27.004Z",
+              "durationMs": 1380,
+              "message": null
+            },
+            {
+              "sourceId": "sentinel2",
+              "name": "Sentinel-2 L2A (Earth Search STAC)",
+              "label": "Satelita (rośliny)",
+              "category": "satellite",
+              "provider": "ESA Copernicus / Element 84 Earth Search",
+              "url": "https://earth-search.aws.element84.com/v1",
+              "license": "Copernicus Sentinel (wolna licencja); katalog CC0",
+              "status": "missing",
+              "dataPeriod": null,
+              "fetchedAt": "2026-11-21T10:14:30.100Z",
+              "durationMs": 3410,
+              "message": "Brak bezchmurnego zdjęcia od 2026-04-26 (najnowsza scena z 2026-06-03 ma 81% zachmurzenia)"
+            },
+            {
+              "sourceId": "eumetsat",
+              "name": "EUMETSAT ASCAT SSM (Data Store)",
+              "label": "Satelita (wilgotność gleby)",
+              "category": "satellite",
+              "provider": "EUMETSAT / H SAF",
+              "url": "https://data.eumetsat.int/",
+              "license": "Polityka danych EUMETSAT / H SAF (do potwierdzenia)",
+              "status": "missing",
+              "dataPeriod": null,
+              "fetchedAt": null,
+              "durationMs": 0,
+              "message": "Brak klucza EUMETSAT, źródło pominięte"
+            },
+            {
+              "sourceId": "soilgrids",
+              "name": "SoilGrids 2.0 (ISRIC, WCS)",
+              "label": "Gleba",
+              "category": "soil",
+              "provider": "ISRIC – World Soil Information",
+              "url": "https://maps.isric.org/",
+              "license": "CC BY 4.0",
+              "status": "ok",
+              "dataPeriod": null,
+              "fetchedAt": "2026-11-21T10:19:29.450Z",
+              "durationMs": 3870,
+              "message": null
+            },
+            {
+              "sourceId": "elevation",
+              "name": "Copernicus DEM GLO-90 (Open-Meteo Elevation)",
+              "label": "Teren",
+              "category": "terrain",
+              "provider": "ESA Copernicus / Open-Meteo",
+              "url": "https://open-meteo.com/en/docs/elevation-api",
+              "license": "Copernicus DEM (ESA, z atrybucją); Open-Meteo CC BY 4.0",
+              "status": "ok",
+              "dataPeriod": null,
+              "fetchedAt": "2026-11-21T10:19:26.220Z",
+              "durationMs": 640,
+              "message": null
+            },
+            {
+              "sourceId": "overpass",
+              "name": "OpenStreetMap Overpass API",
+              "label": "Woda w okolicy",
+              "category": "hydro",
+              "provider": "OpenStreetMap contributors (Overpass API)",
+              "url": "https://overpass-api.de/",
+              "license": "ODbL 1.0, © OpenStreetMap contributors",
+              "status": "ok",
+              "dataPeriod": null,
+              "fetchedAt": "2026-11-21T10:19:27.740Z",
+              "durationMs": 2150,
+              "message": null
+            }
+          ],
+          "limitations": [
+            "Dane pogodowe ERA5 pochodzą z siatki 9–25 km, więc opad na samej działce może się różnić od podanego.",
+            "Dane glebowe SoilGrids (250 m) to model, a nie pomiar na działce.",
+            "Model terenu ma rozdzielczość 90 m i wygładza drobne nierówności.",
+            "Mapa rowów i cieków z OpenStreetMap może być niekompletna.",
+            "Normę wyznaczono z 10 lat, to krótki szereg.",
+            "Raport nie zawiera prognozy pogody ani danych o zabiegach i nawadnianiu na działce."
+          ],
+          "dataGaps": [
+            {
+              "sourceId": "sentinel2",
+              "what": "Brak bezchmurnego zdjęcia Sentinel-2 z ostatnich 45 dni",
+              "impact": "Nie policzono NDVI i NDMI, więc nie sprawdzono stanu roślin; pewność obniżona o 0,15"
+            },
+            {
+              "sourceId": "eumetsat",
+              "what": "Brak satelitarnej wilgotności gleby EUMETSAT (brak klucza)",
+              "impact": "Brak niezależnego potwierdzenia wilgotności powierzchni gleby; pewność obniżona o 0,10"
+            }
+          ],
+          "charts": {
+            "kbw60Series": [
+              {
+                "date": "2026-04-01",
+                "kbwMm": 18.4
+              },
+              {
+                "date": "2026-04-08",
+                "kbwMm": 12.1
+              },
+              {
+                "date": "2026-04-15",
+                "kbwMm": 3.6
+              },
+              {
+                "date": "2026-04-22",
+                "kbwMm": -9.8
+              },
+              {
+                "date": "2026-04-29",
+                "kbwMm": -27.5
+              },
+              {
+                "date": "2026-05-06",
+                "kbwMm": -48.2
+              },
+              {
+                "date": "2026-05-13",
+                "kbwMm": -71
+              },
+              {
+                "date": "2026-05-20",
+                "kbwMm": -94.3
+              },
+              {
+                "date": "2026-05-27",
+                "kbwMm": -112.6
+              },
+              {
+                "date": "2026-06-03",
+                "kbwMm": -126.8
+              },
+              {
+                "date": "2026-06-10",
+                "kbwMm": -137.2
+              }
+            ],
+            "kbw60Climatology": [
+              {
+                "date": "2026-04-01",
+                "p10": 8,
+                "p50": 22,
+                "p90": 37
+              },
+              {
+                "date": "2026-04-08",
+                "p10": 0.5,
+                "p50": 15.5,
+                "p90": 31.5
+              },
+              {
+                "date": "2026-04-15",
+                "p10": -9,
+                "p50": 7,
+                "p90": 25
+              },
+              {
+                "date": "2026-04-22",
+                "p10": -21.5,
+                "p50": -3.5,
+                "p90": 16.5
+              },
+              {
+                "date": "2026-04-29",
+                "p10": -37,
+                "p50": -17,
+                "p90": 6
+              },
+              {
+                "date": "2026-05-06",
+                "p10": -55,
+                "p50": -33,
+                "p90": -6
+              },
+              {
+                "date": "2026-05-13",
+                "p10": -74.5,
+                "p50": -49.5,
+                "p90": -18.5
+              },
+              {
+                "date": "2026-05-20",
+                "p10": -91,
+                "p50": -64,
+                "p90": -30
+              },
+              {
+                "date": "2026-05-27",
+                "p10": -107,
+                "p50": -78,
+                "p90": -42
+              },
+              {
+                "date": "2026-06-03",
+                "p10": -118.5,
+                "p50": -88.5,
+                "p90": -51.5
+              },
+              {
+                "date": "2026-06-10",
+                "p10": -127,
+                "p50": -96.4,
+                "p90": -58
+              }
+            ]
+          },
+          "methodologyVersion": "kropla-1.0",
+          "computedAt": "2026-11-21T10:19:41.015Z",
+          "durationMs": 5730,
+          "createdAt": "2026-11-21T10:19:41.198Z"
+        }
+      }
     },
     {
       "id": "API-005",
@@ -152,7 +2791,10 @@
       },
       "errors": ["422 VALIDATION_ERROR (niepoprawny format id)", "404 REPORT_NOT_FOUND"],
       "data_refs": ["DM-001"],
-      "consumers": ["UI-S-003", "UI-S-004"]
+      "consumers": ["UI-S-003", "UI-S-004"],
+      "examples": {
+        "200": "Kształt jak API-004 examples.201_complete (Report, DM-001): ten sam obiekt zwracany z bazy po id, bez ponownego liczenia."
+      }
     },
     {
       "id": "API-006",
@@ -169,7 +2811,90 @@
       },
       "errors": ["500 INTERNAL_SERVER_ERROR"],
       "data_refs": ["DM-005"],
-      "consumers": ["UI-S-002", "UI-S-003"]
+      "consumers": ["UI-S-002", "UI-S-003"],
+      "examples": {
+        "200": {
+          "items": [
+            {
+              "id": "uldk",
+              "name": "ULDK GUGiK (Usługa Lokalizacji Działek Katastralnych)",
+              "category": "spatial",
+              "label": "Działka",
+              "provider": "GUGiK (Główny Urząd Geodezji i Kartografii)",
+              "url": "https://uldk.gugik.gov.pl/",
+              "license": "Dane PZGiK/EGiB, bezpłatne (Prawo geodezyjne i kartograficzne)",
+              "resolution": "działka ewidencyjna (geometria wektorowa)",
+              "timeoutMs": 8000
+            },
+            {
+              "id": "meteo",
+              "name": "Open-Meteo Historical (ERA5)",
+              "category": "meteo",
+              "label": "Pogoda",
+              "provider": "Open-Meteo (dane ERA5, Copernicus/ECMWF)",
+              "url": "https://open-meteo.com/en/docs/historical-weather-api",
+              "license": "CC BY 4.0",
+              "resolution": "siatka 9–25 km, dane dobowe",
+              "timeoutMs": 10000
+            },
+            {
+              "id": "sentinel2",
+              "name": "Sentinel-2 L2A (Earth Search STAC)",
+              "category": "satellite",
+              "label": "Satelita (rośliny)",
+              "provider": "ESA Copernicus / Element 84 Earth Search",
+              "url": "https://earth-search.aws.element84.com/v1",
+              "license": "Copernicus Sentinel (wolna licencja); katalog CC0",
+              "resolution": "10–20 m",
+              "timeoutMs": 15000
+            },
+            {
+              "id": "eumetsat",
+              "name": "EUMETSAT ASCAT SSM (Data Store)",
+              "category": "satellite",
+              "label": "Satelita (wilgotność gleby)",
+              "provider": "EUMETSAT / H SAF",
+              "url": "https://data.eumetsat.int/",
+              "license": "Polityka danych EUMETSAT / H SAF (do potwierdzenia)",
+              "resolution": "12,5–25 km, warstwa powierzchniowa",
+              "timeoutMs": 15000
+            },
+            {
+              "id": "soilgrids",
+              "name": "SoilGrids 2.0 (ISRIC, WCS)",
+              "category": "soil",
+              "label": "Gleba",
+              "provider": "ISRIC – World Soil Information",
+              "url": "https://maps.isric.org/",
+              "license": "CC BY 4.0",
+              "resolution": "250 m",
+              "timeoutMs": 8000
+            },
+            {
+              "id": "elevation",
+              "name": "Copernicus DEM GLO-90 (Open-Meteo Elevation)",
+              "category": "terrain",
+              "label": "Teren",
+              "provider": "ESA Copernicus / Open-Meteo",
+              "url": "https://open-meteo.com/en/docs/elevation-api",
+              "license": "Copernicus DEM (ESA, z atrybucją); Open-Meteo CC BY 4.0",
+              "resolution": "90 m",
+              "timeoutMs": 5000
+            },
+            {
+              "id": "overpass",
+              "name": "OpenStreetMap Overpass API",
+              "category": "hydro",
+              "label": "Woda w okolicy",
+              "provider": "OpenStreetMap contributors (Overpass API)",
+              "url": "https://overpass-api.de/",
+              "license": "ODbL 1.0, © OpenStreetMap contributors",
+              "resolution": "dane wektorowe, promień 1 km",
+              "timeoutMs": 12000
+            }
+          ]
+        }
+      }
     }
   ]
 }
