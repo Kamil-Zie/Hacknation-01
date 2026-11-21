@@ -5,7 +5,7 @@
   "type": "integration",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": [],
   "contract_refs": ["API-001", "API-002", "API-004", "API-006", "DM-005"],
@@ -20,7 +20,16 @@
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
     "Agent: be-integration. Szacunek: 0,75h (timebox 45 min). Faza: start, pierwsze zadanie backendu.",
-    "Wynik wpisz do notes zadania; ewentualne poprawki ADR-006 zgłasza koordynator."
+    "Wynik wpisz do notes zadania; ewentualne poprawki ADR-006 zgłasza koordynator.",
+    "WYNIK 2026-11-21 (punkt Puławy 51.4165,21.9689):",
+    "uldk: DZIAŁA, 1-2.7 s, zimny start do 9.4 s. GetParcelByXY xy=lon,lat,4326 (np. 21.9689,51.4165,4326 -> 061401_1.0001.691/9); lat,lon daje '-1 brak wyników'. Błąd = HTTP 200 z '-1' w linii 1. ID z '/' działa surowe i jako %2F.",
+    "meteo: DZIAŁA, archive-api.open-meteo.com ma dane do dziś (opóźnienie 0 dni). precipitation_sum mm, et0_fao_evapotranspiration mm, temperature_2m_max °C. 20 lat dziennie = 11.2 s (ponad timeout 10 s), krótkie zakresy 1-5 s. forecast past_days działa (do wczoraj).",
+    "sentinel2: DZIAŁA, STAC Earth Search 1.3-4.3 s. Assety red, nir (10 m), nir08, swir16, scl (20 m). Offset zależy od baseline: 05.13 ma -0.1, 2016 (00.01) ma 0, czytać raster:bands z każdej sceny. Najstarsza scena dla Puław 2016-11-06. Pierwszy odczyt COG 64 kB 5.9 s, budżet 15 s napięty.",
+    "soilgrids: DZIAŁA, WCS 0.1-3 s, GeoTIFF Int16, brak danych = 0 bez deklaracji nodata (zabudowa daje same zera). Pole w Bronowicach: sand 605, clay 129 (g/kg, /10 = %), soc 486 (dg/kg, /100 = %, do potwierdzenia). proj4 nie obsługuje +proj=igh: trzeba własnej projekcji Goode Homolosine (prowizoryczna dała dane, pozycja niezwalidowana).",
+    "elevation: DZIAŁA, 0.9 s.",
+    "overpass: NIEZWERYFIKOWANE. overpass-api.de, lz4, kumi, private.coffee: timeout połączenia z sieci backend-1 (także /api/status). Powtórzyć z innej sieci przed T-030.",
+    "eumetsat: publiczny OpenSearch działa bez klucza (1.5 s); bez kluczy token 401. EO:EUM:DAT:METOP:SOMO25: 30 granul 2025-07-01, 0 po 2025-08-01 (koniec 2025-07-15); SOMO12 tak samo. Granule .nat (EPS native), nie netCDF4/BUFR. H SAF brak w Data Store (197 kolekcji). OAS025 (netCDF) to najpewniej wiatr. DECYZJA: NO-GO, eumetsat zostaje opcjonalny ze statusem missing.",
+    "Rozbieżności z ADR-006: (1) Open-Meteo 0 dni opóźnienia zamiast ~5, 20 lat > timeout 10 s: pobierać w 2 równoległych zakresach albo timeout 15 s + cache; (2) SoilGrids: igh poza proj4, nodata=0, okno ±250 m = 2x2 piksele: pomijać zera i powiększać okno; (3) Sentinel-2: offset per baseline, scl 20 m vs red/nir 10 m, archiwum od 11/2016; (4) ULDK: zimny start do 9 s przy timeoucie 8 s: timeout 10 s + 1 ponowienie; (5) EUMETSAT SOMO25 martwe od 2025-07-15, format .nat."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
