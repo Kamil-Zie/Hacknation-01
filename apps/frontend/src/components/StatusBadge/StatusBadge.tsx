@@ -88,7 +88,9 @@ export function StatusBadge({ kind, value, label, size = 'medium' }: StatusBadge
         color: 'text.primary',
         fontWeight: 600,
         bgcolor: 'background.paper',
+        height: 'auto',
         minHeight: size === 'medium' ? 32 : undefined,
+        '& .MuiChip-label': { whiteSpace: 'normal', py: 0.5 },
       }}
     />
   );

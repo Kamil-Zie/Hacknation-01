@@ -47,7 +47,7 @@ declare module '@mui/material/Typography' {
   }
 }
 
-export const theme = createTheme({
+const baseTheme = createTheme({
   breakpoints: { values: { xs: 0, sm: 600, md: 900, lg: 1280, xl: 1920 } },
   palette: {
     primary: { main: '#357A1F', contrastText: '#FFFFFF' },
@@ -81,5 +81,16 @@ export const theme = createTheme({
   // White page and white cards: cards get a divider border instead of a shadow to stay visible.
   components: {
     MuiCard: { defaultProps: { variant: 'outlined' } },
+  },
+});
+
+// Projector (xl, 1920 px): larger headings and metrics than on 1280 px.
+export const theme = createTheme(baseTheme, {
+  typography: {
+    h1: { [baseTheme.breakpoints.up('xl')]: { fontSize: '3.25rem' } },
+    h2: { [baseTheme.breakpoints.up('xl')]: { fontSize: '2.5rem' } },
+    h3: { [baseTheme.breakpoints.up('xl')]: { fontSize: '1.5rem' } },
+    body1: { [baseTheme.breakpoints.up('xl')]: { fontSize: '1.125rem' } },
+    metric: { [baseTheme.breakpoints.up('xl')]: { fontSize: '2.75rem' } },
   },
 });

@@ -83,7 +83,11 @@ function StatusCell({ source }: { source: SourceStatus }) {
 function SourcesTable({ sources }: { sources: SourceStatus[] }) {
   return (
     <TableContainer
-      sx={{ display: { xs: 'none', md: 'block' }, '@media print': { display: 'block' } }}
+      sx={{
+        display: { xs: 'none', md: 'block' },
+        '@media print': { display: 'block', overflow: 'visible' },
+        '& td, & th': { overflowWrap: 'anywhere', wordBreak: 'break-word' },
+      }}
     >
       <Table size="small">
         <TableHead>
@@ -177,7 +181,7 @@ function SourceCards({ sources }: { sources: SourceStatus[] }) {
 
 function BulletList({ items }: { items: string[] }) {
   return (
-    <Box component="ul" sx={{ m: 0, pl: 3 }}>
+    <Box component="ul" sx={{ m: 0, pl: 3, maxWidth: '75ch' }}>
       {items.map((item) => (
         <Typography key={item} component="li">
           {item}
@@ -240,7 +244,7 @@ export function SourcesLimitations({
                       <Typography sx={{ fontWeight: 600 }}>
                         {sourceLabel(gap.sourceId)}: {gap.what}
                       </Typography>
-                      <Typography>Wpływ: {gap.impact}</Typography>
+                      <Typography sx={{ maxWidth: '75ch' }}>Wpływ: {gap.impact}</Typography>
                     </Box>
                   </Stack>
                 ))}

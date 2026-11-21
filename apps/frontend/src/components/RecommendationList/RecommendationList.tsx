@@ -42,7 +42,7 @@ function Field({ label, children }: { label: string; children: string }) {
       <Typography variant="caption" sx={{ fontWeight: 700 }} component="p">
         {label}
       </Typography>
-      <Typography sx={{ m: 0 }}>{children}</Typography>
+      <Typography sx={{ m: 0, maxWidth: '75ch' }}>{children}</Typography>
     </Box>
   );
 }
@@ -120,7 +120,7 @@ function RecommendationCard({ item, isPrint }: { item: Recommendation; isPrint: 
             </AccordionSummary>
             <AccordionDetails>
               <Stack spacing={1}>
-                <Typography>{item.why}</Typography>
+                <Typography sx={{ maxWidth: '75ch' }}>{item.why}</Typography>
                 {item.evidence.length > 0 && (
                   <Box component="ul" sx={{ m: 0, pl: 3 }}>
                     {item.evidence.map((e) => (

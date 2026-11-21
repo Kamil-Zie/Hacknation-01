@@ -18,7 +18,8 @@
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
     "Agent: fe-uiux, fe-developer. Szacunek: 2h. Faza: 5. Przed zamrożeniem 07:00.",
-    "frontend-2: start 13:42 na mockach przed T-025 (decyzja Jakuba); po T-025 powtórka na prawdziwym API (dłuższe teksty, braki danych)."
+    "frontend-2: start 13:42 na mockach przed T-025 (decyzja Jakuba); po T-025 powtórka na prawdziwym API (dłuższe teksty, braki danych).",
+    "frontend-2 runda 1 (mocki, zrzuty 360/768/1280/1920 + fe-reviewer): kafelki xs1/sm2/lg3/xl4; projektor xl: większe h1–h3, body, metric, proza max 75ch; druk: tabela źródeł bez ucinania, Accordiony rozwinięte, spis sekcji no-print; StatusBadge zawija etykiety; dolny pasek xs z menu „Więcej”; zoom mapy 44 px; aria-current w spisie, h4 w przyczynach, main w druku; 404 raportu z „Nowa analiza”. Uwagi do ekranów frontend-1 wysłane (20261121-1348-frontend-2-question)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

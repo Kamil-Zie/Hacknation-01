@@ -1,16 +1,14 @@
 // UI-S-003 Report header
 import { Alert, Box, Stack, Typography } from '@mui/material';
-import type { ReactNode } from 'react';
 
 import type { Report } from '@/api/types';
 import { formatDate, formatDateTime, formatNumber } from '@/utils/format';
 
 interface ReportHeaderProps {
   report: Report;
-  actions?: ReactNode;
 }
 
-export function ReportHeader({ report, actions }: ReportHeaderProps) {
+export function ReportHeader({ report }: ReportHeaderProps) {
   const { parcel, crop, status } = report;
   const place = [
     `obręb ${parcel.region}`,
@@ -28,8 +26,6 @@ export function ReportHeader({ report, actions }: ReportHeaderProps) {
         <Typography variant="h1" component="h1" sx={{ overflowWrap: 'anywhere' }}>
           Raport wody: działka {parcel.parcelNumber}
         </Typography>
-        {/* Slot for ReportActions (T-023), visible from lg */}
-        <Box sx={{ display: { xs: 'none', lg: 'block' }, flexShrink: 0 }}>{actions}</Box>
       </Box>
       <Typography color="text.secondary">{place}</Typography>
       <Typography sx={{ fontWeight: 600 }}>Uprawa: {crop.name}</Typography>

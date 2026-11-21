@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { Link as RouterLink, useParams, useSearchParams } from 'react-router-dom';
 
 import { useReportQuery } from '@/api/analyses';
+import { ApiError } from '@/api/client';
 import { AssessmentSection } from '@/components/AssessmentSection/AssessmentSection';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { RecommendationList } from '@/components/RecommendationList/RecommendationList';
@@ -51,17 +52,27 @@ export function ReportPrintPage() {
       </Stack>
     );
   } else if (!data && isError) {
+    const notFound =
+      error instanceof ApiError && (error.status === 404 || error.code.includes('NOT_FOUND'));
     content = (
       <Alert
         severity="error"
         role="alert"
         action={
-          <Button color="inherit" onClick={() => refetch()} sx={{ minHeight: 44 }}>
-            Spróbuj ponownie
-          </Button>
+          notFound ? (
+            <Button color="inherit" component={RouterLink} to="/" sx={{ minHeight: 44 }}>
+              Nowa analiza
+            </Button>
+          ) : (
+            <Button color="inherit" onClick={() => refetch()} sx={{ minHeight: 44 }}>
+              Spróbuj ponownie
+            </Button>
+          )
         }
       >
-        {error.message || 'Nie udało się pobrać raportu.'}
+        {notFound
+          ? 'Nie znaleziono raportu. Mógł wygasnąć albo link jest niepełny.'
+          : error.message || 'Nie udało się pobrać raportu.'}
       </Alert>
     );
   } else if (!data) {
@@ -149,6 +160,7 @@ export function ReportPrintPage() {
         )}
       </Stack>
       <Paper
+        component="main"
         className="print-sheet"
         elevation={1}
         sx={{

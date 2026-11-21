@@ -16,6 +16,7 @@ export function App() {
         styles={(t) => ({
           // Static map on the print sheet: no zoom buttons (ParcelMap keeps them even when not interactive).
           '.print-sheet .leaflet-control-zoom': { display: 'none' },
+          '.leaflet-control-zoom a': { width: 44, height: 44, lineHeight: '44px', fontSize: 22 },
           '@media print': {
             '.leaflet-control-zoom': { display: 'none !important' },
             '@page': { size: 'A4 portrait', margin: '12mm' },
@@ -38,6 +39,12 @@ export function App() {
             '.print-sheet': { maxWidth: 'none !important', padding: '0 !important' },
             'details > *:not(summary)': { display: 'block !important' },
             'summary::marker': { content: '""' },
+            '.MuiCollapse-hidden': { visibility: 'visible !important', height: 'auto !important' },
+            '.MuiCollapse-root': { height: 'auto !important', visibility: 'visible !important' },
+            '.MuiAccordionSummary-expandIconWrapper': { display: 'none' },
+            '.MuiTableContainer-root': { overflow: 'visible !important' },
+            'td, th': { overflowWrap: 'anywhere', wordBreak: 'break-word' },
+            'a::after': { overflowWrap: 'anywhere', wordBreak: 'break-all' },
           },
         })}
       />

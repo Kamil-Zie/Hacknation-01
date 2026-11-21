@@ -13,7 +13,7 @@ export function ReportSectionNav() {
   const [activeId, setActiveId] = useState<string>(REPORT_SECTIONS[0].id);
 
   return (
-    <Box component="nav" aria-label="Spis sekcji raportu">
+    <Box component="nav" aria-label="Spis sekcji raportu" className="no-print">
       <Box
         sx={{
           display: { xs: 'flex', lg: 'none' },
@@ -33,6 +33,7 @@ export function ReportSectionNav() {
             href={`#${section.id}`}
             clickable
             onClick={() => setActiveId(section.id)}
+            aria-current={activeId === section.id ? 'location' : undefined}
             label={section.label}
             variant={activeId === section.id ? 'filled' : 'outlined'}
             color={activeId === section.id ? 'primary' : 'default'}
@@ -47,6 +48,7 @@ export function ReportSectionNav() {
             component="a"
             href={`#${section.id}`}
             selected={activeId === section.id}
+            aria-current={activeId === section.id ? 'location' : undefined}
             onClick={() => setActiveId(section.id)}
             sx={{ minHeight: 44, borderRadius: 2 }}
           >

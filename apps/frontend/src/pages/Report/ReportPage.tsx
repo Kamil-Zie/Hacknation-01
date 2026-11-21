@@ -1,8 +1,9 @@
 // UI-S-003 Raport
 import { Alert, Box, Button, Card, CardContent, Skeleton, Stack, Typography } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { Link as RouterLink, useParams } from 'react-router-dom';
 
 import { useReportQuery } from '@/api/analyses';
+import { ApiError } from '@/api/client';
 import { AssessmentSection } from '@/components/AssessmentSection/AssessmentSection';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ReportActions } from '@/components/ReportActions/ReportActions';
@@ -27,17 +28,27 @@ export function ReportPage() {
     );
   }
   if (!data && isError) {
+    const notFound =
+      error instanceof ApiError && (error.status === 404 || error.code.includes('NOT_FOUND'));
     return (
       <Alert
         severity="error"
         role="alert"
         action={
-          <Button color="inherit" onClick={() => refetch()} sx={{ minHeight: 44 }}>
-            Spróbuj ponownie
-          </Button>
+          notFound ? (
+            <Button color="inherit" component={RouterLink} to="/" sx={{ minHeight: 44 }}>
+              Nowa analiza
+            </Button>
+          ) : (
+            <Button color="inherit" onClick={() => refetch()} sx={{ minHeight: 44 }}>
+              Spróbuj ponownie
+            </Button>
+          )
         }
       >
-        {error.message || 'Nie udało się pobrać raportu.'}
+        {notFound
+          ? 'Nie znaleziono raportu. Mógł wygasnąć albo link jest niepełny.'
+          : error.message || 'Nie udało się pobrać raportu.'}
       </Alert>
     );
   }

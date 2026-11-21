@@ -88,7 +88,7 @@ function MetricTile({ title, children, missing }: TileProps) {
 
 function Metric({ value, unit }: { value: string; unit?: string }) {
   return (
-    <Typography variant="metric" component="p" sx={{ m: 0 }}>
+    <Typography variant="metric" component="p" sx={{ m: 0, minWidth: 0, overflowWrap: 'anywhere' }}>
       {value}
       {unit && (
         <Typography component="span" color="text.secondary" sx={{ ml: 0.5, fontSize: '1rem' }}>
@@ -206,7 +206,9 @@ export function AssessmentSection({
             />
             <StatusBadge kind="confidence" value={assessment.confidence} />
           </Stack>
-          <Typography sx={{ fontSize: { xs: '1.125rem', lg: '1.5rem' }, fontWeight: 500 }}>
+          <Typography
+            sx={{ fontSize: { xs: '1.125rem', lg: '1.5rem' }, fontWeight: 500, maxWidth: '75ch' }}
+          >
             {assessment.summary}
           </Typography>
           {assessment.isOutOfSeason && (
@@ -219,7 +221,7 @@ export function AssessmentSection({
               <Typography component="summary" sx={{ cursor: 'pointer', minHeight: 44, py: 1 }}>
                 Dlaczego taka pewność oceny
               </Typography>
-              <Box component="ul" sx={{ mt: 0, pl: 3 }}>
+              <Box component="ul" sx={{ mt: 0, pl: 3, maxWidth: '75ch' }}>
                 {assessment.confidenceReasons.map((reason) => (
                   <Typography key={reason} component="li" variant="caption">
                     {reason}
@@ -233,7 +235,13 @@ export function AssessmentSection({
             sx={{
               display: 'grid',
               gap: 2,
-              gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
+              // lg (1280) has the 360 px map column beside it: 3 columns; 4 only on the projector (xl).
+              gridTemplateColumns: {
+                xs: 'minmax(0, 1fr)',
+                sm: 'repeat(2, minmax(0, 1fr))',
+                lg: 'repeat(3, minmax(0, 1fr))',
+                xl: 'repeat(4, minmax(0, 1fr))',
+              },
             }}
           >
             <KbwTile title="Bilans wodny, 30 dni" window={assessment.kbw30} gap={gapFor('meteo')} />
