@@ -1,6 +1,13 @@
 // UI-C-012 StatusBadge
+import CachedIcon from '@mui/icons-material/Cached';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Chip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import type { ReactElement } from 'react';
 
 export interface StatusBadgeProps {
   kind: 'drought' | 'vulnerability' | 'confidence' | 'source';
@@ -11,7 +18,18 @@ export interface StatusBadgeProps {
 
 type Tone = 'good' | 'warn' | 'bad' | 'unknown';
 
-const TONE_ICON: Record<Tone, string> = { good: '✓', warn: '!', bad: '✕', unknown: '?' };
+const TONE_ICON: Record<Tone, ReactElement> = {
+  good: <CheckCircleOutlineIcon />,
+  warn: <WarningAmberIcon />,
+  bad: <HighlightOffIcon />,
+  unknown: <HelpOutlineIcon />,
+};
+
+// Source states with their own meaning get a dedicated icon instead of the tone icon.
+const SOURCE_ICON: Record<string, ReactElement> = {
+  cached: <CachedIcon />,
+  timeout: <ScheduleIcon />,
+};
 
 const LABELS: Record<StatusBadgeProps['kind'], Record<string, string>> = {
   drought: {
@@ -54,19 +72,17 @@ export function StatusBadge({ kind, value, label, size = 'medium' }: StatusBadge
   };
   const color = toneColor[tone];
   const text = label ?? LABELS[kind][value] ?? 'Brak danych';
+  const icon = (kind === 'source' && SOURCE_ICON[value]) || TONE_ICON[tone];
 
   // Outlined variant with colored border/icon and dark text keeps contrast >= 4.5:1.
   return (
     <Chip
       variant="outlined"
       size={size}
-      icon={
-        <span aria-hidden="true" style={{ color, fontWeight: 700, textAlign: 'center' }}>
-          {TONE_ICON[tone]}
-        </span>
-      }
+      icon={icon}
       label={text}
       sx={{
+        '& .MuiChip-icon': { color },
         borderColor: color,
         borderWidth: 2,
         color: 'text.primary',
