@@ -1,0 +1,27 @@
+{
+  "id": "T-037",
+  "title": "Źródło nasa_power: wilgotność gleby (DM-015) z percentylem 10 lat i zapas meteo przy 429 Open-Meteo",
+  "description": "Wg docs/adr/ADR-008. services/sources/nasaPower.source.ts: NASA POWER daily point (community=AG), parametry GWETTOP, GWETROOT, GWETPROF, PRECTOTCORR, T2M, T2M_MAX, T2M_MIN; -999 = null; jedno zapytanie D−10 lat−75 dni .. D. Wilgotność: średnia 7 dni do D (ostatni ważny dzień ≤ D), percentyl względem okna ±15 dni z 10 lat, ocena dry/normal/wet. Kontrakt: sourceId nasa_power w enumach (DM-002, DM-005, DM-010, DM-011, DM-012), DM-015 opisuje produkt NASA POWER (warstwy, %, percentyl, data obserwacji, rozdzielczość ok. 50 km), katalog API-006 z licencją i przypisaniem NASA, examples API-004 z soilMoistureSatellite z nasa_power. Zapas meteo: gdy meteo (Open-Meteo) da 429/5xx/timeout, seria opad/temp z NASA POWER, ET0 Hargreaves-Samani (FAO-56 równ. 52). Krok 4.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "ready",
+  "priority": "critical",
+  "depends_on": ["T-004"],
+  "contract_refs": ["API-004", "API-006", "DM-002", "DM-005", "DM-011", "DM-015"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Dla 061409_2.0009.612 i dowolnej daty z 10 lat zwraca wilgotność 0–5 cm i strefy korzeniowej w %, datę obserwacji, percentyl i ocenę dry/normal/wet w ≤ 3 s (drugi raz z cache)",
+    "Dla D = dziś bierze ostatni ważny dzień (D−2) i podaje jego datę; wartości -999 nigdy nie trafiają do obliczeń",
+    "Gdy Open-Meteo zwraca 429 (test na stubie), meteo ma serię z NASA POWER z ET0 Hargreaves-Samani, a raport podaje źródło i metodę w sources i limitations",
+    "Kontrakty (api.json, data_model.json) mają nasa_power i zaktualizowane DM-015, examples API-004 zgodne; zadanie T-DB w tym samym commicie",
+    "Wiadomość contract_change do frontendu (etykieta 'Wilgotność gleby' = nasa_power, eumetsat już nie pokazywany jako wilgotność)"
+  ],
+  "review": { "status": "pending", "by": null, "note": "" },
+  "notes": [
+    "coord-1: decyzja użytkownika: wilgotność gleby musi być w raporcie. EUMETSAT NO-GO (T-002), więc NASA POWER (sprawdzone na żywo 12:41: 10 lat, 7 parametrów, 1,9 s, bez klucza). Open-Meteo dało 12:40 HTTP 429 (dzienny limit na IP sieci hackathonu).",
+    "Agent: be-api + be-database (kontrakt). Szacunek: 1,5h. Przed T-010 albo razem z nim, bo dzieli logikę zapasu meteo. Silnik (Jan, T-014) czyta DM-015 bez zmian w regułach."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

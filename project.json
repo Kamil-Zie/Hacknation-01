@@ -497,6 +497,15 @@
           "context": "Jury ocenia zgodność z nauką, dopasowanie do działki, uzasadnienie danymi i niepewność.",
           "decision": "ETc = ET0·Kc (FAO-56), KBW 30/60 dni z percentylem względem 10 lat, TAW/RAW z uziarnienia (Saxton-Rawls), reguły R-LAND/SOIL/AGRO/IRR, każda rekomendacja z evidence[]. Szczegóły: docs/adr/ADR-007-methodology.md.",
           "consequences": "Raport jest w pełni liczony przez aplikację i da się go wytłumaczyć jury krok po kroku."
+        },
+        {
+          "id": "ADR-008",
+          "title": "Wilgotność gleby z NASA POWER zamiast EUMETSAT, NASA POWER jako zapas meteo",
+          "status": "accepted",
+          "date": "2026-11-21",
+          "context": "Wilgotność gleby musi być w raporcie, EUMETSAT ASCAT bez danych po 2025-07-15; Open-Meteo dało HTTP 429 (limit dzienny na IP sieci hackathonu).",
+          "decision": "Źródło nasa_power (MERRA-2): GWETTOP/GWETROOT/GWETPROF z percentylem 10 lat do DM-015; przy 429/5xx/timeout Open-Meteo meteo z NASA POWER z ET0 Hargreaves-Samani. Szczegóły: docs/adr/ADR-008-soil-moisture-nasa-power.md.",
+          "consequences": "Wilgotność gleby w każdym raporcie (siatka ok. 50 km, opisana w ograniczeniach), meteo nie zależy od jednego dostawcy."
         }
       ]
     },
