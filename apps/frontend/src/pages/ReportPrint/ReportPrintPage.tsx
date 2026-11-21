@@ -1,13 +1,164 @@
 // UI-S-004 Widok druku / PDF
-import { Stack, Typography } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PrintIcon from '@mui/icons-material/Print';
+import { Alert, Box, Button, Paper, Skeleton, Stack, Typography } from '@mui/material';
+import { useEffect } from 'react';
+import { Link as RouterLink, useParams, useSearchParams } from 'react-router-dom';
+
+import { useReportQuery } from '@/api/analyses';
+import { AssessmentSection } from '@/components/AssessmentSection/AssessmentSection';
+import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
+import { RecommendationList } from '@/components/RecommendationList/RecommendationList';
+import { ReportHeader } from '@/components/ReportHeader/ReportHeader';
+import { SourcesLimitations } from '@/components/SourcesLimitations/SourcesLimitations';
+import { VulnerabilityCauses } from '@/components/VulnerabilityCauses/VulnerabilityCauses';
+import { formatDateTime } from '@/utils/format';
+
+const AUTO_PRINT_DELAY_MS = 1500;
 
 export function ReportPrintPage() {
+  const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const { data, isLoading, isError, error, refetch } = useReportQuery(id);
+  const isReady = Boolean(data);
+  const showPdfHint = searchParams.get('pdf') === '1';
+  const skipAutoPrint = searchParams.get('noprint') === '1';
+
+  // Expand native <details> so the printout shows full content
+  useEffect(() => {
+    if (!isReady) return;
+    document.querySelectorAll('details').forEach((el) => {
+      el.open = true;
+    });
+  }, [isReady]);
+
+  // Auto print once, after map tiles had time to load
+  useEffect(() => {
+    if (!isReady || skipAutoPrint || window.self !== window.top) return;
+    const timer = window.setTimeout(() => window.print(), AUTO_PRINT_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [isReady, skipAutoPrint]);
+
+  const backTo = `/report/${encodeURIComponent(id ?? '')}`;
+
+  let content;
+  if (isLoading) {
+    content = (
+      <Stack spacing={2} aria-busy="true" aria-label="Ładowanie raportu" role="status">
+        <Skeleton variant="text" height={56} width="70%" />
+        <Skeleton variant="text" width="50%" />
+        <Skeleton variant="rounded" height={240} />
+      </Stack>
+    );
+  } else if (isError) {
+    content = (
+      <Alert
+        severity="error"
+        role="alert"
+        action={
+          <Button color="inherit" onClick={() => refetch()} sx={{ minHeight: 44 }}>
+            Spróbuj ponownie
+          </Button>
+        }
+      >
+        {error.message || 'Nie udało się pobrać raportu.'}
+      </Alert>
+    );
+  } else if (!data) {
+    content = <Typography>Brak raportu.</Typography>;
+  } else {
+    content = (
+      <Stack spacing={2.5}>
+        <Typography variant="overline" color="text.secondary">
+          Kropla – raport wody
+        </Typography>
+        <ReportHeader report={data} />
+        <ParcelMap
+          parcel={data.parcel}
+          isInteractive={false}
+          markers={data.recommendations.flatMap((r) =>
+            r.location ? [{ lat: r.location.lat, lon: r.location.lon, label: r.title }] : [],
+          )}
+          height="90mm"
+        />
+        <AssessmentSection
+          assessment={data.assessment}
+          cropName={data.crop.name}
+          analysisDate={data.analysisDate}
+          dataGaps={data.dataGaps}
+        />
+        <VulnerabilityCauses vulnerability={data.vulnerability} causes={data.causes} />
+        <RecommendationList
+          recommendations={data.recommendations}
+          dataGaps={data.dataGaps}
+          isPrint
+        />
+        <Stack spacing={1}>
+          <Typography variant="h2" component="h2">
+            Źródła i ograniczenia
+          </Typography>
+          <SourcesLimitations
+            sources={data.sources}
+            limitations={data.limitations}
+            dataGaps={data.dataGaps}
+            confidenceReasons={data.assessment.confidenceReasons}
+            methodologyVersion={data.methodologyVersion}
+            isPrint
+          />
+        </Stack>
+        <Stack component="footer" spacing={0.5} className="print-footer">
+          <Typography variant="body2">
+            Raport opiera się na danych modelowych i satelitarnych z ograniczoną rozdzielczością.
+            Nie zastępuje oględzin pola ani porady doradcy rolnego.
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Wygenerowano: {formatDateTime(data.computedAt)}. Metodyka: {data.methodologyVersion}.
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ overflowWrap: 'anywhere' }}>
+            Raport online: {`${window.location.origin}/report/${data.id}`}
+          </Typography>
+        </Stack>
+      </Stack>
+    );
+  }
+
   return (
-    <Stack spacing={2} sx={{ p: { xs: 2, md: 3 } }}>
-      <Typography variant="h1" component="h1">
-        Widok druku / PDF
-      </Typography>
-      <Typography>Wersja raportu przygotowana do wydruku na papierze A4.</Typography>
-    </Stack>
+    <Box className="print-screen" sx={{ bgcolor: 'grey.100', minHeight: '100vh', py: { md: 3 } }}>
+      <Stack className="no-print" spacing={1.5} sx={{ maxWidth: '210mm', mx: 'auto', p: 2 }}>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+          <Button
+            component={RouterLink}
+            to={backTo}
+            startIcon={<ArrowBackIcon />}
+            sx={{ minHeight: 44 }}
+          >
+            Wróć do raportu
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<PrintIcon />}
+            onClick={() => window.print()}
+            sx={{ minHeight: 44 }}
+          >
+            Drukuj ponownie
+          </Button>
+        </Stack>
+        {showPdfHint && (
+          <Alert severity="info">W oknie drukowania wybierz »Zapisz jako PDF«.</Alert>
+        )}
+      </Stack>
+      <Paper
+        className="print-sheet"
+        elevation={1}
+        sx={{
+          maxWidth: '210mm',
+          mx: 'auto',
+          p: { xs: 2, md: '12mm' },
+          borderRadius: { xs: 0, md: 1 },
+        }}
+      >
+        {content}
+      </Paper>
+    </Box>
   );
 }

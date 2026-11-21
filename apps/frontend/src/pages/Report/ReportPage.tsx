@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { useReportQuery } from '@/api/analyses';
 import { AssessmentSection } from '@/components/AssessmentSection/AssessmentSection';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
+import { ReportActions } from '@/components/ReportActions/ReportActions';
 import { ReportHeader } from '@/components/ReportHeader/ReportHeader';
 import { RecommendationList } from '@/components/RecommendationList/RecommendationList';
 import { ReportSectionNav } from '@/components/ReportSectionNav/ReportSectionNav';
@@ -51,10 +52,12 @@ export function ReportPage() {
         mx: 'auto',
         gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'minmax(320px, 360px) minmax(0, 1fr)' },
         alignItems: 'start',
+        pb: { xs: 11, md: 0 },
       }}
     >
-      <Box sx={{ gridColumn: { lg: '1 / -1' } }}>
+      <Box sx={{ gridColumn: { lg: '1 / -1' }, display: 'grid', gap: { xs: 2, md: 2 } }}>
         <ReportHeader report={data} />
+        <ReportActions reportId={data.id} />
       </Box>
       <Stack spacing={2} sx={{ position: { lg: 'sticky' }, top: { lg: 16 }, minWidth: 0 }}>
         <ParcelMap
