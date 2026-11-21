@@ -5,6 +5,7 @@ import { setUnauthorizedHandler } from '@/api/client';
 import { AppLayout } from '@/components/AppLayout/AppLayout';
 import { RequireAuth } from '@/components/RequireAuth/RequireAuth';
 import { AccountPage } from '@/pages/Account/AccountPage';
+import { FieldCreatePage } from '@/pages/FieldCreate/FieldCreatePage';
 import { FieldReportPage } from '@/pages/FieldReport/FieldReportPage';
 import { LoginPage } from '@/pages/Login/LoginPage';
 import { ProfilePage } from '@/pages/Profile/ProfilePage';
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <StartPage /> },
           { path: '/parcel/:parcelId', element: <ParcelPage /> },
+          { path: '/pole/nowe', element: <FieldCreatePage /> },
           { path: '/pole/:fieldId/raport', element: <FieldReportPage /> },
           { path: '/konto', element: <AccountPage /> },
           { path: '/konto/profil', element: <ProfilePage /> },

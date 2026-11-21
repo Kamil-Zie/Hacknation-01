@@ -23,6 +23,7 @@ import {
 import { ApiError } from '@/api/client';
 import { AccountReportHistory } from '@/components/AccountReportHistory/AccountReportHistory';
 import { MemberList } from '@/components/MemberList/MemberList';
+import { FieldList } from '@/components/FieldList/FieldList';
 import { RecentParcels } from '@/components/RecentParcels/RecentParcels';
 import { SectionCard } from '@/components/SectionCard/SectionCard';
 import { useRecentParcelsStore } from '@/store/recentParcels';
@@ -174,10 +175,12 @@ export function AccountPage() {
             />
           )}
         </SectionCard>
-        {/* T-079 slot: Dawid drops the "Moje pola" component here */}
-        <SectionCard id="moje-pola" title="Moje pola">
-          <Typography>Wkrótce: łącz sąsiednie działki w pole.</Typography>
-        </SectionCard>
+        {/* T-079 Moje pola (Dawid's FieldList has its own heading and actions) */}
+        <Card component="section" id="moje-pola">
+          <CardContent>
+            <FieldList />
+          </CardContent>
+        </Card>
       </Box>
       <Box
         sx={{
