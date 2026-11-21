@@ -143,7 +143,8 @@ export function KbwChart({ charts }: KbwChartProps) {
         }}
       >
         <LineChart
-          margin={{ top: 12, right: 16, bottom: 8, left: 8 }}
+          // left margin leaves room for y tick labels like "-100 mm"
+          margin={{ top: 12, right: 16, bottom: 28, left: 72 }}
           tooltip={{ trigger: 'none' }}
           skipAnimation
           slotProps={{ legend: { hidden: true } }}
