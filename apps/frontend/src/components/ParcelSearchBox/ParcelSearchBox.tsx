@@ -109,6 +109,7 @@ export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
     <Box>
       <Autocomplete<SearchOption, false, false, true>
         freeSolo
+        openOnFocus
         blurOnSelect
         options={options}
         groupBy={(option) => option.group}
