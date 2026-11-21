@@ -34,3 +34,16 @@ Skutki odczuwają rolnicy. W suszy 2018 roku straty stwierdzono w co najmniej 23
 Kropelka łączy te dane w jeden raport dla jednej działki: czy jest susza, dlaczego i co zrobić, w kolejności zalecanej przez naukę: najpierw zatrzymać wodę tam, gdzie spada, potem agrotechnika, na końcu nawadnianie. Chcemy, żeby decyzja o wodzie zapadała na podstawie danych, przed szkodą, a nie na wyczucie i po niej.
 
 Źródła: Eurostat (przepływy rzeczne na mieszkańca), Ministerstwo Rolnictwa i Rozwoju Wsi (pomoc suszowa 2018), Wody Polskie i rządowy program przeciwdziałania niedoborowi wody (retencja). Dane sprawdzone 2026-11-21.
+
+## Opis rozwiązania, dla kogo i jakie korzyści (do wklejenia)
+
+Kropelka to aplikacja webowa dla rolnika, który prowadzi gospodarstwo z jedną lub kilkoma działkami i nie zna się na GIS ani teledetekcji. Pośrednio także dla doradców ODR i instytucji takich jak KOWR, które wspierają rolników w gospodarowaniu wodą.
+
+Rolnik wpisuje numer działki ewidencyjnej albo klika ją na mapie, wybiera uprawę i datę. Aplikacja pobiera na żywo dane z pięciu kategorii: granicę działki z ULDK, pogodę i wilgotność gleby z ERA5, zdjęcia satelitarne Sentinel-2, glebę z SoilGrids, teren i pobliskie rowy i cieki. Na tej podstawie liczy bilans wodny działki według metodyki FAO-56 i IUNG-PIB i porównuje go z 10 latami. Po kilkunastu sekundach rolnik dostaje raport prostym językiem: czy na działce jest susza i jak silna, z jakiego powodu, jak często niedobór wody powtarzał się w ostatnich latach i w których miesiącach. Do tego konkretne działania w kolejności: zatrzymanie wody (np. zastawka w rowie), poprawa gleby i uprawy, a na końcu nawadnianie z terminem i dawką, tylko jeśli ma sens. Każda rekomendacja ma uzasadnienie w liczbach, źródło i datę danych, a raport mówi wprost, czego nie wie.
+
+Korzyści dla rolnika:
+- decyzja o wodzie na podstawie danych z jego działki, a nie ogólnego komunikatu dla gminy;
+- tańsze działania najpierw: retencja i agrotechnika przed kosztownym nawadnianiem;
+- działa na telefonie w polu, bez instalacji, logowania i opłat;
+- raport do zapisania w PDF, wydruku albo udostępnienia linkiem, np. doradcy;
+- opcjonalne konto gospodarstwa: wspólna historia raportów dla rodziny albo wspólników.
