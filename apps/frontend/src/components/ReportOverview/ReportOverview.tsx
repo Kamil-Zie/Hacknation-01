@@ -170,8 +170,12 @@ function ResultCard({ report }: ReportOverviewProps) {
                 Skąd wiemy, że pewność jest {CONFIDENCE_TEXT[assessment.confidence]}?
               </Typography>
               <Box component="ul" sx={{ m: 0, mt: 1, pl: 3 }}>
-                {assessment.confidenceReasons.map((reason) => (
-                  <Typography key={reason} component="li" sx={{ fontSize: '1.0625rem' }}>
+                {assessment.confidenceReasons.map((reason, index) => (
+                  <Typography
+                    key={`${reason}-${index}`}
+                    component="li"
+                    sx={{ fontSize: '1.0625rem' }}
+                  >
                     {reason}
                   </Typography>
                 ))}
@@ -184,9 +188,9 @@ function ResultCard({ report }: ReportOverviewProps) {
                 Na czym opieramy ocenę
               </Typography>
               <Box component="ul" sx={{ m: 0, mt: 0.5, pl: 3 }}>
-                {assessment.evidence.map((item) => (
+                {assessment.evidence.map((item, index) => (
                   <Typography
-                    key={`${item.label}-${item.dataDate}`}
+                    key={`${item.label}-${item.dataDate}-${index}`}
                     component="li"
                     sx={{ fontSize: '1rem' }}
                   >

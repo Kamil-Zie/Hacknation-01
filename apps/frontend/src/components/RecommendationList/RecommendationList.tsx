@@ -79,8 +79,8 @@ function RecommendationCard({ item }: { item: Recommendation }) {
       <Field label="Dlaczego?">{item.why}</Field>
       {item.evidence.length > 0 && (
         <Box component="ul" sx={{ m: 0, pl: 3 }}>
-          {item.evidence.map((e) => (
-            <Typography key={`${e.label}-${e.dataDate}`} component="li" variant="caption">
+          {item.evidence.map((e, index) => (
+            <Typography key={`${e.label}-${e.dataDate}-${index}`} component="li" variant="caption">
               {formatEvidence(e)}
             </Typography>
           ))}
@@ -104,8 +104,8 @@ export function RecommendationList({ recommendations, dataGaps }: Recommendation
           <Typography color="text.secondary">Za mało danych, by bezpiecznie doradzić.</Typography>
           {dataGaps.length > 0 && (
             <Box component="ul" sx={{ m: 0, pl: 3 }}>
-              {dataGaps.map((gap) => (
-                <Typography key={`${gap.sourceId}-${gap.what}`} component="li">
+              {dataGaps.map((gap, index) => (
+                <Typography key={`${gap.sourceId}-${gap.what}-${index}`} component="li">
                   {gap.what} – {gap.impact}
                 </Typography>
               ))}

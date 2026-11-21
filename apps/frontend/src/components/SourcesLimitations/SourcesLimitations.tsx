@@ -201,9 +201,9 @@ export function SourcesLimitations({
               component="ul"
               sx={{ m: 0, p: 0, display: 'flex', flexDirection: 'column', gap: 1.5 }}
             >
-              {dataGaps.map((gap) => (
+              {dataGaps.map((gap, index) => (
                 <Box
-                  key={`${gap.sourceId}-${gap.what}`}
+                  key={`${gap.sourceId}-${gap.what}-${index}`}
                   component="li"
                   sx={{ display: 'flex', gap: 1, listStyle: 'none' }}
                 >

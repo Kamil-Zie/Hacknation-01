@@ -149,9 +149,9 @@ export function ParcelMap({
         )}
         <FitToParcel parcel={parcel} focusKey={focusKey} />
         <FocusPlace focus={focus} />
-        {markers?.map((marker) => (
+        {markers?.map((marker, index) => (
           <CircleMarker
-            key={`${marker.lat},${marker.lon}`}
+            key={`${marker.lat},${marker.lon}-${index}`}
             center={[marker.lat, marker.lon]}
             radius={8}
           >
