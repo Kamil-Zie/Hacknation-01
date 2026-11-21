@@ -1,3 +1,4 @@
 # Claims: frontend-1 (Dawid)
 
-Brak aktywnych rezerwacji. Wszystkie zadania frontend-1 zakończone (T-079 zamknięte 2026-11-22 00:05, test na żywo przy próbie o 3:00).
+- T-085 · UI-C-016 Sidebar · pliki: `src/components/Sidebar/**` (nowy), `src/components/AppLayout/AppLayout.tsx`, `src/components/AppNav/AppNav.tsx` · od 2026-11-22 00:20 (ParcelSearchBox tylko wstawiam – treść T-087 Nataniela)
+- T-089 · UI-S-011 Moje pola · pliki: `src/pages/MyFields/MyFieldsPage.tsx`, `src/components/FieldList/FieldList.tsx` · od 2026-11-22 00:20
