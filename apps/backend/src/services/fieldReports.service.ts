@@ -122,7 +122,7 @@ export async function createFieldReport(
             parcelId,
             cropCode: body.cropCode,
             analysisDate: body.analysisDate,
-            accountId: field.id,
+            accountId: field.accountId,
           },
           userId,
         );

@@ -5,7 +5,7 @@
   "type": "bugfix",
   "team": "frontend",
   "assignee": "coord-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-002", "UI-S-003", "UI-S-006", "API-015"],
@@ -22,10 +22,11 @@
     "note": ""
   },
   "notes": [
+    "coord-1 00:25: pkt 5–6 już w kodzie: domyślna pszenica tylko przy „Wypróbuj na przykładowej działce”, komunikat „Nie ma takiej uprawy” 1,125 rem. Linia 30 dni (kbw30Series) poza zakresem.",
     "coord-1 22:10: punkty 2, 3, 4 – Kuba (raport, konto); punkty 5, 6 – Dawid (AnalysisForm), uzgodnijcie. Typ fix, dozwolony też po 7:00.",
     "frontend-2 00:20: pkt 2–4 zrobione. (2) Seria z API to KBW z 60 dni na każdy dzień, więc 30-dniowej linii nie da się z niej policzyć: wykres opisany uczciwie ('Bilans wody z 60 dni', przełącznik 'Ostatni miesiąc'/'Ostatnie 2 miesiące', podpis 'Bilans z 60 dni na dd.MM'); prawdziwa linia 30 dni wymaga kbw30Series z backendu. (3) Wyślij link: limit 1,5 s na schowek, potem pole z linkiem do skopiowania. (4) MenuItem w theme ≥ 48 px i 18 px (MUI zbijał minHeight na sm+). Pkt 5–6 czekają na frontend-1.",
     "frontend-2 00:30: przekazane coord-1 (decyzja Jakuba). Pkt 2–4 zrobione (4339210); zostały pkt 5–6 w AnalysisForm (Dawid) i ewentualnie kbw30Series z backendu dla prawdziwej linii 30 dni."
   ],
   "created_at": "2026-11-21",
-  "updated_at": "2026-11-21"
+  "updated_at": "2026-11-22"
 }

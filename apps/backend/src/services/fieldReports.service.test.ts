@@ -58,7 +58,7 @@ function makeDeps(
     isMember: async () => member,
     analyze: async (body) => {
       calls.push(body.parcelId);
-      assert.equal(body.accountId, FIELD.id);
+      assert.equal(body.accountId, FIELD.accountId);
       const spec = specs[body.parcelId]!;
       if (spec instanceof Error) throw spec;
       return fakeReport(body.parcelId, spec);

@@ -21,10 +21,11 @@
     "note": ""
   },
   "notes": [
+    "coord-1 00:25: NAPRAWIONE: analiza działek pola dostawała accountId = id pola zamiast id konta, więc każda działka kończyła się NOT_A_MEMBER i API-019 zawsze zwracało 502 (test utrwalał błąd, poprawiony). Po poprawce: 2 działki w 3,7 s, complete, summary ważone.",
     "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo.",
     "backend-1 21:30 etap 1 na main: POST /fields/:fieldId/analyses (fieldReports.*), działki max 3 równolegle, start kolejnych tylko do 15 s, podsumowanie ważone powierzchnią z działek policzonych, rekomendacje połączone po ruleId z parcelIds; runSource łączy równoległe zapytania o ten sam klucz (sąsiednie działki = jedno zapytanie Open-Meteo/NASA). Testy 313/313. Pole czytane z kolekcji fields; zostaje: przepięcie na FieldModel i test na żywo po T-077.",
     "WYNIK (backend-1) 21:30: odczyt z FieldModel, parcelNumber i errorMessage (prośba frontend-2), DM-025 agreed (T-DB-014). Test na żywo bez serwera (skrypt, bez zapisu do bazy) – pole 3 działek Bronowice 061409_2.0009.611/612/613 winter_wheat 2026-06-10: zimno 11,9 s, z cache 7,3 s, moderate 100%, rekomendacje połączone 5 reguł × 3 działki. Testy 326/326."
   ],
   "created_at": "2026-11-21",
-  "updated_at": "2026-11-21"
+  "updated_at": "2026-11-22"
 }
