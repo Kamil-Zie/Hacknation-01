@@ -1,0 +1,28 @@
+{
+  "id": "T-078",
+  "title": "Raport zbiorczy pola: API-019 POST /fields/:fieldId/analyses (DM-025)",
+  "description": "ADR-011. Dla każdej działki pola uruchom istniejącą analizę (ta sama funkcja co API-004, accountId pola – raporty trafią do historii), równolegle max 3, wspólny budżet czasu (cache źródeł: pogoda i NASA są na siatce 9–50 km, więc kolejne działki idą z cache). Podsumowanie: najgorsza klasa suszy, % powierzchni w suszy silnej/umiarkowanej, wilgotność strefy korzeni i deficyt ważone powierzchnią, najniższa pewność; rekomendacje połączone bez duplikatów z listą działek. Działka, która się nie policzyła → status failed, reszta raportu dalej. Fallback: zapis bez kolekcji (DTO na żądanie).",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": ["T-070", "T-077"],
+  "contract_refs": ["API-019", "DM-025", "API-004"],
+  "demo_step": 5,
+  "acceptance_criteria": [
+    "Pole 2–3 działek Bronowice: 201 w < 25 s (z cache < 8 s)",
+    "Suma procentów powierzchni zgodna, wartości ważone policzone w teście jednostkowym",
+    "Jedna działka z błędem ULDK → status failed, raport 201"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

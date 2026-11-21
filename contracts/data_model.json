@@ -9,9 +9,21 @@
       "name": "Item",
       "description": "Element listy",
       "fields": [
-        { "name": "id", "type": "uuid", "required": true },
-        { "name": "name", "type": "string(120)", "required": true },
-        { "name": "createdAt", "type": "datetime", "required": true }
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string(120)",
+          "required": true
+        },
+        {
+          "name": "createdAt",
+          "type": "datetime",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
@@ -38,17 +50,37 @@
           "required": true,
           "note": "kopia osadzona w chwili analizy"
         },
-        { "name": "crop", "type": "object { code: string, name: string }", "required": true },
-        { "name": "analysisDate", "type": "string(10) YYYY-MM-DD", "required": true },
+        {
+          "name": "crop",
+          "type": "object { code: string, name: string }",
+          "required": true
+        },
+        {
+          "name": "analysisDate",
+          "type": "string(10) YYYY-MM-DD",
+          "required": true
+        },
         {
           "name": "status",
           "type": "enum(complete|partial)",
           "required": true,
           "note": "partial tylko gdy choć jedno źródło OBOWIĄZKOWE (uldk, meteo, sentinel2, era5land, soilgrids, elevation, overpass) ma status error|timeout|missing. eumetsat jest opcjonalny i zawsze missing: nie zmienia statusu, ale zostaje wpis w dataGaps. nasa_power występuje zawsze (ADR-009, role climatology). Gdy Open-Meteo zawiedzie (429/5xx/timeout), meteo i era5land zostają w sources[] ze statusem error|timeout i komunikatem „zastąpione przez nasa_power”, a nasa_power ma role fallback; jeśli nasa_power ma wtedy status ok|cached, meteo i era5land uznaje się za pokryte i raport NIE jest partial (decyzja koordynatora 13:42). Zapas obniża pewność o 0,05 i dodaje wpis w limitations (ADR-008)"
         },
-        { "name": "assessment", "type": "Ref<DM-006>", "required": true },
-        { "name": "vulnerability", "type": "Ref<DM-007>", "required": true },
-        { "name": "causes", "type": "Ref<DM-008>[]", "required": true },
+        {
+          "name": "assessment",
+          "type": "Ref<DM-006>",
+          "required": true
+        },
+        {
+          "name": "vulnerability",
+          "type": "Ref<DM-007>",
+          "required": true
+        },
+        {
+          "name": "causes",
+          "type": "Ref<DM-008>[]",
+          "required": true
+        },
         {
           "name": "recommendations",
           "type": "Ref<DM-009>[]",
@@ -61,7 +93,11 @@
           "required": true,
           "note": "wszystkie 8 źródeł z katalogu (DM-005), także eumetsat (missing)"
         },
-        { "name": "limitations", "type": "string[]", "required": true },
+        {
+          "name": "limitations",
+          "type": "string[]",
+          "required": true
+        },
         {
           "name": "dataGaps",
           "type": "Ref<DM-012>[]",
@@ -80,9 +116,21 @@
           "required": true,
           "note": "np. kropla-1.0"
         },
-        { "name": "computedAt", "type": "datetime", "required": true },
-        { "name": "durationMs", "type": "integer", "required": true },
-        { "name": "createdAt", "type": "datetime", "required": true },
+        {
+          "name": "computedAt",
+          "type": "datetime",
+          "required": true
+        },
+        {
+          "name": "durationMs",
+          "type": "integer",
+          "required": true
+        },
+        {
+          "name": "createdAt",
+          "type": "datetime",
+          "required": true
+        },
         {
           "name": "accountId",
           "type": "objectId | null",
@@ -90,7 +138,13 @@
           "note": "ADR-010: konto gospodarstwa (DM-017), do którego trafia raport w historii; null/brak = analiza anonimowa. W JSON API jako string (24 znaki hex) lub null"
         }
       ],
-      "relations": [{ "field": "accountId", "ref": "DM-017", "cardinality": "many-to-one" }],
+      "relations": [
+        {
+          "field": "accountId",
+          "ref": "DM-017",
+          "cardinality": "many-to-one"
+        }
+      ],
       "indexes": [
         {
           "fields": {
@@ -136,9 +190,21 @@
           "required": true,
           "note": "znormalizowany wynik źródła; maks. ok. 200 kB na dokument"
         },
-        { "name": "dataPeriod", "type": "string(40) | null", "required": false },
-        { "name": "fetchedAt", "type": "datetime", "required": true },
-        { "name": "expiresAt", "type": "datetime", "required": true }
+        {
+          "name": "dataPeriod",
+          "type": "string(40) | null",
+          "required": false
+        },
+        {
+          "name": "fetchedAt",
+          "type": "datetime",
+          "required": true
+        },
+        {
+          "name": "expiresAt",
+          "type": "datetime",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": [
@@ -169,22 +235,65 @@
           "required": true,
           "note": "pełny TERYT, np. 061409_2.0009.612; numery z ukośnikiem (np. 061401_1.0001.691/9) w ścieżce API jako %2F"
         },
-        { "name": "parcelNumber", "type": "string(30)", "required": true },
-        { "name": "region", "type": "string(120)", "required": true, "note": "obręb ewidencyjny" },
-        { "name": "commune", "type": "string(120)", "required": true, "note": "gmina" },
+        {
+          "name": "parcelNumber",
+          "type": "string(30)",
+          "required": true
+        },
+        {
+          "name": "region",
+          "type": "string(120)",
+          "required": true,
+          "note": "obręb ewidencyjny"
+        },
+        {
+          "name": "commune",
+          "type": "string(120)",
+          "required": true,
+          "note": "gmina"
+        },
         {
           "name": "county",
           "type": "string(120)",
           "required": true,
           "note": "powiat bez prefiksu 'powiat' (ULDK zwraca 'powiat puławski', w polu: 'puławski')"
         },
-        { "name": "voivodeship", "type": "string(60)", "required": true },
-        { "name": "areaHa", "type": "number", "required": true },
-        { "name": "centroid", "type": "object { lat: number, lon: number }", "required": true },
-        { "name": "bbox", "type": "number[4] [minLon, minLat, maxLon, maxLat]", "required": true },
-        { "name": "geometry", "type": "GeoJSON Polygon | MultiPolygon", "required": true },
-        { "name": "source", "type": "string", "required": true, "note": "ULDK GUGiK" },
-        { "name": "fetchedAt", "type": "datetime", "required": true }
+        {
+          "name": "voivodeship",
+          "type": "string(60)",
+          "required": true
+        },
+        {
+          "name": "areaHa",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "centroid",
+          "type": "object { lat: number, lon: number }",
+          "required": true
+        },
+        {
+          "name": "bbox",
+          "type": "number[4] [minLon, minLat, maxLon, maxLat]",
+          "required": true
+        },
+        {
+          "name": "geometry",
+          "type": "GeoJSON Polygon | MultiPolygon",
+          "required": true
+        },
+        {
+          "name": "source",
+          "type": "string",
+          "required": true,
+          "note": "ULDK GUGiK"
+        },
+        {
+          "name": "fetchedAt",
+          "type": "datetime",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
@@ -201,11 +310,31 @@
           "type": "enum(winter_wheat|spring_barley|maize|potato|winter_rapeseed|sugar_beet|grassland)",
           "required": true
         },
-        { "name": "name", "type": "string(60)", "required": true },
-        { "name": "kcIni", "type": "number", "required": true },
-        { "name": "kcMid", "type": "number", "required": true },
-        { "name": "kcEnd", "type": "number", "required": true },
-        { "name": "rootDepthM", "type": "number", "required": true },
+        {
+          "name": "name",
+          "type": "string(60)",
+          "required": true
+        },
+        {
+          "name": "kcIni",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "kcMid",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "kcEnd",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "rootDepthM",
+          "type": "number",
+          "required": true
+        },
         {
           "name": "depletionFraction",
           "type": "number",
@@ -269,16 +398,32 @@
           "required": true,
           "note": "prosta etykieta dla rolnika: Działka, Pogoda, Satelita (rośliny), Wilgotność gleby (era5land; zapas nasa_power ma tę samą etykietę), Satelita ASCAT (opcjonalne) (eumetsat, nie pokazywać jako wilgotność gleby), Gleba, Teren, Woda w okolicy"
         },
-        { "name": "provider", "type": "string(80)", "required": true },
-        { "name": "url", "type": "string", "required": true },
-        { "name": "license", "type": "string(80)", "required": true },
+        {
+          "name": "provider",
+          "type": "string(80)",
+          "required": true
+        },
+        {
+          "name": "url",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "license",
+          "type": "string(80)",
+          "required": true
+        },
         {
           "name": "resolution",
           "type": "string(60)",
           "required": true,
           "note": "np. siatka 9–25 km"
         },
-        { "name": "timeoutMs", "type": "integer", "required": true },
+        {
+          "name": "timeoutMs",
+          "type": "integer",
+          "required": true
+        },
         {
           "name": "attribution",
           "type": "string | null",
@@ -296,25 +441,53 @@
       "storage": "embedded in DM-001",
       "description": "Ocena bieżąca na datę analizy (krok 4).",
       "fields": [
-        { "name": "droughtClass", "type": "enum(none|moderate|severe|unknown)", "required": true },
+        {
+          "name": "droughtClass",
+          "type": "enum(none|moderate|severe|unknown)",
+          "required": true
+        },
         {
           "name": "droughtClassLabel",
           "type": "string(60)",
           "required": true,
           "note": "Brak suszy / Susza umiarkowana / Susza silna / Brak danych"
         },
-        { "name": "isOutOfSeason", "type": "boolean", "required": true },
-        { "name": "confidence", "type": "enum(high|medium|low)", "required": true },
-        { "name": "confidenceScore", "type": "number 0–1", "required": true },
-        { "name": "confidenceReasons", "type": "string[]", "required": true },
+        {
+          "name": "isOutOfSeason",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "confidence",
+          "type": "enum(high|medium|low)",
+          "required": true
+        },
+        {
+          "name": "confidenceScore",
+          "type": "number 0–1",
+          "required": true
+        },
+        {
+          "name": "confidenceReasons",
+          "type": "string[]",
+          "required": true
+        },
         {
           "name": "summary",
           "type": "string",
           "required": true,
           "note": "zdanie w prostym języku złożone z liczb (szablon w kodzie)"
         },
-        { "name": "kbw30", "type": "Ref<DM-013> | null", "required": true },
-        { "name": "kbw60", "type": "Ref<DM-013> | null", "required": true },
+        {
+          "name": "kbw30",
+          "type": "Ref<DM-013> | null",
+          "required": true
+        },
+        {
+          "name": "kbw60",
+          "type": "Ref<DM-013> | null",
+          "required": true
+        },
         {
           "name": "soilWater",
           "type": "object { tawMm: number, rawMm: number, depletionMm: number | null, isStressed: boolean | null } | null",
@@ -326,14 +499,22 @@
           "type": "object { code: string, name: string, kc: number, isCritical: boolean }",
           "required": true
         },
-        { "name": "satellite", "type": "Ref<DM-014> | null", "required": true },
+        {
+          "name": "satellite",
+          "type": "Ref<DM-014> | null",
+          "required": true
+        },
         {
           "name": "soilMoistureSatellite",
           "type": "Ref<DM-015> | null",
           "required": true,
           "note": "wilgotność gleby z ERA5-Land (sourceId era5land, ADR-008 v2); gdy Open-Meteo zawiedzie, z zapasu NASA POWER (pole product mówi, który produkt; fallback=true); null + wpis w dataGaps (sourceId era5land), gdy brak obu; potwierdza lub przeczy klasie suszy, wpływa na pewność (waga 0,10), nie zmienia klasy (ADR-007 §5a). eumetsat nie jest źródłem tego pola"
         },
-        { "name": "evidence", "type": "Ref<DM-010>[]", "required": true }
+        {
+          "name": "evidence",
+          "type": "Ref<DM-010>[]",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
@@ -345,12 +526,36 @@
       "storage": "embedded in DM-001",
       "description": "Podatność wieloletnia z 10 sezonów przed rokiem analizy (krok 5).",
       "fields": [
-        { "name": "vulnerabilityClass", "type": "enum(low|medium|high|unknown)", "required": true },
-        { "name": "vulnerabilityLabel", "type": "string(60)", "required": true },
-        { "name": "yearsAnalyzed", "type": "integer", "required": true },
-        { "name": "seasonsWithDeficit", "type": "integer | null", "required": true },
-        { "name": "deficitYears", "type": "integer[]", "required": true },
-        { "name": "criticalMonths", "type": "integer[] (1–12)", "required": true },
+        {
+          "name": "vulnerabilityClass",
+          "type": "enum(low|medium|high|unknown)",
+          "required": true
+        },
+        {
+          "name": "vulnerabilityLabel",
+          "type": "string(60)",
+          "required": true
+        },
+        {
+          "name": "yearsAnalyzed",
+          "type": "integer",
+          "required": true
+        },
+        {
+          "name": "seasonsWithDeficit",
+          "type": "integer | null",
+          "required": true
+        },
+        {
+          "name": "deficitYears",
+          "type": "integer[]",
+          "required": true
+        },
+        {
+          "name": "criticalMonths",
+          "type": "integer[] (1–12)",
+          "required": true
+        },
         {
           "name": "criticalMonthsLabel",
           "type": "string(40) | null",
@@ -368,8 +573,16 @@
           "type": "object { sandPct: number, siltPct: number, clayPct: number, socPct: number, category: enum(very_light|light|medium|heavy), categoryLabel: string } | null",
           "required": true
         },
-        { "name": "summary", "type": "string", "required": true },
-        { "name": "evidence", "type": "Ref<DM-010>[]", "required": true }
+        {
+          "name": "summary",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "evidence",
+          "type": "Ref<DM-010>[]",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
@@ -386,15 +599,27 @@
           "type": "enum(precip_deficit_heat|low_soil_retention|surface_runoff|crop_water_demand|low_vegetation_moisture)",
           "required": true
         },
-        { "name": "title", "type": "string(80)", "required": true },
+        {
+          "name": "title",
+          "type": "string(80)",
+          "required": true
+        },
         {
           "name": "description",
           "type": "string",
           "required": true,
           "note": "prosty język z liczbami, np. Gleba ma 82% piasku i zatrzymuje tylko 48 mm wody w strefie korzeni"
         },
-        { "name": "severity", "type": "enum(low|medium|high)", "required": true },
-        { "name": "evidence", "type": "Ref<DM-010>[]", "required": true }
+        {
+          "name": "severity",
+          "type": "enum(low|medium|high)",
+          "required": true
+        },
+        {
+          "name": "evidence",
+          "type": "Ref<DM-010>[]",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
@@ -424,17 +649,39 @@
           "required": true,
           "note": "kolejność w całej liście, rosnąco od 1"
         },
-        { "name": "priority", "type": "enum(high|medium|low)", "required": true },
-        { "name": "title", "type": "string(100)", "required": true },
-        { "name": "action", "type": "string", "required": true, "note": "co zrobić" },
+        {
+          "name": "priority",
+          "type": "enum(high|medium|low)",
+          "required": true
+        },
+        {
+          "name": "title",
+          "type": "string(100)",
+          "required": true
+        },
+        {
+          "name": "action",
+          "type": "string",
+          "required": true,
+          "note": "co zrobić"
+        },
         {
           "name": "where",
           "type": "string | null",
           "required": true,
           "note": "np. wzdłuż południowej granicy działki (w dół spadku)"
         },
-        { "name": "when", "type": "string | null", "required": true },
-        { "name": "why", "type": "string", "required": true, "note": "uzasadnienie z liczbami" },
+        {
+          "name": "when",
+          "type": "string | null",
+          "required": true
+        },
+        {
+          "name": "why",
+          "type": "string",
+          "required": true,
+          "note": "uzasadnienie z liczbami"
+        },
         {
           "name": "location",
           "type": "object { lat: number, lon: number } | null",
@@ -447,7 +694,12 @@
           "required": true,
           "note": "tylko dla category=irrigation, w pozostałych null. netDoseMm = dawka netto (mm); grossDoseMm = dawka brutto (netto / efektywność nawadniania); doseM3PerHa = dawka BRUTTO w m³/ha (z uwzględnieniem efektywności, = grossDoseMm × 10)"
         },
-        { "name": "evidence", "type": "Ref<DM-010>[]", "required": true, "note": "min. 1 element" }
+        {
+          "name": "evidence",
+          "type": "Ref<DM-010>[]",
+          "required": true,
+          "note": "min. 1 element"
+        }
       ],
       "relations": [],
       "indexes": []
@@ -459,14 +711,23 @@
       "storage": "embedded",
       "description": "Jedna wartość-dowód z jednostką, źródłem i datą danych.",
       "fields": [
-        { "name": "label", "type": "string(80)", "required": true, "note": "np. KBW 60 dni" },
+        {
+          "name": "label",
+          "type": "string(80)",
+          "required": true,
+          "note": "np. KBW 60 dni"
+        },
         {
           "name": "value",
           "type": "number | string | null",
           "required": true,
           "note": "null = brak danych"
         },
-        { "name": "unit", "type": "string(20) | null", "required": true },
+        {
+          "name": "unit",
+          "type": "string(20) | null",
+          "required": true
+        },
         {
           "name": "sourceId",
           "type": "enum(uldk|meteo|sentinel2|era5land|nasa_power|eumetsat|soilgrids|elevation|overpass|engine)",
@@ -479,7 +740,11 @@
           "required": true,
           "note": "data lub okres danych, np. 2025-04-01–2025-05-30; źródła statyczne (soilgrids, elevation): rok wersji produktu (SoilGrids 2.0 = 2020); overpass: data odczytu OSM; źródło missing: patrz DM-011"
         },
-        { "name": "note", "type": "string | null", "required": false }
+        {
+          "name": "note",
+          "type": "string | null",
+          "required": false
+        }
       ],
       "relations": [],
       "indexes": []
@@ -496,17 +761,41 @@
           "type": "enum(uldk|meteo|sentinel2|era5land|nasa_power|eumetsat|soilgrids|elevation|overpass)",
           "required": true
         },
-        { "name": "name", "type": "string(80)", "required": true },
-        { "name": "label", "type": "string(40)", "required": true },
+        {
+          "name": "name",
+          "type": "string(80)",
+          "required": true
+        },
+        {
+          "name": "label",
+          "type": "string(40)",
+          "required": true
+        },
         {
           "name": "category",
           "type": "enum(spatial|meteo|satellite|soil|terrain|hydro)",
           "required": true
         },
-        { "name": "provider", "type": "string(80)", "required": true },
-        { "name": "url", "type": "string", "required": true },
-        { "name": "license", "type": "string(80)", "required": true },
-        { "name": "status", "type": "enum(ok|cached|missing|error|timeout)", "required": true },
+        {
+          "name": "provider",
+          "type": "string(80)",
+          "required": true
+        },
+        {
+          "name": "url",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "license",
+          "type": "string(80)",
+          "required": true
+        },
+        {
+          "name": "status",
+          "type": "enum(ok|cached|missing|error|timeout)",
+          "required": true
+        },
         {
           "name": "dataPeriod",
           "type": "string(40) | null",
@@ -519,7 +808,11 @@
           "required": true,
           "note": "chwila pobrania albo odczytu z cache; dla missing chwila próby (null tylko gdy próby nie było, np. eumetsat)"
         },
-        { "name": "durationMs", "type": "integer", "required": true },
+        {
+          "name": "durationMs",
+          "type": "integer",
+          "required": true
+        },
         {
           "name": "message",
           "type": "string | null",
@@ -583,16 +876,57 @@
       "storage": "embedded in DM-006",
       "description": "KBW = Σ(P − ETc) dla okna n dni kończącego się w dacie analizy, na tle 10 lat (70 próbek, ADR-007 §3).",
       "fields": [
-        { "name": "days", "type": "enum(30|60)", "required": true },
-        { "name": "from", "type": "string(10)", "required": true },
-        { "name": "to", "type": "string(10)", "required": true },
-        { "name": "precipitationMm", "type": "number", "required": true },
-        { "name": "et0Mm", "type": "number", "required": true },
-        { "name": "etcMm", "type": "number", "required": true },
-        { "name": "kbwMm", "type": "number", "required": true },
-        { "name": "normKbwMm", "type": "number", "required": true, "note": "mediana 10 lat" },
-        { "name": "anomalyMm", "type": "number", "required": true },
-        { "name": "percentile", "type": "number 0–100", "required": true },
+        {
+          "name": "days",
+          "type": "enum(30|60)",
+          "required": true
+        },
+        {
+          "name": "from",
+          "type": "string(10)",
+          "required": true
+        },
+        {
+          "name": "to",
+          "type": "string(10)",
+          "required": true
+        },
+        {
+          "name": "precipitationMm",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "et0Mm",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "etcMm",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "kbwMm",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "normKbwMm",
+          "type": "number",
+          "required": true,
+          "note": "mediana 10 lat"
+        },
+        {
+          "name": "anomalyMm",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "percentile",
+          "type": "number 0–100",
+          "required": true
+        },
         {
           "name": "precipitationNormPct",
           "type": "number | null",
@@ -622,15 +956,51 @@
       "storage": "embedded in DM-006",
       "description": "NDVI/NDMI działki z ostatniej ważnej sceny Sentinel-2 L2A ≤ data analizy, interpretowane dla uprawy i miesiąca.",
       "fields": [
-        { "name": "sceneId", "type": "string(80)", "required": true },
-        { "name": "sceneDate", "type": "string(10)", "required": true },
-        { "name": "ageDays", "type": "integer", "required": true },
-        { "name": "validPixelFraction", "type": "number 0–1", "required": true },
-        { "name": "validPixels", "type": "integer", "required": true },
-        { "name": "ndvi", "type": "number | null", "required": true },
-        { "name": "ndmi", "type": "number | null", "required": true },
-        { "name": "ndviAssessment", "type": "enum(below|normal|above|unknown)", "required": true },
-        { "name": "ndmiAssessment", "type": "enum(below|normal|above|unknown)", "required": true },
+        {
+          "name": "sceneId",
+          "type": "string(80)",
+          "required": true
+        },
+        {
+          "name": "sceneDate",
+          "type": "string(10)",
+          "required": true
+        },
+        {
+          "name": "ageDays",
+          "type": "integer",
+          "required": true
+        },
+        {
+          "name": "validPixelFraction",
+          "type": "number 0–1",
+          "required": true
+        },
+        {
+          "name": "validPixels",
+          "type": "integer",
+          "required": true
+        },
+        {
+          "name": "ndvi",
+          "type": "number | null",
+          "required": true
+        },
+        {
+          "name": "ndmi",
+          "type": "number | null",
+          "required": true
+        },
+        {
+          "name": "ndviAssessment",
+          "type": "enum(below|normal|above|unknown)",
+          "required": true
+        },
+        {
+          "name": "ndmiAssessment",
+          "type": "enum(below|normal|above|unknown)",
+          "required": true
+        },
         {
           "name": "expected",
           "type": "object { ndviMin: number, ndviMax: number, ndmiMin: number, ndmiMax: number }",
@@ -695,7 +1065,11 @@
           "required": false,
           "note": "rootZonePct − normRootZonePct w punktach procentowych (ujemna = suchsze niż zwykle)"
         },
-        { "name": "assessment", "type": "enum(dry|normal|wet|unknown)", "required": true },
+        {
+          "name": "assessment",
+          "type": "enum(dry|normal|wet|unknown)",
+          "required": true
+        },
         {
           "name": "agreement",
           "type": "enum(confirms|contradicts|neutral)",
@@ -809,17 +1183,32 @@
           "required": true,
           "note": "unikalny, zapisywany małymi literami (lowercase, trim)"
         },
-        { "name": "name", "type": "string(120)", "required": true },
+        {
+          "name": "name",
+          "type": "string(120)",
+          "required": true
+        },
         {
           "name": "passwordHash",
           "type": "string(200)",
           "required": true,
           "note": "scrypt (sól + hash); tylko w bazie, NIGDY w API"
         },
-        { "name": "createdAt", "type": "datetime", "required": true }
+        {
+          "name": "createdAt",
+          "type": "datetime",
+          "required": true
+        }
       ],
       "relations": [],
-      "indexes": [{ "fields": { "email": 1 }, "unique": true }]
+      "indexes": [
+        {
+          "fields": {
+            "email": 1
+          },
+          "unique": true
+        }
+      ]
     },
     {
       "id": "DM-017",
@@ -834,8 +1223,16 @@
           "required": true,
           "note": "w JSON API jako string (24 znaki hex)"
         },
-        { "name": "name", "type": "string(120)", "required": true },
-        { "name": "createdAt", "type": "datetime", "required": true }
+        {
+          "name": "name",
+          "type": "string(120)",
+          "required": true
+        },
+        {
+          "name": "createdAt",
+          "type": "datetime",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
@@ -853,24 +1250,59 @@
           "required": true,
           "note": "w JSON API jako string (24 znaki hex)"
         },
-        { "name": "accountId", "type": "Ref<DM-017>", "required": true },
+        {
+          "name": "accountId",
+          "type": "Ref<DM-017>",
+          "required": true
+        },
         {
           "name": "userId",
           "type": "Ref<DM-016> | null",
           "required": false,
           "note": "null dla status = pending"
         },
-        { "name": "email", "type": "string(254)", "required": true, "note": "lowercase" },
-        { "name": "status", "type": "enum(active|pending)", "required": true },
-        { "name": "addedAt", "type": "datetime", "required": true }
+        {
+          "name": "email",
+          "type": "string(254)",
+          "required": true,
+          "note": "lowercase"
+        },
+        {
+          "name": "status",
+          "type": "enum(active|pending)",
+          "required": true
+        },
+        {
+          "name": "addedAt",
+          "type": "datetime",
+          "required": true
+        }
       ],
       "relations": [
-        { "field": "accountId", "ref": "DM-017", "cardinality": "many-to-one" },
-        { "field": "userId", "ref": "DM-016", "cardinality": "many-to-one" }
+        {
+          "field": "accountId",
+          "ref": "DM-017",
+          "cardinality": "many-to-one"
+        },
+        {
+          "field": "userId",
+          "ref": "DM-016",
+          "cardinality": "many-to-one"
+        }
       ],
       "indexes": [
-        { "fields": { "accountId": 1, "email": 1 }, "unique": true },
-        { "fields": { "userId": 1 } }
+        {
+          "fields": {
+            "accountId": 1,
+            "email": 1
+          },
+          "unique": true
+        },
+        {
+          "fields": {
+            "userId": 1
+          }
+        }
       ]
     },
     {
@@ -880,9 +1312,22 @@
       "storage": "dto",
       "description": "Odpowiedź API-007 i API-008: token JWT (HS256, 7 dni; Authorization: Bearer) oraz użytkownik i jego konta.",
       "fields": [
-        { "name": "token", "type": "string", "required": true, "note": "JWT HS256" },
-        { "name": "user", "type": "Ref<DM-020>", "required": true },
-        { "name": "accounts", "type": "Ref<DM-021>[]", "required": true }
+        {
+          "name": "token",
+          "type": "string",
+          "required": true,
+          "note": "JWT HS256"
+        },
+        {
+          "name": "user",
+          "type": "Ref<DM-020>",
+          "required": true
+        },
+        {
+          "name": "accounts",
+          "type": "Ref<DM-021>[]",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
@@ -894,9 +1339,21 @@
       "storage": "dto",
       "description": "Użytkownik w odpowiedziach API (bez passwordHash).",
       "fields": [
-        { "name": "id", "type": "string", "required": true },
-        { "name": "email", "type": "string(254)", "required": true },
-        { "name": "name", "type": "string(120)", "required": true }
+        {
+          "name": "id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string(254)",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string(120)",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
@@ -908,9 +1365,21 @@
       "storage": "dto",
       "description": "Konto w odpowiedziach API. memberCount liczy członków ze statusem active.",
       "fields": [
-        { "name": "id", "type": "string", "required": true },
-        { "name": "name", "type": "string(120)", "required": true },
-        { "name": "memberCount", "type": "integer", "required": true }
+        {
+          "name": "id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string(120)",
+          "required": true
+        },
+        {
+          "name": "memberCount",
+          "type": "integer",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
@@ -922,16 +1391,33 @@
       "storage": "dto",
       "description": "Członek konta lub zaproszenie w odpowiedziach API-010 i API-011.",
       "fields": [
-        { "name": "id", "type": "string", "required": true, "note": "id AccountMember (DM-018)" },
-        { "name": "email", "type": "string(254)", "required": true },
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "note": "id AccountMember (DM-018)"
+        },
+        {
+          "name": "email",
+          "type": "string(254)",
+          "required": true
+        },
         {
           "name": "name",
           "type": "string(120) | null",
           "required": true,
           "note": "null dla pending"
         },
-        { "name": "status", "type": "enum(active|pending)", "required": true },
-        { "name": "addedAt", "type": "datetime", "required": true }
+        {
+          "name": "status",
+          "type": "enum(active|pending)",
+          "required": true
+        },
+        {
+          "name": "addedAt",
+          "type": "datetime",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
@@ -943,25 +1429,159 @@
       "storage": "dto",
       "description": "Skrót raportu w historii konta (API-013), od najnowszych. Pełny raport: API-005.",
       "fields": [
-        { "name": "id", "type": "string", "required": true },
+        {
+          "name": "id",
+          "type": "string",
+          "required": true
+        },
         {
           "name": "parcel",
           "type": "object { id: string, parcelNumber: string, region: string, commune: string }",
           "required": true
         },
-        { "name": "crop", "type": "object { code: string, name: string }", "required": true },
-        { "name": "analysisDate", "type": "string(10) YYYY-MM-DD", "required": true },
-        { "name": "status", "type": "enum(complete|partial)", "required": true },
+        {
+          "name": "crop",
+          "type": "object { code: string, name: string }",
+          "required": true
+        },
+        {
+          "name": "analysisDate",
+          "type": "string(10) YYYY-MM-DD",
+          "required": true
+        },
+        {
+          "name": "status",
+          "type": "enum(complete|partial)",
+          "required": true
+        },
         {
           "name": "droughtClass",
           "type": "enum(none|moderate|severe|unknown)",
           "required": true,
           "note": "assessment.droughtClass z DM-006"
         },
-        { "name": "createdAt", "type": "datetime", "required": true }
+        {
+          "name": "createdAt",
+          "type": "datetime",
+          "required": true
+        }
       ],
       "relations": [],
       "indexes": []
+    },
+    {
+      "id": "DM-024",
+      "status": "proposed",
+      "name": "Field",
+      "storage": "collection fields",
+      "description": "Pole: nazwany zbiór sąsiadujących działek jednego konta gospodarstwa (ADR-011). Ułatwia analizę wilgotności dla całego kawałka ziemi uprawianego razem.",
+      "fields": [
+        {
+          "name": "_id",
+          "type": "ObjectId",
+          "required": true
+        },
+        {
+          "name": "accountId",
+          "type": "ObjectId (DM-017)",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string(1–120)",
+          "required": true
+        },
+        {
+          "name": "parcelIds",
+          "type": "string[] (TERYT, 2–20, unikalne)",
+          "required": true
+        },
+        {
+          "name": "parcels",
+          "type": "object[] { id, parcelNumber, commune, region, areaHa } (kopia z ULDK przy zapisie)",
+          "required": true
+        },
+        {
+          "name": "areaHa",
+          "type": "number (suma)",
+          "required": true
+        },
+        {
+          "name": "centroid",
+          "type": "object { lat: number, lon: number }",
+          "required": true
+        },
+        {
+          "name": "createdBy",
+          "type": "ObjectId (DM-016)",
+          "required": true
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "required": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "Date",
+          "required": true
+        }
+      ],
+      "indexes": ["{ accountId: 1, createdAt: -1 }"]
+    },
+    {
+      "id": "DM-025",
+      "status": "proposed",
+      "name": "FieldReport",
+      "storage": "dto",
+      "description": "Raport zbiorczy pola (API-019): analiza każdej działki pola tym samym silnikiem (API-004) i podsumowanie ważone powierzchnią.",
+      "fields": [
+        {
+          "name": "fieldId",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "crop",
+          "type": "object { code: string, name: string }",
+          "required": true
+        },
+        {
+          "name": "analysisDate",
+          "type": "string(10) YYYY-MM-DD",
+          "required": true
+        },
+        {
+          "name": "areaHa",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "summary",
+          "type": "object { droughtClass: enum(none|moderate|severe|unknown) – najgorsza klasa, severeAreaPct: number, moderateAreaPct: number, rootZonePctWeighted: number|null, deficitMmWeighted: number|null, confidence: enum(high|medium|low) – najniższa }",
+          "required": true
+        },
+        {
+          "name": "parcels",
+          "type": "object[] { parcelId, reportId, areaHa, droughtClass, rootZonePct: number|null, deficitMm: number|null, status: enum(complete|partial|failed) }",
+          "required": true
+        },
+        {
+          "name": "recommendations",
+          "type": "Recommendation[] (DM-007) – połączone, bez duplikatów, z listą działek, których dotyczą",
+          "required": true
+        },
+        {
+          "name": "createdAt",
+          "type": "string ISO",
+          "required": true
+        }
+      ]
     }
   ]
 }

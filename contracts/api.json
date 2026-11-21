@@ -3510,6 +3510,118 @@
           "name": "Jan Kowalski"
         }
       }
+    },
+    {
+      "id": "API-016",
+      "status": "proposed",
+      "method": "POST",
+      "path": "/accounts/:accountId/fields",
+      "summary": "Utworzenie pola z sąsiadujących działek (T-077). Działki sprawdzane w ULDK; każda musi sąsiadować z co najmniej jedną inną z pola (odległość granic ≤ 50 m).",
+      "auth": "required",
+      "request": {
+        "params": {
+          "accountId": "string"
+        },
+        "body": {
+          "name": "string 1–120",
+          "parcelIds": "string[] 2–20 (TERYT)"
+        }
+      },
+      "response": {
+        "201": "Field (DM-024)"
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER",
+        "503 DB_UNAVAILABLE",
+        "404 PARCEL_NOT_FOUND (details.parcelId)",
+        "422 VALIDATION_ERROR",
+        "422 PARCELS_NOT_ADJACENT (details.parcelIds – działki bez sąsiada)"
+      ],
+      "data_refs": ["DM-024"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-006"]
+    },
+    {
+      "id": "API-017",
+      "status": "proposed",
+      "method": "GET",
+      "path": "/accounts/:accountId/fields",
+      "summary": "Lista pól konta, od najnowszych.",
+      "auth": "required",
+      "request": {
+        "params": {
+          "accountId": "string"
+        },
+        "query": {
+          "page": "number",
+          "pageSize": "number"
+        }
+      },
+      "response": {
+        "200": "{ items: Field[], page, pageSize, total }"
+      },
+      "errors": ["401 UNAUTHORIZED", "403 NOT_A_MEMBER", "503 DB_UNAVAILABLE"],
+      "data_refs": ["DM-024"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-006"]
+    },
+    {
+      "id": "API-018",
+      "status": "proposed",
+      "method": "DELETE",
+      "path": "/accounts/:accountId/fields/:fieldId",
+      "summary": "Usunięcie pola (działki i raporty zostają).",
+      "auth": "required",
+      "request": {
+        "params": {
+          "accountId": "string",
+          "fieldId": "string"
+        }
+      },
+      "response": {
+        "204": "brak treści"
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER",
+        "503 DB_UNAVAILABLE",
+        "404 FIELD_NOT_FOUND"
+      ],
+      "data_refs": ["DM-024"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-006"]
+    },
+    {
+      "id": "API-019",
+      "status": "proposed",
+      "method": "POST",
+      "path": "/fields/:fieldId/analyses",
+      "summary": "Raport zbiorczy pola (T-078): analiza każdej działki (API-004, cache źródeł, równolegle max 3) i podsumowanie ważone powierzchnią. Raporty działek zapisane w historii konta.",
+      "auth": "required",
+      "request": {
+        "params": {
+          "fieldId": "string"
+        },
+        "body": {
+          "cropCode": "string (DM-004)",
+          "analysisDate": "string YYYY-MM-DD"
+        }
+      },
+      "response": {
+        "201": "FieldReport (DM-025)"
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER",
+        "503 DB_UNAVAILABLE",
+        "404 FIELD_NOT_FOUND",
+        "422 VALIDATION_ERROR",
+        "502 UPSTREAM_UNAVAILABLE (gdy żadna działka się nie policzyła)"
+      ],
+      "data_refs": ["DM-024", "DM-025", "DM-007"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-006"]
     }
   ]
 }

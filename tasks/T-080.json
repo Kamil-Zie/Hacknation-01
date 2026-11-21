@@ -1,0 +1,29 @@
+{
+  "id": "T-080",
+  "title": "Raport zbiorczy pola: ekran wyniku (uprawa, data, podsumowanie, tabela działek)",
+  "description": "API-019 (mock z DM-025, potem prawdziwe API po T-078). Z 'Raport pola': wybór uprawy i daty (użyj komponentów z kroku 2), potem ekran: mapa pola z działkami pokolorowanymi klasą suszy, karta podsumowania (najgorsza klasa, % powierzchni w suszy, średnia wilgotność ważona), tabela/karty działek z linkiem do raportu działki (/report/:id), połączone rekomendacje z listą działek. Postęp liczenia ('Liczymy działkę 2 z 3'). Druk/PDF jak raport działki. Dopisz ekran do contracts/ui.json (UI-S-008).\n\nUX dla wieku 18–99: tekst ≥ 18 px, przyciski ≥ 48 px, kontrast AA, proste słowa, ikony z podpisem.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": ["T-073", "T-078"],
+  "contract_refs": ["UI-S-003", "API-019", "DM-025"],
+  "demo_step": 5,
+  "acceptance_criteria": [
+    "Raport pola z 3 działek: podsumowanie, mapa w kolorach klas, link do każdego raportu działki",
+    "Działka failed pokazana jako 'Nie udało się policzyć' bez psucia reszty",
+    "Druk/PDF działa",
+    "UX 18–99 sprawdzony na 390 px i 1440 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

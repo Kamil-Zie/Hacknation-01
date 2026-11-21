@@ -1,0 +1,28 @@
+{
+  "id": "T-077",
+  "title": "Pola: model Field + API-016/017/018 (utworzenie z sąsiadujących działek, lista, usunięcie)",
+  "description": "ADR-011. Model DM-024 (models/field.model.ts, wzór: account.model.ts), trasy wzorem API-014 (accounts). POST: każdą działkę pobierz z ULDK (istniejący serwis + cache), sprawdź sąsiedztwo: graf działek, krawędź gdy min. odległość wierzchołków/odcinków granic ≤ 50 m (własna funkcja w utils/geo.ts, bez nowej biblioteki), pole musi być spójne (każda działka połączona z resztą) – inaczej 422 PARCELS_NOT_ADJACENT z listą. Zapisz parcels (kopie), areaHa, centroid. Tylko członek konta (isMember). Najpierw popraw/zatwierdź kontrakt (status agreed) i wyślij contract_change – frontend startuje na mocku.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": ["T-075"],
+  "contract_refs": ["API-016", "API-017", "API-018", "DM-024"],
+  "demo_step": 5,
+  "acceptance_criteria": [
+    "Kontrakt API-016…018 i DM-024 agreed + contract_change",
+    "2 sąsiednie działki Bronowice → 201; działka z innej gminy → 422 PARCELS_NOT_ADJACENT",
+    "Nie-członek → 403; testy zielone; T-DB-012 zamknięte"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "T-079",
+  "title": "Pola: tworzenie pola z działek (zaznaczanie na mapie) i lista pól w panelu",
+  "description": "API-016/017/018 (na mocku zgodnym z kontraktem, potem prawdziwe API po contract_change Nataniela). Panel konta: sekcja 'Moje pola' (lista: nazwa, liczba działek, ha, 'Raport pola', 'Usuń'). Przycisk 'Utwórz pole': nazwa + dodawanie działek numerem albo kliknięciem na mapie (wiele obrysów naraz, każda z numerem; usuń z listy), przy działkach sprawdzonych wcześniej podpowiedź z 'Ostatnie działki'. Błąd 422 PARCELS_NOT_ADJACENT: działki bez sąsiada na czerwono na mapie + tekst 'Te działki nie leżą obok siebie'. Dopisz ekran do contracts/ui.json (UI-S-007).\n\nUX dla wieku 18–99: tekst ≥ 18 px, przyciski ≥ 48 px, kontrast AA, proste słowa, ikony z podpisem.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": ["T-071", "T-077"],
+  "contract_refs": ["UI-S-006", "API-016", "API-017", "API-018"],
+  "demo_step": 5,
+  "acceptance_criteria": [
+    "Utworzenie pola z 2 działek Bronowice kliknięciem na mapie",
+    "Niesąsiadujące działki zaznaczone na czerwono z komunikatem",
+    "Lista pól w panelu, usuwanie z potwierdzeniem",
+    "UX 18–99 sprawdzony na 390 px i 1440 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
