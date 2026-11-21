@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "integration",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-041"],
   "contract_refs": ["API-007", "API-014", "DM-017", "DM-021"],
@@ -17,11 +17,12 @@
     "Handoff do frontend z przykładami curl"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "backend-1",
+    "note": "Review 18:12 OK (be-reviewer + test na żywo), 290/290. Drobne uwagi (trimEnd po slice, testy 403/422) opcjonalne."
   },
   "notes": [
+    "coord-1 18:13: zamknięte po review Jana.",
     "coord-1 18:05: uwaga Kamila po teście UI. Zamrożenie funkcji 7:00 – zrób przed nim.",
     "Review: Jan (backend-1) po handoffie, krótko (be-reviewer), zanim Dawid podepnie T-057.",
     "Zrobione (backend-2): API-007 opcjonalne accountName (1–120), domyślnie 'Gospodarstwo <name>'; API-014 PATCH /accounts/:accountId {name} → 200 Account (requireAuth, członkostwo, 401/403/422/503), kontrakt 0.4.1 (API-014 agreed). Pliki: auth.schema, auth.service, accounts.schema, accounts.controller, accounts.service (renameAccount), accounts.routes. curl: domyślna nazwa, PATCH 200 i nowa nazwa w /auth/me, pusta nazwa 422, bez tokenu 401. Testy 287/287. Czeka na review Jana."
