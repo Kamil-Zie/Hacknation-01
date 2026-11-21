@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-041"],
   "contract_refs": ["DM-001"],
@@ -22,7 +22,10 @@
   },
   "notes": [
     "coord-1 16:35: Jan zostaje przy T-042 (zależy od T-041 Nataniela).",
-    "coord-1 16:10: Po T-041, ten sam wzorzec."
+    "coord-1 16:10: Po T-041, ten sam wzorzec.",
+    "WYNIK: routes/members.routes.ts, controllers/members.controller.ts, services/members.service.ts, validation/members.schema.ts + routes/members.routes.test.ts (testy HTTP z atrapami modeli). Backend 270/270.",
+    "Na żywo (dwóch nowych użytkowników testowych jan.test+a/b…@example.com w bazie dev): dodanie istniejącego → 201 active, nowego e-maila → 201 pending, duplikat → 409 ALREADY_MEMBER, zły e-mail → 422, lista 3 członków z paginacją, członek B widzi listę, bez tokenu → 401, cudze konto → 403 NOT_A_MEMBER, usunięcie pending i drugiego członka → 204, ostatni aktywny → 409 LAST_MEMBER, nieznany → 404 MEMBER_NOT_FOUND; anonimowe POST /analyses nadal 201.",
+    "addedBy pominięte: kontrakt 0.4.0 (API-010, DM-022) i model AccountMember go nie mają. Nieistniejące konto → 403 NOT_A_MEMBER (kontrakt nie ma 404 dla konta). Brak bazy → 503 DB_UNAVAILABLE."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
