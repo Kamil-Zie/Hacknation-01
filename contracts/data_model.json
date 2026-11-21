@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -595,12 +595,22 @@
         { "name": "percentile", "type": "number 0–100", "required": true },
         {
           "name": "precipitationNormPct",
-          "type": "number",
+          "type": "number | null",
           "required": true,
-          "note": "opad jako % mediany opadu 10 lat"
+          "note": "opad jako % mediany opadu 10 lat; null gdy mediana opadu = 0"
         },
-        { "name": "meanTmaxC", "type": "number", "required": true },
-        { "name": "normTmaxC", "type": "number", "required": true }
+        {
+          "name": "meanTmaxC",
+          "type": "number | null",
+          "required": true,
+          "note": "null gdy brak Tmax w oknie"
+        },
+        {
+          "name": "normTmaxC",
+          "type": "number | null",
+          "required": true,
+          "note": "null gdy brak Tmax w próbkach referencyjnych"
+        }
       ],
       "relations": [],
       "indexes": []

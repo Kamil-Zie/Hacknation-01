@@ -185,7 +185,8 @@ export function computeEngine(input: EngineInput): EngineOutput {
   const evidenceSource = isFallback ? 'nasa_power' : 'meteo';
   const evidence: Evidence[] = [
     ...classified.evidence,
-    ...windowEvidence('KBW 30 dni', cur30 ?? kbw30, evidenceSource),
+    // No current 30-day window (e.g. a date within the last days): the value comes from NASA POWER.
+    ...windowEvidence('KBW 30 dni', cur30 ?? kbw30, cur30 ? evidenceSource : 'nasa_power'),
     ...(kbw60 ? [] : windowEvidence('KBW 60 dni (bieżący)', cur60, evidenceSource)),
     ...moistureEvidence(soilMoisture),
   ];

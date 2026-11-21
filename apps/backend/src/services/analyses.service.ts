@@ -95,6 +95,11 @@ export type AnalysesDeps = {
   budgetMs: number;
 };
 
+// ULDK has its own limit (as in uldk.source); the sources budget is capped so both fit in 38 s.
+const PARCEL_TIMEOUT_MS = 20000;
+const TOTAL_DEADLINE_MS = 38000;
+const MIN_SOURCES_BUDGET_MS = 5000;
+
 export const defaultAnalysesDeps: AnalysesDeps = {
   fetchParcel: (parcelId, signal) => fetchParcelById(parcelId, signal),
   fetchMeteo: (lat, lon, analysisDate, signal) => fetchMeteo(lat, lon, analysisDate, signal),
@@ -175,18 +180,24 @@ export async function createAnalysis(
     }
   }
   const startedAt = deps.now();
-  const budget = AbortSignal.timeout(deps.budgetMs);
 
   const crop = getCrop(body.cropCode);
   if (!crop) {
     throw new AppError('VALIDATION_ERROR', 'Nieznana uprawa', 422, { field: 'cropCode' });
   }
 
-  // 1. Geometry from ULDK (cache inside the source); without it there is no analysis.
-  const uldk = await deps.fetchParcel(body.parcelId, budget);
+  // 1. Geometry from ULDK (cache inside the source) under its own limit; without it there is no analysis.
+  const uldkStartedAt = Date.now();
+  const uldk = await deps.fetchParcel(body.parcelId, AbortSignal.timeout(PARCEL_TIMEOUT_MS));
   const parcel = requireParcel(uldk);
 
-  // 2. Sources in parallel under the 25 s budget.
+  // 2. Sources in parallel. The sources budget starts when the geometry arrives, capped so that
+  // ULDK time + sources time fits the frontend's 40 s POST timeout (TOTAL_DEADLINE_MS).
+  const sourcesBudgetMs = Math.min(
+    deps.budgetMs,
+    Math.max(MIN_SOURCES_BUDGET_MS, TOTAL_DEADLINE_MS - (Date.now() - uldkStartedAt)),
+  );
+  const budget = AbortSignal.timeout(sourcesBudgetMs);
   const { lat, lon } = parcel.centroid;
   const context = {
     parcel,
@@ -264,8 +275,15 @@ export async function createAnalysis(
     createdAt: computedAt,
   };
 
-  // 7. Save; the DTO has `id` as a string and ISO dates.
-  const id = await deps.saveReport(report);
+  // 7. Save; the DTO has `id` as a string and ISO dates. A save failure must not lose the computed
+  // report: same shape as without a connection (new ObjectId, nothing stored, GET by id gives 404).
+  let id: string;
+  try {
+    id = await deps.saveReport(report);
+  } catch (error) {
+    logger.error(`report not saved: ${error instanceof Error ? error.name : 'unknown error'}`);
+    id = new mongoose.Types.ObjectId().toString();
+  }
   return {
     id,
     ...report,

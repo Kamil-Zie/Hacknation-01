@@ -519,3 +519,44 @@ test('without a database connection the report is returned unsaved with a new Ob
   const id = await defaultAnalysesDeps.saveReport({} as Parameters<AnalysesDeps['saveReport']>[0]);
   assert.match(id, /^[0-9a-f]{24}$/);
 });
+
+test('KBW 30 evidence is attributed to nasa_power when the current 30-day window is missing', async () => {
+  const { deps } = makeDeps();
+  const original = deps.fetchMeteo;
+  deps.fetchMeteo = async (lat, lon, date, signal) => {
+    const outcome = await original(lat, lon, date, signal);
+    return {
+      ...outcome,
+      current: {
+        ...outcome.current,
+        series: outcome.current.series.filter((day) => day.date <= '2026-05-27'),
+      },
+    };
+  };
+  const report = await createAnalysis(BODY, deps);
+  const kbw30 = report.assessment.evidence.filter((item) => item.label === 'KBW 30 dni');
+  assert.ok(kbw30.length > 0);
+  assert.ok(kbw30.every((item) => item.sourceId === 'nasa_power'));
+});
+
+test('a report save failure still returns the computed report with a new id', async () => {
+  const { deps } = makeDeps();
+  deps.saveReport = async () => {
+    throw new Error('atlas unavailable');
+  };
+  const report = await createAnalysis(BODY, deps);
+  assert.match(report.id, /^[0-9a-f]{24}$/);
+  assert.equal(report.parcel.id, BODY.parcelId);
+});
+
+test('the sources budget starts after ULDK: a slow geometry fetch does not consume it', async () => {
+  const { deps } = makeDeps();
+  deps.budgetMs = 300;
+  const fetchParcel = deps.fetchParcel;
+  deps.fetchParcel = async (parcelId, signal) => {
+    await new Promise((done) => setTimeout(done, 400));
+    return fetchParcel(parcelId, signal);
+  };
+  const report = await createAnalysis(BODY, deps);
+  assert.equal(report.sources.find((s) => s.sourceId === 'soilgrids')?.status, 'ok');
+});

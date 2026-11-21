@@ -44,7 +44,10 @@ process.on('unhandledRejection', (reason) => {
   );
 });
 
-createApp().listen(env.PORT, () => {
-  logger.info(`API listening on :${env.PORT}/api/v1`);
+// Listen only after the connection attempt (connectDb never throws), so the first requests see a ready database.
+void connectDb().then(() => {
+  createApp().listen(env.PORT, () => {
+    logger.info(`API listening on :${env.PORT}/api/v1`);
+  });
+  void warmUpUldk();
 });
-void connectDb().then(warmUpUldk);
