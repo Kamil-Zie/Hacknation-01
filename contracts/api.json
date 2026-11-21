@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "base_url": "/api/v1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. Wymieniaj tylko błędy, które endpoint naprawdę zwraca w demo.",
@@ -48,7 +48,8 @@
       "errors": [
         "422 VALIDATION_ERROR (details: { field: 'parcelId', hint: 'Format: 141201_1.0001.123' })",
         "404 PARCEL_NOT_FOUND",
-        "502 UPSTREAM_UNAVAILABLE (ULDK nie odpowiada i brak cache)"
+        "504 UPSTREAM_TIMEOUT (ULDK nie odpowiedział w czasie i brak cache)",
+        "502 UPSTREAM_UNAVAILABLE (błąd ULDK bez timeoutu i brak cache)"
       ],
       "data_refs": ["DM-003", "DM-002"],
       "consumers": ["UI-S-001", "UI-S-002"]
@@ -72,7 +73,8 @@
       "errors": [
         "422 VALIDATION_ERROR (punkt poza zakresem Polski)",
         "404 PARCEL_NOT_FOUND (w punkcie nie ma działki ewidencyjnej)",
-        "502 UPSTREAM_UNAVAILABLE"
+        "504 UPSTREAM_TIMEOUT (ULDK nie odpowiedział w czasie)",
+        "502 UPSTREAM_UNAVAILABLE (błąd ULDK bez timeoutu)"
       ],
       "data_refs": ["DM-003", "DM-002"],
       "consumers": ["UI-S-001"]
@@ -1030,7 +1032,8 @@
       "errors": [
         "422 VALIDATION_ERROR (zły format ID, nieznana uprawa, data spoza zakresu; details.field)",
         "404 PARCEL_NOT_FOUND",
-        "502 UPSTREAM_UNAVAILABLE (tylko gdy nie da się pobrać geometrii działki z ULDK ani z cache)"
+        "504 UPSTREAM_TIMEOUT (ULDK nie odpowiedział w czasie, brak geometrii z cache)",
+        "502 UPSTREAM_UNAVAILABLE (błąd ULDK bez timeoutu, brak geometrii z cache)"
       ],
       "timeout": "Frontend: timeout żądania 40 s; serwer kończy analizę najpóźniej po 25 s, niedokończone źródła mają status 'timeout'.",
       "data_refs": [
@@ -1823,7 +1826,8 @@
               "dataPeriod": null,
               "fetchedAt": null,
               "durationMs": 0,
-              "message": "Źródło opcjonalne, brak dostępu do danych (nie wpływa na wynik)"
+              "message": "Źródło opcjonalne, brak dostępu do danych (nie wpływa na wynik)",
+              "reasonCode": "NOT_CONFIGURED"
             },
             {
               "sourceId": "soilgrids",
@@ -1883,7 +1887,8 @@
             {
               "sourceId": "eumetsat",
               "what": "Brak niezależnego odczytu radarowego wilgotności gleby (EUMETSAT ASCAT, źródło opcjonalne)",
-              "impact": "Brak. Wilgotność gleby pochodzi z ERA5-Land, a pewność i status raportu nie zmieniają się"
+              "impact": "Brak. Wilgotność gleby pochodzi z ERA5-Land, a pewność i status raportu nie zmieniają się",
+              "reasonCode": "NOT_CONFIGURED"
             }
           ],
           "charts": {
@@ -2679,7 +2684,8 @@
               "dataPeriod": null,
               "fetchedAt": "2026-11-21T10:19:50.100Z",
               "durationMs": 15000,
-              "message": "Źródło nie odpowiedziało na czas"
+              "message": "Źródło nie odpowiedziało na czas",
+              "reasonCode": "TIMEOUT"
             },
             {
               "sourceId": "era5land",
@@ -2723,7 +2729,8 @@
               "dataPeriod": null,
               "fetchedAt": null,
               "durationMs": 0,
-              "message": "Źródło opcjonalne, brak dostępu do danych (nie wpływa na wynik)"
+              "message": "Źródło opcjonalne, brak dostępu do danych (nie wpływa na wynik)",
+              "reasonCode": "NOT_CONFIGURED"
             },
             {
               "sourceId": "soilgrids",
@@ -2782,12 +2789,14 @@
             {
               "sourceId": "sentinel2",
               "what": "Zdjęcie Sentinel-2 nie zostało pobrane (przekroczony czas odpowiedzi)",
-              "impact": "Nie policzono NDVI i NDMI, więc nie sprawdzono stanu roślin; pewność obniżona o 0,15"
+              "impact": "Nie policzono NDVI i NDMI, więc nie sprawdzono stanu roślin; pewność obniżona o 0,15",
+              "reasonCode": "TIMEOUT"
             },
             {
               "sourceId": "eumetsat",
               "what": "Brak niezależnego odczytu radarowego wilgotności gleby (EUMETSAT ASCAT, źródło opcjonalne)",
-              "impact": "Brak. Wilgotność gleby pochodzi z ERA5-Land, a pewność i status raportu nie zmieniają się"
+              "impact": "Brak. Wilgotność gleby pochodzi z ERA5-Land, a pewność i status raportu nie zmieniają się",
+              "reasonCode": "NOT_CONFIGURED"
             }
           ],
           "charts": {

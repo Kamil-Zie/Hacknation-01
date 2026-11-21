@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -515,6 +515,12 @@
           "note": "dla rolnika, np. Brak bezchmurnego zdjęcia od 2025-04-05"
         },
         {
+          "name": "reasonCode",
+          "type": "enum(NO_SCENE|CLOUD_COVER|PARCEL_TOO_SMALL|TIMEOUT|RATE_LIMIT|UPSTREAM_ERROR|NOT_CONFIGURED) | null",
+          "required": false,
+          "note": "T-039: przyczyna statusu missing/error/timeout, null albo brak dla ok/cached. NO_SCENE = brak sceny Sentinel-2 w oknie 45 dni; CLOUD_COVER = sceny są, ale < 60% ważnych pikseli; PARCEL_TOO_SMALL = działka < 4 pikseli 10 m; TIMEOUT = źródło nie odpowiedziało w limicie; RATE_LIMIT = HTTP 429; UPSTREAM_ERROR = HTTP 5xx, inny błąd HTTP albo sieci; NOT_CONFIGURED = źródło bez dostępu/klucza (eumetsat)"
+        },
+        {
           "name": "role",
           "type": "enum(current|climatology|fallback) | null",
           "required": false,
@@ -547,6 +553,12 @@
           "type": "string",
           "required": true,
           "note": "np. Nie policzono pojemności wodnej gleby i deficytu glebowego; pewność obniżona"
+        },
+        {
+          "name": "reasonCode",
+          "type": "enum(NO_SCENE|CLOUD_COVER|PARCEL_TOO_SMALL|TIMEOUT|RATE_LIMIT|UPSTREAM_ERROR|NOT_CONFIGURED) | null",
+          "required": false,
+          "note": "T-039: ten sam kod co w DM-011 danego źródła (znaczenie kodów jak w DM-011); brak dla luk bez źródłowej przyczyny (np. za mało danych z 10 lat)"
         }
       ],
       "relations": [],

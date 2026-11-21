@@ -149,6 +149,7 @@ export async function fetchSentinel2Scenes(
       status: 'missing',
       data: null,
       message: MSG_BEFORE_ARCHIVE,
+      reasonCode: 'NO_SCENE',
       fetchedAt: new Date(),
       dataPeriod: null,
       durationMs: 0,
@@ -164,6 +165,7 @@ export async function fetchSentinel2Scenes(
   if (result.status !== 'missing') return result;
   return {
     ...result,
+    reasonCode: 'NO_SCENE',
     message: `Brak zdjęć z mniejszym zachmurzeniem niż ${MAX_CLOUD_COVER}% w ${WINDOW_DAYS} dniach przed ${analysisDate}`,
   };
 }

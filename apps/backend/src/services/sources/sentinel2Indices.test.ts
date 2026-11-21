@@ -334,6 +334,26 @@ test('fetchSatellite: three scenes under 60% valid -> missing with date and clou
   assert.equal(result.data, null);
   assert.match(result.message!, /2026-06-07/);
   assert.match(result.message!, /61%/);
+  assert.equal(result.reasonCode, 'CLOUD_COVER');
+});
+
+test('fetchSatellite: no scene in the window -> missing with NO_SCENE', async () => {
+  const result = await fetchSatellite(parcel, '2026-05-25', 'winter_wheat', undefined, {
+    open: opener({}),
+    cache: memoryCache(),
+    fetchScenes: async () => ({
+      sourceId: 'sentinel2',
+      status: 'missing',
+      data: null,
+      message: 'Brak zdjęć',
+      reasonCode: 'NO_SCENE',
+      fetchedAt: new Date(),
+      dataPeriod: null,
+      durationMs: 1,
+    }),
+  });
+  assert.equal(result.status, 'missing');
+  assert.equal(result.reasonCode, 'NO_SCENE');
 });
 
 test('fetchSatellite: tiny parcel -> missing with a message, no value', async () => {
@@ -360,6 +380,7 @@ test('fetchSatellite: tiny parcel -> missing with a message, no value', async ()
   });
   assert.equal(result.status, 'missing');
   assert.match(result.message!, /zbyt mała/);
+  assert.equal(result.reasonCode, 'PARCEL_TOO_SMALL');
 });
 
 test('fetchSatellite: unknown crop is an error and does not touch the network', async () => {

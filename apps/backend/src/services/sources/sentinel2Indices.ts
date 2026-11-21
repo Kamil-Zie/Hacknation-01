@@ -11,7 +11,7 @@ import type { SatelliteObservation } from '@/services/engine/satellite';
 import { mongoSourceCache } from '@/services/sources/cache.service';
 import type { SourceCacheStore } from '@/services/sources/cache.service';
 import { runSource } from '@/services/sources/runSource';
-import type { SourceResult, SourceStatusValue } from '@/services/sources/types';
+import type { ReasonCode, SourceResult, SourceStatusValue } from '@/services/sources/types';
 import { SHORT_TTL_MS } from '@/services/sources/catalog';
 import { fetchSentinel2Scenes } from '@/services/sources/sentinel2.source';
 import type {
@@ -382,7 +382,7 @@ export async function computeSceneIndices(
   };
 }
 
-type Failure = { status: SourceStatusValue; message: string };
+type Failure = { status: SourceStatusValue; message: string; reasonCode: ReasonCode | null };
 
 function ageDays(sceneDate: string, analysisDate: string): number {
   return Math.round((Date.parse(analysisDate) - Date.parse(sceneDate)) / DAY_MS);
@@ -401,7 +401,11 @@ async function findStats(
   });
   if (!scenes.data) {
     return {
-      failure: { status: scenes.status, message: scenes.message ?? 'Brak scen Sentinel-2' },
+      failure: {
+        status: scenes.status,
+        message: scenes.message ?? 'Brak scen Sentinel-2',
+        reasonCode: scenes.reasonCode ?? null,
+      },
     };
   }
   const candidates = scenes.data.slice(0, MAX_SCENE_ATTEMPTS);
@@ -425,6 +429,7 @@ async function findStats(
       return {
         failure: {
           status: 'missing',
+          reasonCode: 'PARCEL_TOO_SMALL',
           message: `Działka zbyt mała na analizę satelitarną (mniej niż ${MIN_PIXELS} pikseli 10 m)`,
         },
       };
@@ -449,6 +454,7 @@ async function findStats(
   return {
     failure: {
       status: 'missing',
+      reasonCode: 'CLOUD_COVER',
       message: `Brak sceny z co najmniej ${MIN_VALID_FRACTION * 100}% ważnych pikseli po ${candidates.length} próbach; ostatnia scena ${last.date}, zachmurzenie ${Math.round(last.cloudCover)}%`,
     },
   };

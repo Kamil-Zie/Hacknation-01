@@ -46,6 +46,31 @@ test('timeout gives status timeout without throwing', async () => {
   });
   assert.equal(result.status, 'timeout');
   assert.equal(result.data, null);
+  assert.equal(result.reasonCode, 'TIMEOUT');
+});
+
+test('reasonCode: 429 -> RATE_LIMIT, 5xx and network errors -> UPSTREAM_ERROR, eumetsat -> NOT_CONFIGURED', async () => {
+  const run = (sourceId: 'meteo' | 'eumetsat', error: Error, key: string) =>
+    runSource({
+      sourceId,
+      key,
+      fetcher: async () => {
+        throw error;
+      },
+      retries: 0,
+      cache: memoryCache(),
+    });
+  const rateLimited = await run('meteo', new HttpStatusError(429), 'rc1');
+  assert.equal(rateLimited.status, 'error');
+  assert.equal(rateLimited.reasonCode, 'RATE_LIMIT');
+  assert.equal((await run('meteo', new HttpStatusError(503), 'rc2')).reasonCode, 'UPSTREAM_ERROR');
+  assert.equal(
+    (await run('meteo', new TypeError('fetch failed'), 'rc3')).reasonCode,
+    'UPSTREAM_ERROR',
+  );
+  const eumetsat = await run('eumetsat', new Error('unused'), 'rc4');
+  assert.equal(eumetsat.status, 'missing');
+  assert.equal(eumetsat.reasonCode, 'NOT_CONFIGURED');
 });
 
 test('slow first attempt is cut by attemptTimeoutMs and the retry succeeds (cold start)', async () => {

@@ -124,6 +124,26 @@ test('no scenes gives missing with a Polish message', async () => {
     result.message,
     'Brak zdjęć z mniejszym zachmurzeniem niż 70% w 45 dniach przed 2026-06-10',
   );
+  assert.equal(result.reasonCode, 'NO_SCENE');
+});
+
+test('slow STAC server gives timeout with TIMEOUT, HTTP 429 gives RATE_LIMIT', async () => {
+  vi.stubGlobal('fetch', (_url: unknown, init?: { signal?: AbortSignal }) =>
+    Promise.reject(init?.signal?.reason ?? new DOMException('timeout', 'TimeoutError')),
+  );
+  const controller = new AbortController();
+  controller.abort(new DOMException('budget', 'TimeoutError'));
+  const timedOut = await fetchSentinel2Scenes(parcel, '2026-06-10', controller.signal, {
+    cache: memoryCache(),
+  });
+  assert.equal(timedOut.status, 'timeout');
+  assert.equal(timedOut.reasonCode, 'TIMEOUT');
+  vi.stubGlobal('fetch', async () => new Response('{}', { status: 429 }));
+  const limited = await fetchSentinel2Scenes(parcel, '2026-06-10', undefined, {
+    cache: memoryCache(),
+  });
+  assert.equal(limited.status, 'error');
+  assert.equal(limited.reasonCode, 'RATE_LIMIT');
 });
 
 test('date before the archive gives missing without a request', async () => {
@@ -133,5 +153,6 @@ test('date before the archive gives missing without a request', async () => {
   });
   assert.equal(result.status, 'missing');
   assert.equal(result.message, 'Archiwum Sentinel-2 L2A obejmuje daty od listopada 2016');
+  assert.equal(result.reasonCode, 'NO_SCENE');
   assert.equal(mock.mock.calls.length, 0);
 });

@@ -138,7 +138,7 @@ function okSource(sourceId: SourceId, data: unknown = null) {
   });
 }
 
-function parcelResult(status: 'ok' | 'missing' | 'error'): SourceResult<ParcelData> {
+function parcelResult(status: 'ok' | 'missing' | 'error' | 'timeout'): SourceResult<ParcelData> {
   return {
     sourceId: 'uldk',
     status,
@@ -151,7 +151,11 @@ function parcelResult(status: 'ok' | 'missing' | 'error'): SourceResult<ParcelDa
 }
 
 function makeDeps(
-  options: { archiveStatus?: number; nasaOk?: boolean; parcel?: 'ok' | 'missing' | 'error' } = {},
+  options: {
+    archiveStatus?: number;
+    nasaOk?: boolean;
+    parcel?: 'ok' | 'missing' | 'error' | 'timeout';
+  } = {},
 ) {
   const saved: unknown[] = [];
   const fetchFn = stubFetch(options.archiveStatus ?? 200, options.nasaOk ?? true);
@@ -442,13 +446,50 @@ test('no parcel geometry gives 502 UPSTREAM_UNAVAILABLE, unknown parcel gives 40
   );
 });
 
+test('ULDK timeout gives 504 UPSTREAM_TIMEOUT', async () => {
+  await expectAppError(
+    createAnalysis(BODY, makeDeps({ parcel: 'timeout' }).deps),
+    'UPSTREAM_TIMEOUT',
+    504,
+  );
+});
+
 test('a source that hangs past the budget ends as timeout instead of blocking the analysis', async () => {
   const { deps } = makeDeps();
   deps.budgetMs = 200;
   deps.fetchers = { ...deps.fetchers, overpass: () => new Promise(() => {}) };
   const report = await createAnalysis(BODY, deps);
-  assert.equal(report.sources.find((s) => s.sourceId === 'overpass')?.status, 'timeout');
+  const overpass = report.sources.find((s) => s.sourceId === 'overpass');
+  assert.equal(overpass?.status, 'timeout');
+  assert.equal(overpass?.reasonCode, 'TIMEOUT');
+  assert.equal(report.dataGaps.find((gap) => gap.sourceId === 'overpass')?.reasonCode, 'TIMEOUT');
   assert.equal(report.status, 'partial');
+});
+
+test('sources[] and dataGaps carry the same reasonCode; eumetsat is NOT_CONFIGURED', async () => {
+  const { deps } = makeDeps();
+  deps.fetchers = {
+    ...deps.fetchers,
+    sentinel2: async () => ({
+      sourceId: 'sentinel2',
+      status: 'missing',
+      data: null,
+      message: 'Brak sceny z co najmniej 60% ważnych pikseli',
+      reasonCode: 'CLOUD_COVER',
+      fetchedAt: new Date(),
+      dataPeriod: null,
+      durationMs: 10,
+    }),
+  };
+  const report = await createAnalysis(BODY, deps);
+  for (const [sourceId, code] of [
+    ['sentinel2', 'CLOUD_COVER'],
+    ['eumetsat', 'NOT_CONFIGURED'],
+  ] as const) {
+    assert.equal(report.sources.find((s) => s.sourceId === sourceId)?.reasonCode, code);
+    assert.equal(report.dataGaps.find((gap) => gap.sourceId === sourceId)?.reasonCode, code);
+  }
+  assert.equal(report.sources.find((s) => s.sourceId === 'soilgrids')?.reasonCode, null);
 });
 
 test('without a database connection the report is returned unsaved with a new ObjectId', async () => {

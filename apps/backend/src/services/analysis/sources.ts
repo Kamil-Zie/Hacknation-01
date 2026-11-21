@@ -2,7 +2,7 @@
 import { SOURCES } from '@/services/sources/catalog';
 import type { MeteoOutcome } from '@/services/sources/meteo.source';
 import type { ParcelData } from '@/services/sources/uldk.source';
-import type { SourceId, SourceResult, SourceRole } from '@/services/sources/types';
+import type { ReasonCode, SourceId, SourceResult, SourceRole } from '@/services/sources/types';
 
 export type SourceContext = {
   parcel: ParcelData;
@@ -37,10 +37,16 @@ export type SourceStatusDto = {
   fetchedAt: string | null;
   durationMs: number;
   message: string | null;
+  reasonCode: ReasonCode | null;
   role: SourceRole | null;
 };
 
-export type DataGapDto = { sourceId: SourceId; what: string; impact: string };
+export type DataGapDto = {
+  sourceId: SourceId;
+  what: string;
+  impact: string;
+  reasonCode?: ReasonCode;
+};
 
 export type GapContext = {
   hasCurrent: boolean;
@@ -106,13 +112,14 @@ function raceBudget<T>(promise: Promise<T>, signal: AbortSignal): Promise<T> {
 
 function failedResult(sourceId: SourceId, signal: AbortSignal): SourceResult<unknown> {
   return signal.aborted
-    ? emptyResult(sourceId, 'timeout', MSG_TIMEOUT)
-    : emptyResult(sourceId, 'error', MSG_ERROR);
+    ? { ...emptyResult(sourceId, 'timeout', MSG_TIMEOUT), reasonCode: 'TIMEOUT' }
+    : { ...emptyResult(sourceId, 'error', MSG_ERROR), reasonCode: 'UPSTREAM_ERROR' };
 }
 
 function failedMeteo(signal: AbortSignal): MeteoOutcome {
   const status = signal.aborted ? 'timeout' : 'error';
   const message = signal.aborted ? MSG_TIMEOUT : MSG_ERROR;
+  const reasonCode = signal.aborted ? 'TIMEOUT' : 'UPSTREAM_ERROR';
   return {
     current: { series: [], source: null, fallback: true },
     climatology: null,
@@ -120,8 +127,13 @@ function failedMeteo(signal: AbortSignal): MeteoOutcome {
     confidencePenalty: 0,
     limitations: [],
     sources: [
-      { ...emptyResult('meteo', status, message), data: null, role: 'current' },
-      { ...emptyResult('nasa_power', status, message), data: null, role: 'climatology' },
+      { ...emptyResult('meteo', status, message), data: null, reasonCode, role: 'current' },
+      {
+        ...emptyResult('nasa_power', status, message),
+        data: null,
+        reasonCode,
+        role: 'climatology',
+      },
     ],
     dataGaps: [],
   };
@@ -156,7 +168,13 @@ export async function runSources(
   return {
     meteo: meteoSettled?.status === 'fulfilled' ? meteoSettled.value : failedMeteo(signal),
     // EUMETSAT is optional and always missing (ADR-006): it never changes the report status.
-    extras: { ...extraResults, eumetsat: emptyResult('eumetsat', 'missing', MSG_EUMETSAT) },
+    extras: {
+      ...extraResults,
+      eumetsat: {
+        ...emptyResult('eumetsat', 'missing', MSG_EUMETSAT),
+        reasonCode: 'NOT_CONFIGURED',
+      },
+    },
   };
 }
 
@@ -215,6 +233,7 @@ export function buildSources(
       fetchedAt: result.fetchedAt?.toISOString() ?? null,
       durationMs: result.durationMs,
       message: replaced ? MSG_REPLACED_BY_NASA : result.message,
+      reasonCode: result.reasonCode ?? null,
       role: result.role ?? null,
     };
   });
@@ -269,6 +288,7 @@ export function buildDataGaps(sources: SourceStatusDto[], context: GapContext): 
       sourceId: source.sourceId,
       what: source.message ? `${WHAT[source.sourceId]} (${source.message})` : WHAT[source.sourceId],
       impact: impactFor(source.sourceId, context),
+      ...(source.reasonCode ? { reasonCode: source.reasonCode } : {}),
     }));
   if (context.hasClimatology && context.isClimatologyIncomplete) {
     gaps.push({

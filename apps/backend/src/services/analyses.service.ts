@@ -122,6 +122,9 @@ function requireParcel(result: SourceResult<ParcelData>): ParcelData & { fetched
   if (result.status === 'missing') {
     throw new AppError('PARCEL_NOT_FOUND', 'Nie znaleziono działki', 404);
   }
+  if (!result.data && result.status === 'timeout') {
+    throw new AppError('UPSTREAM_TIMEOUT', 'Usługa ULDK GUGiK nie odpowiedziała na czas', 504);
+  }
   if (!result.data) {
     throw new AppError('UPSTREAM_UNAVAILABLE', 'Usługa ULDK GUGiK nie odpowiada', 502);
   }

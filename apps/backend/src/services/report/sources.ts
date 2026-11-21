@@ -1,6 +1,7 @@
 // T-018 DM-011 sources[] built from runSource results + DM-001 report status rule
 import { SOURCES } from '@/services/sources/catalog';
 import type {
+  ReasonCode,
   SourceId,
   SourceResult,
   SourceRole,
@@ -21,6 +22,7 @@ export type SourceStatus = {
   fetchedAt: Date | null;
   durationMs: number;
   message: string | null;
+  reasonCode: ReasonCode | null;
   role: SourceRole | null;
 };
 
@@ -55,6 +57,7 @@ export function buildSourceStatuses(results: SourceResult<unknown>[]): SourceSta
       fetchedAt: result.fetchedAt,
       durationMs: result.durationMs,
       message: result.message,
+      reasonCode: result.reasonCode ?? null,
       role: result.role ?? null,
     });
   }

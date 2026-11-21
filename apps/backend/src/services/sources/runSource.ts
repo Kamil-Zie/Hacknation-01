@@ -50,7 +50,7 @@ export async function runSource<T>(options: RunSourceOptions<T>): Promise<Source
 
   // EUMETSAT is optional and unavailable (ADR-006 update, T-002): no fetcher call, no cache, fetchedAt stays null.
   if (sourceId === 'eumetsat') {
-    return build({ status: 'missing', message: MSG_EUMETSAT });
+    return build({ status: 'missing', message: MSG_EUMETSAT, reasonCode: 'NOT_CONFIGURED' });
   }
 
   try {
@@ -91,11 +91,13 @@ export async function runSource<T>(options: RunSourceOptions<T>): Promise<Source
   } catch (error) {
     if (isAbort(error)) {
       logger.warn(`source ${sourceId} timeout`);
-      return build({ status: 'timeout', message: MSG_TIMEOUT });
+      return build({ status: 'timeout', message: MSG_TIMEOUT, reasonCode: 'TIMEOUT' });
     }
     // Log only the error name: messages may contain URLs with keys.
     logger.warn(`source ${sourceId} failed: ${error instanceof Error ? error.name : 'unknown'}`);
-    return build({ status: 'error', message: MSG_ERROR });
+    const reasonCode =
+      error instanceof HttpStatusError && error.status === 429 ? 'RATE_LIMIT' : 'UPSTREAM_ERROR';
+    return build({ status: 'error', message: MSG_ERROR, reasonCode });
   }
 }
 
