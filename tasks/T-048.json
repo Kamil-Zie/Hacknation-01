@@ -4,8 +4,8 @@
   "description": "Po T-041…T-047: coord-integration-reviewer na ścieżce rejestracja → dodanie członka → analiza w koncie → historia u drugiego członka oraz regresja ścieżki anonimowej; coord-security: hasła, JWT_SECRET, 401/403, brak wycieku passwordHash, limit logowań, CORS. Wg docs/adr/ADR-010-shared-accounts.md.",
   "type": "feature",
   "team": "coordinator",
-  "assignee": "backend-2",
-  "status": "ready",
+  "assignee": "coord-1",
+  "status": "in_progress",
   "priority": "medium",
   "depends_on": ["T-042", "T-043", "T-046", "T-047"],
   "contract_refs": ["API-004"],
@@ -20,7 +20,7 @@
     "note": ""
   },
   "notes": [
-    "coord-1 18:15: Nataniel przejmuje (18:15). Przegląd end-to-end kont: rejestracja z nazwą gospodarstwa, logowanie, dodanie członka (istniejący i pending), usunięcie, analiza w koncie, historia u drugiego członka, zmiana nazwy, wylogowanie; ścieżka anonimowa bez zmian. Bezpieczeństwo: be-reviewer / przegląd jak coord-security (sekrety, CORS, auth na endpointach, walidacja, limit logowań, JWT_SECRET w prod wymagany, npm audit --omit=dev). Wynik: lista problemów z priorytetem w wiadomości info do coord-1; poprawki w backendzie robisz od razu (fix), front zgłoś Dawidowi.",
+    "coord-1 18:15: Robi coord-1 (decyzja Kamila 18:17, przekazanie cofnięte). Przegląd end-to-end kont: rejestracja z nazwą gospodarstwa, logowanie, dodanie członka (istniejący i pending), usunięcie, analiza w koncie, historia u drugiego członka, zmiana nazwy, wylogowanie; ścieżka anonimowa bez zmian. Bezpieczeństwo: be-reviewer / przegląd jak coord-security (sekrety, CORS, auth na endpointach, walidacja, limit logowań, JWT_SECRET w prod wymagany, npm audit --omit=dev). Wynik: lista problemów z priorytetem w wiadomości info do coord-1; poprawki w backendzie robisz od razu (fix), front zgłoś Dawidowi.",
     "coord-1 17:25: z powrotem u coord-1 (Kamil) – decyzja Kamila; przydział do backend-2 z 17:10 nieaktualny.",
     "coord-1 17:10: PRZEPISANE na backend-2 decyzją Kamila. Nataniel pisał T-041/T-043, więc przegląd bezpieczeństwa uruchom agentem be-reviewer/coord-security (świeże oczy), a nie sam po sobie. Ścieżka: rejestracja → dodanie członka (T-042 Jana) → analiza w koncie → historia u drugiego członka + regresja ścieżki anonimowej. Front T-046/T-047 jeszcze w toku: backend sprawdź curl-em teraz, UI po handoffie Jakuba. Wynik do coord-1; JWT_SECRET na prod ustawia Kamil przy wdrożeniu.",
     "coord-1 16:10: Przed zamrożeniem funkcji (7:00)."
