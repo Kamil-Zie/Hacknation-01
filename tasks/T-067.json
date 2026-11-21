@@ -16,11 +16,12 @@
     "Czas analizy nadal < 25 s"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "coord-1 19:18: zamknięte. Przyczyna ULDK (natychmiastowe ponowienie), poprawka z przerwami; 294/294; seria 12 analiz na ERA5 u koordynatora bez 502."
   },
   "notes": [
+    "coord-1 19:18: zamknięte. Przyczyna ULDK (natychmiastowe ponowienie), poprawka z przerwami; 294/294; seria 12 analiz na ERA5 u koordynatora bez 502.",
     "coord-1 18:25: ryzyko dla oceny jury (KOWR testuje dowolne działki). Priorytet przed powtórką IUNG na ERA5 (T-055 część 2).",
     "WYNIK (backend-1): 502 UPSTREAM_UNAVAILABLE pochodzi wyłącznie z geometrii działki (ULDK, requireParcel), nie z pogody; szybkie porażki ULDK ponawiane bez przerwy dawały 502 po ok. 2 s. Poprawka: runSource retryDelayMs (podwajana przerwa, 429 ponawiane, przerwę przerywa budżet), ULDK 2 ponowienia 0,6/1,2 s, NASA POWER 2 ponowienia 0,5/1 s, 502 z details.reasonCode, log z kodem HTTP lub kodem błędu sieci. Testy 294/294, seria 12 analiz lokalnie 0 × 502.",
     "Repro: for p in '040706_4.0004.15 sugar_beet' '221002_4.0004.136 winter_rapeseed' '080906_5.0018.138/3 spring_barley' '161002_4.0241.261 maize'; do set -- $p; curl -s -X POST localhost:3000/api/v1/analyses -H Content-Type:application/json -d \"{\\\"parcelId\\\":\\\"$1\\\",\\\"cropCode\\\":\\\"$2\\\",\\\"analysisDate\\\":\\\"2026-06-10\\\"}\" | head -c 120; echo; done"

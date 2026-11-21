@@ -77,7 +77,7 @@ Zmienne w `.env` (wzór: `.env.example`):
 | `JWT_SECRET` | sekret tokenów logowania; w dev pusty = losowy przy starcie, w produkcji wymagany |
 | `EUMETSAT_*`, `OVERPASS_*` | opcjonalne (źródło EUMETSAT jest wyłączone w MVP, patrz sekcja 4; adresy Overpass to zapas) |
 
-Aplikacja działa w przeglądarkach Chrome, Firefox, Edge, Safari i Opera bez instalacji po stronie użytkownika; układ jest responsywny (telefon i komputer).
+Aplikacja działa w przeglądarce bez instalowania czegokolwiek po stronie użytkownika; układ jest responsywny (telefon i komputer). Test ścieżki demo 2026-11-21 na Windows 11: Chrome i Edge (test automatyczny), Firefox i Opera (ręcznie) przeszły wszystkie kroki: wyszukanie, klik na mapie, uprawa i data, raport, wydruk/PDF, logowanie. Widok telefonu sprawdzony na 390 px. Safari (iPhone) nie było testowane.
 
 ## 2. Opis podstawowych funkcji
 
