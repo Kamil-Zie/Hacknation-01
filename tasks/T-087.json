@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "backend-2",
-  "status": "integration",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-C-018", "API-020", "API-001"],
@@ -22,7 +22,8 @@
   },
   "notes": [
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu.",
-    "backend-2 00:45: ParcelSearchBox i store/searchHistory gotowe na mocku (tsc, eslint, prettier OK). Komponent nie jest jeszcze osadzony: wstawia go T-085 (Sidebar). Test 390/1440 px i klawiatury po osadzeniu. Usuwanie wpisu historii: Tab/mysz, nie strzałki."
+    "backend-2 00:18: ParcelSearchBox i store/searchHistory gotowe na mocku (tsc, eslint, prettier OK). Komponent nie jest jeszcze osadzony: wstawia go T-085 (Sidebar). Test 390/1440 px i klawiatury po osadzeniu. Usuwanie wpisu historii: Tab/mysz, nie strzałki.",
+    "backend-2 00:31: done. Osadzony w Sidebar przez T-085 (a6b5638); test Dawida 390/1440 px bez poziomego scrolla i błędów JS (20261122-0022-frontend-1-info). Ręczny test klawiatury (strzałki/Enter/Esc) nie był robiony."
   ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"

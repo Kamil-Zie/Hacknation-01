@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "backend-2",
-  "status": "integration",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-087"],
   "contract_refs": ["UI-S-010", "UI-C-019", "API-020"],
@@ -22,7 +22,8 @@
   },
   "notes": [
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu.",
-    "backend-2 01:05: MyParcelsPage i ParcelFilters gotowe na mocku (tsc, eslint, prettier OK, Vite kompiluje). Brak testu wizualnego 390/1440 px i axe – do sprawdzenia w przeglądarce."
+    "backend-2 00:21: MyParcelsPage i ParcelFilters gotowe na mocku (tsc, eslint, prettier OK, Vite kompiluje). Brak testu wizualnego 390/1440 px i axe – do sprawdzenia w przeglądarce.",
+    "backend-2 00:31: done. axe-core 4.14 na /dzialki 0 błędów, też w Wysokim kontraście, na prawdziwym API-020 (Kamil, 20261122-0030-coord-1-info)."
   ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
