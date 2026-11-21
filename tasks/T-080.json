@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "in_progress",
+  "status": "integration",
   "priority": "medium",
   "depends_on": ["T-073", "T-078"],
   "contract_refs": ["UI-S-003", "API-019", "DM-025"],
@@ -23,7 +23,8 @@
   },
   "notes": [
     "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo.",
-    "frontend-2: start 21:40 na mocku API-019/DM-025 (fe-developer)."
+    "frontend-2: start 21:40 na mocku API-019/DM-025 (fe-developer).",
+    "frontend-2: 21:55 ekran na mocku (/pole/:fieldId/raport, /pole/demo/raport), FieldMap, druk przez window.print. Czeka na T-078; przełączenie: VITE_MOCK_FIELD_REPORTS=false. Proponowane pola errorMessage (failed) i parcelIds (porady) wysłane do backendu."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

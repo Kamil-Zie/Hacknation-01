@@ -375,3 +375,46 @@ export interface UpdateProfileRequest {
   currentPassword?: string;
   newPassword?: string;
 }
+
+// DM-025 FieldReport (API-019 POST /fields/:fieldId/analyses)
+export type FieldParcelStatus = 'complete' | 'partial' | 'failed';
+
+export interface FieldReportRequest {
+  cropCode: string;
+  analysisDate: string;
+}
+
+export interface FieldReportParcel {
+  parcelId: string;
+  /** null when the parcel could not be computed (status failed) */
+  reportId: string | null;
+  areaHa: number;
+  droughtClass: DroughtClass;
+  rootZonePct: number | null;
+  deficitMm: number | null;
+  status: FieldParcelStatus;
+  /** Optional reason for a failed parcel (not in DM-025 yet; shown when the backend sends it) */
+  errorMessage?: string | null;
+}
+
+export interface FieldReportSummary {
+  droughtClass: DroughtClass;
+  severeAreaPct: number;
+  moderateAreaPct: number;
+  rootZonePctWeighted: number | null;
+  deficitMmWeighted: number | null;
+  confidence: Confidence;
+}
+
+export interface FieldReport {
+  fieldId: string;
+  name: string;
+  crop: { code: string; name: string };
+  analysisDate: string;
+  areaHa: number;
+  summary: FieldReportSummary;
+  parcels: FieldReportParcel[];
+  /** DM-009 merged without duplicates; parcelIds = parcels the recommendation applies to */
+  recommendations: (Recommendation & { parcelIds?: string[] })[];
+  createdAt: string;
+}

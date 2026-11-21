@@ -445,6 +445,24 @@
         "phone": null,
         "desktop": null
       }
+    },
+    {
+      "id": "UI-S-008",
+      "status": "proposed",
+      "name": "Raport pola",
+      "route": "/pole/:fieldId/raport",
+      "description": "Raport zbiorczy pola z kilku sąsiednich działek (T-080, API-019). Krok 1: wybór uprawy i dnia (AnalysisForm z kroku 2), błąd API-019 jako Alert z ponowieniem. Liczenie: pasek postępu z komunikatem „Liczymy działki pola” (API jest synchroniczne, bez licznika). Wynik: nagłówek (nazwa pola, liczba działek, ha, uprawa, data), karta podsumowania (najgorsza klasa suszy jako ikona + słowo + kolor, % powierzchni w suszy silnej i umiarkowanej, średnie ważone: woda w strefie korzeni i deficyt, pewność), mapa pola z działkami pokolorowanymi klasą suszy i podpisem (FieldMap) z legendą słowną, karty działek (numer, ha, klasa, link „Zobacz raport działki” do /report/:id), działka failed jako „Nie udało się policzyć” z powodem bez psucia reszty, połączone porady z listą działek („Dotyczy działek”). Akcje Drukuj / Pobierz PDF przez window.print() i style druku (przyciski ukryte). Stany: ładowanie upraw (szkielety), błąd upraw, liczenie, błąd API-019, wynik. Testowo z mockiem: /pole/demo/raport.",
+      "components": ["UI-C-004", "UI-C-012"],
+      "api_refs": ["API-019"],
+      "responsive": {
+        "xs": "jedna kolumna, karty działek jedna pod drugą, mapa 320 px",
+        "md": "karty działek w siatce auto-fill, mapa 440 px",
+        "lg": "szerokość do 1600 px, ta sama siatka"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
     }
   ]
 }
