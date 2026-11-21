@@ -87,7 +87,9 @@ export function ParcelPage() {
   useEffect(() => () => clearTimeout(navTimer.current), []);
 
   function handleSubmit(formValues: FormValues) {
-    if (!parcelId) return;
+    // Guard against a fast double click sending two POST API-004
+    if (!parcelId || mutation.isPending) return;
+    clearTimeout(navTimer.current);
     setValues(formValues);
     setLocalError(null);
     mutation.mutate(
@@ -188,6 +190,7 @@ export function ParcelPage() {
         crops={cropsQuery.data?.items ?? []}
         defaultCropCode={values?.cropCode}
         defaultDate={values?.analysisDate}
+        isSubmitting={mutation.isPending}
         onSubmit={handleSubmit}
       />
     );
