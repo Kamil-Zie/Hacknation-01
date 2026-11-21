@@ -194,6 +194,7 @@ export async function createAnalysis(
       : []),
     ...run.meteo.limitations,
     ...LIMITATIONS_AFTER_SPLIT,
+    'Tło wieloletnie liczy parowanie metodą Hargreavesa z danych NASA POWER, która zwykle daje wyższe wartości niż metoda Penmana-Monteitha, więc podatność może być nieco zawyżona.',
   ];
 
   const computedAt = deps.now();
