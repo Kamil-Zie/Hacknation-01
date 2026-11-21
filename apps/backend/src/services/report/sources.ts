@@ -61,9 +61,20 @@ export function buildSourceStatuses(results: SourceResult<unknown>[]): SourceSta
   return statuses;
 }
 
+// Sources that nasa_power (role fallback, ok/cached) replaces when Open-Meteo fails (ADR-008, decision 13:42).
+const COVERED_BY_NASA_FALLBACK: SourceId[] = ['meteo', 'era5land'];
+
+const isOk = (item: SourceStatus) => item.status === 'ok' || item.status === 'cached';
+
 export function reportStatus(statuses: SourceStatus[]): 'complete' | 'partial' {
+  const nasaFallbackOk = statuses.some(
+    (item) => item.sourceId === 'nasa_power' && item.role === 'fallback' && isOk(item),
+  );
   const failed = statuses.some(
-    (item) => MANDATORY.includes(item.sourceId) && item.status !== 'ok' && item.status !== 'cached',
+    (item) =>
+      MANDATORY.includes(item.sourceId) &&
+      !isOk(item) &&
+      !(nasaFallbackOk && COVERED_BY_NASA_FALLBACK.includes(item.sourceId)),
   );
   return failed ? 'partial' : 'complete';
 }

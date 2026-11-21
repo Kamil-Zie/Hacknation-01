@@ -61,6 +61,33 @@ test('complete when mandatory ok/cached and eumetsat missing', () => {
   assert.equal(reportStatus(buildSourceStatuses(all)), 'complete');
 });
 
+test('complete when Open-Meteo fails but nasa_power fallback covers meteo and era5land', () => {
+  const all = [
+    ...MANDATORY.map((id) => result(id, id === 'meteo' || id === 'era5land' ? 'error' : 'ok')),
+    { ...result('nasa_power'), role: 'fallback' as const },
+  ];
+  assert.equal(reportStatus(buildSourceStatuses(all)), 'complete');
+});
+
+test('partial when Open-Meteo fails and nasa_power is only climatology or failed', () => {
+  const failedMeteo = MANDATORY.map((id) => result(id, id === 'meteo' ? 'timeout' : 'ok'));
+  const climatology = [...failedMeteo, { ...result('nasa_power'), role: 'climatology' as const }];
+  const nasaDown = [
+    ...failedMeteo,
+    { ...result('nasa_power', 'error'), role: 'fallback' as const },
+  ];
+  assert.equal(reportStatus(buildSourceStatuses(climatology)), 'partial');
+  assert.equal(reportStatus(buildSourceStatuses(nasaDown)), 'partial');
+});
+
+test('nasa_power fallback does not cover other mandatory sources', () => {
+  const all = [
+    ...MANDATORY.map((id) => result(id, id === 'sentinel2' ? 'missing' : 'ok')),
+    { ...result('nasa_power'), role: 'fallback' as const },
+  ];
+  assert.equal(reportStatus(buildSourceStatuses(all)), 'partial');
+});
+
 test('partial when a mandatory source fails', () => {
   for (const status of ['error', 'timeout', 'missing'] as const) {
     const all = MANDATORY.map((id) => result(id, id === 'sentinel2' ? status : 'ok'));

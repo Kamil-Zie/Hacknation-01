@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -44,7 +44,7 @@
           "name": "status",
           "type": "enum(complete|partial)",
           "required": true,
-          "note": "partial tylko gdy choć jedno źródło OBOWIĄZKOWE (uldk, meteo, sentinel2, era5land, soilgrids, elevation, overpass) ma status error|timeout|missing. eumetsat jest opcjonalny i zawsze missing: nie zmienia statusu, ale zostaje wpis w dataGaps. nasa_power jest zapasem: wpis w sources[] tylko gdy faktycznie użyty (wtedy meteo i era5land mają status ok z komunikatem o zapasie, pewność −0,05, wpis w limitations)"
+          "note": "partial tylko gdy choć jedno źródło OBOWIĄZKOWE (uldk, meteo, sentinel2, era5land, soilgrids, elevation, overpass) ma status error|timeout|missing. eumetsat jest opcjonalny i zawsze missing: nie zmienia statusu, ale zostaje wpis w dataGaps. nasa_power występuje zawsze (ADR-009, role climatology). Gdy Open-Meteo zawiedzie (429/5xx/timeout), meteo i era5land zostają w sources[] ze statusem error|timeout i komunikatem „zastąpione przez nasa_power”, a nasa_power ma role fallback; jeśli nasa_power ma wtedy status ok|cached, meteo i era5land uznaje się za pokryte i raport NIE jest partial (decyzja koordynatora 13:42). Zapas obniża pewność o 0,05 i dodaje wpis w limitations (ADR-008)"
         },
         { "name": "assessment", "type": "Ref<DM-006>", "required": true },
         { "name": "vulnerability", "type": "Ref<DM-007>", "required": true },
