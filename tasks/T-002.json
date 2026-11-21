@@ -29,6 +29,7 @@
     "elevation: DZIAŁA, 0.9 s.",
     "overpass: NIEZWERYFIKOWANE. overpass-api.de, lz4, kumi, private.coffee: timeout połączenia z sieci backend-1 (także /api/status). Powtórzyć z innej sieci przed T-030.",
     "eumetsat: publiczny OpenSearch działa bez klucza (1.5 s); bez kluczy token 401. EO:EUM:DAT:METOP:SOMO25: 30 granul 2025-07-01, 0 po 2025-08-01 (koniec 2025-07-15); SOMO12 tak samo. Granule .nat (EPS native), nie netCDF4/BUFR. H SAF brak w Data Store (197 kolekcji). OAS025 (netCDF) to najpewniej wiatr. DECYZJA: NO-GO, eumetsat zostaje opcjonalny ze statusem missing.",
+    "Działki demo (sprawdzone w ULDK 2026-11-21): GŁÓWNA 061409_2.0009.612 (obręb Bronowice, gm. Puławy, pole uprawne, punkt 51.44,21.93, SoilGrids: sand ~60%, clay ~13%); POMOCNICZA 061401_1.0001.691/9 (Miasto Puławy, zabudowa: SoilGrids = 0 -> brak gleby; przydatna do testu '/' w ID i ścieżki dataGaps).",
     "Rozbieżności z ADR-006: (1) Open-Meteo 0 dni opóźnienia zamiast ~5, 20 lat > timeout 10 s: pobierać w 2 równoległych zakresach albo timeout 15 s + cache; (2) SoilGrids: igh poza proj4, nodata=0, okno ±250 m = 2x2 piksele: pomijać zera i powiększać okno; (3) Sentinel-2: offset per baseline, scl 20 m vs red/nir 10 m, archiwum od 11/2016; (4) ULDK: zimny start do 9 s przy timeoucie 8 s: timeout 10 s + 1 ponowienie; (5) EUMETSAT SOMO25 martwe od 2025-07-15, format .nat."
   ],
   "created_at": "2026-11-21",
