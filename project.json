@@ -529,7 +529,7 @@
           "status": "accepted",
           "date": "2026-11-21",
           "context": "Rolnik pracuje sam albo dzieli działki z rodziną lub doradcą; nie chcemy osobnych typów kont ani migracji.",
-          "decision": "Jeden typ konta Gospodarstwo tworzony przy rejestracji; członkowie równi, dodawani po e-mailu (pending do rejestracji); e-mail + hasło (scrypt), JWT HS256 (jose); analiza bez logowania bez zmian, z tokenem raport trafia do historii konta. docs/adr/ADR-010-shared-accounts.md",
+          "decision": "Jeden typ konta Gospodarstwo tworzony przy rejestracji; członkowie równi, dodawani po e-mailu (pending do rejestracji); e-mail + hasło (scrypt), JWT HS256 (crypto.createHmac); analiza bez logowania bez zmian, z tokenem raport trafia do historii konta. docs/adr/ADR-010-shared-accounts.md",
           "consequences": "DM-016…DM-018 i accountId w DM-001 (T-DB), API-007…API-013, UI-S-005/006; zadania T-040…T-048; ścieżka anonimowa musi zostać nienaruszona."
         }
       ]
