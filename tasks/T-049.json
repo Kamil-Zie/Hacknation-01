@@ -5,7 +5,7 @@
   "type": "perf",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "ready",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-037"],
   "contract_refs": ["API-004", "DM-011"],
@@ -21,7 +21,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 16:55: zlecone przez Kamila. Ok. 20 min. Przed demo jedno 'rozgrzewające' otwarcie raportu po starcie serwera."
+    "coord-1 16:55: zlecone przez Kamila. Ok. 20 min. Przed demo jedno 'rozgrzewające' otwarcie raportu po starcie serwera.",
+    "Zrobione (backend-2): LRU w procesie w cache.service.ts przed Mongo dla WSZYSTKICH źródeł (50 wpisów, TTL = expiresAt z Mongo albo ttlMs przy zapisie; działa też bez połączenia z bazą). Pomiar (Bronowice / pszenica / 2026-05-25, po restarcie serwera): POST 1 0,62 s (nasa_power z Atlasa 241 ms na tej sieci), POST 2 0,28 s i POST 3 0,29 s (nasa_power z pamięci 0 ms), status 'cached' bez zmian. Testy: cache.service.test.ts (odczyt bez Mongo, TTL, limit LRU), 276/276."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
