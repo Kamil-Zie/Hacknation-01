@@ -21,7 +21,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo."
+    "coord-1 21:15: nowa funkcja Pola (ADR-011), poza pierwotnym scenariuszem demo. Na main przed 7:00 albo odkładamy; najpierw dokończ swoje zadania ścieżki demo.",
+    "backend-1 21:30 etap 1 na main: POST /fields/:fieldId/analyses (fieldReports.*), działki max 3 równolegle, start kolejnych tylko do 15 s, podsumowanie ważone powierzchnią z działek policzonych, rekomendacje połączone po ruleId z parcelIds; runSource łączy równoległe zapytania o ten sam klucz (sąsiednie działki = jedno zapytanie Open-Meteo/NASA). Testy 313/313. Pole czytane z kolekcji fields; zostaje: przepięcie na FieldModel i test na żywo po T-077."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

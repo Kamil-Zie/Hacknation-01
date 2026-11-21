@@ -9,6 +9,7 @@ import { accountsRouter } from '@/routes/accounts.routes';
 import { analysesRouter } from '@/routes/analyses.routes';
 import { authRouter } from '@/routes/auth.routes';
 import { cropsRouter } from '@/routes/crops.routes';
+import { fieldReportsRouter } from '@/routes/fieldReports.routes';
 import { healthRouter } from '@/routes/health.routes';
 import { membersRouter } from '@/routes/members.routes';
 import { parcelsRouter } from '@/routes/parcels.routes';
@@ -30,6 +31,7 @@ export function createApp() {
   app.use('/api/v1', authRouter);
   app.use('/api/v1', accountsRouter);
   app.use('/api/v1', membersRouter);
+  app.use('/api/v1', fieldReportsRouter);
   app.use(notFoundHandler);
   app.use(errorHandler);
   return app;

@@ -31,6 +31,8 @@ export class HttpStatusError extends Error {
   }
 }
 
+const inflight = new Map<string, Promise<unknown>>();
+
 const MSG_TIMEOUT = 'Źródło nie odpowiedziało na czas';
 const MSG_MISSING = 'Brak danych ze źródła';
 const MSG_ERROR = 'Źródło zwróciło błąd';
@@ -70,13 +72,20 @@ export async function runSource<T>(options: RunSourceOptions<T>): Promise<Source
     const signal = options.signal
       ? AbortSignal.any([timeoutSignal, options.signal])
       : timeoutSignal;
-    const fetched = await fetchWithRetry(
-      options.fetcher,
-      signal,
-      options.retries ?? 1,
-      options.attemptTimeoutMs,
-      options.retryDelayMs,
-    );
+    // T-078: parallel calls with the same key (neighbouring parcels of a field share the weather grid)
+    // wait for one upstream request instead of sending their own.
+    let pending = inflight.get(key) as Promise<FetcherResult<T>> | undefined;
+    if (!pending) {
+      pending = fetchWithRetry(
+        options.fetcher,
+        signal,
+        options.retries ?? 1,
+        options.attemptTimeoutMs,
+        options.retryDelayMs,
+      ).finally(() => inflight.delete(key));
+      inflight.set(key, pending);
+    }
+    const fetched = await pending;
 
     if (!fetched || isEmpty(fetched.data)) {
       // DM-011: for missing, fetchedAt is the moment of the attempt.

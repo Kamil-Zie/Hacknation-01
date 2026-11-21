@@ -206,3 +206,23 @@ test('null result gives status missing and is not cached', async () => {
   assert.equal(result.status, 'missing');
   assert.equal(await cache.get('k4'), null);
 });
+
+test('T-078: parallel calls with the same key share one upstream request', async () => {
+  let calls = 0;
+  const fetcher = async () => {
+    calls += 1;
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    return { data: [1, 2, 3] };
+  };
+  const cache = memoryCache();
+  const results = await Promise.all(
+    [1, 2, 3].map(() => runSource({ sourceId: 'meteo', key: 'shared', fetcher, cache })),
+  );
+  assert.equal(calls, 1);
+  assert.ok(results.every((result) => result.status === 'ok'));
+  // After it settles a new call goes through the cache, not the in-flight entry.
+  assert.equal(
+    (await runSource({ sourceId: 'meteo', key: 'shared', fetcher, cache })).status,
+    'cached',
+  );
+});
