@@ -47,7 +47,7 @@ export function AppNav() {
   return (
     <Box
       component="nav"
-      aria-label="Nawigacja główna"
+      aria-label="Menu główne"
       className="no-print"
       sx={{
         flexGrow: 1,
@@ -75,13 +75,19 @@ export function AppNav() {
           color="inherit"
           aria-label="Menu"
           aria-haspopup="menu"
-          aria-expanded={anchor ? 'true' : undefined}
+          aria-controls="menu-glowne"
+          aria-expanded={anchor ? 'true' : 'false'}
           onClick={(event) => setAnchor(event.currentTarget)}
           sx={{ width: 44, height: 44 }}
         >
           <MenuIcon />
         </IconButton>
-        <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={() => setAnchor(null)}>
+        <Menu
+          id="menu-glowne"
+          anchorEl={anchor}
+          open={Boolean(anchor)}
+          onClose={() => setAnchor(null)}
+        >
           {items.map((item) => (
             <MenuItem
               key={item.label}

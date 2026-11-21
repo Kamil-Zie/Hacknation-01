@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "coord-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-001", "UI-S-003", "UI-S-005", "UI-S-006"],
@@ -22,8 +22,9 @@
     "note": ""
   },
   "notes": [
+    "coord-1 00:30: wdrożone, axe-core 0 błędów na 10 stronach (też w HC + 125%), raport docs/accessibility-report.md.",
     "coord-1 22:40: pliki zarezerwowane w claims/coord-1.md; frontend: nie ruszajcie AppLayout/AppNav/App.tsx do handoffu."
   ],
   "created_at": "2026-11-21",
-  "updated_at": "2026-11-21"
+  "updated_at": "2026-11-22"
 }

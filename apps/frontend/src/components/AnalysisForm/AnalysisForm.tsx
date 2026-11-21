@@ -172,7 +172,7 @@ export function AnalysisForm({
                   >
                     <Typography
                       variant="h3"
-                      component="h3"
+                      component="h2"
                       id={`crop-group-${group.category}`}
                       sx={{ fontSize: '1.125rem', fontWeight: 700, mb: 1.25 }}
                     >

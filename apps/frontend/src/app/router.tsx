@@ -1,10 +1,12 @@
-// T-006 T-081 All routes in one place (UI-S-001..UI-S-006); everything except /logowanie and shared reports needs a session
+// T-006 T-081 T-084 All routes in one place (UI-S-001..UI-S-006); everything except /logowanie and shared reports needs a session
 import { createBrowserRouter } from 'react-router-dom';
 
 import { setUnauthorizedHandler } from '@/api/client';
 import { AppLayout } from '@/components/AppLayout/AppLayout';
 import { RequireAuth } from '@/components/RequireAuth/RequireAuth';
+import { A11yStatementPage } from '@/pages/A11yStatement/A11yStatementPage';
 import { AccountPage } from '@/pages/Account/AccountPage';
+import { EasyReadPage } from '@/pages/EasyRead/EasyReadPage';
 import { FieldCreatePage } from '@/pages/FieldCreate/FieldCreatePage';
 import { FieldReportPage } from '@/pages/FieldReport/FieldReportPage';
 import { LoginPage } from '@/pages/Login/LoginPage';
@@ -13,6 +15,7 @@ import { NotFoundPage } from '@/pages/NotFound/NotFoundPage';
 import { ParcelPage } from '@/pages/Parcel/ParcelPage';
 import { ReportPage } from '@/pages/Report/ReportPage';
 import { ReportPrintPage } from '@/pages/ReportPrint/ReportPrintPage';
+import { SitemapPage } from '@/pages/Sitemap/SitemapPage';
 import { StartPage } from '@/pages/Start/StartPage';
 import { markSessionExpired, useSessionStore } from '@/store/session';
 
@@ -33,6 +36,9 @@ export const router = createBrowserRouter([
       },
       { path: '/report/:id', element: <ReportPage /> },
       { path: '/logowanie', element: <LoginPage /> },
+      { path: '/tekst-latwy-do-czytania', element: <EasyReadPage /> },
+      { path: '/deklaracja-dostepnosci', element: <A11yStatementPage /> },
+      { path: '/mapa-strony', element: <SitemapPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

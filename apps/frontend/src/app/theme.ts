@@ -87,7 +87,8 @@ const baseTheme = createTheme({
       ctaGradient: 'linear-gradient(180deg, #a8cdf8 0%, #d4e7fc 100%)',
       ctaText: '#0B2545',
       line: '#DDE1D8',
-      iconMuted: '#7FB2EE',
+      // T-084: was #7FB2EE (2.2:1 on white); borders and icons of controls need 3:1 (WCAG 1.4.11)
+      iconMuted: '#4A87D0',
       tint: '#E9EEF5',
       alertHigh: '#C62828',
       alertMedium: '#F28C28',

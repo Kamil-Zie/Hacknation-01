@@ -13,7 +13,12 @@ export function RecentParcels({ items, currentId, onSelect }: RecentParcelsProps
   if (items.length === 0) return null;
   return (
     <Stack spacing={1} component="section" aria-labelledby="recent-parcels-title">
-      <Typography id="recent-parcels-title" variant="subtitle2" color="text.secondary">
+      <Typography
+        id="recent-parcels-title"
+        variant="subtitle2"
+        component="h2"
+        color="text.secondary"
+      >
         Ostatnie działki
       </Typography>
       <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: 'wrap' }}>

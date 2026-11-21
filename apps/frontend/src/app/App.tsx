@@ -3,6 +3,7 @@ import { CssBaseline, GlobalStyles, ThemeProvider } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router-dom';
 
+import { a11yStyles } from '@/app/a11yStyles';
 import { router } from '@/app/router';
 import { theme } from '@/app/theme';
 
@@ -12,6 +13,7 @@ export function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <GlobalStyles styles={a11yStyles} />
       <GlobalStyles
         styles={(t) => ({
           // Static map on the print sheet: no zoom buttons (ParcelMap keeps them even when not interactive).

@@ -23,6 +23,28 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // T-084 apply saved text size and contrast before the first render (keys: src/store/a11y.ts)
+      (function () {
+        try {
+          var html = document.documentElement;
+          var size = window.localStorage.getItem('kropelka-text-size');
+          var sizes = { 1: '112.5%', 2: '125%' };
+          if (sizes[size]) {
+            html.style.fontSize = sizes[size];
+            html.dataset.textSize = size;
+          }
+          var contrast = window.localStorage.getItem('kropelka-contrast');
+          var systemHigh =
+            window.matchMedia && window.matchMedia('(prefers-contrast: more)').matches;
+          if (contrast === 'high' || (contrast === null && systemHigh)) {
+            html.classList.add('high-contrast');
+          }
+        } catch (e) {
+          // no storage access: defaults
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

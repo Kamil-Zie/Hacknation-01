@@ -175,12 +175,7 @@ function StepTile({ number, step, state, href, isCurrent }: StepTileProps) {
   );
   if (isDone && href) {
     return (
-      <ButtonBase
-        component={RouterLink}
-        to={href}
-        aria-label={`${step.label}: gotowe, zmień`}
-        sx={sx}
-      >
+      <ButtonBase component={RouterLink} to={href} sx={sx}>
         {content}
       </ButtonBase>
     );

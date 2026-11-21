@@ -164,7 +164,7 @@ export function AccountPage() {
           alignItems: 'start',
         }}
       >
-        <SectionCard id="moje-dzialki" title="Moje działki">
+        <SectionCard id="moje-dzialki" title="Moje działki" headingLevel="h2">
           {myParcels.length === 0 ? (
             <Typography>Nie sprawdzano jeszcze żadnej działki.</Typography>
           ) : (

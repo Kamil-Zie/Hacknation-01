@@ -5,11 +5,19 @@ import type { ReactNode } from 'react';
 export interface SectionCardProps {
   id: string;
   title: string;
+  /** T-084 heading level: h2 when the card is a top-level section of the page (no skipped levels) */
+  headingLevel?: 'h2' | 'h3';
   subtitle?: string;
   children: ReactNode;
 }
 
-export function SectionCard({ id, title, subtitle, children }: SectionCardProps) {
+export function SectionCard({
+  id,
+  title,
+  subtitle,
+  headingLevel = 'h3',
+  children,
+}: SectionCardProps) {
   return (
     <Box
       component="section"
@@ -34,7 +42,7 @@ export function SectionCard({ id, title, subtitle, children }: SectionCardProps)
         <Typography
           id={`${id}-title`}
           variant="h3"
-          component="h3"
+          component={headingLevel}
           sx={{ fontSize: '1.625rem', fontWeight: 800 }}
         >
           {title}

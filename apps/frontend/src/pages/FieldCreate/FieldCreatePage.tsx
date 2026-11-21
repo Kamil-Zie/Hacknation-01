@@ -199,7 +199,12 @@ export function FieldCreatePage() {
 
           {suggestions.length > 0 && (
             <Stack spacing={1} component="section" aria-label="Ostatnie działki">
-              <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: 16 }}>
+              <Typography
+                variant="subtitle2"
+                component="h2"
+                color="text.secondary"
+                sx={{ fontSize: 16 }}
+              >
                 Ostatnie działki
               </Typography>
               <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: 'wrap' }}>
