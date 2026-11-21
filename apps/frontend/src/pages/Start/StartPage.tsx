@@ -148,7 +148,9 @@ export function StartPage() {
         sx={{
           position: { xs: 'relative', md: 'sticky' },
           minWidth: 0,
-          minHeight: { xs: 480, md: 560 },
+          minHeight: { xs: 'auto', md: 560 },
+          // phones: card goes under the map so 'Podgląd tej działki' really shows the outline (T-071)
+          flexDirection: { xs: 'column', md: 'row' },
           // md+: fit the viewport under header + stepper so the "Wybrana działka" buttons are
           // never below the fold on a 1920×1080 projector (map used to stretch to the left column)
           height: { md: 'calc(100vh - 248px)' },
@@ -165,7 +167,7 @@ export function StartPage() {
           parcel={parcel}
           focus={focus}
           focusKey={focusKey}
-          height="100%"
+          height={{ xs: 380, md: '100%' }}
           isLoading={isLoading}
           errorMessage={searchId === null ? (error?.message ?? null) : null}
           onPick={handlePick}
@@ -202,10 +204,12 @@ export function StartPage() {
         {parcel && (
           <Box
             sx={{
-              position: 'absolute',
-              left: { xs: 12, md: 24 },
-              right: { xs: 12, md: 24 },
-              bottom: { xs: 28, md: 32 },
+              // phones: static under the map (overlay hid the outline); md+: floating over the map
+              position: { xs: 'static', md: 'absolute' },
+              left: { md: 24 },
+              right: { md: 24 },
+              bottom: { md: 32 },
+              p: { xs: 1.5, md: 0 },
               zIndex: 1000,
               display: 'flex',
               justifyContent: 'center',
