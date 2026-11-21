@@ -7,7 +7,8 @@
     "seed": "tsx seed.ts",
     "copy-cache": "tsx scripts/copy-cache.ts",
     "typecheck": "tsc --noEmit",
-    "warm-cache": "tsx scripts/warm-cache.ts"
+    "warm-cache": "tsx scripts/warm-cache.ts",
+    "demo-accounts": "tsx scripts/demo-accounts.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

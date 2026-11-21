@@ -20,7 +20,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "seed": "npm run seed -w database",
-    "warm-cache": "npm run warm-cache -w database --"
+    "warm-cache": "npm run warm-cache -w database --",
+    "demo-accounts": "npm run demo-accounts -w database --"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

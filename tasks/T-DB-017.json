@@ -1,0 +1,40 @@
+{
+  "id": "T-DB-017",
+  "title": "[DATA] Demo accounts for the team (dawid@test.pl, jan@test.pl) via public API, script demo-accounts",
+  "description": "Obowiązkowe zadanie update danych po zmianie w bazie. Zmienione pliki: database/package.json, database/scripts/warm-cache.ts, database/scripts/demo-accounts.ts.",
+  "type": "data_update",
+  "team": "backend",
+  "assignee": "coord-1",
+  "status": "done",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["DM-016", "DM-017", "DM-018", "DM-024"],
+  "data_change": {
+    "changed_files": [
+      "database/package.json",
+      "database/scripts/warm-cache.ts",
+      "database/scripts/demo-accounts.ts"
+    ],
+    "data_model_version": "0.6.0",
+    "breaking": false,
+    "created_by": "coord-1"
+  },
+  "acceptance_criteria": [
+    "contracts/data_model.json opisuje nowy stan i ma podbite version",
+    "Model/schemat w kodzie zgadza się z contracts/data_model.json",
+    "Seed w database/ zaktualizowany pod nowy model, idempotentny, z realistycznymi danymi demo",
+    "npm run seed przechodzi na wspólnej bazie dev w MongoDB Atlas (hacknation) bez błędów",
+    "Wysłana wiadomość contract_change (lub breaking_change) do frontendu, żeby zaktualizował mocki",
+    "Przy najbliższym wdrożeniu baza prod (hacknation_prod) odtworzona tym samym seedem (robi koordynator / coord-devops)"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 00:55: konta utworzone na bazie dev (hacknationS) skryptem npm run demo-accounts -- [apiUrl] --account email:hasło:imię (hasła tylko w argumentach, nie w repo). Dawid: 7 działek / 171 ha (Środa Wlkp., Kruszwica, Sulechów, Cerekwica + sąsiedzi z ULDK), pola „Pole pod Środą” (3 dz.) i „Buraki w Kruszwicy” (2 dz.) z raportami. Jan: 7 działek / 8,6 ha (Bronowice 612/613/373/2, Nowy Dwór Gdański, Głogówek + sąsiedzi), pola „Pole za stodołą” i „Kukurydza w Głogówku” z raportami. Każdy jest wspólnikiem drugiego z dostępem do 2 działek. Analizy na 2026-06-10. Na prod: ten sam skrypt z adresem API po wdrożeniu (T-065)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-22"
+}
