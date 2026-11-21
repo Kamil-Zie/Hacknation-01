@@ -182,7 +182,9 @@ export function AnalysisForm({
                       sx={{
                         display: 'grid',
                         gridTemplateColumns: {
-                          xs: 'repeat(2, minmax(0, 1fr))',
+                          // one column below 600 px: with 18 px text two columns split words ("Kukurydz-a")
+                          xs: 'minmax(0, 1fr)',
+                          sm: 'repeat(2, minmax(0, 1fr))',
                           md: 'repeat(auto-fill, minmax(240px, 1fr))',
                         },
                         gap: { xs: 1.25, md: 1.75 },
