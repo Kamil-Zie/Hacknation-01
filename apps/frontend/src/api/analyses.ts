@@ -9,12 +9,21 @@ const CREATE_TIMEOUT_MS = 40_000;
 const MOCK_GET_DELAY_MS = 800;
 const MOCK_CREATE_DELAY_MS = 4000;
 
+// T-025: API-005 and API-004 go live separately; VITE_MOCK_REPORTS / VITE_MOCK_ANALYSES
+// override VITE_USE_MOCKS per resource (same pattern as VITE_MOCK_PARCELS). No API URL = mock.
+function isMocked(flag: string | undefined): boolean {
+  return (flag ?? String(USE_MOCKS)) === 'true' || !import.meta.env.VITE_API_URL;
+}
+const MOCK_REPORTS = isMocked(import.meta.env.VITE_MOCK_REPORTS);
+const MOCK_ANALYSES = isMocked(import.meta.env.VITE_MOCK_ANALYSES);
+const OBJECT_ID_REGEX = /^[0-9a-f]{24}$/i;
+
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export async function createAnalysis(body: AnalysisRequest): Promise<Report> {
-  if (USE_MOCKS) {
+  if (MOCK_ANALYSES) {
     await delay(MOCK_CREATE_DELAY_MS);
     const { buildMockReport } = await import('@/mocks/analyses.mock');
     return buildMockReport(body);
@@ -27,11 +36,13 @@ export async function createAnalysis(body: AnalysisRequest): Promise<Report> {
 }
 
 export async function getReport(id: string): Promise<Report> {
-  if (USE_MOCKS) {
+  // Real report ids are ObjectIds; mock ids ('demo', 'demo-partial') stay on the mock even
+  // when API-005 is live, so a mocked analysis still opens its report
+  if (MOCK_REPORTS || !OBJECT_ID_REGEX.test(id)) {
     await delay(MOCK_GET_DELAY_MS);
     const { findMockReport } = await import('@/mocks/analyses.mock');
     const report = findMockReport(id);
-    if (!report) throw new ApiError('NOT_FOUND', 'Nie znaleziono raportu', 404);
+    if (!report) throw new ApiError('REPORT_NOT_FOUND', 'Nie znaleziono raportu', 404);
     return report;
   }
   return apiFetch<Report>(`/analyses/${encodeURIComponent(id)}`);
