@@ -5,7 +5,7 @@
   "type": "data_update",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": [],
@@ -34,7 +34,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1: szkielet seeda z T-001 (ee7ee53), pusty. Zamknij razem z T-DB-001 po pierwszym npm run seed."
+    "coord-1: szkielet seeda z T-001 (ee7ee53), pusty. Zamknij razem z T-DB-001 po pierwszym npm run seed.",
+    "Domknięte w T-DB-001 (backend-2): seed wypełniony raportami demo, npm run seed OK."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
