@@ -13,7 +13,11 @@ const FIELD: FieldDoc = {
   accountId: '665f0c0ffee0000000000bbb',
   name: 'Pole za stodołą',
   parcelIds: ['P1', 'P2', 'P3'],
-  parcelAreas: { P1: 1, P2: 3, P3: 2 },
+  parcels: [
+    { id: 'P1', parcelNumber: '11', areaHa: 1 },
+    { id: 'P2', parcelNumber: '12/2', areaHa: 3 },
+    { id: 'P3', parcelNumber: '13', areaHa: 2 },
+  ],
   areaHa: 6,
 };
 const BODY = { cropCode: 'winter_wheat' as const, analysisDate: '2026-06-10' };
@@ -31,7 +35,7 @@ function fakeReport(parcelId: string, spec: Spec): ReportDto {
   return {
     id: `report-${parcelId}`,
     status: 'complete',
-    parcel: { id: parcelId, areaHa: spec.areaHa },
+    parcel: { id: parcelId, parcelNumber: `n-${parcelId}`, areaHa: spec.areaHa },
     crop: { code: 'winter_wheat', name: 'Pszenica ozima' },
     assessment: {
       droughtClass: spec.droughtClass,
@@ -112,13 +116,19 @@ test('summary: worst class, area percentages add up, values weighted by area, lo
 });
 
 test('a parcel that fails is listed as failed and the rest of the report is returned', async () => {
-  const deps = makeDeps({ P1, P2: new AppError('UPSTREAM_UNAVAILABLE', 'x', 502), P3 });
+  const reason = 'Usługa działek ewidencyjnych nie odpowiada.';
+  const deps = makeDeps({ P1, P2: new AppError('UPSTREAM_UNAVAILABLE', reason, 502), P3 });
   const report = await createFieldReport(FIELD.id, BODY, 'user', deps);
 
   const failed = report.parcels.find((parcel) => parcel.parcelId === 'P2')!;
   assert.equal(failed.status, 'failed');
   assert.equal(failed.reportId, null);
   assert.equal(failed.areaHa, 3); // from the stored field copy
+  assert.equal(failed.parcelNumber, '12/2');
+  assert.equal(failed.errorMessage, reason);
+  const ok = report.parcels.find((parcel) => parcel.parcelId === 'P1')!;
+  assert.equal(ok.parcelNumber, 'n-P1');
+  assert.equal(ok.errorMessage, undefined);
   assert.equal(report.summary.severeAreaPct, 33.3); // over the computed 3 ha
   assert.equal(report.summary.moderateAreaPct, 0);
   assert.equal(deps.calls.length, 3);
@@ -143,7 +153,7 @@ test('no parcel computed gives 502, unknown field 404, non-member 403', async ()
 test('at most 3 parcel analyses run at the same time', async () => {
   let running = 0;
   let peak = 0;
-  const field = { ...FIELD, parcelIds: ['A', 'B', 'C', 'D', 'E'], parcelAreas: {} };
+  const field = { ...FIELD, parcelIds: ['A', 'B', 'C', 'D', 'E'], parcels: [] };
   const deps: FieldReportDeps = {
     loadField: async () => field,
     isMember: async () => true,

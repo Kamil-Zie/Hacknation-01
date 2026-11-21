@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -1538,7 +1538,7 @@
     },
     {
       "id": "DM-025",
-      "status": "proposed",
+      "status": "agreed",
       "name": "FieldReport",
       "storage": "dto",
       "description": "Raport zbiorczy pola (API-019): analiza każdej działki pola tym samym silnikiem (API-004) i podsumowanie ważone powierzchnią.",
@@ -1575,12 +1575,13 @@
         },
         {
           "name": "parcels",
-          "type": "object[] { parcelId, reportId, areaHa, droughtClass, rootZonePct: number|null, deficitMm: number|null, status: enum(complete|partial|failed) }",
-          "required": true
+          "type": "object[] { parcelId: string, parcelNumber: string, reportId: string|null, areaHa: number, droughtClass: enum(none|moderate|severe|unknown), rootZonePct: number|null, deficitMm: number|null, status: enum(complete|partial|failed), errorMessage?: string }",
+          "required": true,
+          "note": "T-078: errorMessage tylko przy status failed (prosty powód po polsku); failed ma reportId null, droughtClass unknown, areaHa z kopii w polu"
         },
         {
           "name": "recommendations",
-          "type": "Recommendation[] (DM-007) – połączone, bez duplikatów, z listą działek, których dotyczą",
+          "type": "(Recommendation (DM-009) & { parcelIds: string[] })[] – jedna pozycja na ruleId, kolejność order",
           "required": true
         },
         {

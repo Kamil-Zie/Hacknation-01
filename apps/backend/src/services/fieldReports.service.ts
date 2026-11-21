@@ -1,7 +1,6 @@
 // T-078 API-019 DM-025 field report: the API-004 analysis on every parcel of a field (max 3 at once),
 // summary weighted by area, merged recommendations; a parcel that fails is "failed", the rest goes on.
-import mongoose from 'mongoose';
-
+import { FieldModel } from '@/models/Field.model';
 import { isMember } from '@/services/accounts.service';
 import { createAnalysis, defaultAnalysesDeps } from '@/services/analyses.service';
 import type { ReportDto } from '@/services/analyses.service';
@@ -11,13 +10,13 @@ import { assertDbConnected } from '@/utils/db';
 import { logger } from '@/utils/logger';
 import type { CreateFieldReportBody } from '@/validation/fieldReports.schema';
 
-// DM-024 fields read by the report (collection fields, model in T-077).
+// DM-024 fields read by the report.
 export type FieldDoc = {
   id: string;
   accountId: string;
   name: string;
   parcelIds: string[];
-  parcelAreas: Record<string, number>;
+  parcels: { id: string; parcelNumber: string; areaHa: number }[];
   areaHa: number;
 };
 
@@ -26,13 +25,17 @@ type Confidence = 'high' | 'medium' | 'low';
 
 export type FieldParcelResult = {
   parcelId: string;
+  parcelNumber: string;
   reportId: string | null;
   areaHa: number;
   droughtClass: DroughtClass;
   rootZonePct: number | null;
   deficitMm: number | null;
   status: 'complete' | 'partial' | 'failed';
+  errorMessage?: string; // only for failed: plain reason for the farmer
 };
+
+type ParcelOutcome = { report: ReportDto } | { error: string };
 
 export type FieldRecommendation = Recommendation & { parcelIds: string[] };
 
@@ -70,21 +73,20 @@ const CONCURRENCY = 3;
 const START_DEADLINE_MS = 15000;
 const CLASS_RANK: Record<DroughtClass, number> = { unknown: 0, none: 1, moderate: 2, severe: 3 };
 const CONFIDENCE_RANK: Record<Confidence, number> = { low: 0, medium: 1, high: 2 };
+const MSG_NOT_STARTED = 'Nie zdążyliśmy policzyć tej działki w limicie czasu. Spróbuj ponownie.';
+const MSG_UNKNOWN_ERROR = 'Nie udało się policzyć tej działki. Spróbuj ponownie za chwilę.';
 
 async function loadFieldFromDb(fieldId: string): Promise<FieldDoc | null> {
   assertDbConnected();
-  const doc = await mongoose.connection
-    .collection('fields')
-    .findOne({ _id: new mongoose.Types.ObjectId(fieldId) });
+  const doc = await FieldModel.findById(fieldId).lean();
   if (!doc) return null;
-  const parcels = (doc.parcels ?? []) as { id: string; areaHa?: number }[];
   return {
     id: String(doc._id),
     accountId: String(doc.accountId),
-    name: String(doc.name ?? ''),
-    parcelIds: (doc.parcelIds ?? []) as string[],
-    parcelAreas: Object.fromEntries(parcels.map((p) => [p.id, p.areaHa ?? 0])),
-    areaHa: Number(doc.areaHa ?? 0),
+    name: doc.name,
+    parcelIds: doc.parcelIds,
+    parcels: doc.parcels.map((p) => ({ id: p.id, parcelNumber: p.parcelNumber, areaHa: p.areaHa })),
+    areaHa: doc.areaHa,
   };
 }
 
@@ -109,21 +111,32 @@ export async function createFieldReport(
   }
 
   const startedAt = deps.now();
-  const reports = await mapWithLimit(field.parcelIds, CONCURRENCY, async (parcelId) => {
-    if (deps.now() - startedAt > START_DEADLINE_MS) return null;
-    try {
-      return await deps.analyze(
-        { parcelId, cropCode: body.cropCode, analysisDate: body.analysisDate, accountId: field.id },
-        userId,
-      );
-    } catch (error) {
-      const code = error instanceof AppError ? error.code : 'INTERNAL';
-      logger.warn(`field ${field.id} parcel ${parcelId} failed: ${code}`);
-      return null;
-    }
-  });
+  const outcomes = await mapWithLimit(
+    field.parcelIds,
+    CONCURRENCY,
+    async (parcelId): Promise<ParcelOutcome> => {
+      if (deps.now() - startedAt > START_DEADLINE_MS) return { error: MSG_NOT_STARTED };
+      try {
+        const report = await deps.analyze(
+          {
+            parcelId,
+            cropCode: body.cropCode,
+            analysisDate: body.analysisDate,
+            accountId: field.id,
+          },
+          userId,
+        );
+        return { report };
+      } catch (error) {
+        const code = error instanceof AppError ? error.code : 'INTERNAL';
+        logger.warn(`field ${field.id} parcel ${parcelId} failed: ${code}`);
+        // AppError messages are already plain Polish for the user (e.g. ULDK timeout).
+        return { error: error instanceof AppError ? error.message : MSG_UNKNOWN_ERROR };
+      }
+    },
+  );
 
-  const done = reports.filter((report): report is ReportDto => report !== null);
+  const done = outcomes.flatMap((outcome) => ('report' in outcome ? [outcome.report] : []));
   if (done.length === 0) {
     throw new AppError('UPSTREAM_UNAVAILABLE', 'Nie udało się policzyć żadnej działki pola.', 502, {
       reasonCode: 'UPSTREAM_ERROR',
@@ -131,7 +144,11 @@ export async function createFieldReport(
   }
 
   const parcels = field.parcelIds.map((parcelId, index) =>
-    toParcelResult(parcelId, reports[index] ?? null, field.parcelAreas[parcelId] ?? 0),
+    toParcelResult(
+      parcelId,
+      outcomes[index]!,
+      field.parcels.find((p) => p.id === parcelId),
+    ),
   );
   const crop = done[0]!.crop;
   return {
@@ -149,22 +166,26 @@ export async function createFieldReport(
 
 function toParcelResult(
   parcelId: string,
-  report: ReportDto | null,
-  storedAreaHa: number,
+  outcome: ParcelOutcome,
+  stored: FieldDoc['parcels'][number] | undefined,
 ): FieldParcelResult {
-  if (!report) {
+  if (!('report' in outcome)) {
     return {
       parcelId,
+      parcelNumber: stored?.parcelNumber ?? parcelId.split('.').pop() ?? parcelId,
       reportId: null,
-      areaHa: storedAreaHa,
+      areaHa: stored?.areaHa ?? 0,
       droughtClass: 'unknown',
       rootZonePct: null,
       deficitMm: null,
       status: 'failed',
+      errorMessage: outcome.error,
     };
   }
+  const { report } = outcome;
   return {
     parcelId,
+    parcelNumber: report.parcel.parcelNumber,
     reportId: report.id,
     areaHa: report.parcel.areaHa,
     droughtClass: report.assessment.droughtClass,
