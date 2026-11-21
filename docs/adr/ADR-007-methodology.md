@@ -121,3 +121,8 @@ FAO-56 i KBW IUNG to metody wskazane w bibliografii zadania, a jawne progi w tab
 - **§7 Podatność:** sezon z deficytem, gdy min. 60-dniowego KBW w IV–IX < **−3·RAW** (bez danych o glebie: **−180 mm**). Przy −2·RAW wychodziło 9/10 sezonów na glebach lekkich i średnich także po przejściu ET0 NASA na Penman-Monteith (Bronowice 2026-07-15: 9/10). Okno NASA zaczyna się najpóźniej 1 stycznia roku D − 10, więc analizujemy 10 pełnych sezonów, nie 9.
 - **§9 Nawadnianie:** dawka maks. 30 mm netto na zabieg (decyzja z 12:xx, tu tylko zapis).
 - **Data demo:** 2026-05-25 zamiast 2026-06-10 (Sentinel-2: 10 czerwca nad Bronowicami cirrus we wszystkich 3 scenach, 25 maja scena 100% ważnych pikseli). SCL 10 (cirrus) nadal nie jest pikselem ważnym.
+
+## Aktualizacja 2026-11-21 17:55 (coord-1, po porównaniu z IUNG-PIB, T-054)
+
+- **§6 przy zapasie NASA POWER** (Open-Meteo niedostępne, dane bieżące z siatki ok. 50 km): `severe` tylko z percentyla KBW60 ≤ 10; reguła „Dr > RAW i percentyl ≤ 30” podnosi klasę najwyżej do `moderate`. Powód: wszystkie 3 niezgodności z IUNG (12 porównań) to fałszywe alarmy `severe` przy percentylu 14–27, wynikające z deficytu glebowego liczonego na danych NASA.
+- Ścieżka ERA5 / ERA5-Land bez zmian. Porównanie z IUNG powtarzamy na danych ERA5 (prod albo po resecie limitu Open-Meteo) i aktualizujemy tabelę w README §9.

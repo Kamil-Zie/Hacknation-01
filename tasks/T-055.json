@@ -1,0 +1,28 @@
+{
+  "id": "T-055",
+  "title": "Klasa suszy przy zapasie NASA: severe tylko z percentyla ≤ 10, potem powtórka porównania IUNG na ERA5",
+  "description": "ADR-007 aktualizacja 17:55: gdy dane bieżące są z zapasu nasa_power, reguła 'Dr > RAW i percentyl KBW60 ≤ 30' daje najwyżej moderate; severe tylko przy percentylu ≤ 10. Ścieżka ERA5 bez zmian. Potem powtórz 12 porównań z T-054 na danych ERA5 (z sieci bez 429: VPN, prod Synology albo po 1:00) i wyślij coord-1 nową tabelę do README §9.",
+  "type": "fix",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-054"],
+  "contract_refs": ["API-004"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Test kontrolny: zapas NASA, p20, Dr > RAW → moderate; zapas NASA, p8 → severe; ERA5, p20, Dr > RAW → severe (bez zmian)",
+    "Głogówek i Środa Wlkp. 2024 z zapasu NASA nie dają już severe",
+    "Nowa tabela porównania na ERA5 (12 wierszy, źródło meteo w kolumnie) w wiadomości do coord-1 przed 11:00"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 17:55: decyzja po T-054. Implementacja przed zamrożeniem funkcji 7:00 (typ fix na ścieżce demo)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

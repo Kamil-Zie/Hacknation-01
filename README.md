@@ -170,7 +170,24 @@ Cache działki demo (061409_2.0009.612, pszenica, 2026-05-25) rozgrzany 2026-11-
 - **Odtwarzalność:** ta sama działka, uprawa i data dają ten sam wynik; data analizy ucina dane po dniu analizy.
 - **Test na działkach z kilku lokalizacji w Polsce:** wyniki sprawdziliśmy ręcznie na 8 lokalizacjach, co doprowadziło do korekty progów klasy suszy i podatności (ADR-007, aktualizacja 14:20).
 - **Weryfikacja na działce demo** (`061409_2.0009.612`, pszenica ozima, 2026-05-25): wilgotność strefy korzeniowej 64% wobec normy 71% (−6,6 pp, percentyl 3, ocena „sucho”).
-- **Porównanie z danymi referencyjnymi:** Porównanie klas suszy z Monitoringiem Suszy IUNG-PIB dla wybranych działek: w trakcie (wynik zostanie dopisany przed oddaniem). Nie twierdzimy zgodności z tym systemem, dopóki nie zostanie zmierzona.
+- **Porównanie z danymi referencyjnymi (IUNG-PIB):** 6 działek z różnych regionów i gleb, 2 okresy raportowe Systemu Monitoringu Suszy Rolniczej IUNG-PIB (tabele „Zagrożenie suszą na poziomie gminy”, https://susza.iung.pulawy.pl/wykazy/, dostęp 2026-11-21). Kropelka liczona na koniec okresu IUNG dla tej samej uprawy. Klasy IUNG: susza = co najmniej 50% powierzchni gminy zagrożone, częściowa = 10–50%, brak = poniżej 10%. Uwaga: analizy liczone z sieci z limitem Open-Meteo, więc dane bieżące we wszystkich wierszach pochodzą z zapasowego NASA POWER (siatka ok. 50 km).
+
+  | Działka | Gmina | Uprawa | Okres IUNG | IUNG (udział pow. zagrożonej) | Kropelka (klasa, percentyl KBW60, KBW60) | Zgodność |
+  |---|---|---|---|---|---|---|
+  | 061409_2.0009.612 | Puławy (gm. wiejska) | zboża ozime | 21.V–20.VII.2023 | częściowa (39%) | silna, p21, −154 mm | częściowo |
+  | 302504_5.0029.66 | Środa Wielkopolska | zboża ozime | 21.V–20.VII.2023 | susza (94%) | silna, p21, −168 mm | tak |
+  | 040706_4.0004.15 | Kruszwica | burak cukrowy | 21.V–20.VII.2023 | częściowa (36%) | silna, p9, −179 mm | częściowo |
+  | 221002_4.0004.136 | Nowy Dwór Gdański | rzepak | 11.V–10.VII.2023 | susza (99,8%) | silna, p1, −113 mm | tak |
+  | 161002_4.0241.261 | Głogówek | kukurydza na ziarno | 21.V–20.VII.2023 | brak (0,6%) | silna, p14, −113 mm | nie |
+  | 080906_5.0018.138/3 | Sulechów | zboża jare | 21.V–20.VII.2023 | susza (92%) | silna, p21, −147 mm | tak |
+  | 061409_2.0009.612 | Puławy (gm. wiejska) | zboża ozime | 1.IV–31.V.2024 | susza (52%) | silna, p10, −118 mm | tak |
+  | 302504_5.0029.66 | Środa Wielkopolska | zboża ozime | 1.IV–31.V.2024 | brak (1,7%) | silna, p27, −102 mm | nie |
+  | 040706_4.0004.15 | Kruszwica | burak cukrowy | 1.IV–31.V.2024 | brak (0%) | brak, p43, +11 mm | tak |
+  | 221002_4.0004.136 | Nowy Dwór Gdański | rzepak | 1.IV–31.V.2024 | brak (0%) | brak, p61, −48 mm | tak |
+  | 161002_4.0241.261 | Głogówek | zboża ozime | 1.IV–31.V.2024 | brak (0%) | silna, p20, −85 mm | nie |
+  | 080906_5.0018.138/3 | Sulechów | zboża jare | 1.IV–31.V.2024 | częściowa (41%) | umiarkowana, p36, −57 mm | częściowo |
+
+  **Wynik:** 6 z 12 zgodnych, 3 częściowo (IUNG: susza na 10–50% gminy, Kropelka: susza na działce), 3 niezgodne. Próba jest mała (6 działek, 2 okresy), więc to sprawdzenie kierunku, nie walidacja statystyczna. Kropelka zgadza się z IUNG przy rozległej suszy i przy jej braku. Wszystkie 3 niezgodności to fałszywe alarmy Kropelki (susza silna, gdy IUNG wskazuje poniżej 2% powierzchni gminy) przy percentylu KBW60 14–27: klasę podniosła reguła „deficyt w strefie korzeni większy od RAW i percentyl ≤ 30” (ADR-007 §6) liczona na danych zapasowych NASA. Możliwe przyczyny: lokalne opady niewidoczne w siatce 50 km, KBW IUNG z interpolacji danych stacji i agregacja na gminę i kategorię gleby, u nas jedna działka z glebą SoilGrids. Ich wpływu nie mierzyliśmy. Wnioski wprowadzone do metodyki: patrz ADR-007, aktualizacja z 2026-11-21 17:55.
 - **Niepewność:** raport podaje poziom pewności (wysoka / średnia / niska) z listą powodów obniżenia oraz braki danych wprost, bez pozornej precyzji.
 
 ### Podstawy naukowe
