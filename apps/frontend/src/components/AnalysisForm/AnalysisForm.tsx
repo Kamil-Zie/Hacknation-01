@@ -123,7 +123,7 @@ export function AnalysisForm({
                       >
                         <CropIcon
                           cropCode={crop.code}
-                          sx={{ fontSize: { xs: 36, md: 44 }, flexShrink: 0 }}
+                          sx={{ fontSize: { xs: 30, md: 44 }, flexShrink: 0 }}
                         />
                         <Typography
                           component="span"
@@ -131,9 +131,11 @@ export function AnalysisForm({
                             flex: 1,
                             minWidth: 0,
                             fontWeight: 700,
-                            fontSize: { xs: '1.125rem', md: '1.375rem' },
+                            fontSize: { xs: '1rem', md: '1.375rem' },
                             lineHeight: 1.2,
-                            overflowWrap: 'anywhere',
+                            // break between words only (360 px tiles split "Psze-nica" with 'anywhere')
+                            overflowWrap: 'break-word',
+                            hyphens: 'auto',
                           }}
                         >
                           {crop.name}
@@ -141,7 +143,12 @@ export function AnalysisForm({
                         {isSelected && (
                           <CheckCircleIcon
                             aria-hidden
-                            sx={{ color: 'kropla.iconMuted', fontSize: { xs: 26, md: 30 } }}
+                            sx={{
+                              color: 'kropla.iconMuted',
+                              fontSize: { xs: 26, md: 30 },
+                              // on phones the highlighted tile already shows the choice; keep the width for the name
+                              display: { xs: 'none', sm: 'inline-flex' },
+                            }}
                           />
                         )}
                       </Box>
