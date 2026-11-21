@@ -5,6 +5,9 @@ import { resolve } from 'node:path';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
+import { AccountModel } from '../apps/backend/src/models/Account.model';
+import { AccountMemberModel } from '../apps/backend/src/models/AccountMember.model';
+import { UserModel } from '../apps/backend/src/models/User.model';
 import { ReportModel } from '../apps/backend/src/models/Report.model';
 import { SourceCacheModel } from '../apps/backend/src/models/SourceCache.model';
 
@@ -48,7 +51,14 @@ async function main(): Promise<void> {
   if (dbName === PROD_DB && !process.argv.includes('--prod')) {
     throw new Error(`Refusing to seed ${PROD_DB} without --prod`);
   }
-  await Promise.all([ReportModel.syncIndexes(), SourceCacheModel.syncIndexes()]);
+  // T-DB-010: accounts collections get indexes only (no users with passwords in the repo).
+  await Promise.all([
+    ReportModel.syncIndexes(),
+    SourceCacheModel.syncIndexes(),
+    UserModel.syncIndexes(),
+    AccountModel.syncIndexes(),
+    AccountMemberModel.syncIndexes(),
+  ]);
   const reports = loadDemoReports();
   for (const report of reports) {
     await ReportModel.collection.replaceOne({ _id: report._id }, report, { upsert: true });

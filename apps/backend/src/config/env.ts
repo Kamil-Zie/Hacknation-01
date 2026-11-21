@@ -1,8 +1,11 @@
 // T-001 Environment variables: the only place that reads process.env
+import { randomBytes } from 'node:crypto';
 import { resolve } from 'node:path';
 
 import dotenv from 'dotenv';
 import { z } from 'zod';
+
+import { logger } from '@/utils/logger';
 
 dotenv.config({ path: resolve(process.cwd(), '../../.env') });
 dotenv.config();
@@ -21,6 +24,18 @@ const envSchema = z.object({
   ANALYSIS_BUDGET_MS: z.coerce.number().int().positive().default(25000),
   OVERPASS_URL: z.string().default('https://overpass-api.de/api/interpreter'),
   OVERPASS_FALLBACK_URL: z.string().default('https://overpass.kumi.systems/api/interpreter'),
+  JWT_SECRET: z.string().optional(),
 });
 
-export const env = envSchema.parse(process.env);
+const parsed = envSchema.parse(process.env);
+let jwtSecret = parsed.JWT_SECRET;
+if (!jwtSecret) {
+  if (parsed.NODE_ENV === 'production') throw new Error('JWT_SECRET is required in production');
+  // Dev/test: random per process, so tokens stop working after a restart.
+  jwtSecret = randomBytes(32).toString('hex');
+  if (parsed.NODE_ENV === 'development') {
+    logger.warn('JWT_SECRET is empty: using a random secret, sessions reset on restart');
+  }
+}
+
+export const env = { ...parsed, JWT_SECRET: jwtSecret };

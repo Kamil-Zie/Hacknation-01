@@ -27,6 +27,7 @@ const reportSchema = new Schema(
     methodologyVersion: { type: String, required: true, maxlength: 20 },
     computedAt: { type: Date, required: true },
     durationMs: { type: Number, required: true },
+    accountId: { type: Schema.Types.ObjectId, ref: 'Account', required: false, default: null },
     createdAt: { type: Date, required: true },
   },
   {
@@ -46,6 +47,7 @@ const reportSchema = new Schema(
 
 reportSchema.index({ 'parcel.id': 1, analysisDate: 1, 'crop.code': 1 });
 reportSchema.index({ createdAt: -1 });
+reportSchema.index({ accountId: 1, createdAt: -1 });
 
 export type Report = InferSchemaType<typeof reportSchema>;
 

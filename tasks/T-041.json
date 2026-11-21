@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-040"],
   "contract_refs": ["API-004", "DM-001"],
@@ -24,7 +24,8 @@
   },
   "notes": [
     "coord-1 16:35: PRZEPISANE na backend-2 razem z T-040.",
-    "coord-1 16:10: Wzorzec warstw z apps/backend/CLAUDE.md (validation → model → service → controller → route). Nowa biblioteka jose: zatwierdzona przez coord-1 (ADR-010)."
+    "coord-1 16:10: Wzorzec warstw z apps/backend/CLAUDE.md (validation → model → service → controller → route). Nowa biblioteka jose: zatwierdzona przez coord-1 (ADR-010).",
+    "Zrobione (backend-2): bez nowych zależności (paczki tylko z Linuksa): hasła crypto.scrypt, JWT HS256 przez crypto.createHmac (utils/jwt.ts, 7 dni). Modele User/Account/AccountMember + Report.accountId. POST /auth/register (konto „Moje gospodarstwo”, pending → active), /auth/login (limit 10 nieudanych / 15 min → 429 z retryAfterSec), GET /auth/me. middleware/auth.ts: requireAuth, optionalAuth (req.userId); services/accounts.service.ts: isMember(userId, accountId), listAccountsForUser. JWT_SECRET: prod wymagany, dev pusty = losowy na start procesu (tokeny tracą ważność po restarcie). curl OK, regresja POST /analyses bez tokenu 201. .env.example: prośba do koordynatora (poza ścieżkami backendu). Uwaga: GET /analyses/:id zwraca teraz accountId: null (zgodne z DM-001)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
