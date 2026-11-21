@@ -1,0 +1,26 @@
+{
+  "id": "T-065",
+  "title": "Wdrożenie prod na Synology + Cloudflare Tunnel (link dla jury)",
+  "description": "Kamil wdraża: Dockerfile backend i frontend (nginx), docker-compose.prod, .env.prod (MONGODB_URI, MONGODB_DB=hacknation_prod, JWT_SECRET, CORS_ORIGIN), tunel Cloudflare na domenę. Po wdrożeniu: link w README §1 i docs/zgloszenie.md, potem T-035 (rozgrzanie cache).",
+  "type": "infra",
+  "team": "coordinator",
+  "assignee": "coord-1",
+  "status": "in_progress",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": [],
+  "demo_step": null,
+  "acceptance_criteria": [
+    "Aplikacja pod publicznym HTTPS, analiza Bronowic < 30 s",
+    "Brak sekretów w repo, JWT_SECRET ustawiony",
+    "Link w README i zgloszenie.md"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": ["coord-1 18:10: zgłoszenie KOWR pkt 4.1, oddanie nd 11:00."],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "T-060",
+  "title": "Prezentacja PDF do 10 slajdów (KOWR 4.1)",
+  "description": "Treść slajdów w docs/pitch/slides.md (coord-docs), potem złożenie w PDF (Claude Design / artifact Slides albo Google Slides → PDF). Struktura pod kryteria oceny: problem, rozwiązanie, demo (zrzuty nowego UI), dane i metodyka, wiarygodność (porównanie z IUNG), niepewność, architektura, skalowalność i koszty, zespół i dalszy rozwój.",
+  "type": "docs",
+  "team": "coordinator",
+  "assignee": "coord-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": [],
+  "demo_step": null,
+  "acceptance_criteria": [
+    "Najwyżej 10 slajdów, PDF w docs/pitch/",
+    "Każde kryterium oceny KOWR ma swój slajd albo punkt",
+    "Liczby zgodne z README (czas raportu, źródła, IUNG 6/12+3/12)"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": ["coord-1 18:10: zgłoszenie KOWR pkt 4.1, oddanie nd 11:00."],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
