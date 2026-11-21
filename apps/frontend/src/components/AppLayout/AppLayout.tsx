@@ -1,15 +1,29 @@
-// T-026 T-084 App shell: skip link, accessibility bar, Kropla header (blue gradient), step navigation, main#tresc, footer
+// T-026 T-084 T-085 App shell: skip link, accessibility bar, Kropla header (blue gradient), step navigation, sidebar panel/drawer (UI-C-016), main#tresc, footer
+import MenuIcon from '@mui/icons-material/Menu';
 import OpacityIcon from '@mui/icons-material/Opacity';
-import { AppBar, Box, Container, Link, Toolbar, Typography } from '@mui/material';
-import { useEffect } from 'react';
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  Drawer,
+  Link,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
+import type { Theme } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 
 import { srOnly } from '@/app/a11yStyles';
 import { A11yBar } from '@/components/A11yBar/A11yBar';
 import { AccountMenu } from '@/components/AccountMenu/AccountMenu';
 import { AppFooter } from '@/components/AppFooter/AppFooter';
-import { AppNav, ReportBackButton } from '@/components/AppNav/AppNav';
+import { ReportBackButton } from '@/components/AppNav/AppNav';
+import { Sidebar } from '@/components/Sidebar/Sidebar';
 import { StepNav } from '@/components/StepNav/StepNav';
+import { useSessionStore } from '@/store/session';
 
 // Unique document title per page (WCAG 2.4.2)
 const TITLES: [RegExp, string][] = [
@@ -41,6 +55,15 @@ export function AppLayout() {
   }, [pathname]);
   const isLogin = pathname === '/logowanie';
   const isWide = pathname.startsWith('/report/');
+  const token = useSessionStore((state) => state.token);
+  const showSidebar = Boolean(token) && !isLogin && !isWide;
+  const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const closeDrawer = () => {
+    setDrawerOpen(false);
+    menuButtonRef.current?.focus();
+  };
   return (
     <Box
       sx={{
@@ -104,28 +127,85 @@ export function AppLayout() {
               – strona główna
             </Box>
           </Link>
-          {isLogin ? <Box sx={{ flexGrow: 1 }} /> : <AppNav />}
+          <Box sx={{ flexGrow: 1 }} />
+          {showSidebar && !isDesktop && (
+            <Button
+              ref={menuButtonRef}
+              color="inherit"
+              className="no-print"
+              startIcon={<MenuIcon aria-hidden />}
+              aria-haspopup="dialog"
+              aria-expanded={drawerOpen ? 'true' : 'false'}
+              onClick={() => setDrawerOpen(true)}
+              sx={{ minHeight: 48, fontSize: '1.125rem', fontWeight: 700 }}
+            >
+              Menu
+            </Button>
+          )}
           {!isLogin && <AccountMenu />}
         </Toolbar>
       </AppBar>
-      <StepNav />
-      <Container
-        component="main"
-        id="tresc"
-        tabIndex={-1}
-        maxWidth={false}
-        sx={{
-          flexGrow: 1,
-          width: '100%',
-          maxWidth: isWide ? 1600 : 1536,
-          py: { xs: 2, md: 4 },
-          px: { xs: 2, md: 4 },
-        }}
-      >
-        <ReportBackButton />
-        <Outlet />
-      </Container>
-      <AppFooter />
+      <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'flex-start', minWidth: 0 }}>
+        {showSidebar && isDesktop && (
+          <Box
+            component="aside"
+            className="no-print"
+            sx={{
+              width: 280,
+              flexShrink: 0,
+              position: 'sticky',
+              top: 0,
+              alignSelf: 'flex-start',
+              maxHeight: '100vh',
+              overflowY: 'auto',
+              borderRight: 1,
+              borderColor: 'divider',
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Sidebar />
+          </Box>
+        )}
+        <Box
+          sx={{
+            flexGrow: 1,
+            minWidth: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignSelf: 'stretch',
+          }}
+        >
+          <StepNav />
+          <Container
+            component="main"
+            id="tresc"
+            tabIndex={-1}
+            maxWidth={false}
+            sx={{
+              flexGrow: 1,
+              width: '100%',
+              maxWidth: isWide ? 1600 : 1536,
+              py: { xs: 2, md: 4 },
+              px: { xs: 2, md: 4 },
+            }}
+          >
+            <ReportBackButton />
+            <Outlet />
+          </Container>
+          <AppFooter />
+        </Box>
+      </Box>
+      {showSidebar && !isDesktop && (
+        <Drawer
+          anchor="left"
+          open={drawerOpen}
+          onClose={closeDrawer}
+          className="no-print"
+          slotProps={{ paper: { sx: { width: 'min(320px, 88vw)' }, 'aria-label': 'Menu' } }}
+        >
+          <Sidebar onNavigate={() => setDrawerOpen(false)} />
+        </Drawer>
+      )}
     </Box>
   );
 }
