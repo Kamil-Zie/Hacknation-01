@@ -4,7 +4,8 @@ import { Box, CircularProgress, LinearProgress, Stack, Typography } from '@mui/m
 import type { DataSource, SourceStatus } from '@/api/types';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 
-const PROGRESS_TOTAL_MS = 30_000;
+// Real API-004 with Sentinel-2 takes 8–16 s (backend-1, 20261121-1425)
+const PROGRESS_TOTAL_MS = 15_000;
 
 interface SourceProgressListProps {
   sources: DataSource[];
