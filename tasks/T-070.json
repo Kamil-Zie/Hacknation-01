@@ -17,9 +17,9 @@
     "Testy backendu zielone"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "21:20 decyzja 4b wdrożona, review 43da511 OK, 305/305."
   },
   "notes": [
     "coord-1 21:00: z przeglądu backendu Kuby 20261121-2050, przed zamrożeniem 7:00.",
