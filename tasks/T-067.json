@@ -1,0 +1,29 @@
+{
+  "id": "T-067",
+  "title": "Sporadyczne 502 UPSTREAM_UNAVAILABLE przy 429 Open-Meteo: odporność zapasu NASA POWER",
+  "description": "Koordynator 18:20 (lokalnie, sieć hackathonu z 429 Open-Meteo): seria 12 analiz POST /analyses dla działek zapasowych (Kruszwica 040706_4.0004.15 sugar_beet 2026-06-10, Nowy Dwór Gdański 221002_4.0004.136 winter_rapeseed, Sulechów 080906_5.0018.138/3 spring_barley, Głogówek 161002_4.0241.261 maize) – 8 z 12 zwróciło 502 UPSTREAM_UNAVAILABLE po 1,4–2,6 s, także drugie wywołanie; minutę później ta sama Kruszwica 201 w 8,4 s. Pierwsza analiza Bronowic w koncie też raz dała 502. Hipoteza: gdy meteo = RATE_LIMIT, zapas nasa_power też pada (429/5xx NASA przy seriach albo błąd/timeout) i silnik nie ma pogody → 502. Zbadaj logi, potwierdź źródło i dodaj odporność: retry z backoffem dla NASA POWER (1–2 próby w budżecie 25 s), krótkie negatywne cache'owanie 429 Open-Meteo (np. 60 s, żeby nie tracić czasu na kolejne 429), a jeśli pogody nie ma z żadnego źródła – czytelny błąd z reasonCode zamiast ogólnego UPSTREAM_UNAVAILABLE.",
+  "type": "bugfix",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-055"],
+  "contract_refs": ["API-004"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Seria 12 analiz 4 działek z rzędu (skrypt w notes) na sieci z 429 Open-Meteo: 0 × 502 albo każdy błąd z konkretnym reasonCode i przyczyną w logu",
+    "Test jednostkowy: meteo 429 + NASA pierwsza próba 503 → druga próba OK → 201",
+    "Czas analizy nadal < 25 s"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 18:25: ryzyko dla oceny jury (KOWR testuje dowolne działki). Priorytet przed powtórką IUNG na ERA5 (T-055 część 2).",
+    "Repro: for p in '040706_4.0004.15 sugar_beet' '221002_4.0004.136 winter_rapeseed' '080906_5.0018.138/3 spring_barley' '161002_4.0241.261 maize'; do set -- $p; curl -s -X POST localhost:3000/api/v1/analyses -H Content-Type:application/json -d \"{\\\"parcelId\\\":\\\"$1\\\",\\\"cropCode\\\":\\\"$2\\\",\\\"analysisDate\\\":\\\"2026-06-10\\\"}\" | head -c 120; echo; done"
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
