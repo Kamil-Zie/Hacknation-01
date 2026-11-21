@@ -28,7 +28,9 @@
     "by": null,
     "note": ""
   },
-  "notes": [],
+  "notes": [
+    "coord-1: kod zmieniony w a6843bb (dbName z MONGODB_DB). Seed jest jeszcze pusty: zamknij razem z T-DB-001 po pierwszym npm run seed (sprawdź, że loguje 'Seed on hacknation')."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
