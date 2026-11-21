@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "backend-1",
-  "status": "ready",
+  "status": "in_progress",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-009", "UI-C-017", "API-020", "API-013", "API-006"],
