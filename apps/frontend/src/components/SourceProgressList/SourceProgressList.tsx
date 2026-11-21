@@ -3,6 +3,7 @@ import { Box, CircularProgress, LinearProgress, Stack, Typography } from '@mui/m
 
 import type { DataSource, SourceStatus } from '@/api/types';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
+import { reasonText } from '@/utils/reasonCodes';
 
 // Real API-004 with Sentinel-2 takes 8–16 s (backend-1, 20261121-1425)
 const PROGRESS_TOTAL_MS = 15_000;
@@ -89,7 +90,7 @@ export function SourceProgressList({
                 <Typography variant="subtitle2">{source.label}</Typography>
                 {status?.message && (
                   <Typography variant="caption" color="text.secondary">
-                    {status.message}
+                    {reasonText(status.reasonCode, status.message)}
                   </Typography>
                 )}
               </Box>

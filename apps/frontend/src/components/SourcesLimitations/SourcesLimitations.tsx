@@ -22,6 +22,7 @@ import {
 import type { DataGap, SourceCategory, SourceStatus } from '@/api/types';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { formatDateTime } from '@/utils/format';
+import { reasonText } from '@/utils/reasonCodes';
 import { sourceLabel } from '@/utils/sourceLabels';
 
 interface SourcesLimitationsProps {
@@ -75,7 +76,9 @@ function StatusCell({ source }: { source: SourceStatus }) {
   return (
     <Stack spacing={0.5} sx={{ alignItems: 'flex-start' }}>
       <StatusBadge kind="source" value={source.status} size="small" />
-      {source.message && <Typography variant="caption">{source.message}</Typography>}
+      {source.message && (
+        <Typography variant="caption">{reasonText(source.reasonCode, source.message)}</Typography>
+      )}
     </Stack>
   );
 }
@@ -244,7 +247,9 @@ export function SourcesLimitations({
                       <Typography sx={{ fontWeight: 600 }}>
                         {sourceLabel(gap.sourceId)}: {gap.what}
                       </Typography>
-                      <Typography sx={{ maxWidth: '75ch' }}>Wpływ: {gap.impact}</Typography>
+                      <Typography sx={{ maxWidth: '75ch' }}>
+                        Wpływ: {reasonText(gap.reasonCode, gap.impact)}
+                      </Typography>
                     </Box>
                   </Stack>
                 ))}

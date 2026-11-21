@@ -15,6 +15,11 @@ import type {
 import { KbwChart } from '@/components/KbwChart/KbwChart';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { formatDate, formatNumber, formatSigned } from '@/utils/format';
+import { reasonText } from '@/utils/reasonCodes';
+
+function gapReason(gap: DataGap | undefined): string | undefined {
+  return gap ? reasonText(gap.reasonCode, gap.impact) : undefined;
+}
 
 interface AssessmentSectionProps {
   assessment: Assessment;
@@ -124,7 +129,7 @@ function KbwTile({
     return (
       <MetricTile
         title={title}
-        missing={{ reason: gap?.impact ?? 'Brak danych pogodowych dla tego okresu.' }}
+        missing={{ reason: gapReason(gap) ?? 'Brak danych pogodowych dla tego okresu.' }}
       />
     );
   }
@@ -162,8 +167,8 @@ function IndexTile({
           // Scene exists but this one index is missing: say so instead of "no clear scene".
           // Backend adds a sentinel2 data gap with the reason (e.g. plan B: NDVI only); prefer it.
           reason: satellite
-            ? `Wskaźnika ${kind.toUpperCase()} nie udało się policzyć dla zdjęcia z ${formatDate(satellite.sceneDate)}.${gap ? ` ${gap.impact}` : ''}`
-            : (gap?.impact ?? 'Brak bezchmurnego zdjęcia satelitarnego z ostatnich tygodni.'),
+            ? `Wskaźnika ${kind.toUpperCase()} nie udało się policzyć dla zdjęcia z ${formatDate(satellite.sceneDate)}.${gap ? ` ${gapReason(gap)}` : ''}`
+            : (gapReason(gap) ?? 'Brak bezchmurnego zdjęcia satelitarnego z ostatnich tygodni.'),
         }}
       />
     );
@@ -290,7 +295,8 @@ export function AssessmentSection({
                 title="Woda w glebie"
                 missing={{
                   reason:
-                    gapFor('soilgrids')?.impact ?? 'Brak danych o glebie, nie policzono deficytu.',
+                    gapReason(gapFor('soilgrids')) ??
+                    'Brak danych o glebie, nie policzono deficytu.',
                 }}
               />
             )}
@@ -341,8 +347,8 @@ export function AssessmentSection({
                 missing={{
                   calm: true,
                   reason:
-                    gapFor('era5land')?.impact ??
-                    gapFor('nasa_power')?.impact ??
+                    gapReason(gapFor('era5land')) ??
+                    gapReason(gapFor('nasa_power')) ??
                     'Ten pomiar jest dodatkowy, ocena opiera się na bilansie wodnym i glebie.',
                 }}
               />

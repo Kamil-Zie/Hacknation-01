@@ -266,6 +266,7 @@ export interface SourceStatus {
   durationMs: number;
   message: string | null;
   role?: 'current' | 'climatology' | 'fallback' | null;
+  reasonCode?: string | null;
 }
 
 // DM-012
@@ -273,6 +274,7 @@ export interface DataGap {
   sourceId: SourceId;
   what: string;
   impact: string;
+  reasonCode?: string | null;
 }
 
 // DM-001
