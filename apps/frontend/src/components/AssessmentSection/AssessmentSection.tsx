@@ -173,6 +173,13 @@ function IndexTile({
       <Line>
         Zdjęcie z {formatDate(satellite.sceneDate)} ({satellite.ageDays} dni temu)
       </Line>
+      <Line>
+        Ważne piksele: {formatNumber(satellite.validPixelFraction * 100, 0)}% (
+        {formatNumber(satellite.validPixels, 0)})
+      </Line>
+      <Line>
+        Zawiera zmodyfikowane dane Copernicus Sentinel-2 ({satellite.sceneDate.slice(0, 4)})
+      </Line>
     </MetricTile>
   );
 }
