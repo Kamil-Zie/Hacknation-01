@@ -5,7 +5,7 @@
   "type": "docs",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-031"],
   "contract_refs": ["API-004"],
@@ -21,7 +21,10 @@
     "note": ""
   },
   "notes": [
-    "coord-1 17:50: zlecone przez Kamila. Na sieci hackathonu Open-Meteo 429 → analizy z zapasu NASA; zaznacz źródło w tabeli (ERA5 albo NASA). Termin: przed 11:00 jutro, najlepiej dziś. README i docs/ są poza Twoimi paths.write: wynik oddaj w wiadomości info (tabela markdown), koordynator wklei go do README."
+    "coord-1 17:50: zlecone przez Kamila. Na sieci hackathonu Open-Meteo 429 → analizy z zapasu NASA; zaznacz źródło w tabeli (ERA5 albo NASA). Termin: przed 11:00 jutro, najlepiej dziś. README i docs/ są poza Twoimi paths.write: wynik oddaj w wiadomości info (tabela markdown), koordynator wklei go do README.",
+    "WYNIK (2026-11-21): IUNG SMSR /wykazy/<rok>,<TERYT gminy 7 cyfr>/ (HTML renderowany na serwerze, bez API), tabela „Udział powierzchni zagrożonej suszą [%]”. 12 porównań (6 działek × raport 07/2023 lub 06/2023 dla rzepaku i raport 02/2024): 6 zgodnych, 3 częściowo, 3 niezgodne (fałszywe alarmy Kropelki: Głogówek 2023 i 2024, Środa Wlkp. 2024). Wszystkie analizy na zapasie NASA POWER (Open-Meteo 429).",
+    "Sprawdzone ręcznie: Puławy (0614092) zboża ozime raport 02/2024 = 52,38% u IUNG; Kropelka severe p10 −117,8 mm. Kody gmin IUNG mogą różnić się od TERYT działki (Kruszwica 0407063, działka 302504_5 = Środa Wielkopolska 3025043, nie Kórnik).",
+    "Fałszywe alarmy przy p14–27 wynikają z reguły §6 Dr > RAW i p ≤ 30 na deficycie glebowym liczonym z NASA; propozycja zmiany wysłana do koordynatora (decyzja po jego stronie). Tabela i wnioski w wiadomości info do coord-1."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
