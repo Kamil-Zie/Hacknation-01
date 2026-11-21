@@ -4,13 +4,13 @@ Nie eksploruj całego repo. Masz: brief teamu i mapę kodu z początku sesji (`n
 
 ## Gdzie co dodać
 
-| Potrzebujesz | Plik | Wzór do skopiowania |
-|---|---|---|
-| Nowy ekran (UI-S-NNN) | `src/pages/<Name>/<Name>.tsx` + trasa w `src/app/router.tsx` | pierwszy istniejący plik w `src/pages/` |
-| Komponent (UI-C-NNN) | `src/components/<Name>/<Name>.tsx` | istniejący komponent o podobnej roli |
-| Wywołanie API (API-NNN) | `src/api/<resource>.ts` (funkcja + hook TanStack Query), typy w `src/api/types.ts` | istniejący plik w `src/api/` |
-| Mock endpointu | `src/mocks/<resource>.mock.ts` (kształt z `contracts/api.json`) | istniejący mock |
-| Kolory, odstępy, breakpointy | tylko `src/app/theme.ts` (z `contracts/ui.json → design_tokens`) | – |
+| Potrzebujesz                 | Plik                                                                               | Wzór do skopiowania                     |
+| ---------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------- |
+| Nowy ekran (UI-S-NNN)        | `src/pages/<Name>/<Name>.tsx` + trasa w `src/app/router.tsx`                       | pierwszy istniejący plik w `src/pages/` |
+| Komponent (UI-C-NNN)         | `src/components/<Name>/<Name>.tsx`                                                 | istniejący komponent o podobnej roli    |
+| Wywołanie API (API-NNN)      | `src/api/<resource>.ts` (funkcja + hook TanStack Query), typy w `src/api/types.ts` | istniejący plik w `src/api/`            |
+| Mock endpointu               | `src/mocks/<resource>.mock.ts` (kształt z `contracts/api.json`)                    | istniejący mock                         |
+| Kolory, odstępy, breakpointy | tylko `src/app/theme.ts` (z `contracts/ui.json → design_tokens`)                   | –                                       |
 
 Każdy plik zaczyna się komentarzem z ID kontraktu, np. `// UI-S-001 Lista zgłoszeń`. Z tego komentarza powstaje mapa kodu, więc pisz go zawsze.
 

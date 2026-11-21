@@ -4,13 +4,13 @@ Nie eksploruj całego repo. Masz: brief teamu i mapę kodu z początku sesji (`n
 
 ## Gdzie co dodać (endpoint API-NNN, zawsze w tej kolejności)
 
-| Krok | Plik | Wzór do skopiowania |
-|---|---|---|
-| 1. Schemat wejścia/wyjścia | `src/validation/<resource>.schema.ts` (Zod, typy z `z.infer`) | istniejący schemat |
-| 2. Model (DM-NNN) | `src/models/<Resource>.model.ts` + zadanie T-DB | istniejący model |
-| 3. Logika | `src/services/<resource>.service.ts` (mapowanie dokumentu na DTO) | istniejący service |
-| 4. Kontroler | `src/controllers/<resource>.controller.ts` (`asyncHandler`) | istniejący kontroler |
-| 5. Trasa | `src/routes/<resource>.routes.ts` + podpięcie w `src/app.ts` | istniejąca trasa |
+| Krok                       | Plik                                                              | Wzór do skopiowania  |
+| -------------------------- | ----------------------------------------------------------------- | -------------------- |
+| 1. Schemat wejścia/wyjścia | `src/validation/<resource>.schema.ts` (Zod, typy z `z.infer`)     | istniejący schemat   |
+| 2. Model (DM-NNN)          | `src/models/<Resource>.model.ts` + zadanie T-DB                   | istniejący model     |
+| 3. Logika                  | `src/services/<resource>.service.ts` (mapowanie dokumentu na DTO) | istniejący service   |
+| 4. Kontroler               | `src/controllers/<resource>.controller.ts` (`asyncHandler`)       | istniejący kontroler |
+| 5. Trasa                   | `src/routes/<resource>.routes.ts` + podpięcie w `src/app.ts`      | istniejąca trasa     |
 
 Błędy tylko przez `throw new AppError(code, message, status)`; kody z `contracts/api.json`. Listy zawsze `{ items, page, pageSize, total }`. Każdy plik zaczyna się komentarzem z ID kontraktu (`// API-002 GET /items`), z którego powstaje mapa kodu.
 

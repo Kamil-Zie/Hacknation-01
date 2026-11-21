@@ -62,19 +62,50 @@
           "step": 2,
           "user_action": "Wpisuje ID działki TERYT (np. 141201_1.0001.123) albo klika swoją działkę na mapie.",
           "result": "Granica działki z ULDK na mapie, numer, gmina, obręb i powierzchnia; przy błędnym ID czytelny komunikat z podpowiedzią formatu.",
-          "contract_refs": ["API-001", "API-002", "DM-003", "DM-002", "UI-S-001", "UI-C-001", "UI-C-002", "UI-C-003"]
+          "contract_refs": [
+            "API-001",
+            "API-002",
+            "DM-003",
+            "DM-002",
+            "UI-S-001",
+            "UI-C-001",
+            "UI-C-002",
+            "UI-C-003"
+          ]
         },
         {
           "step": 3,
           "user_action": "Wybiera uprawę z listy (np. pszenica ozima, kukurydza, ziemniak, rzepak, użytki zielone) i datę analizy (domyślnie dziś, kalendarz do 10 lat wstecz), klika „Analizuj”.",
           "result": "Pasek postępu z listą źródeł pobieranych na żywo (meteo, satelita, gleba, teren, hydrologia) i statusem każdego (ok / brak danych / z cache).",
-          "contract_refs": ["API-003", "API-006", "API-004", "DM-004", "DM-005", "DM-011", "UI-S-002", "UI-C-004", "UI-C-005"]
+          "contract_refs": [
+            "API-003",
+            "API-006",
+            "API-004",
+            "DM-004",
+            "DM-005",
+            "DM-011",
+            "UI-S-002",
+            "UI-C-004",
+            "UI-C-005"
+          ]
         },
         {
           "step": 4,
           "user_action": "Czeka na wynik (≤ 30 s).",
           "result": "Ocena bieżąca na datę analizy: KBW z ostatnich 30/60 dni względem normy z 10 lat (anomalia, percentyl), NDVI/NDMI z ostatniej bezchmurnej sceny z datą i oceną dla wybranej uprawy, klasa suszy (brak/umiarkowana/silna) z poziomem pewności.",
-          "contract_refs": ["API-004", "DM-001", "DM-006", "DM-013", "DM-014", "DM-015", "DM-010", "UI-S-003", "UI-C-006", "UI-C-011", "UI-C-012"]
+          "contract_refs": [
+            "API-004",
+            "DM-001",
+            "DM-006",
+            "DM-013",
+            "DM-014",
+            "DM-015",
+            "DM-010",
+            "UI-S-003",
+            "UI-C-006",
+            "UI-C-011",
+            "UI-C-012"
+          ]
         },
         {
           "step": 5,
@@ -92,7 +123,15 @@
           "step": 7,
           "user_action": "Rozwija „Źródła i ograniczenia”.",
           "result": "Tabela źródeł z datą danych i licencją, ograniczenia (rozdzielczość 250 m SoilGrids, ERA5 ok. 9–25 km, chmury), niepewność wyniku i jawnie oznaczone braki danych bez wymyślonych wartości.",
-          "contract_refs": ["API-004", "API-006", "DM-011", "DM-012", "DM-005", "UI-S-003", "UI-C-009"]
+          "contract_refs": [
+            "API-004",
+            "API-006",
+            "DM-011",
+            "DM-012",
+            "DM-005",
+            "UI-S-003",
+            "UI-C-009"
+          ]
         },
         {
           "step": 8,
@@ -182,10 +221,7 @@
       "design": {
         "tool": "Claude Design: artefakty claude.ai typu Design System (tokeny, komponenty, brand) i Design (canvas z ekranami)",
         "required": false,
-        "required_for": [
-          "frontend-1",
-          "frontend-2"
-        ],
+        "required_for": ["frontend-1", "frontend-2"],
         "enforced_by": "Gdy required = true: guard-paths.mjs i guard-bash.mjs blokują edycję, a pre-commit commity osób z required_for bez udanego wywołania Claude Design. Teraz required = false: hook design-mcp-mark.mjs tylko rejestruje użycie, check-tools przypomina.",
         "verify": "Na start sesji: ToolSearch „artifacts design”, potem list_types albo list_artifacts z typem „Design System”. Jeśli działa, projektuj w Claude Design.",
         "access": "Narzędzia artefaktów (list_types, create_from_type, publish_files, list_artifacts, list_files, read_file) są dostępne w Claude Code po zalogowaniu kontem claude.ai (/login; sprawdź /mcp). Agent szuka ich przez ToolSearch: 'artifacts design'.",
@@ -280,10 +316,7 @@
       "ci_cd": "GitHub Actions (lint, typecheck, test, build); wdrożenie przez docker compose pull/up na Synology",
       "containerization": "Tylko prod: Docker + docker-compose w Container Manager na Synology. Na komputerach zespołu (dev) bez kontenerów.",
       "hosting": "Synology DS225+ 24/7 (Container Manager) + domena kamil-zielinski.pl (app.kamil-zielinski.pl = frontend, api.kamil-zielinski.pl = backend); ruch przez Cloudflare (DNS, proxy, Cloudflare Tunnel, SSL); baza w MongoDB Atlas",
-      "environments": [
-        "dev",
-        "prod"
-      ],
+      "environments": ["dev", "prod"],
       "environment_config": {
         "dev": {
           "mode": "local-app-cloud-db",
@@ -349,18 +382,7 @@
               "443 TCP (Cloudflare, GHCR, npm)",
               "27017 TCP do *.mongodb.net (Atlas)"
             ],
-            "reserved_by_dsm": [
-              22,
-              80,
-              443,
-              873,
-              3306,
-              5000,
-              5001,
-              5005,
-              5006,
-              6690
-            ],
+            "reserved_by_dsm": [22, 80, 443, 873, 3306, 5000, 5001, 5005, 5006, 6690],
             "tunnel": "istniejący kontener cloudflare-synology-kamil (cloudflare/cloudflared, sieć host); projekt nie ma własnego cloudflared"
           },
           "env": {
@@ -553,13 +575,7 @@
   },
   "contracts": {
     "description": "Kontrakty są w osobnych plikach. Edytuje je tylko team-właściciel (i koordynator); drugi team proponuje zmiany wiadomością.",
-    "statuses": [
-      "draft",
-      "proposed",
-      "agreed",
-      "implemented",
-      "deprecated"
-    ],
+    "statuses": ["draft", "proposed", "agreed", "implemented", "deprecated"],
     "files": {
       "api": {
         "path": "contracts/api.json",
@@ -598,14 +614,9 @@
         "coord-docs",
         "coord-devops"
       ],
-      "builtin_agents": [
-        "Explore",
-        "Plan"
-      ],
+      "builtin_agents": ["Explore", "Plan"],
       "paths": {
-        "write": [
-          "**"
-        ]
+        "write": ["**"]
       }
     },
     "backend": {
@@ -635,10 +646,7 @@
         "be-reviewer",
         "be-integration"
       ],
-      "builtin_agents": [
-        "Explore",
-        "Plan"
-      ],
+      "builtin_agents": ["Explore", "Plan"],
       "paths": {
         "write": [
           "apps/backend/**",
@@ -678,10 +686,7 @@
         "fe-tester",
         "fe-reviewer"
       ],
-      "builtin_agents": [
-        "Explore",
-        "Plan"
-      ],
+      "builtin_agents": ["Explore", "Plan"],
       "paths": {
         "write": [
           "apps/frontend/**",
@@ -866,16 +871,10 @@
   },
   "coordination": {
     "description": "Obowiązkowa koordynacja wewnątrz teamu w czasie rzeczywistym: rezerwacje obszarów i dziennik zmian.",
-    "teams": [
-      "backend",
-      "frontend"
-    ],
+    "teams": ["backend", "frontend"],
     "remote": "origin",
     "stale_after_hours": 1,
-    "exempt_paths": [
-      "tasks/**",
-      ".claude/sync/**"
-    ],
+    "exempt_paths": ["tasks/**", ".claude/sync/**"],
     "rules": [
       "Przed edycją lead robi git pull --rebase, sprawdza pliki w .claude/sync/claims/ i rezerwuje moduł (katalog) oraz elementy kontraktu z zadania wpisem we własnym pliku claim, potem commit i push.",
       "Obszaru zarezerwowanego przez kolegę nie wolno edytować; potrzebę zmiany zgłasza się wiadomością typu question albo na Discordzie.",
@@ -889,52 +888,17 @@
     "claim_format": "Lista rezerwacji osoby: ścieżka modułu lub ID kontraktu, ID zadania, godzina rezerwacji. Plik edytuje tylko jego właściciel."
   },
   "workflow": {
-    "statuses": [
-      "backlog",
-      "ready",
-      "in_progress",
-      "in_review",
-      "integration",
-      "done",
-      "blocked"
-    ],
+    "statuses": ["backlog", "ready", "in_progress", "in_review", "integration", "done", "blocked"],
     "transitions": {
-      "backlog": [
-        "ready"
-      ],
-      "ready": [
-        "in_progress",
-        "blocked"
-      ],
-      "in_progress": [
-        "in_review",
-        "done",
-        "blocked"
-      ],
-      "in_review": [
-        "in_progress",
-        "integration",
-        "done"
-      ],
-      "integration": [
-        "in_progress",
-        "done"
-      ],
-      "blocked": [
-        "ready",
-        "in_progress"
-      ],
-      "done": [
-        "in_progress"
-      ]
+      "backlog": ["ready"],
+      "ready": ["in_progress", "blocked"],
+      "in_progress": ["in_review", "done", "blocked"],
+      "in_review": ["in_progress", "integration", "done"],
+      "integration": ["in_progress", "done"],
+      "blocked": ["ready", "in_progress"],
+      "done": ["in_progress"]
     },
-    "team_editable_task_fields": [
-      "status",
-      "assignee",
-      "review",
-      "notes",
-      "updated_at"
-    ],
+    "team_editable_task_fields": ["status", "assignee", "review", "notes", "updated_at"],
     "gates": {
       "done_requires_review_approved": false,
       "done_requires_no_open_messages": true
@@ -949,16 +913,8 @@
         "coord-docs",
         "coord-devops"
       ],
-      "backend": [
-        "be-database",
-        "be-api",
-        "be-integration"
-      ],
-      "frontend": [
-        "fe-uiux",
-        "fe-developer",
-        "fe-integration"
-      ]
+      "backend": ["be-database", "be-api", "be-integration"],
+      "frontend": ["fe-uiux", "fe-developer", "fe-integration"]
     }
   },
   "modes": {
@@ -967,10 +923,7 @@
       "description": "Zwykły projekt: gałęzie na zadanie, testy i review każdego zadania.",
       "set": {
         "workflow.gates.done_requires_review_approved": true,
-        "workflow.transitions.in_progress": [
-          "in_review",
-          "blocked"
-        ],
+        "workflow.transitions.in_progress": ["in_review", "blocked"],
         "workflow.pipelines.backend": [
           "be-database",
           "be-api",
@@ -1009,21 +962,9 @@
       "description": "24 godziny do działającego prototypu i prezentacji. Liczy się scenariusz demo.",
       "set": {
         "workflow.gates.done_requires_review_approved": false,
-        "workflow.transitions.in_progress": [
-          "in_review",
-          "done",
-          "blocked"
-        ],
-        "workflow.pipelines.backend": [
-          "be-database",
-          "be-api",
-          "be-integration"
-        ],
-        "workflow.pipelines.frontend": [
-          "fe-uiux",
-          "fe-developer",
-          "fe-integration"
-        ],
+        "workflow.transitions.in_progress": ["in_review", "done", "blocked"],
+        "workflow.pipelines.backend": ["be-database", "be-api", "be-integration"],
+        "workflow.pipelines.frontend": ["fe-uiux", "fe-developer", "fe-integration"],
         "coordination.stale_after_hours": 1,
         "documentation.conventions.git": {
           "branch_naming": "wszyscy pracują na gałęzi głównej",
@@ -1136,11 +1077,7 @@
   "data_updates": {
     "description": "Baza danych jest kluczem do aktualnych zmian: stan modelu danych i seeda mówi, na czym pracują wszyscy. Każda zmiana w bazie tworzy obowiązkowe zadanie update danych.",
     "enforce": true,
-    "watched_paths": [
-      "contracts/data_model.json",
-      "database/**",
-      "apps/backend/src/models/**"
-    ],
+    "watched_paths": ["contracts/data_model.json", "database/**", "apps/backend/src/models/**"],
     "task_id_format": "T-DB-NNN (tasks/T-DB-001.json, T-DB-002.json, ...)",
     "create": "node .claude/scripts/new-data-task.mjs --title \"<co się zmieniło>\" [--refs DM-001,API-002] [--breaking]",
     "enforced_by": "Hook gita pre-commit (.githooks → .claude/scripts/git-checks.mjs) blokuje commit, który zmienia watched_paths bez pliku tasks/T-DB-*.json w tym samym commicie. Zmiany tylko w kluczach zaczynających się od _ (np. _example) nie wymagają T-DB.",
@@ -1182,11 +1119,7 @@
       "Agent nie instaluje narzędzi systemowych sam (node, git, python); robi to osoba. Brakujące zależności projektu (npm install) agent może doinstalować.",
       "Po decyzji o stacku coord-architect dopisuje do stack_rules każde narzędzie, którego nie ma na liście."
     ],
-    "common": [
-      "git",
-      "node",
-      "npm"
-    ],
+    "common": ["git", "node", "npm"],
     "tools": {
       "git": {
         "cmd": "git --version",
@@ -1267,91 +1200,43 @@
           "next",
           "npm"
         ],
-        "tools": [
-          "node",
-          "npm"
-        ]
+        "tools": ["node", "npm"]
       },
       {
-        "match": [
-          "pnpm"
-        ],
-        "tools": [
-          "pnpm"
-        ]
+        "match": ["pnpm"],
+        "tools": ["pnpm"]
       },
       {
-        "match": [
-          "yarn"
-        ],
-        "tools": [
-          "yarn"
-        ]
+        "match": ["yarn"],
+        "tools": ["yarn"]
       },
       {
-        "match": [
-          "python",
-          "fastapi",
-          "django",
-          "flask"
-        ],
-        "tools": [
-          "python3"
-        ]
+        "match": ["python", "fastapi", "django", "flask"],
+        "tools": ["python3"]
       }
     ],
     "teams": {
       "frontend": {
-        "stack_scope": [
-          "frontend"
-        ],
+        "stack_scope": ["frontend"],
         "env_required": [],
-        "env_recommended": [
-          "VITE_API_URL"
-        ],
-        "optional_tools": [
-          "claude"
-        ]
+        "env_recommended": ["VITE_API_URL"],
+        "optional_tools": ["claude"]
       },
       "backend": {
-        "stack_scope": [
-          "backend",
-          "database"
-        ],
-        "env_required": [
-          "MONGODB_URI"
-        ],
-        "env_recommended": [
-          "PORT",
-          "CORS_ORIGIN"
-        ],
-        "optional_tools": [
-          "claude"
-        ]
+        "stack_scope": ["backend", "database"],
+        "env_required": ["MONGODB_URI"],
+        "env_recommended": ["PORT", "CORS_ORIGIN"],
+        "optional_tools": ["claude"]
       },
       "coordinator": {
-        "stack_scope": [
-          "frontend",
-          "backend",
-          "database"
-        ],
-        "env_required": [
-          "MONGODB_URI"
-        ],
+        "stack_scope": ["frontend", "backend", "database"],
+        "env_required": ["MONGODB_URI"],
         "env_recommended": [],
-        "optional_tools": [
-          "claude",
-          "gh"
-        ]
+        "optional_tools": ["claude", "gh"]
       }
     },
     "env_file": ".env",
-    "placeholder_markers": [
-      "<user>",
-      "<password>",
-      "<id>",
-      "<cluster>"
-    ],
+    "placeholder_markers": ["<user>", "<password>", "<id>", "<cluster>"],
     "atlas_dns_check": true
   },
   "automation": {

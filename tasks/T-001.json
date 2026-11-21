@@ -5,7 +5,7 @@
   "type": "infra",
   "team": "coordinator",
   "assignee": "coord-1",
-  "status": "ready",
+  "status": "done",
   "priority": "critical",
   "depends_on": [],
   "contract_refs": [],
@@ -18,9 +18,7 @@
     "node .claude/scripts/validate.mjs bez błędów"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: coord-devops. Szacunek: 1,5h. Faza: szkielet 12:30-14:00."
-  ],
+  "notes": ["Agent: coord-devops. Szacunek: 1,5h. Faza: szkielet 12:30-14:00."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

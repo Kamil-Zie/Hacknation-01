@@ -39,19 +39,44 @@
       "description": "Zapisany raport analizy działki na datę analizy; zwracany przez API-004 i API-005. Brak danych = null + wpis w dataGaps, nigdy wartość domyślna.",
       "fields": [
         { "name": "id", "type": "objectId", "required": true },
-        { "name": "parcel", "type": "Ref<DM-003>", "required": true, "note": "kopia osadzona w chwili analizy" },
+        {
+          "name": "parcel",
+          "type": "Ref<DM-003>",
+          "required": true,
+          "note": "kopia osadzona w chwili analizy"
+        },
         { "name": "crop", "type": "object { code: string, name: string }", "required": true },
         { "name": "analysisDate", "type": "string(10) YYYY-MM-DD", "required": true },
-        { "name": "status", "type": "enum(complete|partial)", "required": true, "note": "partial gdy choć jedno źródło ma status error|timeout|missing" },
+        {
+          "name": "status",
+          "type": "enum(complete|partial)",
+          "required": true,
+          "note": "partial gdy choć jedno źródło ma status error|timeout|missing"
+        },
         { "name": "assessment", "type": "Ref<DM-006>", "required": true },
         { "name": "vulnerability", "type": "Ref<DM-007>", "required": true },
         { "name": "causes", "type": "Ref<DM-008>[]", "required": true },
-        { "name": "recommendations", "type": "Ref<DM-009>[]", "required": true, "note": "kolejność: retention_landscape, retention_soil, agrotechnics, irrigation; pusta, gdy ocena i podatność = unknown" },
+        {
+          "name": "recommendations",
+          "type": "Ref<DM-009>[]",
+          "required": true,
+          "note": "kolejność: retention_landscape, retention_soil, agrotechnics, irrigation; pusta, gdy ocena i podatność = unknown"
+        },
         { "name": "sources", "type": "Ref<DM-011>[]", "required": true },
         { "name": "limitations", "type": "string[]", "required": true },
         { "name": "dataGaps", "type": "Ref<DM-012>[]", "required": true },
-        { "name": "charts", "type": "object { kbw60Series: { date: string, kbwMm: number }[], kbw60Climatology: { date: string, p10: number, p50: number, p90: number }[] } | null", "required": false, "note": "should: wykres KBW sezonu na tle 10 lat (UI-C-011)" },
-        { "name": "methodologyVersion", "type": "string(20)", "required": true, "note": "np. kropla-1.0" },
+        {
+          "name": "charts",
+          "type": "object { kbw60Series: { date: string, kbwMm: number }[], kbw60Climatology: { date: string, p10: number, p50: number, p90: number }[] } | null",
+          "required": false,
+          "note": "should: wykres KBW sezonu na tle 10 lat (UI-C-011)"
+        },
+        {
+          "name": "methodologyVersion",
+          "type": "string(20)",
+          "required": true,
+          "note": "np. kropla-1.0"
+        },
         { "name": "computedAt", "type": "datetime", "required": true },
         { "name": "durationMs", "type": "integer", "required": true },
         { "name": "createdAt", "type": "datetime", "required": true }
@@ -69,9 +94,23 @@
       "storage": "collection: source_cache",
       "description": "Cache przetworzonych odpowiedzi źródeł (statystyki, nie rastry). Klucz: sourceId + parametry (zaokrąglony punkt/ID działki + zakres dat). TTL per źródło wg ADR-006.",
       "fields": [
-        { "name": "key", "type": "string(200)", "required": true, "note": "np. meteo:52.4012,22.0410:2015-03-08:2025-05-20" },
-        { "name": "sourceId", "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)", "required": true },
-        { "name": "payload", "type": "Mixed", "required": true, "note": "znormalizowany wynik źródła; maks. ok. 200 kB na dokument" },
+        {
+          "name": "key",
+          "type": "string(200)",
+          "required": true,
+          "note": "np. meteo:52.4012,22.0410:2015-03-08:2025-05-20"
+        },
+        {
+          "name": "sourceId",
+          "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)",
+          "required": true
+        },
+        {
+          "name": "payload",
+          "type": "Mixed",
+          "required": true,
+          "note": "znormalizowany wynik źródła; maks. ok. 200 kB na dokument"
+        },
         { "name": "dataPeriod", "type": "string(40) | null", "required": false },
         { "name": "fetchedAt", "type": "datetime", "required": true },
         { "name": "expiresAt", "type": "datetime", "required": true }
@@ -89,7 +128,12 @@
       "storage": "dto (z ULDK, cache w DM-002, kopia osadzona w DM-001)",
       "description": "Działka ewidencyjna z ULDK GUGiK, geometria GeoJSON EPSG:4326; powierzchnia i centroid liczone turf-em.",
       "fields": [
-        { "name": "id", "type": "string(60)", "required": true, "note": "pełny TERYT, np. 141201_1.0001.123" },
+        {
+          "name": "id",
+          "type": "string(60)",
+          "required": true,
+          "note": "pełny TERYT, np. 141201_1.0001.123"
+        },
         { "name": "parcelNumber", "type": "string(30)", "required": true },
         { "name": "region", "type": "string(120)", "required": true, "note": "obręb ewidencyjny" },
         { "name": "commune", "type": "string(120)", "required": true, "note": "gmina" },
@@ -112,17 +156,44 @@
       "storage": "code: apps/backend/src/services/engine/crops.ts",
       "description": "Uprawa z parametrami FAO-56 i oczekiwanymi zakresami NDVI/NDMI per miesiąc (tabela ADR-007 §2, §5).",
       "fields": [
-        { "name": "code", "type": "enum(winter_wheat|spring_barley|maize|potato|winter_rapeseed|sugar_beet|grassland)", "required": true },
+        {
+          "name": "code",
+          "type": "enum(winter_wheat|spring_barley|maize|potato|winter_rapeseed|sugar_beet|grassland)",
+          "required": true
+        },
         { "name": "name", "type": "string(60)", "required": true },
         { "name": "kcIni", "type": "number", "required": true },
         { "name": "kcMid", "type": "number", "required": true },
         { "name": "kcEnd", "type": "number", "required": true },
         { "name": "rootDepthM", "type": "number", "required": true },
-        { "name": "depletionFraction", "type": "number", "required": true, "note": "p z FAO-56 Tab. 22" },
-        { "name": "stages", "type": "object { code: string, name: string, from: string MM-DD, to: string MM-DD, isCritical: boolean }[]", "required": true },
-        { "name": "criticalPeriodLabel", "type": "string(80)", "required": true, "note": "np. strzelanie w źdźbło – kwitnienie (maj–czerwiec)" },
-        { "name": "expectedIndices", "type": "object { month: integer, ndviMin: number, ndviMax: number, ndmiMin: number, ndmiMax: number }[]", "required": true },
-        { "name": "reference", "type": "string", "required": true, "note": "FAO-56 Allen i in. 1998, Tab. 12 i 22" }
+        {
+          "name": "depletionFraction",
+          "type": "number",
+          "required": true,
+          "note": "p z FAO-56 Tab. 22"
+        },
+        {
+          "name": "stages",
+          "type": "object { code: string, name: string, from: string MM-DD, to: string MM-DD, isCritical: boolean }[]",
+          "required": true
+        },
+        {
+          "name": "criticalPeriodLabel",
+          "type": "string(80)",
+          "required": true,
+          "note": "np. strzelanie w źdźbło – kwitnienie (maj–czerwiec)"
+        },
+        {
+          "name": "expectedIndices",
+          "type": "object { month: integer, ndviMin: number, ndviMax: number, ndmiMin: number, ndmiMax: number }[]",
+          "required": true
+        },
+        {
+          "name": "reference",
+          "type": "string",
+          "required": true,
+          "note": "FAO-56 Allen i in. 1998, Tab. 12 i 22"
+        }
       ],
       "relations": [],
       "indexes": []
@@ -134,14 +205,37 @@
       "storage": "code: apps/backend/src/services/sources/catalog.ts",
       "description": "Katalog źródeł danych (API-006, README sekcje 4–7).",
       "fields": [
-        { "name": "id", "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)", "required": true },
-        { "name": "name", "type": "string(80)", "required": true, "note": "np. Open-Meteo Historical (ERA5)" },
-        { "name": "category", "type": "enum(spatial|meteo|satellite|soil|terrain|hydro)", "required": true },
-        { "name": "label", "type": "string(40)", "required": true, "note": "prosta etykieta dla rolnika: Działka, Pogoda, Satelita (rośliny), Satelita (wilgotność gleby), Gleba, Teren, Woda w okolicy" },
+        {
+          "name": "id",
+          "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string(80)",
+          "required": true,
+          "note": "np. Open-Meteo Historical (ERA5)"
+        },
+        {
+          "name": "category",
+          "type": "enum(spatial|meteo|satellite|soil|terrain|hydro)",
+          "required": true
+        },
+        {
+          "name": "label",
+          "type": "string(40)",
+          "required": true,
+          "note": "prosta etykieta dla rolnika: Działka, Pogoda, Satelita (rośliny), Satelita (wilgotność gleby), Gleba, Teren, Woda w okolicy"
+        },
         { "name": "provider", "type": "string(80)", "required": true },
         { "name": "url", "type": "string", "required": true },
         { "name": "license", "type": "string(80)", "required": true },
-        { "name": "resolution", "type": "string(60)", "required": true, "note": "np. siatka 9–25 km" },
+        {
+          "name": "resolution",
+          "type": "string(60)",
+          "required": true,
+          "note": "np. siatka 9–25 km"
+        },
         { "name": "timeoutMs", "type": "integer", "required": true }
       ],
       "relations": [],
@@ -155,18 +249,42 @@
       "description": "Ocena bieżąca na datę analizy (krok 4).",
       "fields": [
         { "name": "droughtClass", "type": "enum(none|moderate|severe|unknown)", "required": true },
-        { "name": "droughtClassLabel", "type": "string(60)", "required": true, "note": "Brak suszy / Susza umiarkowana / Susza silna / Brak danych" },
+        {
+          "name": "droughtClassLabel",
+          "type": "string(60)",
+          "required": true,
+          "note": "Brak suszy / Susza umiarkowana / Susza silna / Brak danych"
+        },
         { "name": "isOutOfSeason", "type": "boolean", "required": true },
         { "name": "confidence", "type": "enum(high|medium|low)", "required": true },
         { "name": "confidenceScore", "type": "number 0–1", "required": true },
         { "name": "confidenceReasons", "type": "string[]", "required": true },
-        { "name": "summary", "type": "string", "required": true, "note": "zdanie w prostym języku złożone z liczb (szablon w kodzie)" },
+        {
+          "name": "summary",
+          "type": "string",
+          "required": true,
+          "note": "zdanie w prostym języku złożone z liczb (szablon w kodzie)"
+        },
         { "name": "kbw30", "type": "Ref<DM-013> | null", "required": true },
         { "name": "kbw60", "type": "Ref<DM-013> | null", "required": true },
-        { "name": "soilWater", "type": "object { tawMm: number, rawMm: number, depletionMm: number | null, isStressed: boolean | null } | null", "required": true, "note": "null gdy brak gleby" },
-        { "name": "cropStage", "type": "object { code: string, name: string, kc: number, isCritical: boolean }", "required": true },
+        {
+          "name": "soilWater",
+          "type": "object { tawMm: number, rawMm: number, depletionMm: number | null, isStressed: boolean | null } | null",
+          "required": true,
+          "note": "null gdy brak gleby"
+        },
+        {
+          "name": "cropStage",
+          "type": "object { code: string, name: string, kc: number, isCritical: boolean }",
+          "required": true
+        },
         { "name": "satellite", "type": "Ref<DM-014> | null", "required": true },
-        { "name": "soilMoistureSatellite", "type": "Ref<DM-015> | null", "required": true, "note": "ASCAT SSM z EUMETSAT; null + wpis w dataGaps (sourceId eumetsat), gdy brak klucza, granuli lub timeout; tylko wpływ na pewność (ADR-007 §5a)" },
+        {
+          "name": "soilMoistureSatellite",
+          "type": "Ref<DM-015> | null",
+          "required": true,
+          "note": "ASCAT SSM z EUMETSAT; null + wpis w dataGaps (sourceId eumetsat), gdy brak klucza, granuli lub timeout; tylko wpływ na pewność (ADR-007 §5a)"
+        },
         { "name": "evidence", "type": "Ref<DM-010>[]", "required": true }
       ],
       "relations": [],
@@ -185,9 +303,23 @@
         { "name": "seasonsWithDeficit", "type": "integer | null", "required": true },
         { "name": "deficitYears", "type": "integer[]", "required": true },
         { "name": "criticalMonths", "type": "integer[] (1–12)", "required": true },
-        { "name": "criticalMonthsLabel", "type": "string(40) | null", "required": true, "note": "np. maj–lipiec" },
-        { "name": "monthly", "type": "object { month: integer, deficitFrequency: number, medianKbwMm: number }[]", "required": true, "note": "IV–IX" },
-        { "name": "soil", "type": "object { sandPct: number, siltPct: number, clayPct: number, socPct: number, category: enum(very_light|light|medium|heavy), categoryLabel: string } | null", "required": true },
+        {
+          "name": "criticalMonthsLabel",
+          "type": "string(40) | null",
+          "required": true,
+          "note": "np. maj–lipiec"
+        },
+        {
+          "name": "monthly",
+          "type": "object { month: integer, deficitFrequency: number, medianKbwMm: number }[]",
+          "required": true,
+          "note": "IV–IX"
+        },
+        {
+          "name": "soil",
+          "type": "object { sandPct: number, siltPct: number, clayPct: number, socPct: number, category: enum(very_light|light|medium|heavy), categoryLabel: string } | null",
+          "required": true
+        },
         { "name": "summary", "type": "string", "required": true },
         { "name": "evidence", "type": "Ref<DM-010>[]", "required": true }
       ],
@@ -201,9 +333,18 @@
       "storage": "embedded in DM-001",
       "description": "Przyczyna niedoboru wody wykryta regułą (ADR-007 §8).",
       "fields": [
-        { "name": "code", "type": "enum(precip_deficit_heat|low_soil_retention|surface_runoff|crop_water_demand|low_vegetation_moisture)", "required": true },
+        {
+          "name": "code",
+          "type": "enum(precip_deficit_heat|low_soil_retention|surface_runoff|crop_water_demand|low_vegetation_moisture)",
+          "required": true
+        },
         { "name": "title", "type": "string(80)", "required": true },
-        { "name": "description", "type": "string", "required": true, "note": "prosty język z liczbami, np. Gleba ma 82% piasku i zatrzymuje tylko 48 mm wody w strefie korzeni" },
+        {
+          "name": "description",
+          "type": "string",
+          "required": true,
+          "note": "prosty język z liczbami, np. Gleba ma 82% piasku i zatrzymuje tylko 48 mm wody w strefie korzeni"
+        },
         { "name": "severity", "type": "enum(low|medium|high)", "required": true },
         { "name": "evidence", "type": "Ref<DM-010>[]", "required": true }
       ],
@@ -218,16 +359,35 @@
       "description": "Rekomendacja policzona regułą R-* (ADR-007 §9); zawsze z uzasadnieniem w danych.",
       "fields": [
         { "name": "ruleId", "type": "string(12)", "required": true, "note": "np. R-LAND-01" },
-        { "name": "category", "type": "enum(retention_landscape|retention_soil|agrotechnics|irrigation)", "required": true },
+        {
+          "name": "category",
+          "type": "enum(retention_landscape|retention_soil|agrotechnics|irrigation)",
+          "required": true
+        },
         { "name": "order", "type": "integer", "required": true },
         { "name": "priority", "type": "enum(high|medium|low)", "required": true },
         { "name": "title", "type": "string(100)", "required": true },
         { "name": "action", "type": "string", "required": true, "note": "co zrobić" },
-        { "name": "where", "type": "string | null", "required": true, "note": "np. wzdłuż południowej granicy działki (w dół spadku)" },
+        {
+          "name": "where",
+          "type": "string | null",
+          "required": true,
+          "note": "np. wzdłuż południowej granicy działki (w dół spadku)"
+        },
         { "name": "when", "type": "string | null", "required": true },
         { "name": "why", "type": "string", "required": true, "note": "uzasadnienie z liczbami" },
-        { "name": "location", "type": "object { lat: number, lon: number } | null", "required": true, "note": "punkt na mapie (should)" },
-        { "name": "irrigation", "type": "object { isJustified: boolean, netDoseMm: number | null, grossDoseMm: number | null, doseM3PerHa: number | null, window: string | null, nextCheckInDays: number | null } | null", "required": true, "note": "tylko dla category=irrigation" },
+        {
+          "name": "location",
+          "type": "object { lat: number, lon: number } | null",
+          "required": true,
+          "note": "punkt na mapie (should)"
+        },
+        {
+          "name": "irrigation",
+          "type": "object { isJustified: boolean, netDoseMm: number | null, grossDoseMm: number | null, doseM3PerHa: number | null, window: string | null, nextCheckInDays: number | null } | null",
+          "required": true,
+          "note": "tylko dla category=irrigation"
+        },
         { "name": "evidence", "type": "Ref<DM-010>[]", "required": true, "note": "min. 1 element" }
       ],
       "relations": [],
@@ -241,10 +401,25 @@
       "description": "Jedna wartość-dowód z jednostką, źródłem i datą danych.",
       "fields": [
         { "name": "label", "type": "string(80)", "required": true, "note": "np. KBW 60 dni" },
-        { "name": "value", "type": "number | string | null", "required": true, "note": "null = brak danych" },
+        {
+          "name": "value",
+          "type": "number | string | null",
+          "required": true,
+          "note": "null = brak danych"
+        },
         { "name": "unit", "type": "string(20) | null", "required": true },
-        { "name": "sourceId", "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass|engine)", "required": true, "note": "engine = wartość wyliczona z kilku źródeł" },
-        { "name": "dataDate", "type": "string(40)", "required": true, "note": "data lub okres danych, np. 2025-04-01–2025-05-30" },
+        {
+          "name": "sourceId",
+          "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass|engine)",
+          "required": true,
+          "note": "engine = wartość wyliczona z kilku źródeł"
+        },
+        {
+          "name": "dataDate",
+          "type": "string(40)",
+          "required": true,
+          "note": "data lub okres danych, np. 2025-04-01–2025-05-30"
+        },
         { "name": "note", "type": "string | null", "required": false }
       ],
       "relations": [],
@@ -257,18 +432,36 @@
       "storage": "embedded in DM-001",
       "description": "Status źródła w tej analizie (krok 3 i 7).",
       "fields": [
-        { "name": "sourceId", "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)", "required": true },
+        {
+          "name": "sourceId",
+          "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)",
+          "required": true
+        },
         { "name": "name", "type": "string(80)", "required": true },
         { "name": "label", "type": "string(40)", "required": true },
-        { "name": "category", "type": "enum(spatial|meteo|satellite|soil|terrain|hydro)", "required": true },
+        {
+          "name": "category",
+          "type": "enum(spatial|meteo|satellite|soil|terrain|hydro)",
+          "required": true
+        },
         { "name": "provider", "type": "string(80)", "required": true },
         { "name": "url", "type": "string", "required": true },
         { "name": "license", "type": "string(80)", "required": true },
         { "name": "status", "type": "enum(ok|cached|missing|error|timeout)", "required": true },
-        { "name": "dataPeriod", "type": "string(40) | null", "required": true, "note": "np. 2015-03-08–2025-05-20 albo data sceny 2025-05-14" },
+        {
+          "name": "dataPeriod",
+          "type": "string(40) | null",
+          "required": true,
+          "note": "np. 2015-03-08–2025-05-20 albo data sceny 2025-05-14"
+        },
         { "name": "fetchedAt", "type": "datetime | null", "required": true },
         { "name": "durationMs", "type": "integer", "required": true },
-        { "name": "message", "type": "string | null", "required": true, "note": "dla rolnika, np. Brak bezchmurnego zdjęcia od 2025-04-05" }
+        {
+          "name": "message",
+          "type": "string | null",
+          "required": true,
+          "note": "dla rolnika, np. Brak bezchmurnego zdjęcia od 2025-04-05"
+        }
       ],
       "relations": [],
       "indexes": []
@@ -280,9 +473,23 @@
       "storage": "embedded in DM-001",
       "description": "Jawny brak danych i jego wpływ na wynik.",
       "fields": [
-        { "name": "sourceId", "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)", "required": true },
-        { "name": "what", "type": "string", "required": true, "note": "np. Brak danych glebowych SoilGrids" },
-        { "name": "impact", "type": "string", "required": true, "note": "np. Nie policzono pojemności wodnej gleby i deficytu glebowego; pewność obniżona" }
+        {
+          "name": "sourceId",
+          "type": "enum(uldk|meteo|sentinel2|eumetsat|soilgrids|elevation|overpass)",
+          "required": true
+        },
+        {
+          "name": "what",
+          "type": "string",
+          "required": true,
+          "note": "np. Brak danych glebowych SoilGrids"
+        },
+        {
+          "name": "impact",
+          "type": "string",
+          "required": true,
+          "note": "np. Nie policzono pojemności wodnej gleby i deficytu glebowego; pewność obniżona"
+        }
       ],
       "relations": [],
       "indexes": []
@@ -304,7 +511,12 @@
         { "name": "normKbwMm", "type": "number", "required": true, "note": "mediana 10 lat" },
         { "name": "anomalyMm", "type": "number", "required": true },
         { "name": "percentile", "type": "number 0–100", "required": true },
-        { "name": "precipitationNormPct", "type": "number", "required": true, "note": "opad jako % mediany opadu 10 lat" },
+        {
+          "name": "precipitationNormPct",
+          "type": "number",
+          "required": true,
+          "note": "opad jako % mediany opadu 10 lat"
+        },
         { "name": "meanTmaxC", "type": "number", "required": true },
         { "name": "normTmaxC", "type": "number", "required": true }
       ],
@@ -327,8 +539,17 @@
         { "name": "ndmi", "type": "number | null", "required": true },
         { "name": "ndviAssessment", "type": "enum(below|normal|above|unknown)", "required": true },
         { "name": "ndmiAssessment", "type": "enum(below|normal|above|unknown)", "required": true },
-        { "name": "expected", "type": "object { ndviMin: number, ndviMax: number, ndmiMin: number, ndmiMax: number }", "required": true },
-        { "name": "thumbnailUrl", "type": "string | null", "required": false, "note": "should: asset thumbnail z STAC" }
+        {
+          "name": "expected",
+          "type": "object { ndviMin: number, ndviMax: number, ndmiMin: number, ndmiMax: number }",
+          "required": true
+        },
+        {
+          "name": "thumbnailUrl",
+          "type": "string | null",
+          "required": false,
+          "note": "should: asset thumbnail z STAC"
+        }
       ],
       "relations": [],
       "indexes": []
@@ -340,17 +561,52 @@
       "storage": "embedded in DM-006",
       "description": "Wilgotność powierzchniowej warstwy gleby z ASCAT (EUMETSAT Data Store / H SAF), najnowsza obserwacja w oknie D−3…D dla centroidu działki. Wartość orientacyjna, nie zmienia klasy suszy (ADR-006, ADR-007 §5a).",
       "fields": [
-        { "name": "valuePct", "type": "number 0–100", "required": true, "note": "% saturacji (degree of saturation)" },
+        {
+          "name": "valuePct",
+          "type": "number 0–100",
+          "required": true,
+          "note": "% saturacji (degree of saturation)"
+        },
         { "name": "assessment", "type": "enum(dry|normal|wet|unknown)", "required": true },
-        { "name": "agreement", "type": "enum(confirms|contradicts|neutral)", "required": true, "note": "zgodność z klasą suszy z KBW" },
+        {
+          "name": "agreement",
+          "type": "enum(confirms|contradicts|neutral)",
+          "required": true,
+          "note": "zgodność z klasą suszy z KBW"
+        },
         { "name": "observedAt", "type": "datetime", "required": true },
         { "name": "ageDays", "type": "integer", "required": true },
-        { "name": "product", "type": "string(80)", "required": true, "note": "np. ASCAT SSM 25 km NRT (Metop-B)" },
-        { "name": "collectionId", "type": "string(60)", "required": true, "note": "np. EO:EUM:DAT:METOP:SOMO25 (do weryfikacji)" },
+        {
+          "name": "product",
+          "type": "string(80)",
+          "required": true,
+          "note": "np. ASCAT SSM 25 km NRT (Metop-B)"
+        },
+        {
+          "name": "collectionId",
+          "type": "string(60)",
+          "required": true,
+          "note": "np. EO:EUM:DAT:METOP:SOMO25 (do weryfikacji)"
+        },
         { "name": "granuleId", "type": "string(160)", "required": true },
-        { "name": "resolutionKm", "type": "number", "required": true, "note": "12.5 albo 25 zależnie od produktu" },
-        { "name": "depthLabel", "type": "string(40)", "required": true, "note": "warstwa powierzchniowa (kilka cm)" },
-        { "name": "distanceKm", "type": "number", "required": true, "note": "odległość punktu siatki od centroidu działki (maks. 20)" }
+        {
+          "name": "resolutionKm",
+          "type": "number",
+          "required": true,
+          "note": "12.5 albo 25 zależnie od produktu"
+        },
+        {
+          "name": "depthLabel",
+          "type": "string(40)",
+          "required": true,
+          "note": "warstwa powierzchniowa (kilka cm)"
+        },
+        {
+          "name": "distanceKm",
+          "type": "number",
+          "required": true,
+          "note": "odległość punktu siatki od centroidu działki (maks. 20)"
+        }
       ],
       "relations": [],
       "indexes": []

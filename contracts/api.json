@@ -23,17 +23,9 @@
           "total": "integer"
         }
       },
-      "errors": [
-        "401 UNAUTHORIZED",
-        "422 VALIDATION_ERROR",
-        "500 INTERNAL_SERVER_ERROR"
-      ],
-      "data_refs": [
-        "DM-001"
-      ],
-      "consumers": [
-        "UI-S-001"
-      ]
+      "errors": ["401 UNAUTHORIZED", "422 VALIDATION_ERROR", "500 INTERNAL_SERVER_ERROR"],
+      "data_refs": ["DM-001"],
+      "consumers": ["UI-S-001"]
     }
   },
   "_note": "Kropla: brak auth (auth: none). Format błędu: { code, message, details }. Daty jako YYYY-MM-DD (strefa Europe/Warsaw), znaczniki czasu ISO 8601 UTC. Źródła i metodyka: docs/adr/ADR-006-data-sources.md, docs/adr/ADR-007-methodology.md.",
@@ -58,14 +50,8 @@
         "404 PARCEL_NOT_FOUND",
         "502 UPSTREAM_UNAVAILABLE (ULDK nie odpowiada i brak cache)"
       ],
-      "data_refs": [
-        "DM-003",
-        "DM-002"
-      ],
-      "consumers": [
-        "UI-S-001",
-        "UI-S-002"
-      ]
+      "data_refs": ["DM-003", "DM-002"],
+      "consumers": ["UI-S-001", "UI-S-002"]
     },
     {
       "id": "API-002",
@@ -88,13 +74,8 @@
         "404 PARCEL_NOT_FOUND (w punkcie nie ma działki ewidencyjnej)",
         "502 UPSTREAM_UNAVAILABLE"
       ],
-      "data_refs": [
-        "DM-003",
-        "DM-002"
-      ],
-      "consumers": [
-        "UI-S-001"
-      ]
+      "data_refs": ["DM-003", "DM-002"],
+      "consumers": ["UI-S-001"]
     },
     {
       "id": "API-003",
@@ -109,15 +90,9 @@
           "items": "Crop[] (DM-004)"
         }
       },
-      "errors": [
-        "500 INTERNAL_SERVER_ERROR"
-      ],
-      "data_refs": [
-        "DM-004"
-      ],
-      "consumers": [
-        "UI-S-002"
-      ]
+      "errors": ["500 INTERNAL_SERVER_ERROR"],
+      "data_refs": ["DM-004"],
+      "consumers": ["UI-S-002"]
     },
     {
       "id": "API-004",
@@ -158,10 +133,7 @@
         "DM-014",
         "DM-015"
       ],
-      "consumers": [
-        "UI-S-002",
-        "UI-S-003"
-      ]
+      "consumers": ["UI-S-002", "UI-S-003"]
     },
     {
       "id": "API-005",
@@ -178,17 +150,9 @@
       "response": {
         "200": "Report (DM-001)"
       },
-      "errors": [
-        "422 VALIDATION_ERROR (niepoprawny format id)",
-        "404 REPORT_NOT_FOUND"
-      ],
-      "data_refs": [
-        "DM-001"
-      ],
-      "consumers": [
-        "UI-S-003",
-        "UI-S-004"
-      ]
+      "errors": ["422 VALIDATION_ERROR (niepoprawny format id)", "404 REPORT_NOT_FOUND"],
+      "data_refs": ["DM-001"],
+      "consumers": ["UI-S-003", "UI-S-004"]
     },
     {
       "id": "API-006",
@@ -203,16 +167,9 @@
           "items": "DataSource[] (DM-005)"
         }
       },
-      "errors": [
-        "500 INTERNAL_SERVER_ERROR"
-      ],
-      "data_refs": [
-        "DM-005"
-      ],
-      "consumers": [
-        "UI-S-002",
-        "UI-S-003"
-      ]
+      "errors": ["500 INTERNAL_SERVER_ERROR"],
+      "data_refs": ["DM-005"],
+      "consumers": ["UI-S-002", "UI-S-003"]
     }
   ]
 }

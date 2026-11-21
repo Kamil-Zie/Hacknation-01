@@ -57,12 +57,7 @@
   },
   "responsive": {
     "approach": "mobile-first: style bazowe dla telefonu, większe ekrany przez min-width",
-    "target_widths": [
-      360,
-      768,
-      1280,
-      1920
-    ],
+    "target_widths": [360, 768, 1280, 1920],
     "required": [
       "Każdy ekran ścieżki demo działa i dobrze wygląda na 360, 768, 1280 i 1920 px (1280–1920 to projektor na pokazie)",
       "Brak poziomego przewijania strony na żadnej szerokości",
@@ -87,12 +82,7 @@
         "items": "Item[]",
         "loading": "boolean"
       },
-      "states": [
-        "loading",
-        "empty",
-        "error",
-        "ready"
-      ],
+      "states": ["loading", "empty", "error", "ready"],
       "accessibility": "Lista jako <ul>, komunikat błędu z role=alert",
       "responsive": "Na < md karty zamiast wierszy tabeli; przyciski akcji pełnej szerokości"
     },
@@ -102,12 +92,8 @@
       "name": "Lista elementów",
       "route": "/items",
       "description": "Ekran z listą i paginacją",
-      "components": [
-        "UI-C-001"
-      ],
-      "api_refs": [
-        "API-001"
-      ],
+      "components": ["UI-C-001"],
+      "api_refs": ["API-001"],
       "responsive": {
         "xs": "jedna kolumna, lista jako karty, filtr w szufladzie",
         "md": "filtr nad listą, lista jako tabela",
@@ -330,7 +316,16 @@
       "name": "Raport",
       "route": "/report/:id",
       "description": "Kroki 4–7: nagłówek (działka, uprawa, data analizy, data wygenerowania, status complete/partial), ReportActions, sekcje w kolejności: Stan wody (AssessmentSection + KbwChart), Podatność i przyczyny, Co zrobić (RecommendationList), Źródła i ograniczenia (zwinięte). Dane z cache TanStack Query po API-004, przy wejściu z linku z API-005.",
-      "components": ["UI-C-002", "UI-C-006", "UI-C-007", "UI-C-008", "UI-C-009", "UI-C-010", "UI-C-011", "UI-C-012"],
+      "components": [
+        "UI-C-002",
+        "UI-C-006",
+        "UI-C-007",
+        "UI-C-008",
+        "UI-C-009",
+        "UI-C-010",
+        "UI-C-011",
+        "UI-C-012"
+      ],
       "api_refs": ["API-005", "API-006"],
       "responsive": {
         "xs": "jedna kolumna, sekcje jako karty, spis sekcji jako poziome chipy przewijane w swoim kontenerze, ReportActions jako dolny pasek",
