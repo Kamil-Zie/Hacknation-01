@@ -2,6 +2,8 @@
 import { AppBar, Box, Container, Link, Toolbar, Typography } from '@mui/material';
 import { Link as RouterLink, Outlet } from 'react-router-dom';
 
+import { AccountMenu } from '@/components/AccountMenu/AccountMenu';
+
 export function AppLayout() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -27,6 +29,7 @@ export function AppLayout() {
           <Typography variant="body1" sx={{ display: { xs: 'none', sm: 'block' }, opacity: 0.9 }}>
             Sprawdź wodę na swojej działce
           </Typography>
+          <AccountMenu />
         </Toolbar>
       </AppBar>
       <Container component="main" maxWidth="xl" sx={{ py: { xs: 2, md: 4 }, px: { xs: 2, md: 3 } }}>

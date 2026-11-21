@@ -415,7 +415,7 @@
       "status": "proposed",
       "name": "Logowanie i rejestracja",
       "route": "/logowanie",
-      "description": "Jedna strona z AuthForm i przełącznikiem „Mam konto” / „Załóż konto” (ADR-010). Rejestracja tworzy konto „Moje gospodarstwo”; po sukcesie przejście na /konto (lub wcześniejszą stronę). Stany: ładowanie (przycisk z postępem), błąd przy polu lub alert (EMAIL_TAKEN, INVALID_CREDENTIALS, TOO_MANY_ATTEMPTS, błąd sieci z „Spróbuj ponownie”). Zalogowany użytkownik jest przekierowany na /konto. Link „Kontynuuj bez konta” do /. Docelowe api_refs: API-007, API-008, API-009 (do uzupełnienia po T-040, gdy elementy trafią do api.json).",
+      "description": "Jedna strona z AuthForm i przełącznikiem „Mam konto” / „Załóż konto” (ADR-010). Rejestracja tworzy konto „Moje gospodarstwo”; po sukcesie powrót na wcześniejszą stronę (?next=, tylko ścieżki zaczynające się od /) albo na /; zalogowany na /logowanie widzi „Jesteś zalogowany jako …” z przyciskiem powrotu. Stany: ładowanie (przycisk z postępem), błąd przy polu lub alert (EMAIL_TAKEN, INVALID_CREDENTIALS, TOO_MANY_ATTEMPTS, błąd sieci z „Spróbuj ponownie”). Zalogowany użytkownik jest przekierowany na /konto. Link „Kontynuuj bez konta” do /. Docelowe api_refs: API-007, API-008, API-009 (do uzupełnienia po T-040, gdy elementy trafią do api.json).",
       "components": ["UI-C-013"],
       "api_refs": [],
       "responsive": {
