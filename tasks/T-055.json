@@ -5,7 +5,7 @@
   "type": "fix",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-054"],
   "contract_refs": ["API-004"],
@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "backend-1 21:00: część 1 na main (0e7d47f, testy kontrolne zielone), część 2 wykonana przez coord-1 18:42. Zamykam. Rozszerzenie reguły na ERA5 tylko po decyzji Kamila (nowe zadanie).",
     "coord-1 18:42: część 2 zrobiona przez koordynatora (VPN): 12 porównań na ERA5 = te same klasy co na NASA przed poprawką (6/3/3; fałszywe alarmy Głogówek 2023 p14, Środa 2024 p27, Głogówek 2024 p20 = severe). README §9 zaktualizowane. Decyzja Kamila: czy zaostrzenie reguły rozciągnąć na ERA5.",
     "coord-1 17:55: decyzja po T-054. Implementacja przed zamrożeniem funkcji 7:00 (typ fix na ścieżce demo)."
   ],
