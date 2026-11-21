@@ -182,7 +182,7 @@
       "id": "UI-C-005",
       "status": "proposed",
       "name": "SourceProgressList",
-      "description": "Lista źródeł z API-006 (Działka, Pogoda, Satelita, Gleba, Teren, Woda w okolicy) ze stanem: pobieranie (spinner) → ok / z cache / brak danych / przekroczony czas po odpowiedzi API-004; pasek postępu orientacyjny (czas do 30 s)",
+      "description": "Lista źródeł z API-006 (Działka, Pogoda, Satelita (rośliny), Satelita (wilgotność gleby), Gleba, Teren, Woda w okolicy) ze stanem: pobieranie (spinner) → ok / z cache / brak danych / przekroczony czas po odpowiedzi API-004; pasek postępu orientacyjny (czas do 30 s)",
       "props": {
         "sources": "DataSource[]",
         "statuses": "SourceStatus[] | null (null = trwa pobieranie)",
@@ -196,7 +196,7 @@
       "id": "UI-C-006",
       "status": "proposed",
       "name": "AssessmentSection",
-      "description": "Krok 4: klasa suszy (DroughtBadge), pewność, zdanie podsumowania, metryki KBW 30/60 dni (wartość, norma, anomalia, percentyl), deficyt glebowy, NDVI/NDMI z datą sceny i oceną dla uprawy, faza uprawy",
+      "description": "Krok 4: klasa suszy (DroughtBadge), pewność, zdanie podsumowania, metryki KBW 30/60 dni (wartość, norma, anomalia, percentyl), deficyt glebowy, NDVI/NDMI z datą sceny i oceną dla uprawy, satelitarna wilgotność gleby ASCAT (% saturacji, data obserwacji, rozdzielczość km, „potwierdza / nie potwierdza oceny”; przy null „brak danych EUMETSAT”), faza uprawy",
       "props": {
         "assessment": "Assessment",
         "cropName": "string",

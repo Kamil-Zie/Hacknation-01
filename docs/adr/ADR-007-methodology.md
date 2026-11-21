@@ -47,6 +47,13 @@ Dla każdej warstwy SoilGrids: S, C jako ułamki (piasek, ił), OM = SOC[%] · 1
 - Tabela oczekiwanych zakresów NDVI/NDMI per uprawa i miesiąc w `engine/crops.ts` (np. pszenica ozima V: NDVI 0,6–0,9; kukurydza IV–V: gleba odkryta, niski NDVI jest normalny). Ocena: `below` / `normal` / `above` / `unknown`.
 - Satelita nie zmienia klasy suszy sam: potwierdza lub osłabia ocenę meteo-glebową (wpływ na pewność) i może dodać przyczynę „niska wilgotność roślinności”.
 
+### 5a. Satelitarna wilgotność gleby ASCAT (EUMETSAT, źródło `eumetsat`)
+- Wartość SSM w % saturacji warstwy powierzchniowej (kilka cm) z najnowszej obserwacji w oknie D−3…D (ADR-006), rozdzielczość 12,5–25 km zależnie od produktu.
+- Ocena orientacyjna: `dry` przy SSM ≤ 30%, `wet` przy SSM ≥ 70%, w pozostałych przypadkach `normal`; `unknown`, gdy brak wartości albo flaga zamarznięcia lub śniegu. Progi są w kodzie jako stałe z komentarzem; MVP nie ma klimatologii SSM, więc nie liczymy anomalii.
+- **Bez samodzielnej interpretacji:** SSM nie ustala ani nie zmienia klasy suszy (§6). Wpływa tylko na pewność (§10) i na zdanie podsumowania, np. „pomiar satelitarny wilgotności gleby to potwierdza” albo „…wskazuje wilgotniejszą powierzchnię, wynik mniej pewny”.
+- Zgodność z oceną: przy klasie `moderate`/`severe` SSM `dry` potwierdza ocenę, a `wet` jej przeczy. Przy klasie `none` SSM `wet` lub `normal` potwierdza ocenę, a `dry` jej przeczy. Gdy NDMI (§5) i SSM wskazują ten sam kierunek, oba trafiają do `evidence[]` oceny.
+- Ograniczenie w raporcie: ASCAT mierzy tylko kilka centymetrów powierzchni (szybko reaguje na pojedynczy deszcz i nie opisuje strefy korzeni), piksel 12,5–25 km obejmuje wiele działek, pomiar nie działa na zamarzniętej glebie i pod śniegiem.
+
 ### 6. Klasa suszy bieżącej
 - `severe` (silna): percentyl KBW60 ≤ 10 albo (Dr > RAW i percentyl KBW60 ≤ 30).
 - `moderate` (umiarkowana): percentyl KBW60 ≤ 30 albo Dr > RAW.
@@ -90,12 +97,13 @@ Generowane tylko, gdy klasa suszy lub podatność ≠ `unknown`. Każda ma `evid
    - Adnotacja: pobór wody powyżej 5 m³/dobę wymaga zgody wodnoprawnej (Prawo wodne).
 
 ### 10. Pewność
-- Wynik = suma wag dostępnych źródeł: meteo 0,40, gleba 0,20, satelita 0,15, teren 0,10, hydrologia 0,10, działka 0,05.
-- Kary: scena satelitarna starsza niż 20 dni −0,05; satelita sprzeczny z meteo (`normal`/`above` przy klasie severe albo `below` przy none) −0,10; działka < 0,5 ha −0,05; poza sezonem −0,10.
+- Wynik = suma wag dostępnych źródeł: meteo 0,35, gleba 0,20, Sentinel-2 0,15, EUMETSAT SSM 0,10, teren 0,10, hydrologia 0,05, działka 0,05 (razem 1,0).
+- Kary: scena Sentinel-2 starsza niż 20 dni −0,05; NDMI sprzeczny z meteo (`normal`/`above` przy klasie severe albo `below` przy none) −0,10; SSM sprzeczny z klasą (§5a) −0,10; SSM i NDMI jednocześnie sprzeczne z klasą: dodatkowe −0,05 i adnotacja „dane satelitarne nie potwierdzają bilansu”; działka < 0,5 ha −0,05; poza sezonem −0,10.
+- Premia: SSM i NDMI zgodne z klasą +0,05 (maks. do 1,0).
 - `high` ≥ 0,80, `medium` ≥ 0,55, `low` poniżej. Każda kara trafia do `confidenceReasons[]`.
 
 ### 11. Ograniczenia stałe w raporcie
-ERA5 siatka ok. 9–25 km (opad lokalny może się różnić), SoilGrids 250 m (model, nie pomiar na działce), DEM 90 m, chmury i rozdzielczość Sentinel-2 (10–20 m), kompletność rowów w OSM, rozkład odniesienia z 10 lat (krótki szereg), brak prognozy pogody, brak danych o zabiegach i nawadnianiu na działce.
+ERA5 siatka ok. 9–25 km (opad lokalny może się różnić), ASCAT 12,5–25 km i tylko warstwa powierzchniowa, SoilGrids 250 m (model, nie pomiar na działce), DEM 90 m, chmury i rozdzielczość Sentinel-2 (10–20 m), kompletność rowów w OSM, rozkład odniesienia z 10 lat (krótki szereg), brak prognozy pogody, brak danych o zabiegach i nawadnianiu na działce.
 
 ## Uzasadnienie
 

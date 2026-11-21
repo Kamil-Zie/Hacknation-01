@@ -124,7 +124,7 @@
       "status": "proposed",
       "method": "POST",
       "path": "/analyses",
-      "summary": "Uruchamia analizę na żywo (5 źródeł równolegle, timeouty, cache), liczy ocenę, podatność, przyczyny i rekomendacje, zapisuje raport i go zwraca. Budżet ≤ 25 s po stronie serwera; awaria źródła nie przerywa analizy (status 'partial' + dataGaps).",
+      "summary": "Uruchamia analizę na żywo (6 źródeł równolegle, w tym EUMETSAT ASCAT jako assessment.soilMoistureSatellite; brak klucza EUMETSAT = null + dataGap, timeouty, cache), liczy ocenę, podatność, przyczyny i rekomendacje, zapisuje raport i go zwraca. Budżet ≤ 25 s po stronie serwera; awaria źródła nie przerywa analizy (status 'partial' + dataGaps).",
       "auth": "none",
       "request": {
         "body": {
@@ -155,7 +155,8 @@
         "DM-011",
         "DM-012",
         "DM-013",
-        "DM-014"
+        "DM-014",
+        "DM-015"
       ],
       "consumers": [
         "UI-S-002",
@@ -194,7 +195,7 @@
       "status": "proposed",
       "method": "GET",
       "path": "/sources",
-      "summary": "Katalog źródeł danych (nazwa, kategoria, dostawca, licencja, rozdzielczość) do listy postępu w kroku 3 i tabeli źródeł; stała z kodu",
+      "summary": "Katalog źródeł danych (uldk, meteo, sentinel2, eumetsat, soilgrids, elevation, overpass: nazwa, kategoria, dostawca, licencja, rozdzielczość) do listy postępu w kroku 3 i tabeli źródeł; stała z kodu",
       "auth": "none",
       "request": {},
       "response": {

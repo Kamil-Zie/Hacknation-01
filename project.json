@@ -74,7 +74,7 @@
           "step": 4,
           "user_action": "Czeka na wynik (≤ 30 s).",
           "result": "Ocena bieżąca na datę analizy: KBW z ostatnich 30/60 dni względem normy z 10 lat (anomalia, percentyl), NDVI/NDMI z ostatniej bezchmurnej sceny z datą i oceną dla wybranej uprawy, klasa suszy (brak/umiarkowana/silna) z poziomem pewności.",
-          "contract_refs": ["API-004", "DM-001", "DM-006", "DM-013", "DM-014", "DM-010", "UI-S-003", "UI-C-006", "UI-C-011", "UI-C-012"]
+          "contract_refs": ["API-004", "DM-001", "DM-006", "DM-013", "DM-014", "DM-015", "DM-010", "UI-S-003", "UI-C-006", "UI-C-011", "UI-C-012"]
         },
         {
           "step": 5,
@@ -236,7 +236,9 @@
         "validation": "Zod",
         "http_client": "wbudowany fetch (Node 20) + AbortSignal.timeout per źródło",
         "geo": "@turf/turf (powierzchnia, centroid, bbox, odległość do cieku), proj4 (EPSG:4326 ↔ EPSG:2180 i UTM 326xx), wellknown (WKT → GeoJSON)",
-        "raster": "geotiff (geotiff.js): odczyt okna bbox z COG Sentinel-2 przez HTTP range",
+        "raster": "geotiff (geotiff.js): odczyt okna bbox z COG Sentinel-2 i GeoTIFF z WCS SoilGrids",
+        "netcdf": "h5wasm (netCDF4/HDF5 w WASM z npm, bez narzędzi systemowych) + fflate (rozpakowanie zip granuli EUMETSAT w pamięci); BUFR i EPS Native nieobsługiwane",
+        "eumetsat_client": "bezpośredni REST EUMETSAT Data Store przez fetch (OAuth2 client_credentials, zmienne EUMETSAT_CONSUMER_KEY i EUMETSAT_CONSUMER_SECRET tylko w .env); bez eumdac i bez Pythona. Ryzyko: jeśli kolekcja ASCAT SSM ma wyłącznie BUFR, potrzebny decision_request (Python eumdac to nowe narzędzie systemowe)",
         "testing": "Vitest (silnik obliczeń: KBW, percentyle, Saxton-Rawls, reguły rekomendacji)"
       },
       "candidates": {
