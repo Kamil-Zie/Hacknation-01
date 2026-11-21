@@ -112,14 +112,15 @@ export const SOURCES: DataSource[] = [
   },
   {
     id: 'overpass',
-    name: 'OpenStreetMap Overpass API',
+    name: 'OpenStreetMap (API 0.6, zapas Overpass)',
     category: 'hydro',
     label: 'Woda w okolicy',
-    provider: 'OpenStreetMap contributors (Overpass API)',
-    url: 'https://overpass-api.de/',
-    license: 'ODbL 1.0, © OpenStreetMap contributors',
+    provider: 'OpenStreetMap contributors (API 0.6, zapas Overpass)',
+    url: 'https://www.openstreetmap.org/',
+    license: 'ODbL 1.0',
     resolution: 'dane wektorowe, promień 1 km',
     timeoutMs: 12000,
+    attribution: '© OpenStreetMap contributors',
   },
 ];
 
