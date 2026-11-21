@@ -7,6 +7,8 @@ coverage/
 .env.*
 !.env.example
 .claude/settings.local.json
+# Personal templates with secrets: only *.example.json is tracked
+team/*/settings.local.json
 .DS_Store
 .claude/state/
 

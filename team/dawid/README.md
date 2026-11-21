@@ -10,7 +10,7 @@
 
 ```bash
 git clone https://github.com/Kamil-Zie/Hacknation-01.git && cd Hacknation-01
-cp team/dawid/settings.local.json .claude/settings.local.json
+cp team/dawid/settings.local.example.json .claude/settings.local.json
 ```
 
 Otwórz `.claude/settings.local.json` i wklej adresy webhooków Discord (dostaniesz je od Kamila). Ten plik nie trafia do gita.

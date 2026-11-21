@@ -1,7 +1,7 @@
 {
   "agent": "frontend-lead",
   "env": {
-    "HACK_MEMBER": "frontend-2",
+    "HACK_MEMBER": "frontend-1",
     "DISCORD_WEBHOOK_FRONTEND": "",
     "DISCORD_WEBHOOK_SYNC": ""
   }

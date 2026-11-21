@@ -22,7 +22,7 @@ Prototyp budowany w 24 godziny przez 5 osób i zespół 21 agentów Claude Code.
 2. **Repo i tożsamość:**
    ```bash
    git clone https://github.com/Kamil-Zie/Hacknation-01.git && cd Hacknation-01
-   cp team/<twoje-imie>/settings.local.json .claude/settings.local.json   # wklej webhooki Discord od Kamila
+   cp team/<twoje-imie>/settings.local.example.json .claude/settings.local.json   # wklej webhooki Discord od Kamila
    cp .env.example .env                                                   # wklej MONGODB_URI od Kamila
    ```
 3. **Sprawdzenie środowiska** (włącza też hooki gita):

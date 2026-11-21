@@ -584,7 +584,7 @@
         "coordinator": "DISCORD_WEBHOOK_COORDINATOR",
         "sync": "DISCORD_WEBHOOK_SYNC"
       },
-      "setup": "Adresy webhooków są sekretem: wpisuje się je tylko w .claude/settings.local.json (sekcja env), skopiowanym z team/<osoba>/settings.local.json. Brak webhooka = pomijamy powiadomienie.",
+      "setup": "Adresy webhooków są sekretem: wpisuje się je tylko w .claude/settings.local.json (sekcja env), skopiowanym z team/<osoba>/settings.local.example.json. Brak webhooka = pomijamy powiadomienie.",
       "send": "node .claude/scripts/discord-notify.mjs <plik-wiadomości.md> [--channel backend|frontend|coordinator|sync] [--test] [--dry-run]",
       "send_rule": "Każde powiadomienie na Discord idzie tylko przez discord-notify.mjs, nigdy ręcznym curl. Najpierw zapisz wiadomość w .claude/sync/messages/, potem wyślij ten plik. Ogłoszenie zmiany fazy to wiadomość typu info do all.",
       "template": {
