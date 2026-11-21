@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "medium",
   "depends_on": [],
   "contract_refs": ["API-015", "API-008", "DM-020"],
@@ -21,7 +21,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix)."
+    "coord-1 21:05: lista poprawek Kamila. Funkcje na main przed zamrożeniem 7:00 (potem tylko fix).",
+    "Zrobione (backend-2): PATCH /auth/me (name, email, newPassword; currentPassword wymagane przy e-mailu i haśle; 401 INVALID_CREDENTIALS, 409 EMAIL_TAKEN, 422), zmiana e-maila aktualizuje AccountMember.email użytkownika. Login rememberMe: 30 dni / 1 dzień, rejestracja 30 dni (utils/jwt.ts REMEMBER_TOKEN_TTL_SEC). curl OK, testy auth 14/14."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

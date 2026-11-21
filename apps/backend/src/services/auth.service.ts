@@ -1,4 +1,4 @@
-// T-041 API-007 POST /auth/register, API-008 POST /auth/login, API-009 GET /auth/me service
+// T-041 API-007 POST /auth/register, API-008 POST /auth/login, API-009 GET /auth/me, API-015 PATCH /auth/me service
 import { AccountModel } from '@/models/Account.model';
 import { AccountMemberModel } from '@/models/AccountMember.model';
 import { UserModel } from '@/models/User.model';
@@ -6,9 +6,9 @@ import { listAccountsForUser } from '@/services/accounts.service';
 import type { AccountDto } from '@/services/accounts.service';
 import { AppError } from '@/utils/AppError';
 import { assertDbConnected } from '@/utils/db';
-import { signToken } from '@/utils/jwt';
+import { REMEMBER_TOKEN_TTL_SEC, TOKEN_TTL_SEC, signToken } from '@/utils/jwt';
 import { hashPassword, verifyPassword } from '@/utils/password';
-import type { LoginBody, RegisterBody } from '@/validation/auth.schema';
+import type { LoginBody, RegisterBody, UpdateProfileBody } from '@/validation/auth.schema';
 
 export interface UserDto {
   id: string;
@@ -91,7 +91,7 @@ export async function register(body: RegisterBody): Promise<SessionDto> {
     addedAt: new Date(),
   });
   return {
-    token: signToken(String(user._id)),
+    token: signToken(String(user._id), { ttlSec: REMEMBER_TOKEN_TTL_SEC }),
     user: toUserDto(user),
     accounts: await listAccountsForUser(String(user._id)),
   };
@@ -120,7 +120,9 @@ export async function login(body: LoginBody, ip: string): Promise<SessionDto> {
   }
   failedLogins.delete(key);
   return {
-    token: signToken(String(user._id)),
+    token: signToken(String(user._id), {
+      ttlSec: body.rememberMe ? REMEMBER_TOKEN_TTL_SEC : TOKEN_TTL_SEC,
+    }),
     user: toUserDto(user),
     accounts: await listAccountsForUser(String(user._id)),
   };
@@ -131,6 +133,37 @@ export async function me(userId: string): Promise<MeDto> {
   const user = await UserModel.findById(userId);
   if (!user) throw new AppError('UNAUTHORIZED', 'Wymagane zalogowanie.', 401);
   return { user: toUserDto(user), accounts: await listAccountsForUser(userId) };
+}
+
+export async function updateProfile(userId: string, body: UpdateProfileBody): Promise<MeDto> {
+  assertDbConnected();
+  const user = await UserModel.findById(userId);
+  if (!user) throw new AppError('UNAUTHORIZED', 'Wymagane zalogowanie.', 401);
+  const changes: { name?: string; email?: string; passwordHash?: string } = {};
+  if (body.name !== undefined) changes.name = body.name;
+  const newEmail = body.email !== undefined && body.email !== user.email ? body.email : undefined;
+  if (newEmail) changes.email = newEmail;
+  if (newEmail || body.newPassword !== undefined) {
+    if (body.currentPassword === undefined) {
+      throw new AppError('VALIDATION_ERROR', 'Podaj obecne hasło.', 422, {
+        field: 'currentPassword',
+      });
+    }
+    if (!(await verifyPassword(body.currentPassword, user.passwordHash))) {
+      throw new AppError('INVALID_CREDENTIALS', 'Nieprawidłowe obecne hasło.', 401);
+    }
+  }
+  if (body.newPassword !== undefined) changes.passwordHash = await hashPassword(body.newPassword);
+  if (newEmail && (await UserModel.exists({ email: newEmail }))) throw emailTaken();
+  try {
+    await UserModel.findByIdAndUpdate(userId, { $set: changes });
+  } catch (error) {
+    if (isDuplicateKey(error)) throw emailTaken();
+    throw error;
+  }
+  // Invitations are matched by e-mail, so memberships follow the new address.
+  if (newEmail) await AccountMemberModel.updateMany({ userId }, { $set: { email: newEmail } });
+  return me(userId);
 }
 
 function emailTaken(): AppError {

@@ -3,7 +3,8 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 
 import { env } from '@/config/env';
 
-export const TOKEN_TTL_SEC = 7 * 24 * 60 * 60;
+export const TOKEN_TTL_SEC = 24 * 60 * 60; // 1 day: login without rememberMe
+export const REMEMBER_TOKEN_TTL_SEC = 30 * 24 * 60 * 60; // 30 days: rememberMe and registration
 
 export interface JwtPayload {
   sub: string;

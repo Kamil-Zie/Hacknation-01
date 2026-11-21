@@ -206,6 +206,84 @@ test('login: success 200, wrong password 401, 429 after MAX_FAILED_LOGINS failur
   assert.ok(blocked.json.details.retryAfterSec > 0);
 });
 
+async function patchMe(token: string | null, body: unknown) {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(`${base}/auth/me`, {
+    method: 'PATCH',
+    headers,
+    body: JSON.stringify(body),
+  });
+  return { status: res.status, json: (await res.json()) as ReturnType<typeof JSON.parse> };
+}
+
+function tokenLifetimeSec(token: string): number {
+  const payload = JSON.parse(Buffer.from(token.split('.')[1] ?? '', 'base64url').toString()) as {
+    iat: number;
+    exp: number;
+  };
+  return payload.exp - payload.iat;
+}
+
+test('login rememberMe true gives a 30 day token, false or missing 1 day, register 30 days', async () => {
+  const reg = await post('/auth/register', JAN);
+  const creds = { email: 'jan@example.com', password: JAN.password };
+  const remembered = await post('/auth/login', { ...creds, rememberMe: true });
+  const short = await post('/auth/login', { ...creds, rememberMe: false });
+  const plain = await post('/auth/login', creds);
+  assert.equal(tokenLifetimeSec(reg.json.token), 30 * 86400);
+  assert.equal(tokenLifetimeSec(remembered.json.token), 30 * 86400);
+  assert.equal(tokenLifetimeSec(short.json.token), 86400);
+  assert.equal(tokenLifetimeSec(plain.json.token), 86400);
+  assert.equal((await post('/auth/login', { ...creds, rememberMe: 'yes' })).status, 422);
+});
+
+test('PATCH /auth/me: name, e-mail (taken 409, memberships follow), password flow, 422 and 401 cases', async () => {
+  const jan = await post('/auth/register', JAN);
+  await post('/auth/register', {
+    email: 'anna@example.com',
+    password: 'tajne-haslo',
+    name: 'Anna',
+  });
+  const token = jan.json.token as string;
+  assert.equal((await patchMe(null, { name: 'X' })).status, 401);
+  const empty = await patchMe(token, {});
+  assert.equal(empty.status, 422);
+  assert.equal(empty.json.code, 'VALIDATION_ERROR');
+
+  const renamed = await patchMe(token, { name: ' Janusz ' });
+  assert.equal(renamed.status, 200);
+  assert.equal(renamed.json.user.name, 'Janusz');
+  assert.equal(renamed.json.accounts.length, 1);
+
+  const noPass = await patchMe(token, { email: 'jan2@example.com' });
+  assert.equal(noPass.status, 422);
+  const taken = await patchMe(token, { email: 'Anna@Example.com', currentPassword: JAN.password });
+  assert.equal(taken.status, 409);
+  assert.equal(taken.json.code, 'EMAIL_TAKEN');
+  const changed = await patchMe(token, {
+    email: 'Jan2@Example.com',
+    currentPassword: JAN.password,
+  });
+  assert.equal(changed.status, 200);
+  assert.equal(changed.json.user.email, 'jan2@example.com');
+  assert.ok(db.members.some((m) => m.email === 'jan2@example.com'));
+
+  const noCurrent = await patchMe(token, { newPassword: 'nowe-haslo-1' });
+  assert.equal(noCurrent.status, 422);
+  const wrong = await patchMe(token, {
+    newPassword: 'nowe-haslo-1',
+    currentPassword: 'zle-haslo-1',
+  });
+  assert.equal(wrong.status, 401);
+  assert.equal(wrong.json.code, 'INVALID_CREDENTIALS');
+  const ok = await patchMe(token, { newPassword: 'nowe-haslo-1', currentPassword: JAN.password });
+  assert.equal(ok.status, 200);
+  const creds = { email: 'jan2@example.com' };
+  assert.equal((await post('/auth/login', { ...creds, password: 'nowe-haslo-1' })).status, 200);
+  assert.equal((await post('/auth/login', { ...creds, password: JAN.password })).status, 401);
+});
+
 test('me: 401 without token or with bad token, 200 with token from register', async () => {
   const none = await fetch(`${base}/auth/me`);
   assert.equal(none.status, 401);

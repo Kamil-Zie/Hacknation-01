@@ -11,7 +11,7 @@ const SECRET = 'test-secret';
 test('signToken then verifyToken returns sub with 7 day expiry', () => {
   const token = signToken('user1', { secret: SECRET, nowSec: 1000 });
   const payload = verifyToken(token, { secret: SECRET, nowSec: 1001 });
-  assert.deepEqual(payload, { sub: 'user1', iat: 1000, exp: 1000 + 7 * 86400 });
+  assert.deepEqual(payload, { sub: 'user1', iat: 1000, exp: 1000 + 86400 });
 });
 
 test('verifyToken rejects expired token', () => {
