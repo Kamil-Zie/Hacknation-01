@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-021", "T-022"],
   "contract_refs": ["API-005", "DM-001", "UI-S-004", "UI-C-010", "UI-C-002"],
@@ -18,7 +18,8 @@
   ],
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
-    "Agent: fe-developer. Szacunek: 2h. Faza: 5 źródła/ograniczenia + druk. PDF bez backendu (print/Save as PDF), serwerowy PDF poza zakresem."
+    "Agent: fe-developer. Szacunek: 2h. Faza: 5 źródła/ograniczenia + druk. PDF bez backendu (print/Save as PDF), serwerowy PDF poza zakresem.",
+    "frontend-2: trasa wg contracts/ui.json /report/:id/print (nie /druk/:id). ReportActions (UI-C-010): xs dolny pasek, md+ w nagłówku. Auto-druk po 1,5 s (pomijany w iframe i przy ?noprint=1), ?pdf=1 pokazuje podpowiedź „Zapisz jako PDF”. Print CSS w App.tsx. Sprawdzone zrzutami 360/1920 i ręcznie przez Jakuba w oknie druku (Zapisz jako PDF)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
