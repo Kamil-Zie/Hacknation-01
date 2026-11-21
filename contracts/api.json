@@ -2992,11 +2992,11 @@
             },
             {
               "id": "sentinel2",
-              "name": "Sentinel-2 L2A (Earth Search STAC)",
+              "name": "Sentinel-2 L2A (Microsoft Planetary Computer STAC, zapas: Earth Search)",
               "category": "satellite",
               "label": "Satelita (rośliny)",
-              "provider": "ESA Copernicus / Element 84 Earth Search",
-              "url": "https://earth-search.aws.element84.com/v1",
+              "provider": "ESA Copernicus / Microsoft Planetary Computer (zapas: Element 84 Earth Search)",
+              "url": "https://planetarycomputer.microsoft.com/api/stac/v1",
               "license": "Copernicus Sentinel (wolna licencja); katalog CC0",
               "resolution": "10–20 m",
               "timeoutMs": 15000

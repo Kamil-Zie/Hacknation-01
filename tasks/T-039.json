@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-028", "T-031"],
   "contract_refs": ["API-001", "API-004", "DM-011", "DM-012", "DM-014"],
@@ -25,7 +25,8 @@
   },
   "notes": [
     "coord-1 16:02: PRZEPISANE na backend-2 (Nataniel) decyzją Kamila – backend-1 ma problemy z siecią. Handoff 20261121-1558 do Jana nieaktualny.",
-    "coord-1 15:58: zlecone przez Kamila. Nataniel (autor sentinel2Indices.ts) poza sesją, pliki bez rezerwacji. Kolejność: najpierw (B)+(C) (kontrakt, ok. 30 min, front może zacząć teksty), potem (A). Jeśli PC nie da ≤ 15 s w 60 min: zostaw PC jako źródło, zgłoś blocker, demo idzie z cache 2026-05-25, a jury i tak testuje na prod (inna sieć)."
+    "coord-1 15:58: zlecone przez Kamila. Nataniel (autor sentinel2Indices.ts) poza sesją, pliki bez rezerwacji. Kolejność: najpierw (B)+(C) (kontrakt, ok. 30 min, front może zacząć teksty), potem (A). Jeśli PC nie da ≤ 15 s w 60 min: zostaw PC jako źródło, zgłoś blocker, demo idzie z cache 2026-05-25, a jury i tak testuje na prod (inna sieć).",
+    "Zrobione (backend-2): (B)+(C) d8e8899 – reasonCode w DM-011/DM-012 (T-DB-009), 504 UPSTREAM_TIMEOUT dla ULDK. (A) Planetary Computer jako główne źródło (sentinel2Pc.ts, token SAS w pamięci, Earth Search zapas), 5 pasm równolegle. Pomiar bez cache z sieci hackathonu, Bronowice/pszenica/2026-05-25: 1,5 s, 1,0 s, 2,0 s (fetchSatellite), POST /analyses 1,9 s, NDVI 0,35, NDMI 0,117, complete. 2026-06-10: missing + CLOUD_COVER, partial. BŁĄD naprawiony: Earth Search ma w COG już odjęty offset −1000 DN, a raster:bands nadal podaje −0,1 → dotychczasowe 0,577/0,168 były zawyżone (podwójny offset); zapas ES liczony z offsetem 0, klucze cache: sentinel2:v2 (sceny), sentinel2-stats:v4 (statystyki). Raporty zapisane wcześniej w bazie dev mają stare 0,577."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

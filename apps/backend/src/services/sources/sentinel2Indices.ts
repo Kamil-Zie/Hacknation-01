@@ -14,6 +14,7 @@ import { runSource } from '@/services/sources/runSource';
 import type { ReasonCode, SourceResult, SourceStatusValue } from '@/services/sources/types';
 import { SHORT_TTL_MS } from '@/services/sources/catalog';
 import { fetchSentinel2Scenes } from '@/services/sources/sentinel2.source';
+import { getPcToken, isPcHref, signPcHref } from '@/services/sources/sentinel2Pc';
 import type {
   Sentinel2Deps,
   Sentinel2Parcel,
@@ -150,15 +151,18 @@ async function requestChunked(
   );
 }
 
-const openRemote: OpenTiff = (href, signal) =>
-  fromCustomClient(
+// Planetary Computer blobs need the anonymous SAS token (cached in memory) as query string.
+const openRemote: OpenTiff = async (href, signal) => {
+  const url = isPcHref(href) ? signPcHref(href, await getPcToken(signal)) : href;
+  return fromCustomClient(
     {
       request: (options?: { headers?: Record<string, string>; signal?: AbortSignal }) =>
-        requestChunked(href, options?.headers ?? {}, options?.signal),
+        requestChunked(url, options?.headers ?? {}, options?.signal),
     } as unknown as Parameters<typeof fromCustomClient>[0],
     {},
     signal,
   );
+};
 
 function utmDefinition(epsg: number | null): string {
   if (epsg !== null && epsg >= 32601 && epsg <= 32660) {
@@ -308,78 +312,103 @@ export async function computeSceneIndices(
   const { red, nir, nir08, swir16, scl } = scene.assets;
   const notes: string[] = [];
 
-  // Stage 1: the small SCL tile only (tens of KB) decides whether the heavy bands are worth reading.
-  const sclGrid = await readGrid(open, scl, window, signal);
-  if (!sclGrid) return { indices: null, reason: 'no_coverage' };
-  const fineGrid: Grid = {
-    ...sclGrid,
-    px: sclGrid.px / 2,
-    py: sclGrid.py / 2,
-    cols: sclGrid.cols * 2,
-    rows: sclGrid.rows * 2,
+  // All bands start at once (T-039): SCL decides early exits, NDVI bands (red, nir 10 m) and the optional
+  // NDMI bands (nir08, swir16 20 m) download in parallel. NDMI is cut at the soft deadline (Plan B).
+  const readAbort = new AbortController();
+  const readSignal = signal ? AbortSignal.any([signal, readAbort.signal]) : readAbort.signal;
+  const ndmiAbort = new AbortController();
+  const ndmiSignal = AbortSignal.any([readSignal, ndmiAbort.signal]);
+  const timer =
+    options.ndmiDeadlineAt === undefined || options.ndviOnly
+      ? null
+      : setTimeout(() => ndmiAbort.abort(), Math.max(0, options.ndmiDeadlineAt - Date.now()));
+  const sclRead = readGrid(open, scl, window, readSignal);
+  const ndviRead = Promise.all([
+    readGrid(open, red, window, readSignal),
+    readGrid(open, nir, window, readSignal),
+  ]);
+  const ndmiRead = options.ndviOnly
+    ? null
+    : Promise.all([
+        readGrid(open, nir08, window, ndmiSignal),
+        readGrid(open, swir16, window, ndmiSignal),
+      ]).then(
+        (grids) => ({ grids, error: null as unknown }),
+        (error: unknown) => ({ grids: null, error }),
+      );
+  const cancelReads = () => {
+    readAbort.abort();
+    ndviRead.catch(() => undefined);
   };
-  const centres = centresInside(fineGrid, projected);
-  if (centres.length < MIN_PIXELS) return { indices: null, reason: 'small_parcel' };
-  const sclValid = centres.filter(([x, y]) => isValidScl(sclGrid, x, y)).length;
-  if (sclValid / centres.length < MIN_VALID_FRACTION) {
+  try {
+    const sclGrid = await sclRead;
+    if (!sclGrid) {
+      cancelReads();
+      return { indices: null, reason: 'no_coverage' };
+    }
+    const fineGrid: Grid = {
+      ...sclGrid,
+      px: sclGrid.px / 2,
+      py: sclGrid.py / 2,
+      cols: sclGrid.cols * 2,
+      rows: sclGrid.rows * 2,
+    };
+    const centres = centresInside(fineGrid, projected);
+    if (centres.length < MIN_PIXELS) {
+      cancelReads();
+      return { indices: null, reason: 'small_parcel' };
+    }
+    const sclValid = centres.filter(([x, y]) => isValidScl(sclGrid, x, y)).length;
+    if (sclValid / centres.length < MIN_VALID_FRACTION) {
+      cancelReads();
+      return {
+        reason: null,
+        indices: {
+          validPixelFraction: round(sclValid / centres.length, 3),
+          validPixels: sclValid,
+          totalPixels: centres.length,
+          ndvi: null,
+          ndmi: null,
+          notes,
+        },
+      };
+    }
+
+    const [redGrid, nirGrid] = await ndviRead;
+    if (!redGrid || !nirGrid) return { indices: null, reason: 'no_coverage' };
+    const ndvi = meanIndex(centres, nirGrid, redGrid, sclGrid);
+
+    let ndmi: number | null = null;
+    if (!ndmiRead) {
+      notes.push(NOTE_NDVI_ONLY);
+    } else {
+      const outcome = await ndmiRead;
+      if (outcome.grids) {
+        const [nir08Grid, swirGrid] = outcome.grids;
+        if (nir08Grid && swirGrid) {
+          ndmi = meanIndex(centresInside(swirGrid, projected), nir08Grid, swirGrid, sclGrid).mean;
+        }
+      } else {
+        if (signal?.aborted) throw outcome.error;
+        notes.push(ndmiAbort.signal.aborted ? NOTE_NDVI_ONLY : NOTE_NDMI_FAILED);
+      }
+    }
     return {
       reason: null,
       indices: {
-        validPixelFraction: round(sclValid / centres.length, 3),
-        validPixels: sclValid,
+        validPixelFraction: round(ndvi.valid / centres.length, 3),
+        validPixels: ndvi.valid,
         totalPixels: centres.length,
-        ndvi: null,
-        ndmi: null,
+        ndvi: ndvi.mean === null ? null : round(ndvi.mean, 3),
+        ndmi: ndmi === null ? null : round(ndmi, 3),
         notes,
       },
     };
+  } finally {
+    if (timer) clearTimeout(timer);
+    // Reads still running (e.g. after an early exit or an error) are cancelled.
+    readAbort.abort();
   }
-
-  // Stage 2: NDVI bands (red, nir 10 m) first, so the optional NDMI bands never compete for bandwidth.
-  const [redGrid, nirGrid] = await Promise.all([
-    readGrid(open, red, window, signal),
-    readGrid(open, nir, window, signal),
-  ]);
-  if (!redGrid || !nirGrid) return { indices: null, reason: 'no_coverage' };
-  const ndvi = meanIndex(centres, nirGrid, redGrid, sclGrid);
-
-  // Stage 3: NDMI (nir08, swir16 20 m), cut at the soft deadline (Plan B: only NDVI, with a note).
-  let ndmi: number | null = null;
-  if (options.ndviOnly) {
-    notes.push(NOTE_NDVI_ONLY);
-  } else {
-    const ndmiAbort = new AbortController();
-    const ndmiSignal = signal ? AbortSignal.any([signal, ndmiAbort.signal]) : ndmiAbort.signal;
-    const timer =
-      options.ndmiDeadlineAt === undefined
-        ? null
-        : setTimeout(() => ndmiAbort.abort(), Math.max(0, options.ndmiDeadlineAt - Date.now()));
-    try {
-      const [nir08Grid, swirGrid] = await Promise.all([
-        readGrid(open, nir08, window, ndmiSignal),
-        readGrid(open, swir16, window, ndmiSignal),
-      ]);
-      if (nir08Grid && swirGrid) {
-        ndmi = meanIndex(centresInside(swirGrid, projected), nir08Grid, swirGrid, sclGrid).mean;
-      }
-    } catch (error) {
-      if (signal?.aborted) throw error;
-      notes.push(ndmiAbort.signal.aborted ? NOTE_NDVI_ONLY : NOTE_NDMI_FAILED);
-    } finally {
-      if (timer) clearTimeout(timer);
-    }
-  }
-  return {
-    reason: null,
-    indices: {
-      validPixelFraction: round(ndvi.valid / centres.length, 3),
-      validPixels: ndvi.valid,
-      totalPixels: centres.length,
-      ndvi: ndvi.mean === null ? null : round(ndvi.mean, 3),
-      ndmi: ndmi === null ? null : round(ndmi, 3),
-      notes,
-    },
-  };
 }
 
 type Failure = { status: SourceStatusValue; message: string; reasonCode: ReasonCode | null };
@@ -483,6 +512,8 @@ export async function fetchSatellite(
   const isFresh = Date.now() - Date.parse(analysisDate) < FRESH_DAYS * DAY_MS;
   // Plan B results (NDVI only, NDMI null because of the time budget) are not cached, so a later
   // analysis can still read NDMI; v2 key drops NDVI-only entries cached before this rule (T-031).
+  // v4 (T-039): drops stats computed with the double Earth Search offset (NDVI too high);
+  // v3 was briefly filled from a stale scene list, hence v4 together with the scene-list key v2.
   const baseCache = deps.cache ?? mongoSourceCache;
   const cache: SourceCacheStore = {
     get: baseCache.get,
@@ -493,7 +524,7 @@ export async function fetchSatellite(
   };
   const result = await runSource({
     sourceId: 'sentinel2',
-    key: `sentinel2-stats:v2:${parcel.id}:${analysisDate}`,
+    key: `sentinel2-stats:v4:${parcel.id}:${analysisDate}`,
     fetcher: async (s) => {
       const found = await findStats(parcel, analysisDate, s, deps);
       if ('failure' in found) {

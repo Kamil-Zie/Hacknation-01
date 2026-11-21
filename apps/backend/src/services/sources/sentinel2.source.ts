@@ -1,9 +1,11 @@
-// T-027 DM-014 Sentinel-2 L2A scene search (Earth Search STAC)
+// T-027 T-039 DM-014 Sentinel-2 L2A scene search (Planetary Computer STAC, Earth Search as fallback)
 import type { SourceCacheStore } from '@/services/sources/cache.service';
 import { HttpStatusError, runSource } from '@/services/sources/runSource';
 import type { FetcherResult } from '@/services/sources/runSource';
+import { getPcToken, PC_SEARCH_URL, toEarthSearchShape } from '@/services/sources/sentinel2Pc';
 import type { SourceResult } from '@/services/sources/types';
 
+const PC_SEARCH_TIMEOUT_MS = 6000;
 const SEARCH_URL = 'https://earth-search.aws.element84.com/v1/search';
 const COLLECTION = 'sentinel-2-l2a';
 const WINDOW_DAYS = 45;
@@ -104,12 +106,13 @@ export function parseSearchResponse(body: unknown, analysisDate: string): Sentin
     .slice(0, LIMIT);
 }
 
-export async function searchScenes(
+async function postSearch(
+  url: string,
   geometry: Sentinel2Geometry,
   analysisDate: string,
   signal?: AbortSignal,
-): Promise<Sentinel2Scene[]> {
-  const response = await fetch(SEARCH_URL, {
+): Promise<unknown> {
+  const response = await fetch(url, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
@@ -123,7 +126,53 @@ export async function searchScenes(
     signal,
   });
   if (!response.ok) throw new HttpStatusError(response.status);
-  return parseSearchResponse(await response.json(), analysisDate);
+  return response.json();
+}
+
+// Planetary Computer first (faster COG); a PC failure (not the caller's abort) falls back to Earth Search.
+export async function searchScenes(
+  geometry: Sentinel2Geometry,
+  analysisDate: string,
+  signal?: AbortSignal,
+): Promise<Sentinel2Scene[]> {
+  try {
+    const pcSignal = AbortSignal.timeout(PC_SEARCH_TIMEOUT_MS);
+    const combined = signal ? AbortSignal.any([signal, pcSignal]) : pcSignal;
+    // The SAS token is fetched with the search, so a failing SAS endpoint also triggers the fallback.
+    const [body] = (await Promise.all([
+      postSearch(PC_SEARCH_URL, geometry, analysisDate, combined),
+      getPcToken(combined),
+    ])) as [{ features?: unknown }, string];
+    if (!Array.isArray(body?.features)) throw new Error('Malformed STAC response');
+    const scenes = parseSearchResponse(
+      { features: body.features.map((feature) => toEarthSearchShape(feature as never)) },
+      analysisDate,
+    );
+    if (scenes.length) return scenes;
+  } catch (error) {
+    if (signal?.aborted) throw error;
+  }
+  return parseSearchResponse(
+    await postSearch(SEARCH_URL, geometry, analysisDate, signal),
+    analysisDate,
+  ).map(withoutEarthSearchOffset);
+}
+
+// Earth Search COGs already have the -1000 DN (BOA_ADD_OFFSET) removed, but raster:bands still says
+// offset -0.1; applying it again lowers reflectance by 0.1 and inflates NDVI (T-039: same scene, dark NIR
+// minimum PC 1322 vs ES 322 DN; ES with -0.1 gave NDVI 0.577 vs 0.35 from PC). Use offset 0 for ES.
+export function withoutEarthSearchOffset(scene: Sentinel2Scene): Sentinel2Scene {
+  const { red, nir, nir08, swir16, scl } = scene.assets;
+  return {
+    ...scene,
+    assets: {
+      red: { ...red, offset: 0 },
+      nir: { ...nir, offset: 0 },
+      nir08: { ...nir08, offset: 0 },
+      swir16: { ...swir16, offset: 0 },
+      scl,
+    },
+  };
 }
 
 async function fetchScenes(
@@ -157,7 +206,8 @@ export async function fetchSentinel2Scenes(
   }
   const result = await runSource({
     sourceId: 'sentinel2',
-    key: `sentinel2:${parcel.id}:${analysisDate}`,
+    // v2 (T-039): drops scene lists cached from Earth Search with the double offset (-0.1).
+    key: `sentinel2:v2:${parcel.id}:${analysisDate}`,
     fetcher: (s) => fetchScenes(parcel.geometry, analysisDate, s),
     signal,
     cache: deps.cache,

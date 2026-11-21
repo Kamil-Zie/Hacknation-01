@@ -11,6 +11,12 @@ import {
   parseSearchResponse,
   searchScenes,
 } from '@/services/sources/sentinel2.source';
+import {
+  getPcToken,
+  isPcHref,
+  resetPcTokenCache,
+  signPcHref,
+} from '@/services/sources/sentinel2Pc';
 
 const fixture = JSON.parse(
   readFileSync(
@@ -89,12 +95,122 @@ test('scenes dated after D are filtered out', () => {
   );
 });
 
-test('searchScenes sends the STAC query with the D-45 window', async () => {
-  const mock = mockFetch(fixture);
+// Fixture re-keyed the Planetary Computer way (B04, B08, B8A, B11, SCL; no raster:bands).
+function pcBody() {
+  const keys = { red: 'B04', nir: 'B08', nir08: 'B8A', swir16: 'B11', scl: 'SCL' } as const;
+  return {
+    features: fixture.features.map((feature: { assets: Record<string, { href: string }> }) => ({
+      ...structuredClone(feature),
+      properties: { ...(feature as never as { properties: object }).properties },
+      assets: Object.fromEntries(
+        Object.entries(keys).map(([from, to]) => [to, { href: feature.assets[from]!.href }]),
+      ),
+    })),
+  };
+}
+
+function routedFetch(routes: Record<string, () => Response>) {
+  const mock = vi.fn(async (url: string) => {
+    const route = Object.entries(routes).find(([prefix]) => url.startsWith(prefix));
+    return route ? route[1]() : new Response('{}', { status: 500 });
+  });
+  vi.stubGlobal('fetch', mock);
+  return mock;
+}
+
+const PC_SEARCH = 'https://planetarycomputer.microsoft.com/api/stac/v1/search';
+const PC_SAS = 'https://planetarycomputer.microsoft.com/api/sas/v1/token/sentinel-2-l2a';
+const ES_SEARCH = 'https://earth-search.aws.element84.com/v1/search';
+const sasBody = () =>
+  new Response(JSON.stringify({ token: 'sv=1&sig=x', 'msft:expiry': '2099-01-01T00:00:00Z' }));
+
+test('searchScenes prefers Planetary Computer and applies the post-04.00 reflectance offset', async () => {
+  resetPcTokenCache();
+  const mock = routedFetch({
+    [PC_SEARCH]: () => new Response(JSON.stringify(pcBody())),
+    [PC_SAS]: sasBody,
+  });
   const scenes = await searchScenes(geometry, '2026-06-10');
   assert.equal(scenes.length, 3);
-  const [url, init] = mock.mock.calls[0] as unknown as [string, RequestInit];
-  assert.equal(url, 'https://earth-search.aws.element84.com/v1/search');
+  assert.equal(scenes[0]!.assets.red.scale, 0.0001);
+  assert.equal(scenes[0]!.assets.red.offset, -0.1);
+  assert.equal(scenes[0]!.thumbnailUrl, null);
+  assert.ok(!mock.mock.calls.some(([url]) => (url as string).startsWith(ES_SEARCH)));
+});
+
+test('searchScenes falls back to Earth Search when the PC search fails or the SAS endpoint fails', async () => {
+  resetPcTokenCache();
+  let mock = routedFetch({
+    [PC_SEARCH]: () => new Response('{}', { status: 503 }),
+    [PC_SAS]: sasBody,
+    [ES_SEARCH]: () => new Response(JSON.stringify(fixture)),
+  });
+  assert.equal((await searchScenes(geometry, '2026-06-10')).length, 3);
+  assert.ok(mock.mock.calls.some(([url]) => (url as string).startsWith(ES_SEARCH)));
+
+  resetPcTokenCache();
+  mock = routedFetch({
+    [PC_SEARCH]: () => new Response(JSON.stringify(pcBody())),
+    [PC_SAS]: () => new Response('{}', { status: 500 }),
+    [ES_SEARCH]: () => new Response(JSON.stringify(fixture)),
+  });
+  assert.equal((await searchScenes(geometry, '2026-06-10')).length, 3);
+  assert.match(scenesHref(await searchScenes(geometry, '2026-06-10')), /earth|amazonaws|sentinel/);
+});
+
+test('Earth Search fallback uses offset 0 (COGs already have the -1000 DN offset removed)', async () => {
+  resetPcTokenCache();
+  routedFetch({
+    [PC_SEARCH]: () => new Response('{}', { status: 503 }),
+    [PC_SAS]: sasBody,
+    [ES_SEARCH]: () => new Response(JSON.stringify(fixture)),
+  });
+  const [scene] = await searchScenes(geometry, '2026-06-10');
+  for (const band of [
+    scene!.assets.red,
+    scene!.assets.nir,
+    scene!.assets.nir08,
+    scene!.assets.swir16,
+  ]) {
+    assert.equal(band.offset, 0);
+  }
+});
+
+function scenesHref(scenes: Awaited<ReturnType<typeof searchScenes>>): string {
+  return scenes[0]!.assets.red.href;
+}
+
+test('SAS token: appended to PC hrefs only and cached until expiry minus 5 minutes', async () => {
+  resetPcTokenCache();
+  const mock = routedFetch({ [PC_SAS]: sasBody });
+  const first = await getPcToken();
+  const second = await getPcToken();
+  assert.equal(first, second);
+  assert.equal(mock.mock.calls.length, 1);
+  const href = 'https://sentinel2l2a01.blob.core.windows.net/x/B04.tif';
+  assert.equal(signPcHref(href, first), `${href}?sv=1&sig=x`);
+  assert.equal(signPcHref(`${href}?a=b`, first), `${href}?a=b&sv=1&sig=x`);
+  assert.ok(isPcHref(href));
+  assert.ok(!isPcHref('https://sentinel-cogs.s3.us-west-2.amazonaws.com/B04.tif'));
+
+  // Past expiry minus 5 minutes a new token is requested.
+  const expiry = Date.parse('2099-01-01T00:00:00Z');
+  await getPcToken(undefined, fetch, () => expiry - 4 * 60 * 1000);
+  assert.equal(mock.mock.calls.length, 2);
+});
+
+test('searchScenes sends the STAC query with the D-45 window', async () => {
+  resetPcTokenCache();
+  const mock = routedFetch({
+    [PC_SEARCH]: () => new Response(JSON.stringify(fixture)),
+    [ES_SEARCH]: () => new Response(JSON.stringify(fixture)),
+    [PC_SAS]: sasBody,
+  });
+  const scenes = await searchScenes(geometry, '2026-06-10');
+  assert.equal(scenes.length, 3);
+  const call = mock.mock.calls.find(([url]) => (url as string).startsWith(ES_SEARCH));
+  const [url, init] = call as unknown as [string, RequestInit];
+  assert.equal(url, ES_SEARCH);
   const body = JSON.parse(init.body as string);
   assert.deepEqual(body.collections, ['sentinel-2-l2a']);
   assert.equal(body.datetime, '2026-04-26T00:00:00Z/2026-06-10T23:59:59Z');
