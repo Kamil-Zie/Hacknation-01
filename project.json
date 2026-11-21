@@ -48,7 +48,8 @@
           "Aplikacja natywna (tylko web, responsywnie).",
           "Płatne API i usługi wymagające kont komercyjnych.",
           "Trenowane modele ML (tylko jawne reguły i wzory naukowe; LLM co najwyżej do redakcji tekstu, nigdy do liczenia).",
-          "Prognoza pogody i harmonogram nawadniania dzień po dniu, integracje z czujnikami IoT."
+          "Prognoza pogody i harmonogram nawadniania dzień po dniu, integracje z czujnikami IoT.",
+          "Wilgotność gleby z EUMETSAT ASCAT (T-032): SOMO25/SOMO12 bez granul po 2025-07-15, starsze tylko w formacie .nat, H SAF poza Data Store (wynik T-002). Źródło zostaje w kontrakcie jako opcjonalne ze statusem missing."
         ]
       },
       "demo_scenario": [

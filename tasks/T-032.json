@@ -18,6 +18,7 @@
   ],
   "review": { "status": "pending", "by": null, "note": "" },
   "notes": [
+    "coord-1 2026-11-21: WONT dla MVP (wynik T-002: SOMO25/SOMO12 bez danych po 2025-07-15, format .nat, H SAF poza Data Store). Nie brać. Źródło eumetsat w kodzie = zawsze missing + dataGap (robi T-017).",
     "Agent: be-api. Szacunek: 2h. Faza: 8 ASCAT (ostatnie, opcjonalne). Nowe zależności: h5wasm, fflate (drobne, dopisać do notatek)."
   ],
   "created_at": "2026-11-21",

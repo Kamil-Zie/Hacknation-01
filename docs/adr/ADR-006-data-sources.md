@@ -77,3 +77,14 @@ Postęp w kroku 3: API-004 jest jednym żądaniem. Frontend pokazuje listę źr�
 
 - README sekcje 4, 5 i 7 (źródła, dane na żywo vs. przetworzone, licencje) budujemy z katalogu DM-005 (`GET /sources`, API-006), więc dokumentacja i aplikacja nie rozjadą się.
 - Wszystkie dane pobierane na żywo w chwili analizy; jedyną „wcześniej przetworzoną” rzeczą są tabele Kc/NDVI upraw w kodzie (z FAO-56) i cache odpowiedzi.
+
+## Aktualizacja 2026-11-21 po weryfikacji na żywo (T-002)
+
+Pełne wyniki: `tasks/T-002.json → notes`. Zmiany względem tabeli wyżej (obowiązują przed tabelą):
+
+- `uldk`: timeout 10 s + 1 ponowienie (zimny start do 9 s). `GetParcelByXY` przyjmuje `xy=lon,lat,4326`. Błąd to HTTP 200 z `-1` w linii 1.
+- `meteo`: archiwum Open-Meteo ma dane do dziś (bez dociągania z forecast). 20 lat dziennie trwa ok. 11 s, więc pobieramy 2 równoległe zakresy, timeout 15 s + cache.
+- `sentinel2`: offset czytany z `raster:bands` każdej sceny (baseline 05.xx: −0,1; 2016: 0). Archiwum od 11/2016. SCL ma 20 m, red/nir 10 m. Budżet 15 s jest napięty.
+- `soilgrids`: brak danych = 0 bez deklaracji nodata (pomijamy zera, powiększamy okno). proj4 nie obsługuje `+proj=igh`, potrzebna własna projekcja Goode Homolosine.
+- `overpass`: z sieci zespołu (dwie niezależne maszyny) wszystkie serwery Overpass dają timeout. Do rozstrzygnięcia w T-030 (timebox 30 min): powtórka z innej sieci (telefon) i z prod; w razie braku dostępu hydrologia = missing + dataGap, a spadek z `elevation` zostaje.
+- `eumetsat`: **NO-GO dla MVP.** SOMO25/SOMO12 nie mają granul po 2025-07-15, starsze są w formacie `.nat` (EPS native), H SAF nie ma w Data Store. Źródło zostaje w kontrakcie jako opcjonalne, zawsze `missing` + dataGap, bez wpływu na status raportu (decyzja 20261121-1208). T-032 przeniesione do `mvp_scope.wont`.
