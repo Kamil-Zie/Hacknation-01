@@ -84,6 +84,7 @@ function createSeed(): MockStore {
             name: 'Anna Kowalska',
             status: 'active',
             addedAt: '2026-11-02T10:30:00.000Z',
+            parcelIds: ['061409_2.0009.612', '061409_2.0009.613'],
           },
           {
             id: 'm_3',
@@ -91,6 +92,7 @@ function createSeed(): MockStore {
             name: null,
             status: 'pending',
             addedAt: '2026-11-20T15:45:00.000Z',
+            parcelIds: ['061401_1.0001.691/9'],
           },
         ],
         reports: [

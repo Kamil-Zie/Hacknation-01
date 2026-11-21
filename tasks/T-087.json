@@ -1,0 +1,28 @@
+{
+  "id": "T-087",
+  "title": "Wyszukiwarka działki z historią w panelu bocznym",
+  "description": "UI-C-018. Wypełnij stub ParcelSearchBox: MUI Autocomplete freeSolo, historia w localStorage 'kropelka-search-history' (10 ostatnich, usuń wpis), grupy „Ostatnio wyszukiwane” i „Twoje działki” (API-020), filtrowanie po numerze, miejscowości, gminie. Enter z ID TERYT → /parcel/:id przez istniejące lookupy (ParcelSearch, API-001); nie znaleziono = czerwone pole i komunikat (jak T-075). Wywołaj onNavigate po przejściu.\n\nPliki: src/components/ParcelSearchBox/ParcelSearchBox.tsx (stub istnieje), src/store/searchHistory.ts (nowy)\n\nUX dla wieku 18–99: tekst ≥ 18 px w rem, przyciski ≥ 48 px, kontrast AA (też w trybie Wysoki kontrast i przy największym A), proste słowa, ikony z podpisem. Stany loading/error/empty/ready, 390 i 1440 px. Na mocku od razu: hook useAccountParcelsQuery w src/api/accountParcels.ts (mock z MOCK_PARCELS), prawdziwe API po handoffie coord-1 (VITE_MOCK_ACCOUNT_PARCELS=false). Termin: na main do 6:00 (zamrożenie 7:00).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "backend-2",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-C-018", "API-020", "API-001"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Historia działa jak w Google: pojawia się na fokus, nowe wyszukanie na górze",
+    "Działa klawiaturą (strzałki, Enter, Esc)",
+    "axe 0 błędów"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

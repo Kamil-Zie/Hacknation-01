@@ -1,0 +1,24 @@
+{
+  "id": "T-091",
+  "title": "API-020 GET /accounts/:accountId/parcels",
+  "description": "DM-026. Agregacja: najnowszy raport na parcelId z kolekcji raportów konta + działki z pól (DM-024), geometria z cache ULDK (parcels), atRisk, fieldIds. Członek z parcelIds dostaje tylko swoje działki. Max 200. Handoff do frontendu z przykładem curl.\n\nPliki: apps/backend/src/routes, controllers, services (wzór: API-013 reports)\n\nTermin: na main do 3:00, frontend nie czeka (mock).",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "coord-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["API-020", "DM-026"],
+  "demo_step": 1,
+  "acceptance_criteria": ["Odpowiedź zgodna z przykładem kontraktu", "< 500 ms na koncie demo"],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

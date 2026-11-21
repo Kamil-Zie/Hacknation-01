@@ -326,6 +326,54 @@
       "states": ["loading", "empty", "ready"],
       "accessibility": "Przycisk menu z aria-haspopup i aria-expanded; menu role=menu, pozycje role=menuitem / menuitemradio dla kont; Escape zamyka i zwraca fokus; strzałki przesuwają fokus; cele min. 44 px",
       "responsive": "xs: sam awatar z inicjałem (nazwa w menu), menu na szerokość ekranu pomniejszoną o marginesy; md+: nazwa konta obok awatara, menu rozwijane pod przyciskiem"
+    },
+    {
+      "id": "UI-C-016",
+      "status": "proposed",
+      "name": "Sidebar",
+      "description": "T-085. Stały panel boczny dla zalogowanego (AppLayout): ParcelSearchBox (UI-C-018) na górze, potem linki z ikoną i podpisem: Pulpit /konto, Moje działki /dzialki, Utwórz pole /pole/nowe, Moje pola /pola, Wspólnicy /wspolnicy. Aktywny link zaznaczony (aria-current=page). ≥ md: stały, 280 px; < md: szuflada z przycisku Menu w nagłówku. Niezalogowany i strony publiczne: bez panelu.",
+      "props": {
+        "open": "boolean (mobile)",
+        "onClose": "() => void"
+      },
+      "states": ["ready"],
+      "accessibility": "nav aria-label=\"Panel boczny\", linki ≥ 48 px, szuflada zamyka się Esc i wraca fokusem do przycisku Menu"
+    },
+    {
+      "id": "UI-C-017",
+      "status": "proposed",
+      "name": "ThreatMap",
+      "description": "T-086. Mapa Leaflet w kafelku pulpitu: obrysy działek z API-020, kolor i podpis klasy suszy, fitBounds na bbox wszystkich działek atRisk (padding 24 px, maxZoom 15); bez zagrożonych – na wszystkie działki. Legenda słowna pod mapą i lista zagrożonych działek tekstem (dostępność).",
+      "props": {
+        "items": "ParcelOverview[]",
+        "onSelect": "(item) => void"
+      },
+      "states": ["loading", "empty", "ready"],
+      "accessibility": "Mapa z aria-label, lista zagrożonych działek jako zwykła lista linków pod mapą"
+    },
+    {
+      "id": "UI-C-018",
+      "status": "proposed",
+      "name": "ParcelSearchBox",
+      "description": "T-087. Wyszukiwarka działki w panelu bocznym: Autocomplete freeSolo. Na fokus podpowiada historię wyszukiwań (localStorage 'kropelka-search-history', ostatnie 10, jak w Google, z przyciskiem usuń wpis) i działki konta (API-020); podczas pisania filtruje oba źródła po numerze, miejscowości i gminie. Enter z pełnym ID TERYT → /parcel/:id (API-001), błąd = czerwone pole i „Nie znaleziono działki”. Wybór zapisuje się w historii.",
+      "props": {
+        "onNavigate": "() => void (zamyka szufladę)"
+      },
+      "states": ["empty", "loading", "error", "ready"],
+      "accessibility": "combobox z aria-expanded, listbox z grupami „Ostatnio wyszukiwane” i „Twoje działki”"
+    },
+    {
+      "id": "UI-C-019",
+      "status": "proposed",
+      "name": "ParcelFilters",
+      "description": "T-088. Trzy grupy checkboxów (fieldset + legend): Powierzchnia, Miejscowość, Uprawa. Na telefonie zwinięte w przycisk „Filtry (n)”.",
+      "props": {
+        "items": "ParcelOverview[]",
+        "value": "Filters",
+        "onChange": "(f) => void"
+      },
+      "states": ["ready"],
+      "accessibility": "fieldset/legend, checkboxy ≥ 44 px, licznik wyników w aria-live=polite"
     }
   ],
   "screens": [
@@ -483,6 +531,78 @@
         "xs": "jedna kolumna, karty działek jedna pod drugą, mapa 320 px",
         "md": "karty działek w siatce auto-fill, mapa 440 px",
         "lg": "szerokość do 1600 px, ta sama siatka"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-009",
+      "status": "proposed",
+      "name": "Pulpit (strona główna po zalogowaniu)",
+      "route": "/konto",
+      "description": "T-086. Zastępuje dotychczasową treść UI-S-006. Siatka kafelków z danymi wymaganymi w zadaniu KOWR. Kafelek DOMINUJĄCY (największy, pierwszy, na desktopie ok. 2/3 szerokości i 2 rzędy): „Zagrożone działki” – mapa (ThreatMap UI-C-017) z fitBounds na wszystkie działki atRisk, obrysy w kolorze klasy suszy + słowo, klik → raport działki; pusta lista: „Żadna działka nie jest zagrożona” i mapa wszystkich działek. Pozostałe kafelki: Twoje działki (liczba, suma ha, ile zagrożonych), Stan suszy (liczba działek wg klasy: silna / umiarkowana / brak / brak danych), Najważniejsze teraz (porada z ostatniego raportu najbardziej zagrożonej działki, kolejność retencja → agrotechnika → nawadnianie), Ostatnie raporty (3 z API-013), Skąd dane (źródła i aktualność, API-006). Duży przycisk „Sprawdź nową działkę”. Stany loading/error/empty/ready.",
+      "components": ["UI-C-016", "UI-C-017"],
+      "api_refs": ["API-020", "API-013", "API-006"],
+      "responsive": {
+        "xs": "panel boczny jako szuflada z przycisku Menu, treść w jednej kolumnie",
+        "md": "panel boczny stały 280 px po lewej, treść obok",
+        "lg": "treść do 1600 px"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-010",
+      "status": "proposed",
+      "name": "Moje działki",
+      "route": "/dzialki",
+      "description": "T-088. Lista działek konta (API-020) z filtrami jako checkboxy: Powierzchnia (powyżej 1 ha, 5 ha, 10 ha), Miejscowość (unikalne region/obręb z gminą), Uprawa (unikalne lastReport.crop.name + „Bez raportu”). Licznik „Pokazuję X z Y”, „Wyczyść filtry”. Wiersz: numer, miejscowość, ha, uprawa, klasa suszy słowem i ikoną, „Zobacz raport” / „Sprawdź”. Filtry tylko po stronie klienta.",
+      "components": ["UI-C-016", "UI-C-019"],
+      "api_refs": ["API-020"],
+      "responsive": {
+        "xs": "panel boczny jako szuflada z przycisku Menu, treść w jednej kolumnie",
+        "md": "panel boczny stały 280 px po lewej, treść obok",
+        "lg": "treść do 1600 px"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-011",
+      "status": "proposed",
+      "name": "Moje pola",
+      "route": "/pola",
+      "description": "T-089. Lista pól (API-017), klik w pole rozwija działki pola (numer, miejscowość, ha, link do działki), akcje Raport pola i Usuń, przycisk „Utwórz pole” → /pole/nowe. Reużywa FieldList.",
+      "components": ["UI-C-016"],
+      "api_refs": ["API-017", "API-018"],
+      "responsive": {
+        "xs": "panel boczny jako szuflada z przycisku Menu, treść w jednej kolumnie",
+        "md": "panel boczny stały 280 px po lewej, treść obok",
+        "lg": "treść do 1600 px"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-012",
+      "status": "proposed",
+      "name": "Wspólnicy",
+      "route": "/wspolnicy",
+      "description": "T-090. Na górze: filtr „Działka” (select z działek API-020, domyślnie Wszystkie) i wyszukiwarka osoby (imię lub e-mail). Lista osób z dostępem: przy wybranej działce tylko ci, którzy ją widzą (parcelIds null albo zawiera działkę). Klik w osobę → karta: imię, e-mail, status, lista działek, do których ma dostęp, edycja dostępu (checkboxy działek + „Wszystkie działki”, API-021). Dodawanie i usuwanie wspólnika przeniesione z dawnego /konto (MemberList, API-011/012).",
+      "components": ["UI-C-016"],
+      "api_refs": ["API-010", "API-011", "API-012", "API-020", "API-021"],
+      "responsive": {
+        "xs": "panel boczny jako szuflada z przycisku Menu, treść w jednej kolumnie",
+        "md": "panel boczny stały 280 px po lewej, treść obok",
+        "lg": "treść do 1600 px"
       },
       "design_artboards": {
         "phone": null,

@@ -57,8 +57,8 @@
         {
           "step": 1,
           "user_action": "Rolnik otwiera aplikację w przeglądarce (telefon albo desktop) bez instalacji, loguje się albo zakłada konto w jednym kroku.",
-          "result": "Ekran logowania „Sprawdź wodę na swojej działce”, po zalogowaniu Panel z przyciskiem „Sprawdź nową działkę”, a dalej pole na numer działki i mapa Polski (ADR-010 aktualizacja 21:20).",
-          "contract_refs": ["UI-S-001", "UI-C-001", "UI-C-002"]
+          "result": "Ekran logowania „Sprawdź wodę na swojej działce”, po zalogowaniu Pulpit: kafelki z danymi z zadania, największy kafelek to mapa zagrożonych działek, a stały panel boczny ma wyszukiwarkę z historią, Moje działki z filtrami, Utwórz pole, Moje pola i Wspólników; przycisk „Sprawdź nową działkę” prowadzi do pola na numer działki i mapy Polski (ADR-010, aktualizacja 00:20).",
+          "contract_refs": ["UI-S-001", "UI-C-001", "UI-C-002", "UI-S-009", "UI-C-016", "UI-C-017"]
         },
         {
           "step": 2,

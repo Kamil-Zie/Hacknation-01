@@ -1,0 +1,28 @@
+{
+  "id": "T-086",
+  "title": "Pulpit z kafelkami i dominującą mapą zagrożonych działek",
+  "description": "UI-S-009 na /konto (przepisz AccountPage). Kafelek 1, największy: ThreatMap UI-C-017, fitBounds na wszystkie działki atRisk z API-020, obrysy w kolorze klasy + legenda słowna + lista zagrożonych działek tekstem pod mapą, klik → /report/:lastReport.id. Pozostałe kafelki według UI-S-009: Twoje działki, Stan suszy, Najważniejsze teraz, Ostatnie raporty (API-013), Skąd dane (API-006), przycisk „Sprawdź nową działkę”. Nazwa i przełączanie gospodarstwa zostają w nagłówku pulpitu. MemberList przenosi się do /wspolnicy (T-090), FieldList do /pola (T-089): usuń je z pulpitu, gdy te strony są na main.\n\nPliki: src/pages/Account/AccountPage.tsx, src/components/ThreatMap/ThreatMap.tsx (nowy, wzór: FieldMap), src/components/DashboardTile/* (nowe)\n\nUX dla wieku 18–99: tekst ≥ 18 px w rem, przyciski ≥ 48 px, kontrast AA (też w trybie Wysoki kontrast i przy największym A), proste słowa, ikony z podpisem. Stany loading/error/empty/ready, 390 i 1440 px. Na mocku od razu: hook useAccountParcelsQuery w src/api/accountParcels.ts (mock z MOCK_PARCELS), prawdziwe API po handoffie coord-1 (VITE_MOCK_ACCOUNT_PARCELS=false). Termin: na main do 6:00 (zamrożenie 7:00).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-009", "UI-C-017", "API-020", "API-013", "API-006"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Mapa zagrożonych działek jest największym kafelkiem i pokazuje wszystkie zagrożone działki naraz",
+    "Każdy kafelek ma stan pusty",
+    "axe 0 błędów, 390 i 1440 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

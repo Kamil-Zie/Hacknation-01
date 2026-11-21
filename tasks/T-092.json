@@ -1,0 +1,27 @@
+{
+  "id": "T-092",
+  "title": "API-021 dostęp wspólnika do wybranych działek",
+  "description": "DM-018.parcelIds (null = wszystkie), PATCH /accounts/:accountId/members/:memberId, MemberDto z parcelIds w API-010/011, filtr w API-020 i dostęp do raportów działek. T-DB-016 w tym samym commicie.\n\nPliki: apps/backend/src/models/AccountMember*, routes/controllers/services members (wzór: API-012)\n\nTermin: na main do 3:00, frontend nie czeka (mock).",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "coord-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-091"],
+  "contract_refs": ["API-021", "DM-018", "DM-022"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "CANNOT_RESTRICT_SELF dla siebie",
+    "Stare dokumenty bez pola = dostęp do wszystkiego"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

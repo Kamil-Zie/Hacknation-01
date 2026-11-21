@@ -1,0 +1,28 @@
+{
+  "id": "T-088",
+  "title": "Moje działki z filtrami (powierzchnia, miejscowość, uprawa)",
+  "description": "UI-S-010 na /dzialki (stub istnieje) i UI-C-019 ParcelFilters. Lista z API-020, filtry checkboxami liczone po stronie klienta, licznik w aria-live, „Wyczyść filtry”, na telefonie filtry w zwijanym „Filtry (n)”.\n\nPliki: src/pages/MyParcels/MyParcelsPage.tsx (stub), src/components/ParcelFilters/ParcelFilters.tsx (nowy)\n\nUX dla wieku 18–99: tekst ≥ 18 px w rem, przyciski ≥ 48 px, kontrast AA (też w trybie Wysoki kontrast i przy największym A), proste słowa, ikony z podpisem. Stany loading/error/empty/ready, 390 i 1440 px. Na mocku od razu: hook useAccountParcelsQuery w src/api/accountParcels.ts (mock z MOCK_PARCELS), prawdziwe API po handoffie coord-1 (VITE_MOCK_ACCOUNT_PARCELS=false). Termin: na main do 6:00 (zamrożenie 7:00).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "backend-2",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-087"],
+  "contract_refs": ["UI-S-010", "UI-C-019", "API-020"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Filtry łączą się: grupy AND, wartości w grupie OR",
+    "Pusty wynik: „Żadna działka nie pasuje” + Wyczyść filtry",
+    "axe 0 błędów, 390 i 1440 px"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

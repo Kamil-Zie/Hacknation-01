@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "base_url": "/api/v1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. Wymieniaj tylko błędy, które endpoint naprawdę zwraca w demo.",
@@ -3786,6 +3786,125 @@
       "data_refs": ["DM-024", "DM-025", "DM-009"],
       "consumers": [],
       "consumers_planned": ["UI-S-006"]
+    },
+    {
+      "id": "API-020",
+      "status": "proposed",
+      "method": "GET",
+      "path": "/accounts/:accountId/parcels",
+      "summary": "Działki konta z ostatnim raportem i flagą zagrożenia suszą, bez paginacji (max 200, od najnowszego raportu). Członek z parcelIds widzi tylko swoje działki. Tylko członek konta.",
+      "auth": "required",
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
+        "params": {
+          "accountId": "string, id konta (ObjectId)"
+        }
+      },
+      "response": {
+        "200": "{ items: ParcelOverview[] (DM-026), total }"
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER (także gdy konto nie istnieje)",
+        "422 VALIDATION_ERROR (zły accountId; details.field)",
+        "503 DB_UNAVAILABLE"
+      ],
+      "data_refs": ["DM-026", "DM-001", "DM-024"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-009", "UI-S-010", "UI-S-012", "UI-C-018"],
+      "examples": {
+        "200": {
+          "items": [
+            {
+              "parcel": {
+                "id": "061409_2.0009.612",
+                "parcelNumber": "612",
+                "region": "Bronowice",
+                "commune": "Puławy",
+                "county": "puławski",
+                "voivodeship": "lubelskie",
+                "areaHa": 2.41,
+                "centroid": {
+                  "lat": 51.44,
+                  "lon": 21.93
+                },
+                "bbox": [21.9278, 51.4388, 21.9322, 51.4412],
+                "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    [
+                      [21.9278, 51.4388],
+                      [21.9322, 51.4388],
+                      [21.9322, 51.4412],
+                      [21.9278, 51.4412],
+                      [21.9278, 51.4388]
+                    ]
+                  ]
+                }
+              },
+              "lastReport": {
+                "id": "6b0203ef95be8c794e0b4331",
+                "analysisDate": "2026-05-25",
+                "crop": {
+                  "code": "winter_wheat",
+                  "name": "Pszenica ozima"
+                },
+                "status": "complete",
+                "droughtClass": "severe"
+              },
+              "atRisk": true,
+              "fieldIds": []
+            }
+          ],
+          "total": 1
+        }
+      }
+    },
+    {
+      "id": "API-021",
+      "status": "proposed",
+      "method": "PATCH",
+      "path": "/accounts/:accountId/members/:memberId",
+      "summary": "Ustawia, do których działek ma dostęp członek (wspólnik). parcelIds: null = wszystkie działki konta. Tylko aktywny członek konta; nie można ograniczyć samego siebie.",
+      "auth": "required",
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
+        "params": {
+          "accountId": "string",
+          "memberId": "string"
+        },
+        "body": {
+          "parcelIds": "string[] (TERYT, 1–200, unikalne) | null"
+        }
+      },
+      "response": {
+        "200": "Member (DM-022) z parcelIds"
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER (także gdy konto nie istnieje)",
+        "422 VALIDATION_ERROR (zły accountId; details.field)",
+        "503 DB_UNAVAILABLE",
+        "404 MEMBER_NOT_FOUND",
+        "422 CANNOT_RESTRICT_SELF"
+      ],
+      "data_refs": ["DM-018", "DM-022"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-012"],
+      "examples": {
+        "200": {
+          "id": "665f0c0ffee0000000000c02",
+          "email": "robert@example.pl",
+          "name": "Robert Nowak",
+          "status": "active",
+          "addedAt": "2026-11-21T10:00:00.000Z",
+          "parcelIds": ["061409_2.0009.612"]
+        }
+      }
     }
   ]
 }

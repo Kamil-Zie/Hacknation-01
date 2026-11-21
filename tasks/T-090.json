@@ -1,0 +1,28 @@
+{
+  "id": "T-090",
+  "title": "Wspólnicy: kto ma dostęp do których działek",
+  "description": "UI-S-012 na /wspolnicy (stub istnieje). Filtr „Działka” (API-020) + wyszukiwarka osoby, lista osób (API-010, parcelIds null = wszystkie), karta osoby z listą jej działek i edycją dostępu (useUpdateMemberParcelsMutation, API-021), dodawanie i usuwanie wspólnika (przenieś MemberList z /konto). Jakub: potwierdź ack w 20 min; bez ack zadanie bierze Dawid po T-089.\n\nPliki: src/pages/Partners/PartnersPage.tsx (stub), src/components/MemberList/MemberList.tsx\n\nUX dla wieku 18–99: tekst ≥ 18 px w rem, przyciski ≥ 48 px, kontrast AA (też w trybie Wysoki kontrast i przy największym A), proste słowa, ikony z podpisem. Stany loading/error/empty/ready, 390 i 1440 px. Na mocku od razu: hook useAccountParcelsQuery w src/api/accountParcels.ts (mock z MOCK_PARCELS), prawdziwe API po handoffie coord-1 (VITE_MOCK_ACCOUNT_PARCELS=false). Termin: na main do 6:00 (zamrożenie 7:00).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-012", "API-010", "API-011", "API-012", "API-020", "API-021"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Wybór działki pokazuje tylko osoby z dostępem do niej",
+    "Wyszukanie 'robert' pokazuje Roberta i jego działki",
+    "Zmiana dostępu zapisuje się i odświeża listę"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

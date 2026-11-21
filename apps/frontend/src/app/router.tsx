@@ -10,9 +10,12 @@ import { EasyReadPage } from '@/pages/EasyRead/EasyReadPage';
 import { FieldCreatePage } from '@/pages/FieldCreate/FieldCreatePage';
 import { FieldReportPage } from '@/pages/FieldReport/FieldReportPage';
 import { LoginPage } from '@/pages/Login/LoginPage';
+import { MyFieldsPage } from '@/pages/MyFields/MyFieldsPage';
+import { MyParcelsPage } from '@/pages/MyParcels/MyParcelsPage';
 import { ProfilePage } from '@/pages/Profile/ProfilePage';
 import { NotFoundPage } from '@/pages/NotFound/NotFoundPage';
 import { ParcelPage } from '@/pages/Parcel/ParcelPage';
+import { PartnersPage } from '@/pages/Partners/PartnersPage';
 import { ReportPage } from '@/pages/Report/ReportPage';
 import { ReportPrintPage } from '@/pages/ReportPrint/ReportPrintPage';
 import { SitemapPage } from '@/pages/Sitemap/SitemapPage';
@@ -32,6 +35,9 @@ export const router = createBrowserRouter([
           { path: '/pole/:fieldId/raport', element: <FieldReportPage /> },
           { path: '/konto', element: <AccountPage /> },
           { path: '/konto/profil', element: <ProfilePage /> },
+          { path: '/dzialki', element: <MyParcelsPage /> },
+          { path: '/pola', element: <MyFieldsPage /> },
+          { path: '/wspolnicy', element: <PartnersPage /> },
         ],
       },
       { path: '/report/:id', element: <ReportPage /> },

@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -1283,6 +1283,12 @@
           "name": "addedAt",
           "type": "datetime",
           "required": true
+        },
+        {
+          "name": "parcelIds",
+          "type": "string[] (TERYT) | null",
+          "required": false,
+          "note": "T-090: działki, które widzi członek; null lub brak = wszystkie działki konta (domyślnie, zgodne wstecz)"
         }
       ],
       "relations": [
@@ -1424,6 +1430,12 @@
           "name": "addedAt",
           "type": "datetime",
           "required": true
+        },
+        {
+          "name": "parcelIds",
+          "type": "string[] (TERYT) | null",
+          "required": false,
+          "note": "T-090: działki, które widzi członek; null lub brak = wszystkie działki konta (domyślnie, zgodne wstecz)"
         }
       ],
       "relations": [],
@@ -1590,6 +1602,40 @@
           "required": true
         }
       ]
+    },
+    {
+      "id": "DM-026",
+      "status": "proposed",
+      "name": "ParcelOverview",
+      "storage": "dto",
+      "description": "Działka konta z ostatnim raportem (API-020): unikalne działki z raportów konta (DM-001.accountId) i z pól (DM-024), geometria z cache ULDK. Źródło dla pulpitu (mapa zagrożonych działek), listy Moje działki z filtrami, podpowiedzi wyszukiwarki i Wspólników.",
+      "fields": [
+        {
+          "name": "parcel",
+          "type": "object { id, parcelNumber, region, commune, county, voivodeship, areaHa, centroid, bbox, geometry } (pola jak DM-003)",
+          "required": true
+        },
+        {
+          "name": "lastReport",
+          "type": "object { id, analysisDate, crop { code, name }, status, droughtClass } | null",
+          "required": true,
+          "note": "najnowszy raport tej działki w koncie; null dla działki tylko z pola"
+        },
+        {
+          "name": "atRisk",
+          "type": "boolean",
+          "required": true,
+          "note": "lastReport.droughtClass ∈ {moderate, severe}"
+        },
+        {
+          "name": "fieldIds",
+          "type": "string[]",
+          "required": true,
+          "note": "id pól (DM-024) zawierających działkę"
+        }
+      ],
+      "relations": ["DM-001", "DM-003", "DM-024"],
+      "indexes": []
     }
   ]
 }

@@ -345,6 +345,36 @@ export interface Member {
   name: string | null;
   status: MemberStatus;
   addedAt: string;
+  // T-090 API-021: parcels this member may see; null or missing = every parcel of the account
+  parcelIds?: string[] | null;
+}
+
+// DM-026 API-020 One parcel of the account with its latest report (dashboard, my parcels, search)
+export interface ParcelOverview {
+  parcel: Pick<
+    Parcel,
+    | 'id'
+    | 'parcelNumber'
+    | 'region'
+    | 'commune'
+    | 'county'
+    | 'voivodeship'
+    | 'areaHa'
+    | 'centroid'
+    | 'bbox'
+    | 'geometry'
+  >;
+  lastReport: {
+    id: string;
+    analysisDate: string;
+    crop: { code: string; name: string };
+    status: ReportStatus;
+    droughtClass: DroughtClass;
+    createdAt: string;
+  } | null;
+  // droughtClass moderate or severe in the latest report
+  atRisk: boolean;
+  fieldIds: string[];
 }
 
 export interface ReportSummary {
