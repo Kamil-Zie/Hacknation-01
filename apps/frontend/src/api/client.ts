@@ -6,6 +6,7 @@ export class ApiError extends Error {
     public readonly code: string,
     message: string,
     public readonly status: number,
+    public readonly details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = 'ApiError';
@@ -40,8 +41,14 @@ export async function apiFetch<T>(
     const body = (await response.json().catch(() => null)) as {
       code?: string;
       message?: string;
+      details?: Record<string, unknown>;
     } | null;
-    throw new ApiError(body?.code ?? 'UNKNOWN', body?.message ?? 'Błąd serwera', response.status);
+    throw new ApiError(
+      body?.code ?? 'UNKNOWN',
+      body?.message ?? 'Błąd serwera',
+      response.status,
+      body?.details,
+    );
   }
   return (await response.json()) as T;
 }

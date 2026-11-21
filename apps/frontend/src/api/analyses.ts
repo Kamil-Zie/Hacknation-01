@@ -8,7 +8,7 @@ import { buildMockReport, demoReport } from '@/mocks/analyses.mock';
 export const REPORTS_KEY = ['reports'] as const;
 const CREATE_TIMEOUT_MS = 40_000;
 const MOCK_GET_DELAY_MS = 800;
-const MOCK_CREATE_DELAY_MS = 2000;
+const MOCK_CREATE_DELAY_MS = 4000;
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
