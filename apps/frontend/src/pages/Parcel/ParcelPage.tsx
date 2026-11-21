@@ -220,9 +220,7 @@ export function ParcelPage() {
         sx={{ pr: { lg: 3 }, width: { lg: 480 }, maxWidth: { lg: 480 }, flexShrink: 0 }}
       >
         <Stack spacing={3}>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
-            Uprawa, data i analiza
-          </Typography>
+          <Typography variant="h1">Uprawa, data i analiza</Typography>
           {parcel && <ParcelSummaryCard parcel={parcel} />}
           {panel}
         </Stack>

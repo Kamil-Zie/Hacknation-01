@@ -81,7 +81,7 @@ export function StartPage() {
       >
         <Stack spacing={3}>
           <Box>
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }} gutterBottom>
+            <Typography variant="h1" gutterBottom>
               Sprawdź wodę na swojej działce
             </Typography>
             <Box component="ol" sx={{ m: 0, pl: 3, color: 'text.secondary' }}>
