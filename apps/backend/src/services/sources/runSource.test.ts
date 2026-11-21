@@ -1,6 +1,7 @@
 // T-004 runSource tests: cache hit, timeout, network error after retry, missing (in-memory cache, no Atlas)
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+
+import { test } from 'vitest';
 
 import type { CachedEntry, SourceCacheStore } from '@/services/sources/cache.service';
 import { HttpStatusError, runSource } from '@/services/sources/runSource';

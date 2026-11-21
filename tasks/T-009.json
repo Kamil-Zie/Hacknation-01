@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-001", "T-003"],
   "contract_refs": ["API-004", "DM-001", "DM-006", "DM-013", "DM-010"],
@@ -17,7 +17,13 @@
     "Testy jednostkowe pokrywają przypadki brzegowe (początek serii, rok przestępny)"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Czyste funkcje, bez sieci."],
+  "notes": [
+    "Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Czyste funkcje, bez sieci.",
+    "WYNIK: services/engine/kbw.ts: computeKbwWindows(series, analysisDate, kcForDate) zwraca { kbw30, kbw60, gaps }; Kc wstrzykiwany funkcją (tabela upraw T-011 podepnie się w T-017). Vitest dodany do apps/backend (npm test -w apps/backend), 7/7 testów.",
+    "Próg kompletności wg ADR-007 §3 (MAX_MISSING_FRACTION = 0.1, czyli > 10% braków = null), a nie 80% z kryterium zadania. Min. 35 kompletnych próbek referencyjnych z 70.",
+    "precipitationNormPct, meanTmaxC, normTmaxC są w silniku number | null (mediana opadu 0 albo brak Tmax), a DM-013 ma number. Rozstrzygnąć w T-017 (mapowanie do DM-013) albo contract_change. W praktyce Open-Meteo zawsze ma Tmax.",
+    "Pominięte (should): kbw60SeasonSeries do DM-001.charts."
+  ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
