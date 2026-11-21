@@ -8,7 +8,18 @@
   "status": "backlog",
   "priority": "critical",
   "depends_on": ["T-003", "T-006"],
-  "contract_refs": ["API-004", "DM-001", "DM-006", "DM-013", "DM-014", "DM-015", "DM-010", "UI-S-003", "UI-C-006", "UI-C-012"],
+  "contract_refs": [
+    "API-004",
+    "DM-001",
+    "DM-006",
+    "DM-013",
+    "DM-014",
+    "DM-015",
+    "DM-010",
+    "UI-S-003",
+    "UI-C-006",
+    "UI-C-012"
+  ],
   "demo_step": 4,
   "acceptance_criteria": [
     "Raport z mocka pokazuje klasę suszy z kolorem i tekstem, pewność i listę użytych wskaźników",
@@ -17,9 +28,7 @@
     "Ekran obsługuje stany ładowania i błędu; działa responsywnie na 360, 768, 1280 i 1920 px"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: fe-developer. Szacunek: 2h. Faza: 2 meteo/KBW (UI raportu)."
-  ],
+  "notes": ["Agent: fe-developer. Szacunek: 2h. Faza: 2 meteo/KBW (UI raportu)."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

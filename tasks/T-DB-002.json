@@ -8,15 +8,9 @@
   "status": "backlog",
   "priority": "high",
   "depends_on": ["T-DB-001"],
-  "contract_refs": [
-    "DM-002",
-    "DM-005",
-    "DM-015"
-  ],
+  "contract_refs": ["DM-002", "DM-005", "DM-015"],
   "data_change": {
-    "changed_files": [
-      "contracts/data_model.json"
-    ],
+    "changed_files": ["contracts/data_model.json"],
     "data_model_version": "0.1.0",
     "breaking": false,
     "created_by": "coord-1"

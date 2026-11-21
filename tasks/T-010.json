@@ -17,9 +17,7 @@
     "Test na zapisanej odpowiedzi Open-Meteo sprawdza mapowanie pól i jednostki (mm, °C)"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Licencja CC BY 4.0 do DM-005."
-  ],
+  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Licencja CC BY 4.0 do DM-005."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

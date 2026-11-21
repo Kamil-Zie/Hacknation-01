@@ -17,9 +17,7 @@
     "Atrybucja „© OpenStreetMap contributors” (ODbL) w katalogu źródeł; test odległości na syntetycznej geometrii"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: be-api. Szacunek: 2h. Faza: 7 hydrologia+spadek."
-  ],
+  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 7 hydrologia+spadek."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

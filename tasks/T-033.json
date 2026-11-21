@@ -17,9 +17,7 @@
     "Działa responsywnie na 360, 768, 1280 i 1920 px"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: fe-developer. Szacunek: 1,5h. Faza: 6-8."
-  ],
+  "notes": ["Agent: fe-developer. Szacunek: 1,5h. Faza: 6-8."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

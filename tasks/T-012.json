@@ -17,9 +17,7 @@
     "Wzory opisane w komentarzach z odwołaniem do Saxton i Rawls 2006 i FAO-56"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: be-api. Szacunek: 2h. Faza: 3 gleba."
-  ],
+  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 3 gleba."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

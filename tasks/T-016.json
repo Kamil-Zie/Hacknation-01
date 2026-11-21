@@ -17,9 +17,7 @@
     "Testy jednostkowe dla każdej reguły (uruchamia się / nie uruchamia)"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: be-api. Szacunek: 2h. Faza: 4 raport+rekomendacje. Reguły jawne, bez ML/LLM."
-  ],
+  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 4 raport+rekomendacje. Reguły jawne, bez ML/LLM."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

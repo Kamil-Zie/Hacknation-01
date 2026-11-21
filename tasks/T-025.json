@@ -18,9 +18,7 @@
     "Działa responsywnie na 360, 768, 1280 i 1920 px na realnych danych"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: fe-integration. Szacunek: 2h. Faza: 4-5. Wymaga handoff z T-017."
-  ],
+  "notes": ["Agent: fe-integration. Szacunek: 2h. Faza: 4-5. Wymaga handoff z T-017."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

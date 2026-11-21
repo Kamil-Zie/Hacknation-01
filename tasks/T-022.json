@@ -17,9 +17,7 @@
     "Tabela na 360 px zamienia się na układ kartowy bez poziomego scrolla; działa responsywnie na 360, 768, 1280 i 1920 px"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: fe-developer. Szacunek: 1,5h. Faza: 5 źródła/ograniczenia + druk."
-  ],
+  "notes": ["Agent: fe-developer. Szacunek: 1,5h. Faza: 5 źródła/ograniczenia + druk."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

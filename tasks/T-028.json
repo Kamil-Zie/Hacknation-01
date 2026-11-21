@@ -18,9 +18,7 @@
     "Testy na małym zapisanym fragmencie COG"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: be-api. Szacunek: 2h. Faza: 6 Sentinel-2. Licencja Copernicus + katalog CC0."
-  ],
+  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 6 Sentinel-2. Licencja Copernicus + katalog CC0."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

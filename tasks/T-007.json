@@ -8,7 +8,16 @@
   "status": "backlog",
   "priority": "critical",
   "depends_on": ["T-001", "T-003", "T-006"],
-  "contract_refs": ["API-001", "API-002", "DM-002", "DM-003", "UI-S-001", "UI-C-001", "UI-C-002", "UI-C-003"],
+  "contract_refs": [
+    "API-001",
+    "API-002",
+    "DM-002",
+    "DM-003",
+    "UI-S-001",
+    "UI-C-001",
+    "UI-C-002",
+    "UI-C-003"
+  ],
   "demo_step": 2,
   "acceptance_criteria": [
     "Wpisanie poprawnego ID pokazuje granicę działki na mapie i kartę z numerem, gminą, obrębem i powierzchnią (mock)",

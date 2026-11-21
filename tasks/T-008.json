@@ -8,7 +8,17 @@
   "status": "backlog",
   "priority": "critical",
   "depends_on": ["T-003", "T-006"],
-  "contract_refs": ["API-003", "API-004", "API-006", "DM-004", "DM-005", "DM-011", "UI-S-002", "UI-C-004", "UI-C-005"],
+  "contract_refs": [
+    "API-003",
+    "API-004",
+    "API-006",
+    "DM-004",
+    "DM-005",
+    "DM-011",
+    "UI-S-002",
+    "UI-C-004",
+    "UI-C-005"
+  ],
   "demo_step": 3,
   "acceptance_criteria": [
     "Lista upraw pochodzi z API-003 (mock), data poza zakresem 10 lat lub w przyszłości jest odrzucona z komunikatem",
@@ -18,9 +28,7 @@
     "Działa responsywnie na 360, 768, 1280 i 1920 px"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: fe-developer. Szacunek: 2h. Faza: 2 meteo/KBW (UI kroku 3)."
-  ],
+  "notes": ["Agent: fe-developer. Szacunek: 2h. Faza: 2 meteo/KBW (UI kroku 3)."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

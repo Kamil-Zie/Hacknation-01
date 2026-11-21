@@ -17,9 +17,7 @@
     "Licencja Copernicus DEM i Open-Meteo w katalogu źródeł"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: be-api. Szacunek: 1,5h. Faza: 7 hydrologia+spadek."
-  ],
+  "notes": ["Agent: be-api. Szacunek: 1,5h. Faza: 7 hydrologia+spadek."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

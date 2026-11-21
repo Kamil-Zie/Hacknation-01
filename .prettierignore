@@ -5,3 +5,8 @@ coverage/
 package-lock.json
 *.min.*
 .claude/state/
+# Tooling, docs and sync files are not app code: never reformat them (sync messages are immutable).
+.claude/
+team/
+docs/
+*.md

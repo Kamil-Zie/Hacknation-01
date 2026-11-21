@@ -9,15 +9,9 @@
   "status": "backlog",
   "priority": "critical | high | medium | low",
   "depends_on": [],
-  "contract_refs": [
-    "API-NNN",
-    "DM-NNN",
-    "UI-S-NNN"
-  ],
+  "contract_refs": ["API-NNN", "DM-NNN", "UI-S-NNN"],
   "demo_step": 1,
-  "acceptance_criteria": [
-    "Konkretne i sprawdzalne kryterium"
-  ],
+  "acceptance_criteria": ["Konkretne i sprawdzalne kryterium"],
   "review": {
     "status": "pending",
     "by": null,

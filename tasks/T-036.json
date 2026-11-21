@@ -16,9 +16,7 @@
     "Co najmniej jedno porównanie z niezależnym źródłem zapisane z wynikiem i ograniczeniami"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: be-tester. Szacunek: 1,5h. Faza: 5. Wejście do README pkt 9 (T-034)."
-  ],
+  "notes": ["Agent: be-tester. Szacunek: 1,5h. Faza: 5. Wejście do README pkt 9 (T-034)."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }

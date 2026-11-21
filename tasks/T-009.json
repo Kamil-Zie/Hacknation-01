@@ -17,9 +17,7 @@
     "Testy jednostkowe pokrywają przypadki brzegowe (początek serii, rok przestępny)"
   ],
   "review": { "status": "pending", "by": null, "note": "" },
-  "notes": [
-    "Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Czyste funkcje, bez sieci."
-  ],
+  "notes": ["Agent: be-api. Szacunek: 2h. Faza: 2 meteo+KBW. Czyste funkcje, bez sieci."],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"
 }
