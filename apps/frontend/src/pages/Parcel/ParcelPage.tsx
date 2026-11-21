@@ -214,8 +214,10 @@ export function ParcelPage() {
       }}
     >
       <Container
+        disableGutters
         maxWidth={false}
-        sx={{ py: { xs: 3, md: 4 }, width: { lg: 480 }, maxWidth: { lg: 480 }, flexShrink: 0 }}
+        // AppLayout already pads the page, so no extra gutters here (T-026 review)
+        sx={{ pr: { lg: 3 }, width: { lg: 480 }, maxWidth: { lg: 480 }, flexShrink: 0 }}
       >
         <Stack spacing={3}>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
@@ -228,8 +230,7 @@ export function ParcelPage() {
       <Box
         sx={{
           flex: 1,
-          p: 2,
-          pt: { xs: 0, lg: 2 },
+          pt: { xs: 2, lg: 0 },
           minWidth: 0,
           display: 'flex',
         }}
