@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "in_progress",
+  "status": "integration",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-012", "API-010", "API-011", "API-012", "API-020", "API-021"],
@@ -22,7 +22,8 @@
   },
   "notes": [
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu.",
-    "frontend-2 00:20: ack, start (fe-developer) na mocku API-020/021."
+    "frontend-2 00:20: ack, start (fe-developer) na mocku API-020/021.",
+    "frontend-2 00:45: /wspolnicy na main na mocku (PartnersPage, PartnerCard, ParcelAccessEditor, PartnerAddForm). Sprawdzone 390/1440 i wysoki kontrast + największe A. Czeka na prawdziwe API-020/021 (VITE_MOCK_ACCOUNT_PARCELS=false)."
   ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
