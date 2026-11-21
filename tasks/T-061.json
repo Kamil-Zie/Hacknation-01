@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 18:28: scenariusz dopasowany do nowego UI (Podgląd tej działki, To moja działka – dalej, Pokaż raport o wodzie, Dodaj działkę, Wstecz), czasy działek zapasowych zmierzone lokalnie, wariant awaryjny dla sporadycznych 502 (T-067). Zostaje: czas pitchu (Kamil), pomiar na prod i linki do raportów (T-035, T-063).",
     "coord-1 18:15: Robi coord-1 (decyzja Kamila 18:17, przekazanie cofnięte). docs/pitch/scenariusz.md jest (coord-docs). Zostało: (1) dopasować kliknięcia do nowego UI (Podgląd tej działki, nawigacja w nagłówku) – przejść ścieżkę lokalnie; (2) zmierzyć realne czasy analizy działek zapasowych (zimny / z cache) i wpisać; (3) czas pitchu: sprawdzić na Discordzie HackNation, oznaczyć źródło; (4) linki do zapisanych raportów po T-063.",
     "coord-1 18:15: docs/pitch/scenariusz.md gotowy (coord-docs). Zostaje: czas pitchu do potwierdzenia, linki do zapisanych raportów (po T-063).",
     "coord-1 18:10: zgłoszenie KOWR pkt 4.1, oddanie nd 11:00."
