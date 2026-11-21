@@ -108,7 +108,7 @@
   "components": [
     {
       "id": "UI-C-001",
-      "status": "proposed",
+      "status": "agreed",
       "name": "ParcelSearch",
       "description": "Pole na ID działki TERYT z podpowiedzią formatu i przyciskiem „Szukaj”; walidacja Zod tym samym regexem co API-001",
       "props": {
@@ -123,7 +123,7 @@
     },
     {
       "id": "UI-C-002",
-      "status": "proposed",
+      "status": "agreed",
       "name": "ParcelMap",
       "description": "Mapa Leaflet (OSM, opcjonalnie ortofoto Geoportal WMS) z granicą działki; kliknięcie wywołuje API-002; opcjonalnie markery rekomendacji (location) i cieki",
       "props": {
@@ -139,7 +139,7 @@
     },
     {
       "id": "UI-C-003",
-      "status": "proposed",
+      "status": "agreed",
       "name": "ParcelSummaryCard",
       "description": "Numer działki, obręb, gmina, powiat, województwo, powierzchnia w ha, źródło ULDK",
       "props": {
@@ -151,7 +151,7 @@
     },
     {
       "id": "UI-C-004",
-      "status": "proposed",
+      "status": "agreed",
       "name": "AnalysisForm",
       "description": "Wybór uprawy (Select z API-003) i daty analizy (input type=date, domyślnie dziś, min dziś−10 lat, max dziś), przycisk „Analizuj”; RHF + Zod",
       "props": {
@@ -166,7 +166,7 @@
     },
     {
       "id": "UI-C-005",
-      "status": "proposed",
+      "status": "agreed",
       "name": "SourceProgressList",
       "description": "Lista źródeł z API-006 (Działka, Pogoda, Satelita (rośliny), Satelita (wilgotność gleby), Gleba, Teren, Woda w okolicy) ze stanem: pobieranie (spinner) → ok / z cache / brak danych / przekroczony czas po odpowiedzi API-004; pasek postępu orientacyjny (czas do 30 s)",
       "props": {
@@ -180,7 +180,7 @@
     },
     {
       "id": "UI-C-006",
-      "status": "proposed",
+      "status": "agreed",
       "name": "AssessmentSection",
       "description": "Krok 4: klasa suszy (DroughtBadge), pewność, zdanie podsumowania, metryki KBW 30/60 dni (wartość, norma, anomalia, percentyl), deficyt glebowy, NDVI/NDMI z datą sceny i oceną dla uprawy, satelitarna wilgotność gleby ASCAT (% saturacji, data obserwacji, rozdzielczość km, „potwierdza / nie potwierdza oceny”; przy null „brak danych EUMETSAT”), faza uprawy",
       "props": {
@@ -194,7 +194,7 @@
     },
     {
       "id": "UI-C-007",
-      "status": "proposed",
+      "status": "agreed",
       "name": "VulnerabilityCauses",
       "description": "Krok 5: podatność wieloletnia (klasa, „deficyt w X z 10 sezonów”, miesiące krytyczne jako pasek IV–IX), gleba (piasek/pył/ił/SOC, kategoria), lista przyczyn z liczbami",
       "props": {
@@ -207,7 +207,7 @@
     },
     {
       "id": "UI-C-008",
-      "status": "proposed",
+      "status": "agreed",
       "name": "RecommendationList",
       "description": "Krok 6: rekomendacje pogrupowane w kolejności Retencja w krajobrazie → Retencja w glebie → Agrotechnika → Nawadnianie; karta: tytuł, co/gdzie/kiedy, priorytet, rozwijane „Dlaczego?” z evidence (wartość, jednostka, źródło, data); karta nawadniania pokazuje zasadność i dawkę mm oraz m³/ha",
       "props": {
@@ -220,7 +220,7 @@
     },
     {
       "id": "UI-C-009",
-      "status": "proposed",
+      "status": "agreed",
       "name": "SourcesLimitations",
       "description": "Krok 7: tabela źródeł (nazwa, kategoria, okres/data danych, status, licencja, link), lista ograniczeń, lista braków danych (dataGaps) z wpływem, powody poziomu pewności",
       "props": {
@@ -236,7 +236,7 @@
     },
     {
       "id": "UI-C-010",
-      "status": "proposed",
+      "status": "agreed",
       "name": "ReportActions",
       "description": "Przyciski „Pobierz PDF” i „Drukuj” (oba otwierają /report/:id/print i wywołują window.print(); „Pobierz PDF” z podpowiedzią „wybierz Zapisz jako PDF”), „Kopiuj link”, „Nowa analiza”",
       "props": {
@@ -248,7 +248,7 @@
     },
     {
       "id": "UI-C-011",
-      "status": "proposed",
+      "status": "agreed",
       "name": "KbwChart",
       "description": "Should: wykres KBW 60 dni sezonu do daty analizy na tle 10 lat (pasmo p10–p90, linia mediany), MUI X Charts; ukryty, gdy charts = null",
       "props": {
@@ -260,7 +260,7 @@
     },
     {
       "id": "UI-C-012",
-      "status": "proposed",
+      "status": "agreed",
       "name": "StatusBadge",
       "description": "Wspólna plakietka: klasa suszy (none|moderate|severe|unknown), podatność (low|medium|high|unknown), pewność (high|medium|low), status źródła (ok|cached|missing|error|timeout); kolor z tokenów + ikona + tekst",
       "props": {
@@ -276,7 +276,7 @@
   "screens": [
     {
       "id": "UI-S-001",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Start i wybór działki",
       "route": "/",
       "description": "Kroki 1–2: nagłówek „Sprawdź wodę na swojej działce”, krótkie objaśnienie (3 kroki), ParcelSearch, mapa Polski; po znalezieniu działki granica na mapie, ParcelSummaryCard i przycisk „Dalej” do /parcel/:parcelId. Ostatnie działki z localStorage (should).",
@@ -294,7 +294,7 @@
     },
     {
       "id": "UI-S-002",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Uprawa, data i analiza",
       "route": "/parcel/:parcelId",
       "description": "Krok 3: działka na mapie (API-001 z cache), AnalysisForm; po „Analizuj” SourceProgressList w miejscu formularza; po 201 przejście na /report/:id. Błąd 404/502/422 z czytelnym komunikatem i „Spróbuj ponownie”.",
@@ -312,7 +312,7 @@
     },
     {
       "id": "UI-S-003",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Raport",
       "route": "/report/:id",
       "description": "Kroki 4–7: nagłówek (działka, uprawa, data analizy, data wygenerowania, status complete/partial), ReportActions, sekcje w kolejności: Stan wody (AssessmentSection + KbwChart), Podatność i przyczyny, Co zrobić (RecommendationList), Źródła i ograniczenia (zwinięte). Dane z cache TanStack Query po API-004, przy wejściu z linku z API-005.",
@@ -339,7 +339,7 @@
     },
     {
       "id": "UI-S-004",
-      "status": "proposed",
+      "status": "agreed",
       "name": "Widok druku / PDF",
       "route": "/report/:id/print",
       "description": "Krok 8: ten sam raport (API-005) w układzie A4: nagłówek z nazwą aplikacji, działką, uprawą, datą analizy i datą wygenerowania; mapa statyczna (nieinteraktywna), wszystkie sekcje rozwinięte, stopka z linkiem do raportu i zastrzeżeniem o niepewności. Po załadowaniu kafli mapy automatycznie window.print(); przycisk „Drukuj ponownie” (.no-print).",
