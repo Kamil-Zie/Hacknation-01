@@ -273,6 +273,59 @@
       "states": ["ready"],
       "accessibility": "Znaczenie nie tylko kolorem: ikona i tekst; kontrast min. 4.5:1",
       "responsive": "Rozmiar large w nagłówku sekcji, small w tabelach"
+    },
+    {
+      "id": "UI-C-013",
+      "status": "proposed",
+      "name": "AuthForm",
+      "description": "Formularz logowania i rejestracji z przełącznikiem trybu („Mam konto” / „Załóż konto”); React Hook Form + Zod: e-mail, hasło (min. 8 znaków), nazwa tylko przy rejestracji. Błędy API przy polu: EMAIL_TAKEN pod e-mailem, INVALID_CREDENTIALS pod hasłem, TOO_MANY_ATTEMPTS jako alert nad przyciskiem (ADR-010)",
+      "props": {
+        "mode": "'login' | 'register'",
+        "onModeChange": "(mode: 'login' | 'register') => void",
+        "isLoading": "boolean",
+        "error": "{ code: 'EMAIL_TAKEN' | 'INVALID_CREDENTIALS' | 'TOO_MANY_ATTEMPTS' | 'VALIDATION_ERROR' | 'NETWORK_ERROR', message: string } | null",
+        "onSubmit": "(values: LoginRequest | RegisterRequest) => void"
+      },
+      "states": ["idle", "loading", "error", "ready"],
+      "accessibility": "Każde pole z etykietą (E-mail, Hasło, Nazwa gospodarstwa lub imię); błędy w aria-describedby z role=alert; autoComplete email / current-password / new-password; Enter wysyła; przełącznik trybu jako przycisk tekstowy, fokus na pierwszym polu po zmianie trybu",
+      "responsive": "xs: karta na całą szerokość, pola i przycisk pełnej szerokości; md+: karta max 440 px wyśrodkowana; cele dotykowe min. 44 px"
+    },
+    {
+      "id": "UI-C-014",
+      "status": "proposed",
+      "name": "MemberList",
+      "description": "Lista członków konta (imię lub e-mail, e-mail, data dodania) z AddMemberForm (pole e-mail + „Dodaj”; walidacja Zod; ALREADY_MEMBER pod polem). Zaproszenie bez konta ma plakietkę „oczekuje”. Usunięcie z potwierdzeniem w UI (rozwijany wiersz „Usunąć? Tak / Nie”, bez window.confirm); przycisk usunięcia wyłączony dla ostatniego członka z podpowiedzią (LAST_MEMBER)",
+      "props": {
+        "members": "Member[]",
+        "isLoading": "boolean",
+        "error": "{ code: string, message: string } | null",
+        "isAdding": "boolean",
+        "addError": "{ code: 'ALREADY_MEMBER' | 'VALIDATION_ERROR' | 'NOT_A_MEMBER', message: string } | null",
+        "removingId": "string | null",
+        "onAdd": "(email: string) => void",
+        "onRemove": "(memberId: string) => void",
+        "onRetry": "() => void"
+      },
+      "states": ["loading", "empty", "error", "ready", "pending"],
+      "accessibility": "Lista <ul> z elementami <li>; plakietka „oczekuje” tekstem, nie tylko kolorem; przycisk „Usuń członka <e-mail>” z aria-label; potwierdzenie w role=group z fokusem na „Nie”; błędy role=alert; wynik dodania/usunięcia ogłaszany przez aria-live=polite",
+      "responsive": "xs: karty w jednej kolumnie, AddMemberForm pole nad przyciskiem; md+: wiersze w tabeli/liście, pole i przycisk w jednym wierszu; cele dotykowe min. 44 px"
+    },
+    {
+      "id": "UI-C-015",
+      "status": "proposed",
+      "name": "AccountMenu",
+      "description": "Element nagłówka AppLayout: niezalogowany widzi przycisk „Zaloguj” (link do /logowanie); zalogowany widzi nazwę aktywnego konta i menu: lista kont z zaznaczonym aktywnym (przełącznik, gdy kont > 1), link „Moje gospodarstwo” (/konto), „Wyloguj”. Analiza bez logowania działa jak dotąd",
+      "props": {
+        "user": "User | null",
+        "accounts": "Account[]",
+        "activeAccountId": "string | null",
+        "isLoading": "boolean",
+        "onSelectAccount": "(accountId: string) => void",
+        "onLogout": "() => void"
+      },
+      "states": ["loading", "empty", "ready"],
+      "accessibility": "Przycisk menu z aria-haspopup i aria-expanded; menu role=menu, pozycje role=menuitem / menuitemradio dla kont; Escape zamyka i zwraca fokus; strzałki przesuwają fokus; cele min. 44 px",
+      "responsive": "xs: sam awatar z inicjałem (nazwa w menu), menu na szerokość ekranu pomniejszoną o marginesy; md+: nazwa konta obok awatara, menu rozwijane pod przyciskiem"
     }
   ],
   "screens": [
@@ -351,6 +404,42 @@
         "xs": "podgląd na ekranie: jedna kolumna jak w druku",
         "md": "podgląd kartki A4 wyśrodkowany",
         "lg": "podgląd kartki A4 wyśrodkowany; @media print: tokens.print"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-005",
+      "status": "proposed",
+      "name": "Logowanie i rejestracja",
+      "route": "/logowanie",
+      "description": "Jedna strona z AuthForm i przełącznikiem „Mam konto” / „Załóż konto” (ADR-010). Rejestracja tworzy konto „Moje gospodarstwo”; po sukcesie przejście na /konto (lub wcześniejszą stronę). Stany: ładowanie (przycisk z postępem), błąd przy polu lub alert (EMAIL_TAKEN, INVALID_CREDENTIALS, TOO_MANY_ATTEMPTS, błąd sieci z „Spróbuj ponownie”). Zalogowany użytkownik jest przekierowany na /konto. Link „Kontynuuj bez konta” do /. Docelowe api_refs: API-007, API-008, API-009 (do uzupełnienia po T-040, gdy elementy trafią do api.json).",
+      "components": ["UI-C-013"],
+      "api_refs": [],
+      "responsive": {
+        "xs": "jedna kolumna, karta formularza na całą szerokość pod nagłówkiem",
+        "md": "karta max 440 px wyśrodkowana",
+        "lg": "karta max 440 px wyśrodkowana w pionie, bez bocznych paneli"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-006",
+      "status": "proposed",
+      "name": "Moje gospodarstwo",
+      "route": "/konto",
+      "description": "Ekran konta (wymaga logowania, inaczej przekierowanie na /logowanie): nagłówek z nazwą aktywnego konta, sekcja „Członkowie” (MemberList z dodawaniem po e-mailu, status „oczekuje”, usuwanie z potwierdzeniem) i sekcja „Historia raportów” (lista ReportSummary: działka, uprawa, data analizy, klasa suszy przez StatusBadge, link do /report/:id). Stany: ładowanie (szkielety), pusta historia („Brak raportów. Zapisz pierwszy raport na stronie głównej”), błąd z „Spróbuj ponownie”, pending (zaproszenia). Docelowe api_refs: API-009…API-013 (do uzupełnienia po T-040, gdy elementy trafią do api.json).",
+      "components": ["UI-C-014", "UI-C-012", "UI-C-015"],
+      "api_refs": [],
+      "responsive": {
+        "xs": "jedna kolumna: członkowie, potem historia raportów jako karty",
+        "md": "jedna kolumna, historia jako tabela",
+        "lg": "dwie kolumny: członkowie 400 px po lewej, historia raportów po prawej"
       },
       "design_artboards": {
         "phone": null,

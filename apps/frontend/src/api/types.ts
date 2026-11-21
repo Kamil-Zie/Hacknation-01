@@ -310,3 +310,53 @@ export interface ApiErrorBody {
   code: string;
   message: string;
 }
+
+// API-007…API-013 (T-044, kształt z contract_proposal; do potwierdzenia w T-040)
+export type MemberStatus = 'active' | 'pending';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
+export interface Account {
+  id: string;
+  name: string;
+  memberCount: number;
+}
+
+export interface Session {
+  token: string;
+  user: User;
+  accounts: Account[];
+}
+
+export interface Member {
+  id: string;
+  email: string;
+  name: string | null;
+  status: MemberStatus;
+  addedAt: string;
+}
+
+export interface ReportSummary {
+  id: string;
+  parcel: { id: string; parcelNumber: string; region: string; commune: string };
+  crop: { code: string; name: string };
+  analysisDate: string;
+  status: ReportStatus;
+  droughtClass: DroughtClass;
+  createdAt: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
