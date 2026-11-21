@@ -21,6 +21,9 @@ export function ReportSectionNav() {
           overflowX: 'auto',
           py: 0.5,
           maxWidth: '100%',
+          // Scrollbar hidden: the cut-off last chip already signals horizontal scroll.
+          scrollbarWidth: 'none',
+          '&::-webkit-scrollbar': { display: 'none' },
         }}
       >
         {REPORT_SECTIONS.map((section) => (

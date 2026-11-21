@@ -277,20 +277,27 @@ export function AssessmentSection({
             />
 
             {sm ? (
-              <MetricTile title="Wilgotność gleby z satelity">
+              <MetricTile title={sm.label ?? 'Wilgotność gleby'}>
                 <Metric value={formatNumber(sm.valuePct, 0)} unit="%" />
+                <Line>Warstwa: {sm.depthLabel}</Line>
+                {sm.rootZonePct != null && (
+                  <Line>Strefa korzeni: {formatNumber(sm.rootZonePct, 0)}%</Line>
+                )}
+                {sm.percentile != null && (
+                  <Line>Percentyl 10 lat: {formatNumber(sm.percentile, 0)}</Line>
+                )}
                 <Line>Pomiar z {formatDate(sm.observedAt)}</Line>
-                <Line>Rozdzielczość: {formatNumber(sm.resolutionKm, 0)} km</Line>
+                <Line>Dane z siatki ok. {formatNumber(sm.resolutionKm, 0)} km</Line>
                 <Line>Wynik {AGREEMENT_LABEL[sm.agreement]}</Line>
               </MetricTile>
             ) : (
               <MetricTile
-                title="Wilgotność gleby z satelity"
+                title="Wilgotność gleby"
                 missing={{
                   calm: true,
                   reason:
-                    gapFor('eumetsat')?.impact ??
-                    'Ten pomiar jest dodatkowy, ocena opiera się na pozostałych danych.',
+                    gapFor('nasa_power')?.impact ??
+                    'Ten pomiar jest dodatkowy, ocena opiera się na bilansie wodnym i glebie.',
                 }}
               />
             )}

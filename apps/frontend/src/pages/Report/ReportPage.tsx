@@ -60,18 +60,11 @@ export function ReportPage() {
         <ReportHeader report={data} />
       </Box>
       <Stack spacing={2} sx={{ position: { lg: 'sticky' }, top: { lg: 16 }, minWidth: 0 }}>
-        {/* ParcelMap sets its own vh height; force it to fill this box until it accepts a height prop. */}
-        <Box
-          sx={{
-            height: { xs: 240, md: '40vh', lg: 300 },
-            minHeight: 240,
-            overflow: 'hidden',
-            borderRadius: 1,
-            '& > *': { height: '100%' },
-          }}
-        >
-          <ParcelMap parcel={data.parcel} isInteractive={false} />
-        </Box>
+        <ParcelMap
+          parcel={data.parcel}
+          isInteractive={false}
+          height={{ xs: 240, md: '40vh', lg: 300 }}
+        />
         <ReportSectionNav />
       </Stack>
       <Stack spacing={{ xs: 2, md: 3 }} sx={{ minWidth: 0 }}>

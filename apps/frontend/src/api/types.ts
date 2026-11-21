@@ -5,7 +5,14 @@ export type Confidence = 'high' | 'medium' | 'low';
 export type Severity = 'low' | 'medium' | 'high';
 export type SourceStatusValue = 'ok' | 'cached' | 'missing' | 'error' | 'timeout';
 export type SourceId =
-  'uldk' | 'meteo' | 'sentinel2' | 'eumetsat' | 'soilgrids' | 'elevation' | 'overpass';
+  | 'uldk'
+  | 'meteo'
+  | 'sentinel2'
+  | 'nasa_power'
+  | 'eumetsat'
+  | 'soilgrids'
+  | 'elevation'
+  | 'overpass';
 export type EvidenceSourceId = SourceId | 'engine';
 export type SourceCategory = 'spatial' | 'meteo' | 'satellite' | 'soil' | 'terrain' | 'hydro';
 export type CropCode =
@@ -140,17 +147,23 @@ export interface SatelliteObservation {
 
 // DM-015
 export interface SatelliteSoilMoisture {
+  label?: string;
   valuePct: number;
+  rootZonePct?: number | null;
+  profilePct?: number | null;
+  percentile?: number | null;
+  normRootZonePct?: number | null;
+  anomalyPp?: number | null;
   assessment: 'dry' | 'normal' | 'wet' | 'unknown';
   agreement: 'confirms' | 'contradicts' | 'neutral';
   observedAt: string;
   ageDays: number;
   product: string;
   collectionId: string;
-  granuleId: string;
+  granuleId: string | null;
   resolutionKm: number;
   depthLabel: string;
-  distanceKm: number;
+  distanceKm: number | null;
 }
 
 // DM-006
