@@ -16,5 +16,16 @@ export const addMemberBodySchema = z.object({
   email: z.string().trim().toLowerCase().max(254).email(),
 });
 
+// API-021 null = every parcel of the account
+export const updateMemberParcelsBodySchema = z.object({
+  parcelIds: z
+    .array(z.string().trim().min(3).max(64))
+    .min(1)
+    .max(200)
+    .refine((ids) => new Set(ids).size === ids.length, 'Działki nie mogą się powtarzać')
+    .nullable(),
+});
+
+export type UpdateMemberParcelsBody = z.infer<typeof updateMemberParcelsBodySchema>;
 export type ListMembersQuery = z.infer<typeof listMembersQuerySchema>;
 export type AddMemberBody = z.infer<typeof addMemberBodySchema>;

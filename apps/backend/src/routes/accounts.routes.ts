@@ -1,7 +1,7 @@
-// T-043 API-013 GET /accounts/:accountId/reports route (T-042 adds the members routes here)
+// T-043 API-013 GET /accounts/:accountId/reports, API-014 PATCH, T-091 API-020 GET /accounts/:accountId/parcels
 import { Router } from 'express';
 
-import { rename } from '@/controllers/accounts.controller';
+import { listParcels, rename } from '@/controllers/accounts.controller';
 import { listAccountReports } from '@/controllers/analyses.controller';
 import { requireAuth } from '@/middleware/auth';
 import { validate } from '@/middleware/validate';
@@ -19,3 +19,10 @@ accountsRouter.patch(
 );
 
 accountsRouter.get('/accounts/:accountId/reports', requireAuth, listAccountReports);
+
+accountsRouter.get(
+  '/accounts/:accountId/parcels',
+  requireAuth,
+  validate('params', accountParamsSchema),
+  listParcels,
+);

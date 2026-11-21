@@ -9,6 +9,8 @@ const accountMemberSchema = new Schema(
     email: { type: String, required: true, maxlength: 254, lowercase: true, trim: true },
     status: { type: String, required: true, enum: ['active', 'pending'] },
     addedAt: { type: Date, required: true },
+    // T-092 DM-018: parcels this member may see; missing or null = every parcel of the account
+    parcelIds: { type: [String], required: false, default: undefined },
   },
   {
     collection: 'account_members',

@@ -3789,7 +3789,7 @@
     },
     {
       "id": "API-020",
-      "status": "proposed",
+      "status": "agreed",
       "method": "GET",
       "path": "/accounts/:accountId/parcels",
       "summary": "Działki konta z ostatnim raportem i flagą zagrożenia suszą, bez paginacji (max 200, od najnowszego raportu). Członek z parcelIds widzi tylko swoje działki. Tylko członek konta.",
@@ -3864,7 +3864,7 @@
     },
     {
       "id": "API-021",
-      "status": "proposed",
+      "status": "agreed",
       "method": "PATCH",
       "path": "/accounts/:accountId/members/:memberId",
       "summary": "Ustawia, do których działek ma dostęp członek (wspólnik). parcelIds: null = wszystkie działki konta. Tylko aktywny członek konta; nie można ograniczyć samego siebie.",
@@ -3890,7 +3890,9 @@
         "422 VALIDATION_ERROR (zły accountId; details.field)",
         "503 DB_UNAVAILABLE",
         "404 MEMBER_NOT_FOUND",
-        "422 CANNOT_RESTRICT_SELF"
+        "422 CANNOT_RESTRICT_SELF",
+        "403 NOT_A_MEMBER także gdy wołający sam ma ograniczony dostęp (zmieniać dostęp mogą tylko osoby widzące wszystkie działki)",
+        "422 VALIDATION_ERROR dla pustej tablicy parcelIds (użyj null)"
       ],
       "data_refs": ["DM-018", "DM-022"],
       "consumers": [],

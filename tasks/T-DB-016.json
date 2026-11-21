@@ -5,7 +5,7 @@
   "type": "data_update",
   "team": "backend",
   "assignee": "coord-1",
-  "status": "ready",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-092"],
   "contract_refs": ["DM-018", "DM-022", "DM-026"],
@@ -28,7 +28,9 @@
     "by": null,
     "note": ""
   },
-  "notes": [],
+  "notes": [
+    "coord-1 00:20: pole opcjonalne, zgodne wstecz; seed uruchomiony na hacknationS (upsert 2 raportów, indeksy zsynchronizowane)."
+  ],
   "created_at": "2026-11-21",
-  "updated_at": "2026-11-21"
+  "updated_at": "2026-11-22"
 }

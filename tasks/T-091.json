@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "coord-1",
-  "status": "ready",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["API-020", "DM-026"],
@@ -17,6 +17,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 00:20: API-020 na main, test na żywo: 4 działki z geometrią, 322 ms.",
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu."
   ],
   "created_at": "2026-11-22",

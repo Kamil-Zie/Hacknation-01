@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "coord-1",
-  "status": "ready",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-091"],
   "contract_refs": ["API-021", "DM-018", "DM-022"],
@@ -20,6 +20,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 00:20: API-021 na main, test na żywo: ograniczenie i przywrócenie 200, siebie 422 CANNOT_RESTRICT_SELF, pusta lista 422. API-010/011 zwracają parcelIds (null = wszystkie). Raporty działek nie są filtrowane po parcelIds (linki do raportów są publiczne, ADR).",
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu."
   ],
   "created_at": "2026-11-22",

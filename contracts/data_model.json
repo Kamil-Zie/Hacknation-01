@@ -1605,7 +1605,7 @@
     },
     {
       "id": "DM-026",
-      "status": "proposed",
+      "status": "agreed",
       "name": "ParcelOverview",
       "storage": "dto",
       "description": "Działka konta z ostatnim raportem (API-020): unikalne działki z raportów konta (DM-001.accountId) i z pól (DM-024), geometria z cache ULDK. Źródło dla pulpitu (mapa zagrożonych działek), listy Moje działki z filtrami, podpowiedzi wyszukiwarki i Wspólników.",

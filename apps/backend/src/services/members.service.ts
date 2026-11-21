@@ -1,4 +1,4 @@
-// T-042 API-010 API-011 API-012 Account members: list, add by e-mail (active/pending), remove (not the last active)
+// T-042 API-010 API-011 API-012 (T-092 API-021 parcel access) Account members: list, add by e-mail (active/pending), remove (not the last active)
 import mongoose from 'mongoose';
 
 import { AccountMemberModel } from '@/models/AccountMember.model';
@@ -13,6 +13,7 @@ export interface MemberDto {
   name: string | null;
   status: 'active' | 'pending';
   addedAt: string;
+  parcelIds: string[] | null;
 }
 
 export interface MemberPage {
@@ -28,6 +29,7 @@ interface MemberRow {
   email: string;
   status: 'active' | 'pending';
   addedAt: Date;
+  parcelIds?: string[] | null;
 }
 
 function toMemberDto(member: MemberRow, name: string | null): MemberDto {
@@ -37,6 +39,7 @@ function toMemberDto(member: MemberRow, name: string | null): MemberDto {
     name,
     status: member.status,
     addedAt: member.addedAt.toISOString(),
+    parcelIds: member.parcelIds && member.parcelIds.length > 0 ? [...member.parcelIds] : null,
   };
 }
 
@@ -125,4 +128,37 @@ export async function removeMember(
     }
   }
   await AccountMemberModel.deleteOne({ _id: memberId, accountId });
+}
+
+// API-021 Only a member who sees every parcel may change access, and never their own.
+export async function updateMemberParcels(
+  userId: string,
+  accountId: string,
+  memberId: string,
+  parcelIds: string[] | null,
+): Promise<MemberDto> {
+  await assertMember(userId, accountId);
+  const self = await AccountMemberModel.findOne({ accountId, userId, status: 'active' });
+  if (self?.parcelIds && self.parcelIds.length > 0) {
+    throw new AppError(
+      'NOT_A_MEMBER',
+      'Dostęp mogą zmieniać tylko osoby, które widzą wszystkie działki.',
+      403,
+    );
+  }
+  const member = await AccountMemberModel.findOne({ _id: memberId, accountId });
+  if (!member) throw new AppError('MEMBER_NOT_FOUND', 'Nie ma takiego członka gospodarstwa.', 404);
+  if (member.userId && String(member.userId) === userId) {
+    throw new AppError('CANNOT_RESTRICT_SELF', 'Nie możesz zmienić dostępu samemu sobie.', 422, {
+      field: 'memberId',
+    });
+  }
+  const updated = await AccountMemberModel.findOneAndUpdate(
+    { _id: memberId, accountId },
+    parcelIds ? { $set: { parcelIds } } : { $unset: { parcelIds: 1 } },
+    { new: true },
+  );
+  if (!updated) throw new AppError('MEMBER_NOT_FOUND', 'Nie ma takiego członka gospodarstwa.', 404);
+  const user = updated.userId ? await UserModel.findById(updated.userId) : null;
+  return toMemberDto(updated, user ? user.name : null);
 }
