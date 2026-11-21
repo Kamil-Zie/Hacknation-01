@@ -1,0 +1,28 @@
+{
+  "id": "T-049",
+  "title": "Pamięć podręczna w procesie dla serii NASA POWER (raport z cache ≤ 1 s)",
+  "description": "Raport z pełnym cache trwa ok. 10 s na sieci hackathonu: odczyt wpisu nasa_power (10 lat × 11 zmiennych) z Atlasa 10,5 s, reszta źródeł 0,3 s (pomiar coord-1 15:45, Bronowice 2026-05-25; przez VPN 0,6 s). Dodaj warstwę pamięci w procesie (Map/LRU, limit ok. 50 wpisów, TTL jak w cache Mongo) przed SourceCacheStore dla nasa_power (opcjonalnie dla wszystkich źródeł w runSource/cache.service), z kluczem cache v2. Bez zmiany kontraktu i modelu.",
+  "type": "perf",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-037"],
+  "contract_refs": ["API-004", "DM-011"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Drugi POST /analyses dla 061409_2.0009.612 / pszenica / 2026-05-25 w tym samym procesie: ≤ 1 s na sieci hackathonu (zmierzone, wynik w notes); pierwszy bez zmian",
+    "sources[].status nadal 'cached' dla odczytu z pamięci; limit rozmiaru i TTL działają (test)",
+    "Testy backendu zielone, ścieżka anonimowa i konta bez zmian"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 16:55: zlecone przez Kamila. Ok. 20 min. Przed demo jedno 'rozgrzewające' otwarcie raportu po starcie serwera."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
