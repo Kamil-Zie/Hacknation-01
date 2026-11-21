@@ -1,0 +1,31 @@
+{
+  "id": "T-039",
+  "title": "Sentinel-2 niezawodnie: szybsze źródło COG + kody przyczyn braku danych i timeoutu",
+  "description": "Sentinel-2 z sieci hackathonu prawie zawsze daje timeout (15 s), a NDVI/NDMI są wymagane (KOWR 3.3, kategoria satelita). (A) Dostępność: Microsoft Planetary Computer (STAC https://planetarycomputer.microsoft.com/api/stac/v1, kolekcja sentinel-2-l2a, assety B04/B08/B11/SCL, podpis anonimowy przez /api/sas/v1/token/sentinel-2-l2a) jako źródło główne odczytu COG, Earth Search jako zapas; odczyt tylko okna bbox działki (najmniejszy możliwy overview przy 10/20 m), pasma równolegle, Sentinel-2 startuje od t=0 równolegle z resztą, timeout sentinel2 z budżetu ANALYSIS_BUDGET_MS. Pomiar coord-1 15:58 z sieci hackathonu: PC ok. 154 KB/s vs Earth Search ok. 50 KB/s. (B) Kody przyczyn: nowe opcjonalne pole reasonCode w SourceStatus (DM-011) i w dataGaps (DM-012): NO_SCENE (brak sceny w oknie), CLOUD_COVER (sceny są, < 60% ważnych pikseli), PARCEL_TOO_SMALL (< 4 piksele), TIMEOUT, RATE_LIMIT (HTTP 429), UPSTREAM_ERROR (5xx/sieć), NOT_CONFIGURED (np. eumetsat bez klucza). Dla wszystkich źródeł, nie tylko sentinel2. Raport nadal 201 (raport z lukami, KOWR), status partial. (C) Kod HTTP: gdy wymagane ULDK przekroczy czas → 504 UPSTREAM_TIMEOUT (zamiast 502 UPSTREAM_UNAVAILABLE), błąd ULDK bez timeoutu → 502 bez zmian; dopisać do error codes w api.json.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "critical",
+  "depends_on": ["T-028", "T-031"],
+  "contract_refs": ["API-001", "API-004", "DM-011", "DM-012", "DM-014"],
+  "demo_step": 4,
+  "acceptance_criteria": [
+    "Bronowice 061409_2.0009.612 / pszenica / 2026-05-25 BEZ cache Sentinel-2, z sieci hackathonu: sentinel2 ok z NDVI i NDMI w ≤ 15 s (zmierzone 3 razy, wynik w notes)",
+    "Bronowice 2026-06-10: sentinel2 missing + reasonCode CLOUD_COVER; data bez sceny (stub): NO_SCENE; stub wolnego serwera: timeout + TIMEOUT; stub 429: RATE_LIMIT; raport 201, status partial, dataGaps z tym samym reasonCode",
+    "Open-Meteo 429 (sieć hackathonu) daje w sources meteo reasonCode RATE_LIMIT; eumetsat NOT_CONFIGURED",
+    "ULDK timeout (stub) → HTTP 504 z code UPSTREAM_TIMEOUT w formacie błędu { code, message, details }",
+    "Kontrakt: data_model.json (DM-011, DM-012 reasonCode, opcjonalne, zgodne wstecz), api.json (UPSTREAM_TIMEOUT, examples), zadanie T-DB w tym samym commicie, contract_change do frontendu (teksty dla każdego reasonCode)",
+    "Testy jednostkowe na stubach, bez prawdziwych wywołań; testy backendu zielone"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 15:58: zlecone przez Kamila. Nataniel (autor sentinel2Indices.ts) poza sesją, pliki bez rezerwacji. Kolejność: najpierw (B)+(C) (kontrakt, ok. 30 min, front może zacząć teksty), potem (A). Jeśli PC nie da ≤ 15 s w 60 min: zostaw PC jako źródło, zgłoś blocker, demo idzie z cache 2026-05-25, a jury i tak testuje na prod (inna sieć)."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
