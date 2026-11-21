@@ -11,6 +11,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().int().positive().default(3000),
   MONGODB_URI: z.string().optional(),
+  MONGODB_DB: z.string().default('hacknation'),
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
   EUMETSAT_CONSUMER_KEY: z.string().optional(),
   EUMETSAT_CONSUMER_SECRET: z.string().optional(),

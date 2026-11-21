@@ -11,7 +11,10 @@ async function connectDb(): Promise<void> {
     return;
   }
   try {
-    await mongoose.connect(env.MONGODB_URI, { serverSelectionTimeoutMS: 8000 });
+    await mongoose.connect(env.MONGODB_URI, {
+      dbName: env.MONGODB_DB,
+      serverSelectionTimeoutMS: 8000,
+    });
     logger.info(`MongoDB connected (${mongoose.connection.name})`);
   } catch (error) {
     logger.error(`MongoDB connection failed: ${error instanceof Error ? error.message : error}`);

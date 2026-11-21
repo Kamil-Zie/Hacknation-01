@@ -12,7 +12,7 @@ const PROD_DB = 'hacknation_prod';
 async function main(): Promise<void> {
   const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error('MONGODB_URI is not set');
-  await mongoose.connect(uri);
+  await mongoose.connect(uri, { dbName: process.env.MONGODB_DB ?? 'hacknation' });
   const dbName = mongoose.connection.name;
   if (dbName === PROD_DB && !process.argv.includes('--prod')) {
     throw new Error(`Refusing to seed ${PROD_DB} without --prod`);
