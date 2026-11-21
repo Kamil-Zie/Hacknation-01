@@ -1,0 +1,26 @@
+{
+  "id": "T-059",
+  "title": "Przycisk 'Podgląd tej działki' obok 'To moja działka – dalej'",
+  "description": "StartPage.tsx ok. l. 218–228 (karta 'Wybrana działka'): drugi przycisk outlined 'Podgląd tej działki' (ikona lupy/oka). Kliknięcie przybliża mapę do granicy działki z ULDK (fitBounds geometrii z API-002, z marginesem) i podświetla granicę; nie zmienia ekranu. Rolnik sprawdza, czy to właściwa działka, zanim kliknie 'dalej'. Na telefonie przyciski jeden pod drugim, 'dalej' zostaje głównym.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-026"],
+  "contract_refs": ["UI-S-001", "UI-C-002", "API-002"],
+  "demo_step": 2,
+  "acceptance_criteria": [
+    "Po wyszukaniu numeru: 'Podgląd tej działki' przybliża mapę do działki, granica widoczna w całości",
+    "'To moja działka – dalej' bez zmian i nadal główny przycisk",
+    "Działa także po kliknięciu działki na mapie"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": ["coord-1 18:05: uwaga Kamila po teście UI. Zamrożenie funkcji 7:00 – zrób przed nim."],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

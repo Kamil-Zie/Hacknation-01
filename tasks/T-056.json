@@ -1,0 +1,30 @@
+{
+  "id": "T-056",
+  "title": "Nazwa gospodarstwa: pole przy rejestracji i zmiana nazwy konta (API-007, nowy API-014)",
+  "description": "Zamiast stałej 'Moje gospodarstwo' konto ma prawdziwą nazwę. (1) API-007 POST /auth/register: opcjonalne pole body.accountName (string 1–120, trim); brak = 'Gospodarstwo <name użytkownika>' (np. 'Gospodarstwo Jan Kowalski'); auth.service.ts DEFAULT_ACCOUNT_NAME zostaje tylko jako zapas. (2) Nowy API-014 PATCH /accounts/:accountId body {name} → 200 DM-021 Account; wymaga Bearer i członkostwa (403 NOT_A_MEMBER jak API-010), 422 VALIDATION_ERROR przy pustej/za długiej nazwie. Wzór: route/controller/service z API-011 (members). Model DM-017 ma już pole name – bez zmiany schematu, bez T-DB. Koordynator dodał API-014 (status proposed) – zmień na agreed po implementacji, dopisz accountName w API-007, bump 0.4.1, przykłady w api.json, mock frontu (apps/frontend/src/mocks/auth.mock.ts) poprawi Dawid w T-057.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "backend-2",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-041"],
+  "contract_refs": ["API-007", "API-014", "DM-017", "DM-021"],
+  "demo_step": 9,
+  "acceptance_criteria": [
+    "Rejestracja z accountName zwraca konto o tej nazwie; bez accountName 'Gospodarstwo <imię>'",
+    "PATCH /accounts/:id zmienia nazwę, widać ją w GET /auth/me; obcy użytkownik 403; pusta nazwa 422",
+    "Testy vitest (wzór auth.routes.test.ts), wszystkie testy zielone",
+    "Handoff do frontend z przykładami curl"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 18:05: uwaga Kamila po teście UI. Zamrożenie funkcji 7:00 – zrób przed nim.",
+    "Review: Jan (backend-1) po handoffie, krótko (be-reviewer), zanim Dawid podepnie T-057."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "T-057",
+  "title": "Prawdziwa nazwa gospodarstwa w UI: rejestracja, nagłówek, /konto ze zmianą nazwy",
+  "description": "Wszędzie, gdzie widać 'Moje gospodarstwo' (AccountMenu.tsx:94, AccountPage.tsx:35, opis UI-S-005/UI-S-006 w contracts/ui.json), pokaż nazwę aktywnego konta z sesji (account.name). Formularz rejestracji (AuthForm/LoginPage): pole 'Nazwa gospodarstwa' (opcjonalne, podpowiedź 'np. Gospodarstwo Kowalscy'). /konto: nazwa jako nagłówek + przycisk 'Zmień nazwę' (inline edycja, zapis przez API-014, odświeżenie sesji). Najpierw mock (auth.mock.ts) zgodny z T-056, potem prawdziwe API po handoffie Nataniela.",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-046"],
+  "contract_refs": ["UI-S-005", "UI-S-006", "UI-C-015", "API-007", "API-014"],
+  "demo_step": 9,
+  "acceptance_criteria": [
+    "Po rejestracji z nazwą 'Gospodarstwo Nowak' nagłówek i /konto pokazują 'Gospodarstwo Nowak'",
+    "Zmiana nazwy na /konto widoczna od razu w nagłówku i w przełączniku kont",
+    "Brak tekstu 'Moje gospodarstwo' jako stałej w UI (tylko dane z API)"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 18:05: uwaga Kamila po teście UI. Zamrożenie funkcji 7:00 – zrób przed nim.",
+    "Kuba (frontend-2) wyczerpał limit – przejmujesz jego pliki (AccountPage, AppLayout, StartPage); jego rezerwacja z 17:32 nieaktualna."
+  ],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}

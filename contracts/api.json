@@ -3123,7 +3123,9 @@
         "409": {
           "code": "EMAIL_TAKEN",
           "message": "Konto z tym adresem e-mail już istnieje.",
-          "details": { "field": "email" }
+          "details": {
+            "field": "email"
+          }
         }
       }
     },
@@ -3183,7 +3185,9 @@
       "summary": "Bieżący użytkownik i jego konta (odtworzenie sesji po odświeżeniu strony).",
       "auth": "required",
       "request": {
-        "headers": { "Authorization": "Bearer <token>" }
+        "headers": {
+          "Authorization": "Bearer <token>"
+        }
       },
       "response": {
         "200": {
@@ -3228,7 +3232,9 @@
       "summary": "Lista członków i oczekujących zaproszeń konta, od najstarszych (addedAt rosnąco).",
       "auth": "required",
       "request": {
-        "params": { "accountId": "string, id konta (ObjectId)" },
+        "params": {
+          "accountId": "string, id konta (ObjectId)"
+        },
         "query": {
           "page": "integer, domyślnie 1",
           "pageSize": "integer, domyślnie 20, maks. 100"
@@ -3287,8 +3293,12 @@
       "summary": "Dodaje członka po e-mailu (każdy członek może dodać innego). Gdy użytkownik z tym e-mailem istnieje, od razu active; inaczej pending (zaproszenie, bez wysyłki e-maili).",
       "auth": "required",
       "request": {
-        "params": { "accountId": "string, id konta (ObjectId)" },
-        "body": { "email": "string, poprawny e-mail" }
+        "params": {
+          "accountId": "string, id konta (ObjectId)"
+        },
+        "body": {
+          "email": "string, poprawny e-mail"
+        }
       },
       "response": {
         "201": "Member (DM-022)"
@@ -3313,7 +3323,9 @@
         "409": {
           "code": "ALREADY_MEMBER",
           "message": "Ta osoba już należy do gospodarstwa.",
-          "details": { "field": "email" }
+          "details": {
+            "field": "email"
+          }
         }
       }
     },
@@ -3360,7 +3372,9 @@
       "summary": "Historia konta: skróty zapisanych raportów (Report z accountId), od najnowszych (createdAt malejąco). Pełny raport: API-005.",
       "auth": "required",
       "request": {
-        "params": { "accountId": "string, id konta (ObjectId)" },
+        "params": {
+          "accountId": "string, id konta (ObjectId)"
+        },
         "query": {
           "page": "integer, domyślnie 1",
           "pageSize": "integer, domyślnie 20, maks. 100"
@@ -3394,7 +3408,10 @@
                 "region": "Bronowice",
                 "commune": "Puławy"
               },
-              "crop": { "code": "winter_wheat", "name": "Pszenica ozima" },
+              "crop": {
+                "code": "winter_wheat",
+                "name": "Pszenica ozima"
+              },
               "analysisDate": "2026-06-10",
               "status": "complete",
               "droughtClass": "severe",
@@ -3409,6 +3426,40 @@
           "code": "NOT_A_MEMBER",
           "message": "Nie należysz do tego gospodarstwa.",
           "details": null
+        }
+      }
+    },
+    {
+      "id": "API-014",
+      "status": "proposed",
+      "method": "PATCH",
+      "path": "/accounts/:accountId",
+      "summary": "Zmiana nazwy konta gospodarstwa (każdy członek, T-056). Zamiast stałej „Moje gospodarstwo” rolnik nadaje prawdziwą nazwę.",
+      "auth": "required",
+      "request": {
+        "params": {
+          "accountId": "string, id konta (ObjectId)"
+        },
+        "body": {
+          "name": "string, 1–120 znaków po trim"
+        }
+      },
+      "response": {
+        "200": "Account (DM-021)"
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER",
+        "422 VALIDATION_ERROR (pusta lub za długa nazwa, zły accountId; details.field)"
+      ],
+      "data_refs": ["DM-017", "DM-021"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-006", "UI-C-015"],
+      "examples": {
+        "200": {
+          "id": "665f0c0ffee0000000000b01",
+          "name": "Gospodarstwo Kowalscy",
+          "memberCount": 2
         }
       }
     }

@@ -1,0 +1,26 @@
+{
+  "id": "T-058",
+  "title": "Intuicyjna nawigacja: Panel, Szukaj działki, Dodaj działkę i przycisk Wstecz",
+  "description": "Rolnik ma zawsze wiedzieć, jak wrócić. (1) W nagłówku AppLayout (desktop: przyciski tekstowe z ikoną; telefon: menu albo dolny pasek) trzy przyciski: 'Panel' → /konto (niezalogowany → /logowanie), 'Szukaj działki' → / z zachowaną wybraną działką, 'Dodaj działkę' → / z wyczyszczoną selekcją (useSelectionStore) i pustym polem – start analizy kolejnej działki. Decyzja koordynatora: 'Dodaj działkę' NIE zapisuje działki w koncie (brak takiego API przed zamrożeniem); działki konta = historia raportów na /konto. (2) Na /parcel/:id i /report/:id przycisk 'Wstecz' (← Zmień działkę / ← Zmień uprawę) nad treścią, obok StepNav. (3) Ukryte na wydruku (.no-print).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": ["T-026"],
+  "contract_refs": ["UI-S-001", "UI-S-002", "UI-S-003", "UI-S-006"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Z każdego ekranu jednym kliknięciem: Panel, Szukaj działki, Dodaj działkę",
+    "'Dodaj działkę' czyści poprzednią działkę, 'Szukaj działki' ją zachowuje",
+    "Działa na 390 px i 1440 px, przyciski min. 48 px, nie ma ich na wydruku"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": ["coord-1 18:05: uwaga Kamila po teście UI. Zamrożenie funkcji 7:00 – zrób przed nim."],
+  "created_at": "2026-11-21",
+  "updated_at": "2026-11-21"
+}
