@@ -5,7 +5,7 @@ import type { FormEvent } from 'react';
 
 import { PARCEL_ID_REGEX } from '@/api/parcels';
 
-const EXAMPLE_ID = '141201_1.0001.123';
+const EXAMPLE_ID = '061409_2.0009.612';
 const FORMAT_HINT = `Format: ${EXAMPLE_ID}`;
 
 interface ParcelSearchProps {

@@ -42,29 +42,31 @@ function makeParcel(
 }
 
 export const MOCK_PARCELS: Parcel[] = [
+  // Main demo parcel (backend-1, T-002): arable field in Bronowice, real ULDK ID
   makeParcel(
     {
-      id: '141201_1.0001.123',
-      parcelNumber: '123',
-      region: 'Wola Rasztowska',
-      commune: 'Ciechanów',
-      county: 'ciechanowski',
-      voivodeship: 'mazowieckie',
+      id: '061409_2.0009.612',
+      parcelNumber: '612',
+      region: 'Bronowice',
+      commune: 'Puławy',
+      county: 'puławski',
+      voivodeship: 'lubelskie',
     },
-    4.82,
-    [20.4202, 52.8801, 20.4281, 52.8838],
+    2.41,
+    [21.9278, 51.4388, 21.9322, 51.4412],
   ),
+  // Secondary parcel: built-up area in Puławy, tests '/' in the ID and missing soil data
   makeParcel(
     {
-      id: '141201_1.0001.124/2',
-      parcelNumber: '124/2',
-      region: 'Wola Rasztowska',
-      commune: 'Ciechanów',
-      county: 'ciechanowski',
-      voivodeship: 'mazowieckie',
+      id: '061401_1.0001.691/9',
+      parcelNumber: '691/9',
+      region: 'Miasto Puławy',
+      commune: 'Puławy',
+      county: 'puławski',
+      voivodeship: 'lubelskie',
     },
-    1.37,
-    [20.4291, 52.8805, 20.4318, 52.8826],
+    0.08,
+    [21.9688, 51.4158, 21.9697, 51.4163],
   ),
   makeParcel(
     {
