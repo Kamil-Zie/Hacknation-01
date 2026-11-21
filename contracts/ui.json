@@ -415,9 +415,9 @@
       "status": "proposed",
       "name": "Logowanie i rejestracja",
       "route": "/logowanie",
-      "description": "Jedna strona z AuthForm i przełącznikiem „Mam konto” / „Załóż konto” (ADR-010). Rejestracja tworzy konto „Moje gospodarstwo”; po sukcesie powrót na wcześniejszą stronę (?next=, tylko ścieżki zaczynające się od /) albo na /; zalogowany na /logowanie widzi „Jesteś zalogowany jako …” z przyciskiem powrotu. Stany: ładowanie (przycisk z postępem), błąd przy polu lub alert (EMAIL_TAKEN, INVALID_CREDENTIALS, TOO_MANY_ATTEMPTS, błąd sieci z „Spróbuj ponownie”). Zalogowany użytkownik jest przekierowany na /konto. Link „Kontynuuj bez konta” do /. Docelowe api_refs: API-007, API-008, API-009 (do uzupełnienia po T-040, gdy elementy trafią do api.json).",
+      "description": "Jedna strona z AuthForm i przełącznikiem „Mam konto” / „Załóż konto” (ADR-010). Rejestracja tworzy konto „Moje gospodarstwo”; po sukcesie powrót na wcześniejszą stronę (?next=, tylko ścieżki zaczynające się od /) albo na /; zalogowany na /logowanie widzi „Jesteś zalogowany jako …” z przyciskiem powrotu. Stany: ładowanie (przycisk z postępem), błąd przy polu lub alert (EMAIL_TAKEN, INVALID_CREDENTIALS, TOO_MANY_ATTEMPTS, błąd sieci z „Spróbuj ponownie”). Zalogowany użytkownik jest przekierowany na /konto. Link „Kontynuuj bez konta” do /.json).",
       "components": ["UI-C-013"],
-      "api_refs": [],
+      "api_refs": ["API-007", "API-008", "API-009"],
       "responsive": {
         "xs": "jedna kolumna, karta formularza na całą szerokość pod nagłówkiem",
         "md": "karta max 440 px wyśrodkowana",
@@ -433,9 +433,9 @@
       "status": "proposed",
       "name": "Moje gospodarstwo",
       "route": "/konto",
-      "description": "Ekran konta (wymaga logowania, inaczej przekierowanie na /logowanie): nagłówek z nazwą aktywnego konta, sekcja „Członkowie” (MemberList z dodawaniem po e-mailu, status „oczekuje”, usuwanie z potwierdzeniem) i sekcja „Historia raportów” (lista ReportSummary: działka, uprawa, data analizy, klasa suszy przez StatusBadge, link do /report/:id). Stany: ładowanie (szkielety), pusta historia („Brak raportów. Zapisz pierwszy raport na stronie głównej”), błąd z „Spróbuj ponownie”, pending (zaproszenia). Docelowe api_refs: API-009…API-013 (do uzupełnienia po T-040, gdy elementy trafią do api.json).",
+      "description": "Ekran konta (wymaga logowania, inaczej przekierowanie na /logowanie): nagłówek z nazwą aktywnego konta, sekcja „Członkowie” (MemberList z dodawaniem po e-mailu, status „oczekuje”, usuwanie z potwierdzeniem) i sekcja „Historia raportów” (lista ReportSummary: działka, uprawa, data analizy, klasa suszy przez StatusBadge, link do /report/:id). Stany: ładowanie (szkielety), pusta historia („Brak raportów. Zapisz pierwszy raport na stronie głównej”), błąd z „Spróbuj ponownie”, pending (zaproszenia).json).",
       "components": ["UI-C-014", "UI-C-012", "UI-C-015"],
-      "api_refs": [],
+      "api_refs": ["API-009", "API-010", "API-011", "API-012", "API-013"],
       "responsive": {
         "xs": "jedna kolumna: członkowie, potem historia raportów jako karty",
         "md": "jedna kolumna, historia jako tabela",
