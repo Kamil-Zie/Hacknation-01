@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["API-004", "DM-001"],
@@ -23,7 +23,8 @@
   },
   "notes": [
     "coord-1 16:35: PRZEPISANE na backend-2 (Jan: problemy z siecią, nie zaczął). Bazuj na propozycji frontend-1 20261121-1632-frontend-1-contract_proposal (kształt Session/Member/ReportSummary, /auth/me, kody NOT_A_MEMBER, ALREADY_MEMBER, TOO_MANY_ATTEMPTS) – przyjęta przez coord-1; listy zgodnie ze standardem {items,page,pageSize,total}.",
-    "coord-1 16:10: Jan: kontrakt można robić offline (problemy z siecią). Ok. 45 min. Pierwsze w kolejce, odblokowuje front na mockach."
+    "coord-1 16:10: Jan: kontrakt można robić offline (problemy z siecią). Ok. 45 min. Pierwsze w kolejce, odblokowuje front na mockach.",
+    "Zrobione (backend-2): kontrakt 0.4.0 (api i data_model), status agreed (propozycja Dawida przyjęta przez koordynatora 16:33). DM-016 User, DM-017 Account, DM-018 AccountMember, DTO DM-019 Session … DM-023 ReportSummary, DM-001.accountId. API-007…API-013 z examples; API-004 auth optional + accountId. Różnice wobec propozycji: listy {items,page,pageSize,total}, 404 MEMBER_NOT_FOUND (API-012), 422 VALIDATION_ERROR, TOO_MANY_ATTEMPTS z details.retryAfterSec. consumers UI-S-005/006 jako consumers_planned do czasu T-044. T-DB-010 domknie T-041 (modele)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-21"

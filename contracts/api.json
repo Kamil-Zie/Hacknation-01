@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "base_url": "/api/v1",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. Wymieniaj tylko błędy, które endpoint naprawdę zwraca w demo.",
@@ -28,7 +28,7 @@
       "consumers": ["UI-S-001"]
     }
   },
-  "_note": "Kropelka: brak auth (auth: none). Format błędu: { code, message, details }. Daty jako YYYY-MM-DD (strefa Europe/Warsaw), znaczniki czasu ISO 8601 UTC. Źródła i metodyka: docs/adr/ADR-006-data-sources.md, docs/adr/ADR-007-methodology.md.",
+  "_note": "Kropelka: analiza działki działa bez logowania (auth: none). Od 0.4.0 (ADR-010) opcjonalne konta gospodarstwa: uwierzytelnianie Bearer JWT (HS256, 7 dni) w nagłówku Authorization; auth: required tylko dla API-009..API-013, auth: optional dla API-004 (token + accountId zapisują raport w historii konta). Listy kont w standardzie { items, page, pageSize, total }. Format błędu: { code, message, details }. Daty jako YYYY-MM-DD (strefa Europe/Warsaw), znaczniki czasu ISO 8601 UTC. Źródła i metodyka: docs/adr/ADR-006-data-sources.md, docs/adr/ADR-007-methodology.md.",
   "endpoints": [
     {
       "id": "API-001",
@@ -1018,19 +1018,22 @@
       "method": "POST",
       "path": "/analyses",
       "summary": "Uruchamia analizę na żywo (źródła równolegle: uldk, meteo, sentinel2, soilgrids, elevation, overpass; okno bieżące D−90…D z Open-Meteo (meteo i wilgotność ERA5-Land era5land w jednym zapytaniu, role=current), klimatologia 10 lat z NASA POWER zawsze równolegle (nasa_power, role=climatology: percentyl, anomalia, klasa, podatność; brak NASA = null + dataGap); zapas NASA POWER dla okna bieżącego przy 429/5xx/timeout Open-Meteo (role=fallback, pewność −0,05, wpis w limitations i sources) jako assessment.soilMoistureSatellite; eumetsat jest opcjonalny i zawsze missing, więc zostaje wpis w dataGaps, ale nie zmienia statusu raportu; timeouty, cache), liczy ocenę, podatność, przyczyny i rekomendacje, zapisuje raport i go zwraca. Budżet ≤ 25 s po stronie serwera; awaria źródła obowiązkowego nie przerywa analizy (status 'partial' + dataGaps).",
-      "auth": "none",
+      "auth": "optional",
       "request": {
         "body": {
           "parcelId": "string, identyfikator TERYT jak w API-001",
           "cropCode": "enum(winter_wheat|spring_barley|maize|potato|winter_rapeseed|sugar_beet|grassland)",
-          "analysisDate": "string YYYY-MM-DD, od (dziś − 10 lat) do dziś włącznie; domyślnie dziś po stronie frontendu"
+          "analysisDate": "string YYYY-MM-DD, od (dziś − 10 lat) do dziś włącznie; domyślnie dziś po stronie frontendu",
+          "accountId": "string, opcjonalne (ObjectId konta, ADR-010); wymaga nagłówka Authorization: Bearer i członkostwa w koncie; raport trafia do historii konta (API-013). Bez accountId analiza anonimowa jak dotąd, Report.accountId = null"
         }
       },
       "response": {
         "201": "Report (DM-001)"
       },
       "errors": [
-        "422 VALIDATION_ERROR (zły format ID, nieznana uprawa, data spoza zakresu; details.field)",
+        "422 VALIDATION_ERROR (zły format ID, nieznana uprawa, data spoza zakresu, zły format accountId; details.field)",
+        "401 UNAUTHORIZED (podano accountId bez ważnego tokenu Bearer)",
+        "403 NOT_A_MEMBER (zalogowany użytkownik nie jest członkiem konta accountId)",
         "404 PARCEL_NOT_FOUND",
         "504 UPSTREAM_TIMEOUT (ULDK nie odpowiedział w czasie, brak geometrii z cache)",
         "502 UPSTREAM_UNAVAILABLE (błąd ULDK bez timeoutu, brak geometrii z cache)"
@@ -1056,6 +1059,7 @@
       "examples": {
         "201_complete": {
           "id": "6740a1f3c2e4b5a1d8f90a11",
+          "accountId": null,
           "parcel": {
             "id": "061409_2.0009.612",
             "parcelNumber": "612",
@@ -2014,6 +2018,7 @@
         },
         "201_partial": {
           "id": "6740a1f3c2e4b5a1d8f90a12",
+          "accountId": null,
           "parcel": {
             "id": "061409_2.0009.612",
             "parcelNumber": "612",
@@ -3071,6 +3076,333 @@
               "timeoutMs": 12000
             }
           ]
+        }
+      }
+    },
+    {
+      "id": "API-007",
+      "status": "agreed",
+      "method": "POST",
+      "path": "/auth/register",
+      "summary": "Rejestracja (ADR-010): tworzy użytkownika i konto „Moje gospodarstwo” z nim jako członkiem; oczekujące zaproszenia (pending) na ten e-mail zamieniają się w członkostwa. Zwraca sesję (token JWT + user + accounts).",
+      "auth": "none",
+      "request": {
+        "body": {
+          "email": "string, poprawny e-mail (zapisywany małymi literami)",
+          "password": "string, min. 8 znaków",
+          "name": "string, 1–120 znaków"
+        }
+      },
+      "response": {
+        "201": "Session (DM-019)"
+      },
+      "errors": [
+        "409 EMAIL_TAKEN (konto z tym e-mailem już istnieje)",
+        "422 VALIDATION_ERROR (zły e-mail, hasło krótsze niż 8 znaków, brak imienia; details.field)"
+      ],
+      "data_refs": ["DM-016", "DM-017", "DM-018", "DM-019", "DM-020", "DM-021"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-005"],
+      "examples": {
+        "201": {
+          "token": "eyJ...example",
+          "user": {
+            "id": "665f0c0ffee0000000000a01",
+            "email": "jan.kowalski@example.com",
+            "name": "Jan Kowalski"
+          },
+          "accounts": [
+            {
+              "id": "665f0c0ffee0000000000b01",
+              "name": "Moje gospodarstwo",
+              "memberCount": 1
+            }
+          ]
+        },
+        "409": {
+          "code": "EMAIL_TAKEN",
+          "message": "Konto z tym adresem e-mail już istnieje.",
+          "details": { "field": "email" }
+        }
+      }
+    },
+    {
+      "id": "API-008",
+      "status": "agreed",
+      "method": "POST",
+      "path": "/auth/login",
+      "summary": "Logowanie e-mail + hasło (ADR-010). Limit prób (licznik w pamięci) zwraca 429.",
+      "auth": "none",
+      "request": {
+        "body": {
+          "email": "string, poprawny e-mail",
+          "password": "string, niepusty"
+        }
+      },
+      "response": {
+        "200": "Session (DM-019)"
+      },
+      "errors": [
+        "401 INVALID_CREDENTIALS (zły e-mail lub hasło; jeden komunikat dla obu przypadków)",
+        "429 TOO_MANY_ATTEMPTS (za dużo nieudanych prób; details.retryAfterSec)",
+        "422 VALIDATION_ERROR (zły format e-maila lub brak hasła; details.field)"
+      ],
+      "data_refs": ["DM-016", "DM-019", "DM-020", "DM-021"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-005"],
+      "examples": {
+        "200": {
+          "token": "eyJ...example",
+          "user": {
+            "id": "665f0c0ffee0000000000a01",
+            "email": "jan.kowalski@example.com",
+            "name": "Jan Kowalski"
+          },
+          "accounts": [
+            {
+              "id": "665f0c0ffee0000000000b01",
+              "name": "Moje gospodarstwo",
+              "memberCount": 2
+            }
+          ]
+        },
+        "401": {
+          "code": "INVALID_CREDENTIALS",
+          "message": "Nieprawidłowy e-mail lub hasło.",
+          "details": null
+        }
+      }
+    },
+    {
+      "id": "API-009",
+      "status": "agreed",
+      "method": "GET",
+      "path": "/auth/me",
+      "summary": "Bieżący użytkownik i jego konta (odtworzenie sesji po odświeżeniu strony).",
+      "auth": "required",
+      "request": {
+        "headers": { "Authorization": "Bearer <token>" }
+      },
+      "response": {
+        "200": {
+          "user": "User (DM-020)",
+          "accounts": "Account[] (DM-021)"
+        }
+      },
+      "errors": ["401 UNAUTHORIZED (brak, zły lub przeterminowany token)"],
+      "data_refs": ["DM-020", "DM-021"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-005", "UI-S-006"],
+      "examples": {
+        "200": {
+          "user": {
+            "id": "665f0c0ffee0000000000a01",
+            "email": "jan.kowalski@example.com",
+            "name": "Jan Kowalski"
+          },
+          "accounts": [
+            {
+              "id": "665f0c0ffee0000000000b01",
+              "name": "Moje gospodarstwo",
+              "memberCount": 2
+            }
+          ]
+        },
+        "401": {
+          "code": "UNAUTHORIZED",
+          "message": "Wymagane zalogowanie.",
+          "details": null
+        }
+      }
+    },
+    {
+      "id": "API-010",
+      "status": "agreed",
+      "method": "GET",
+      "path": "/accounts/:accountId/members",
+      "summary": "Lista członków i oczekujących zaproszeń konta, od najstarszych (addedAt rosnąco).",
+      "auth": "required",
+      "request": {
+        "params": { "accountId": "string, id konta (ObjectId)" },
+        "query": {
+          "page": "integer, domyślnie 1",
+          "pageSize": "integer, domyślnie 20, maks. 100"
+        }
+      },
+      "response": {
+        "200": {
+          "items": "Member[] (DM-022)",
+          "page": "integer",
+          "pageSize": "integer",
+          "total": "integer"
+        }
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER (użytkownik nie jest członkiem konta)",
+        "422 VALIDATION_ERROR (zły format accountId lub page/pageSize)"
+      ],
+      "data_refs": ["DM-018", "DM-022"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-006"],
+      "examples": {
+        "200": {
+          "items": [
+            {
+              "id": "665f0c0ffee0000000000c01",
+              "email": "jan.kowalski@example.com",
+              "name": "Jan Kowalski",
+              "status": "active",
+              "addedAt": "2026-11-21T09:12:44.000Z"
+            },
+            {
+              "id": "665f0c0ffee0000000000c02",
+              "email": "anna.nowak@example.com",
+              "name": null,
+              "status": "pending",
+              "addedAt": "2026-11-21T10:30:05.000Z"
+            }
+          ],
+          "page": 1,
+          "pageSize": 20,
+          "total": 2
+        },
+        "403": {
+          "code": "NOT_A_MEMBER",
+          "message": "Nie należysz do tego gospodarstwa.",
+          "details": null
+        }
+      }
+    },
+    {
+      "id": "API-011",
+      "status": "agreed",
+      "method": "POST",
+      "path": "/accounts/:accountId/members",
+      "summary": "Dodaje członka po e-mailu (każdy członek może dodać innego). Gdy użytkownik z tym e-mailem istnieje, od razu active; inaczej pending (zaproszenie, bez wysyłki e-maili).",
+      "auth": "required",
+      "request": {
+        "params": { "accountId": "string, id konta (ObjectId)" },
+        "body": { "email": "string, poprawny e-mail" }
+      },
+      "response": {
+        "201": "Member (DM-022)"
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER",
+        "409 ALREADY_MEMBER (ten e-mail jest już członkiem lub ma zaproszenie)",
+        "422 VALIDATION_ERROR (zły e-mail lub accountId; details.field)"
+      ],
+      "data_refs": ["DM-016", "DM-018", "DM-022"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-006"],
+      "examples": {
+        "201": {
+          "id": "665f0c0ffee0000000000c02",
+          "email": "anna.nowak@example.com",
+          "name": null,
+          "status": "pending",
+          "addedAt": "2026-11-21T10:30:05.000Z"
+        },
+        "409": {
+          "code": "ALREADY_MEMBER",
+          "message": "Ta osoba już należy do gospodarstwa.",
+          "details": { "field": "email" }
+        }
+      }
+    },
+    {
+      "id": "API-012",
+      "status": "agreed",
+      "method": "DELETE",
+      "path": "/accounts/:accountId/members/:memberId",
+      "summary": "Usuwa członka lub zaproszenie (każdy członek może usunąć innego, także siebie). Nie wolno usunąć ostatniego członka active.",
+      "auth": "required",
+      "request": {
+        "params": {
+          "accountId": "string, id konta (ObjectId)",
+          "memberId": "string, id członkostwa (DM-018, ObjectId)"
+        }
+      },
+      "response": {
+        "204": "brak treści"
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER",
+        "404 MEMBER_NOT_FOUND (brak takiego członka w tym koncie)",
+        "409 LAST_MEMBER (to ostatni członek konta)",
+        "422 VALIDATION_ERROR (zły format accountId lub memberId)"
+      ],
+      "data_refs": ["DM-018"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-006"],
+      "examples": {
+        "204": "brak treści",
+        "409": {
+          "code": "LAST_MEMBER",
+          "message": "Nie można usunąć ostatniego członka gospodarstwa.",
+          "details": null
+        }
+      }
+    },
+    {
+      "id": "API-013",
+      "status": "agreed",
+      "method": "GET",
+      "path": "/accounts/:accountId/reports",
+      "summary": "Historia konta: skróty zapisanych raportów (Report z accountId), od najnowszych (createdAt malejąco). Pełny raport: API-005.",
+      "auth": "required",
+      "request": {
+        "params": { "accountId": "string, id konta (ObjectId)" },
+        "query": {
+          "page": "integer, domyślnie 1",
+          "pageSize": "integer, domyślnie 20, maks. 100"
+        }
+      },
+      "response": {
+        "200": {
+          "items": "ReportSummary[] (DM-023)",
+          "page": "integer",
+          "pageSize": "integer",
+          "total": "integer"
+        }
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER",
+        "422 VALIDATION_ERROR (zły format accountId lub page/pageSize)"
+      ],
+      "data_refs": ["DM-001", "DM-023"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-006"],
+      "examples": {
+        "200": {
+          "items": [
+            {
+              "id": "665f0c0ffee0000000000001",
+              "parcel": {
+                "id": "061409_2.0009.612",
+                "parcelNumber": "612",
+                "region": "Bronowice",
+                "commune": "Puławy"
+              },
+              "crop": { "code": "winter_wheat", "name": "Pszenica ozima" },
+              "analysisDate": "2026-06-10",
+              "status": "complete",
+              "droughtClass": "severe",
+              "createdAt": "2026-11-21T10:19:41.198Z"
+            }
+          ],
+          "page": 1,
+          "pageSize": 20,
+          "total": 1
+        },
+        "403": {
+          "code": "NOT_A_MEMBER",
+          "message": "Nie należysz do tego gospodarstwa.",
+          "details": null
         }
       }
     }

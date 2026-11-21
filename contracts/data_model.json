@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -17,7 +17,7 @@
       "indexes": []
     }
   },
-  "_note": "Kolekcje Mongo: tylko DM-001 (reports) i DM-002 (source_cache). DM-003..DM-005 to DTO i stałe z kodu (storage: dto/code), DM-006..DM-015 to obiekty osadzone w DM-001 (storage: embedded). Metodyka: docs/adr/ADR-007-methodology.md. Wersja 0.3.0 (ADR-008 v2, zmiany zgodne wstecz): wilgotność gleby (DM-015) pochodzi z ERA5-Land (sourceId era5land, Copernicus C3S, ok. 9 km, przez Open-Meteo w tym samym zapytaniu co meteo); nasa_power (MERRA-2, ok. 50 km) tylko jako zapas przy 429/5xx/timeout Open-Meteo. eumetsat zostaje opcjonalny i zawsze missing (ADR-006 Aktualizacja). Nowe pola DM-015 są opcjonalne/nullable.",
+  "_note": "Kolekcje Mongo: tylko DM-001 (reports) i DM-002 (source_cache). DM-003..DM-005 to DTO i stałe z kodu (storage: dto/code), DM-006..DM-015 to obiekty osadzone w DM-001 (storage: embedded). Metodyka: docs/adr/ADR-007-methodology.md. Wersja 0.3.0 (ADR-008 v2, zmiany zgodne wstecz): wilgotność gleby (DM-015) pochodzi z ERA5-Land (sourceId era5land, Copernicus C3S, ok. 9 km, przez Open-Meteo w tym samym zapytaniu co meteo); nasa_power (MERRA-2, ok. 50 km) tylko jako zapas przy 429/5xx/timeout Open-Meteo. eumetsat zostaje opcjonalny i zawsze missing (ADR-006 Aktualizacja). Nowe pola DM-015 są opcjonalne/nullable. Wersja 0.4.0 (ADR-010, zmiany zgodne wstecz): konta gospodarstwa. Kolekcje: DM-016 users, DM-017 accounts, DM-018 account_members; DM-019..DM-023 to DTO (storage: dto) zwracane przez API-007..API-013; DM-001 dostaje opcjonalne accountId (null = analiza anonimowa, jak dotąd). passwordHash istnieje tylko w bazie i nigdy nie trafia do API.",
   "entities": [
     {
       "id": "DM-001",
@@ -82,9 +82,15 @@
         },
         { "name": "computedAt", "type": "datetime", "required": true },
         { "name": "durationMs", "type": "integer", "required": true },
-        { "name": "createdAt", "type": "datetime", "required": true }
+        { "name": "createdAt", "type": "datetime", "required": true },
+        {
+          "name": "accountId",
+          "type": "objectId | null",
+          "required": false,
+          "note": "ADR-010: konto gospodarstwa (DM-017), do którego trafia raport w historii; null/brak = analiza anonimowa. W JSON API jako string (24 znaki hex) lub null"
+        }
       ],
-      "relations": [],
+      "relations": [{ "field": "accountId", "ref": "DM-017", "cardinality": "many-to-one" }],
       "indexes": [
         {
           "fields": {
@@ -95,6 +101,12 @@
         },
         {
           "fields": {
+            "createdAt": -1
+          }
+        },
+        {
+          "fields": {
+            "accountId": 1,
             "createdAt": -1
           }
         }
@@ -764,6 +776,179 @@
           "required": false,
           "note": "true, gdy wartości pochodzą z zapasu NASA POWER (Open-Meteo 429/5xx/timeout); false lub brak dla ERA5-Land"
         }
+      ],
+      "relations": [],
+      "indexes": []
+    },
+    {
+      "id": "DM-016",
+      "status": "agreed",
+      "name": "User",
+      "storage": "collection: users",
+      "description": "Użytkownik aplikacji (ADR-010): e-mail + hasło. Hasło hashowane crypto.scrypt. passwordHash tylko w bazie, nigdy w odpowiedziach API (API zwraca DM-020).",
+      "fields": [
+        {
+          "name": "id",
+          "type": "objectId",
+          "required": true,
+          "note": "w JSON API jako string (24 znaki hex)"
+        },
+        {
+          "name": "email",
+          "type": "string(254)",
+          "required": true,
+          "note": "unikalny, zapisywany małymi literami (lowercase, trim)"
+        },
+        { "name": "name", "type": "string(120)", "required": true },
+        {
+          "name": "passwordHash",
+          "type": "string(200)",
+          "required": true,
+          "note": "scrypt (sól + hash); tylko w bazie, NIGDY w API"
+        },
+        { "name": "createdAt", "type": "datetime", "required": true }
+      ],
+      "relations": [],
+      "indexes": [{ "fields": { "email": 1 }, "unique": true }]
+    },
+    {
+      "id": "DM-017",
+      "status": "agreed",
+      "name": "Account",
+      "storage": "collection: accounts",
+      "description": "Konto gospodarstwa (ADR-010): jeden typ konta, tworzone automatycznie przy rejestracji jako „Moje gospodarstwo”. Członkowie w DM-018.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "objectId",
+          "required": true,
+          "note": "w JSON API jako string (24 znaki hex)"
+        },
+        { "name": "name", "type": "string(120)", "required": true },
+        { "name": "createdAt", "type": "datetime", "required": true }
+      ],
+      "relations": [],
+      "indexes": []
+    },
+    {
+      "id": "DM-018",
+      "status": "agreed",
+      "name": "AccountMember",
+      "storage": "collection: account_members",
+      "description": "Członkostwo użytkownika w koncie albo zaproszenie oczekujące (ADR-010). Członkowie są równi (bez ról). pending: e-mail bez konta użytkownika (userId = null); przy rejestracji na ten e-mail zamienia się w active i dostaje userId.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "objectId",
+          "required": true,
+          "note": "w JSON API jako string (24 znaki hex)"
+        },
+        { "name": "accountId", "type": "Ref<DM-017>", "required": true },
+        {
+          "name": "userId",
+          "type": "Ref<DM-016> | null",
+          "required": false,
+          "note": "null dla status = pending"
+        },
+        { "name": "email", "type": "string(254)", "required": true, "note": "lowercase" },
+        { "name": "status", "type": "enum(active|pending)", "required": true },
+        { "name": "addedAt", "type": "datetime", "required": true }
+      ],
+      "relations": [
+        { "field": "accountId", "ref": "DM-017", "cardinality": "many-to-one" },
+        { "field": "userId", "ref": "DM-016", "cardinality": "many-to-one" }
+      ],
+      "indexes": [
+        { "fields": { "accountId": 1, "email": 1 }, "unique": true },
+        { "fields": { "userId": 1 } }
+      ]
+    },
+    {
+      "id": "DM-019",
+      "status": "agreed",
+      "name": "Session",
+      "storage": "dto",
+      "description": "Odpowiedź API-007 i API-008: token JWT (HS256, 7 dni; Authorization: Bearer) oraz użytkownik i jego konta.",
+      "fields": [
+        { "name": "token", "type": "string", "required": true, "note": "JWT HS256" },
+        { "name": "user", "type": "Ref<DM-020>", "required": true },
+        { "name": "accounts", "type": "Ref<DM-021>[]", "required": true }
+      ],
+      "relations": [],
+      "indexes": []
+    },
+    {
+      "id": "DM-020",
+      "status": "agreed",
+      "name": "UserDto",
+      "storage": "dto",
+      "description": "Użytkownik w odpowiedziach API (bez passwordHash).",
+      "fields": [
+        { "name": "id", "type": "string", "required": true },
+        { "name": "email", "type": "string(254)", "required": true },
+        { "name": "name", "type": "string(120)", "required": true }
+      ],
+      "relations": [],
+      "indexes": []
+    },
+    {
+      "id": "DM-021",
+      "status": "agreed",
+      "name": "AccountDto",
+      "storage": "dto",
+      "description": "Konto w odpowiedziach API. memberCount liczy członków ze statusem active.",
+      "fields": [
+        { "name": "id", "type": "string", "required": true },
+        { "name": "name", "type": "string(120)", "required": true },
+        { "name": "memberCount", "type": "integer", "required": true }
+      ],
+      "relations": [],
+      "indexes": []
+    },
+    {
+      "id": "DM-022",
+      "status": "agreed",
+      "name": "MemberDto",
+      "storage": "dto",
+      "description": "Członek konta lub zaproszenie w odpowiedziach API-010 i API-011.",
+      "fields": [
+        { "name": "id", "type": "string", "required": true, "note": "id AccountMember (DM-018)" },
+        { "name": "email", "type": "string(254)", "required": true },
+        {
+          "name": "name",
+          "type": "string(120) | null",
+          "required": true,
+          "note": "null dla pending"
+        },
+        { "name": "status", "type": "enum(active|pending)", "required": true },
+        { "name": "addedAt", "type": "datetime", "required": true }
+      ],
+      "relations": [],
+      "indexes": []
+    },
+    {
+      "id": "DM-023",
+      "status": "agreed",
+      "name": "ReportSummary",
+      "storage": "dto",
+      "description": "Skrót raportu w historii konta (API-013), od najnowszych. Pełny raport: API-005.",
+      "fields": [
+        { "name": "id", "type": "string", "required": true },
+        {
+          "name": "parcel",
+          "type": "object { id: string, parcelNumber: string, region: string, commune: string }",
+          "required": true
+        },
+        { "name": "crop", "type": "object { code: string, name: string }", "required": true },
+        { "name": "analysisDate", "type": "string(10) YYYY-MM-DD", "required": true },
+        { "name": "status", "type": "enum(complete|partial)", "required": true },
+        {
+          "name": "droughtClass",
+          "type": "enum(none|moderate|severe|unknown)",
+          "required": true,
+          "note": "assessment.droughtClass z DM-006"
+        },
+        { "name": "createdAt", "type": "datetime", "required": true }
       ],
       "relations": [],
       "indexes": []
