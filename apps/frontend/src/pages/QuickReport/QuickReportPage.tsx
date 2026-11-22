@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Checkbox,
-  MenuItem,
   Skeleton,
   Stack,
   TextField,
@@ -197,16 +196,21 @@ export function QuickReportPage() {
                     onChange={(event) =>
                       setChosenCrops((map) => ({ ...map, [id]: event.target.value }))
                     }
+                    // T-100 native select: no popup menu to close, so one click on "Zrób raport" runs the analyses
                     slotProps={{
+                      select: { native: true },
                       input: { sx: { minHeight: 56, fontSize: '1.125rem' } },
-                      inputLabel: { sx: textSx },
+                      inputLabel: { shrink: true, sx: textSx },
                     }}
                     sx={{ ml: { xs: 0, sm: 7 }, mb: 1.5, width: { xs: '100%', sm: 360 } }}
                   >
+                    <option value="" disabled>
+                      Wybierz uprawę
+                    </option>
                     {(crops.data?.items ?? []).map((crop) => (
-                      <MenuItem key={crop.code} value={crop.code} sx={{ minHeight: 48, ...textSx }}>
+                      <option key={crop.code} value={crop.code}>
                         {crop.name}
-                      </MenuItem>
+                      </option>
                     ))}
                   </TextField>
                 )}
