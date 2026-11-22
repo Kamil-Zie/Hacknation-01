@@ -1,7 +1,7 @@
 {
   "id": "T-102",
   "title": "Przejście jurora od nowego konta do raportu i poprawki błędów",
-  "description": "Przejdź aplikację jak juror, który zakłada NOWE konto (np. juror-test-<godzina>@test.pl na bazie hacknation): rejestracja, pusty pulpit, Dodaj działkę (061409_2.0009.612), Sprawdź działkę → raport, Moje działki, Utwórz pole z 2 działek, raport pola, Szybki raport, Wspólnicy (dodaj kamil@test.pl), wylogowanie i ponowne logowanie. Telefon 390 px i komputer, tryb jasny i ciemny, największe A.\n\nSzczególnie stany puste nowego konta: pulpit bez działek (mapa, Stan suszy, Bilans wody, Szybki raport), Moje pola bez pól, Szybki raport bez działek, Wspólnicy tylko z Tobą. Każdy ma mieć jasny komunikat i przycisk do następnego kroku.\n\nZnalezione błędy frontendu poprawiaj od razu (fix(frontend): ... [T-102]); błędy backendu zgłoś Janowi wiadomością. Pliki: te ekrany, których dotyczy błąd; przed edycją sprawdź rezerwacje.\n\nTermin: na main do 5:00 (zamrożenie 7:00).",
+  "description": "Przejdź aplikację jak juror, który zakłada NOWE konto (np. juror-test-<godzina>@test.pl na bazie hacknation): rejestracja, pusty pulpit, Dodaj działkę (061409_2.0009.612), Sprawdź działkę → raport, Moje działki, Utwórz pole z 2 działek, raport pola, Szybki raport, Wspólnicy (dodaj kamil@test.pl), wylogowanie i ponowne logowanie. Telefon 390 px i komputer, tryb jasny i ciemny, największe A.\n\nSzczególnie stany puste nowego konta: pulpit bez działek (mapa, Stan suszy, Bilans wody, Szybki raport), Moje pola bez pól, Szybki raport bez działek, Wspólnicy tylko z Tobą. Każdy ma mieć jasny komunikat i przycisk do następnego kroku.\n\nZnalezionych błędów NIE poprawiasz sam: każdy od razu wysyłasz Natanielowi (T-103) wiadomością typu info z krokiem, ekranem, szerokością i trybem (zrzut mile widziany); błędy backendu idą do Jana. Pliki: te ekrany, których dotyczy błąd; przed edycją sprawdź rezerwacje.\n\nTermin: na main do 5:00 (zamrożenie 7:00).",
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-1",
@@ -13,7 +13,7 @@
   "acceptance_criteria": [
     "Lista sprawdzonych kroków z wynikiem w notatce zadania",
     "Każdy stan pusty nowego konta ma komunikat i przycisk dalej",
-    "Znalezione błędy poprawione albo zgłoszone"
+    "Każdy znaleziony błąd zgłoszony Natanielowi albo Janowi"
   ],
   "review": {
     "status": "pending",
@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 02:27: decyzja Kamila: Dawid testuje i zgłasza, poprawki implementuje Nataniel (T-103).",
     "coord-1 02:25: decyzja Kamila: T-102 robi Dawid (po T-100), nie Nataniel.",
     "coord-1 02:25: z propozycji koordynatora zatwierdzonej przez Kamila."
   ],

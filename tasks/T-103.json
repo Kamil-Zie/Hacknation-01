@@ -1,0 +1,28 @@
+{
+  "id": "T-103",
+  "title": "Poprawki błędów z przejścia jurora (T-102) i przeglądów",
+  "description": "Implementujesz poprawki frontendu zgłaszane przez Dawida z T-102 (przejście jurora od nowego konta: stany puste, telefon/komputer, jasny/ciemny, największe A) i przez koordynatora z przeglądów. Każda poprawka to osobny mały commit fix(frontend): ... [T-103], push od razu; po każdej odpowiedz zgłaszającemu ack z hashem commita. Błąd backendu → wiadomość do Jana.\n\nZanim Dawid zacznie (jest na T-100), sam przejdź stany puste nowego konta (pulpit bez działek, Moje pola bez pól, Szybki raport bez działek, Wspólnicy tylko z Tobą) i popraw to, co oczywiste: jasny komunikat + przycisk do następnego kroku.\n\nPliki: ekrany, których dotyczy błąd (src/pages/**, src/components/**). Przed edycją sprawdź rezerwacje: QuickReportPage.tsx ma Dawid do końca T-100. Kolory tylko z motywu (tryb ciemny). Termin: na bieżąco do 6:30, zamrożenie 7:00 (po 7:00 tylko fix na ścieżce demo).",
+  "type": "bug",
+  "team": "frontend",
+  "assignee": "backend-2",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-009", "UI-S-010", "UI-S-011", "UI-S-012", "UI-S-013", "UI-S-014"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Każde zgłoszenie z T-102 ma commit albo odpowiedź, dlaczego nie",
+    "Stany puste nowego konta mają komunikat i przycisk dalej",
+    "axe 0 na poprawionych ekranach (jeśli brak Chrome, poproś koordynatora o sprawdzenie)"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 02:27: decyzja Kamila: Nataniel implementuje poprawki, Dawid testuje (T-102)."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}
