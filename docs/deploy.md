@@ -103,21 +103,16 @@ Pliki `.env*` z prawdziwymi wartościami są tylko na NAS-ie (uprawnienia 600), 
 5. Po szkielecie: `docker compose pull && docker compose up -d` w folderze projektu na NAS-ie.
 6. Sprawdź: `curl -s https://api.kamil-zielinski.pl/api/v1/health` zwraca 200, `https://app.kamil-zielinski.pl` ładuje aplikację, w konsoli przeglądarki brak błędów CORS.
 
-## Wdrożenie: Dockerfile sam pobiera repo i skanuje (zalecane, T-065)
+## Wdrożenie: obrazy z GitHub Actions, NAS tylko pobiera (zalecane, T-065)
 
-Repo jest publiczne, więc tokena nie trzeba. Pliki `deploy/Dockerfile.backend` i `deploy/Dockerfile.frontend` mają etap `source`: klonuje `main` z GitHuba, skanuje pliki i całą historię na sekrety (`git-checks.mjs scan --all` i `--history`), a dopiero potem buduje obraz. Skan z błędem przerywa budowę. Nowy commit na `main` unieważnia cache, więc każde `up --build` bierze najnowszy kod.
+Na NAS-ie nic się nie buduje i nie działa npm (Container Manager zawieszał się na instalacji npm). Workflow `.github/workflows/images.yml` po każdym pushu na `main`: skan sekretów (pliki + cała historia), budowa obrazów backend i frontend dla `linux/amd64` i `linux/arm64`, push do `ghcr.io/kamil-zie/hacknation-{backend,frontend}:latest`.
 
-```bash
-ssh <user>@<nas> && sudo -i
-mkdir -p /volume1/docker/hacknation && cd /volume1/docker/hacknation
-for f in docker-compose.yml Dockerfile.backend Dockerfile.frontend env.prod.example; do curl -fsSL -O https://raw.githubusercontent.com/Kamil-Zie/Hacknation-01/main/deploy/$f; done
-cp -n env.prod.example .env.prod && chmod 600 .env.prod   # raz, potem uzupełnij .env.prod (nano .env.prod)
-# raz: .env.prod z sekretami backendu (sekcja „Zmienne prod”), chmod 600
-docker compose up -d --build          # wdrożenie i każda aktualizacja
-docker compose ps && curl -s localhost:13000/api/v1/health
-```
+Raz, w GitHubie: Profil → Packages → `hacknation-backend` i `hacknation-frontend` → Package settings → Change visibility → Public (bez tego NAS musi logować się do ghcr.io).
 
-Na NAS-ie są tylko `docker-compose.yml`, `Dockerfile.backend`, `Dockerfile.frontend` i `.env.prod` (wzór: `deploy/env.prod.example`). Zmiana tych plików w repo wymaga ponownego `curl`.
+Na NAS-ie bez SSH (DSM):
+1. File Station: folder `/docker/hacknation`, wgraj `deploy/docker-compose.yml` i `.env.prod` (wzór `deploy/env.prod.example`).
+2. Container Manager → Projekt → Utwórz: nazwa `hacknation`, ścieżka `/docker/hacknation`, źródło: istniejący `docker-compose.yml` → Dalej → Gotowe.
+3. Aktualizacja po nowym commicie (gdy workflow `images` jest zielony): Projekt `hacknation` → Akcja → Zbuduj (pobiera `:latest` ponownie).
 
 ## Wdrożenie krok po kroku (ręczny klon, budowanie na NAS-ie, T-065)
 

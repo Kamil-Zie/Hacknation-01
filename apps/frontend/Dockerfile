@@ -1,5 +1,6 @@
-# T-065 Frontend prod image (Synology): Vite build with the prod API URL, served by nginx
-FROM node:22-alpine AS build
+# T-065 Frontend prod image: built in GitHub Actions (.github/workflows/images.yml) for amd64 + arm64, pulled by the NAS.
+# The Vite build runs once on the CI machine ($BUILDPLATFORM); the target image is plain nginx with static files.
+FROM --platform=$BUILDPLATFORM node:22.13.0-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/backend/package.json apps/backend/
