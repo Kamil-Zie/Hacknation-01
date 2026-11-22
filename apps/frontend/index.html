@@ -23,6 +23,18 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      /* T-099 first paint in dark mode before React renders (high contrast wins, it paints black itself) */
+      html.dark:not(.high-contrast),
+      html.dark:not(.high-contrast) body {
+        background-color: #121a23;
+        color-scheme: dark;
+      }
+      html.high-contrast,
+      html.high-contrast body {
+        background-color: #000;
+      }
+    </style>
     <script>
       // T-084 apply saved text size and contrast before the first render (keys: src/store/a11y.ts)
       (function () {
@@ -39,6 +51,13 @@
             window.matchMedia && window.matchMedia('(prefers-contrast: more)').matches;
           if (contrast === 'high' || (contrast === null && systemHigh)) {
             html.classList.add('high-contrast');
+          }
+          // T-099 dark mode: saved choice, otherwise the system setting
+          var dark = window.localStorage.getItem('kropelka-dark');
+          var systemDark =
+            window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (dark === 'dark' || (dark === null && systemDark)) {
+            html.classList.add('dark');
           }
         } catch (e) {
           // no storage access: defaults

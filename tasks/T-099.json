@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "medium",
   "depends_on": [],
   "contract_refs": ["UI-C-001"],
@@ -23,7 +23,8 @@
   },
   "notes": [
     "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu.",
-    "frontend-2 02:00: start (fe-developer), T-097 i T-099 równolegle."
+    "frontend-2 02:00: start (fe-developer), T-097 i T-099 równolegle.",
+    "frontend-2 02:25: linki dostępności tylko w A11yBar (telefon: menu Więcej), stopka bez nich. Tryb ciemny: przełącznik z aria-pressed, localStorage kropelka-dark + prefers-color-scheme, html.dark przed renderem (bez mignięcia), buildTheme(mode); wysoki kontrast wygrywa, mapy jasne. axe-core 4.10.2: 0 naruszeń na /konto, /dzialki, /report/demo w ciemnym, ciemnym+HC i jasnym (mocki)."
   ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"

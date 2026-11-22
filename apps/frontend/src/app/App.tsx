@@ -1,15 +1,24 @@
 // T-001 Providers: MUI theme, TanStack Query, router
 import { CssBaseline, GlobalStyles, ThemeProvider } from '@mui/material';
+import { useMemo } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router-dom';
 
 import { a11yStyles } from '@/app/a11yStyles';
 import { router } from '@/app/router';
-import { theme } from '@/app/theme';
+import { darkTheme, theme as lightTheme } from '@/app/theme';
+import { useA11yStore } from '@/store/a11y';
 
 const queryClient = new QueryClient();
 
 export function App() {
+  const darkMode = useA11yStore((state) => state.darkMode);
+  const highContrast = useA11yStore((state) => state.highContrast);
+  // T-099 high contrast wins over dark mode: it is drawn by CSS on top of the light theme
+  const theme = useMemo(
+    () => (darkMode && !highContrast ? darkTheme : lightTheme),
+    [darkMode, highContrast],
+  );
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
