@@ -3,7 +3,13 @@ import mongoose from 'mongoose';
 
 import { env } from '@/config/env';
 import { ReportModel } from '@/models/Report.model';
-import { allowedParcelIds, isMember } from '@/services/accounts.service';
+import {
+  allowedParcelIds,
+  canEdit,
+  isMember,
+  readOnlyError,
+  roleOf,
+} from '@/services/accounts.service';
 import { computeCharts, computeEngine } from '@/services/analysis/assessment';
 import type { AssessmentDto, ChartsDto } from '@/services/analysis/assessment';
 import {
@@ -175,9 +181,12 @@ export async function createAnalysis(
     if (!userId) {
       throw new AppError('UNAUTHORIZED', 'Wymagane zalogowanie.', 401);
     }
-    if (!(await isMember(userId, body.accountId))) {
+    const role = await roleOf(userId, body.accountId);
+    if (role === null) {
       throw new AppError('NOT_A_MEMBER', 'Nie należysz do tego gospodarstwa.', 403);
     }
+    // T-104 member and guest only view the account's reports
+    if (!canEdit(role)) throw readOnlyError();
   }
   const startedAt = deps.now();
 

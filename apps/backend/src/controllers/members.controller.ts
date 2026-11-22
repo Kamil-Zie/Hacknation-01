@@ -36,13 +36,13 @@ export const remove = asyncHandler(async (req, res) => {
 });
 
 export const updateParcels = asyncHandler(async (req, res) => {
-  const { parcelIds } = req.body as UpdateMemberParcelsBody;
+  const { parcelIds, role } = req.body as UpdateMemberParcelsBody;
   res.json(
-    await membersService.updateMemberParcels(
+    await membersService.updateMember(
       currentUser(req.userId),
       String(req.params.accountId),
       String(req.params.memberId),
-      parcelIds,
+      { parcelIds, role },
     ),
   );
 });

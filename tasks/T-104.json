@@ -1,0 +1,38 @@
+{
+  "id": "T-104",
+  "title": "Tagi wspólników: Właściciel, Wspólnik, Członek, Gość; twórca gospodarstwa nieusuwalny",
+  "description": "Decyzja Kamila 04:00. Twórca konta (najstarsze członkostwo) zawsze Właściciel: nie można go usunąć ani zmienić mu tagu. Właściciel: pełne prawa, przydziela tagi z listy. Wspólnik: zmienia działki i pola, zaprasza, usuwa Członka i Gościa. Członek i Gość: tylko oglądają szczegóły (zapis = 403 READ_ONLY_ROLE). Nowa osoba z zaproszenia = Członek.",
+  "type": "feature",
+  "team": "backend",
+  "assignee": "coord-1",
+  "status": "done",
+  "priority": "high",
+  "depends_on": ["T-092"],
+  "contract_refs": [
+    "DM-018",
+    "API-007",
+    "API-010",
+    "API-011",
+    "API-012",
+    "API-014",
+    "API-021",
+    "UI-S-012",
+    "UI-C-016"
+  ],
+  "acceptance_criteria": [
+    "DELETE twórcy: 409 CANNOT_REMOVE_CREATOR",
+    "PATCH role tylko właściciel, nie siebie ani twórcy",
+    "Członek/Gość: POST pola, działki, raportu, zaproszenia = 403 READ_ONLY_ROLE; odczyt działa",
+    "Wspólnicy: chip z tagiem, lista tagów dla właściciela, „Usuń” tylko gdy wolno"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 04:20: backend 330 testów OK (nowe testy ról w members.routes.test.ts), sprawdzone na żywym API dev i w przeglądarce (Kamil owner, Nataniel member → 403 na zapisach, potem przywrócony partner)."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

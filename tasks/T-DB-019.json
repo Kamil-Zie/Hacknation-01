@@ -1,0 +1,40 @@
+{
+  "id": "T-DB-019",
+  "title": "[DATA] DM-018 role tag of account members (owner/partner/member/guest), creator protected",
+  "description": "Obowiązkowe zadanie update danych po zmianie w bazie. Zmienione pliki: apps/backend/src/models/AccountMember.model.ts, contracts/data_model.json, apps/backend/src/models/memberRoles.ts.",
+  "type": "data_update",
+  "team": "backend",
+  "assignee": "coord-1",
+  "status": "done",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["DM-018"],
+  "data_change": {
+    "changed_files": [
+      "apps/backend/src/models/AccountMember.model.ts",
+      "contracts/data_model.json",
+      "apps/backend/src/models/memberRoles.ts"
+    ],
+    "data_model_version": "0.7.0",
+    "breaking": false,
+    "created_by": "coord-1"
+  },
+  "acceptance_criteria": [
+    "contracts/data_model.json opisuje nowy stan i ma podbite version",
+    "Model/schemat w kodzie zgadza się z contracts/data_model.json",
+    "Seed w database/ zaktualizowany pod nowy model, idempotentny, z realistycznymi danymi demo",
+    "npm run seed przechodzi na wspólnej bazie dev w MongoDB Atlas (hacknation) bez błędów",
+    "Wysłana wiadomość contract_change (lub breaking_change) do frontendu, żeby zaktualizował mocki",
+    "Przy najbliższym wdrożeniu baza prod (hacknation_prod) odtworzona tym samym seedem (robi koordynator / coord-devops)"
+  ],
+  "review": {
+    "status": "approved",
+    "by": "coord-1",
+    "note": "bez migracji"
+  },
+  "notes": [
+    "coord-1 04:20: pole role opcjonalne, zgodne wstecz: brak role = twórca (najstarsze addedAt) owner, reszta partner, więc istniejące dane działają bez migracji i bez seeda. Seed niezmieniony, npm run seed niepotrzebny. Rejestracja zapisuje owner, zaproszenie member. Frontend dostał mocki z role w tym samym commicie."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

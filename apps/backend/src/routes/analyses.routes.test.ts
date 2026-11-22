@@ -44,6 +44,18 @@ vi.mock('@/services/analyses.service', async (importOriginal) => {
 });
 vi.mock('@/models/AccountMember.model', () => ({
   AccountMemberModel: {
+    // T-104 roleOf reads all members of the account; every membership here is an owner
+    find: (q: { accountId: string }) =>
+      Promise.resolve(
+        holder.memberships
+          .filter((key) => key.endsWith(`:${q.accountId}`))
+          .map((key, index) => ({
+            _id: String(index + 1).padStart(24, '0'),
+            userId: key.split(':')[0],
+            status: 'active',
+            addedAt: new Date(2026, 0, 1),
+          })),
+      ),
     exists: (q: { userId: string; accountId: string }) =>
       Promise.resolve(
         holder.memberships.includes(`${q.userId}:${q.accountId}`) ? { _id: 'x' } : null,

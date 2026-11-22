@@ -114,7 +114,12 @@ test('register returns 201 session, never exposes hash, second time 409 EMAIL_TA
   assert.equal(first.status, 201);
   assert.equal(first.json.user.email, 'jan@example.com');
   assert.deepEqual(first.json.accounts, [
-    { id: first.json.accounts[0].id, name: 'Gospodarstwo Jan Kowalski', memberCount: 1 },
+    {
+      id: first.json.accounts[0].id,
+      name: 'Gospodarstwo Jan Kowalski',
+      memberCount: 1,
+      role: 'owner',
+    },
   ]);
   assert.ok(!JSON.stringify(first.json).includes('scrypt$'));
   const second = await post('/auth/register', JAN);
@@ -152,7 +157,7 @@ test('PATCH /accounts/:id renames for a member (visible in /auth/me), 403 strang
   const accountId = jan.json.accounts[0].id as string;
   const ok = await patchAccount(accountId, jan.json.token, { name: ' Kowalscy ' });
   assert.equal(ok.status, 200);
-  assert.deepEqual(ok.json, { id: accountId, name: 'Kowalscy', memberCount: 1 });
+  assert.deepEqual(ok.json, { id: accountId, name: 'Kowalscy', memberCount: 1, role: 'owner' });
   const me = await fetch(`${base}/auth/me`, {
     headers: { Authorization: `Bearer ${jan.json.token as string}` },
   });

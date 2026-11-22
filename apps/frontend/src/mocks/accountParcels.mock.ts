@@ -1,5 +1,5 @@
-// API-020 API-021 API-022 DM-026 Mock of account parcels with their latest report, and per-parcel member access
-import type { DroughtClass, Member, ParcelOverview } from '@/api/types';
+// API-020 API-021 API-022 DM-026 (T-104 role tags) Mock of account parcels with their latest report, and per-parcel member access
+import type { DroughtClass, Member, MemberRole, ParcelOverview } from '@/api/types';
 import { mockDelay, requireAccount, saveStore } from '@/mocks/auth.mock';
 import { MOCK_PARCELS } from '@/mocks/parcels.mock';
 
@@ -107,6 +107,23 @@ export async function mockUpdateMemberParcels(
   const member = requireAccount(accountId, token).members.find((m) => m.id === memberId);
   if (!member) throw new Error('MEMBER_NOT_FOUND');
   member.parcelIds = parcelIds;
+  saveStore();
+  return { ...member };
+}
+
+// T-104 the first member is the creator: always owner, its tag cannot change
+export async function mockUpdateMemberRole(
+  accountId: string,
+  memberId: string,
+  role: MemberRole,
+  token: string,
+): Promise<Member> {
+  await mockDelay();
+  const members = requireAccount(accountId, token).members;
+  const member = members.find((m) => m.id === memberId);
+  if (!member) throw new Error('MEMBER_NOT_FOUND');
+  if (members[0]?.id === memberId) throw new Error('CANNOT_CHANGE_CREATOR');
+  member.role = role;
   saveStore();
   return { ...member };
 }

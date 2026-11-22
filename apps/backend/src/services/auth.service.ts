@@ -89,6 +89,8 @@ export async function register(body: RegisterBody): Promise<SessionDto> {
     email,
     status: 'active',
     addedAt: new Date(),
+    // T-104 the creator of the account
+    role: 'owner',
   });
   return {
     token: signToken(String(user._id), { ttlSec: REMEMBER_TOKEN_TTL_SEC }),

@@ -1,6 +1,6 @@
 {
   "owner_team": "backend",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "_example": {
     "note": "Wzór formatu. Nie implementuj. id: DM-NNN, typy: string(n), integer, number, boolean, datetime, uuid/objectId, enum(a|b), Ref<DM-NNN>, T[].",
     "entity": {
@@ -1295,6 +1295,12 @@
           "type": "string[] (TERYT) | null",
           "required": false,
           "note": "T-090: działki, które widzi członek; null lub brak = wszystkie działki konta (domyślnie, zgodne wstecz)"
+        },
+        {
+          "name": "role",
+          "type": "enum(owner|partner|member|guest)",
+          "required": false,
+          "note": "T-104: owner = pełne prawa, partner = zmiany + usuwa member/guest, member i guest = tylko podgląd. Brak (starsze wiersze): twórca (najstarsze addedAt w koncie) = owner, reszta = partner. Rejestracja zapisuje owner, zaproszenie member."
         }
       ],
       "relations": [

@@ -36,6 +36,15 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 - [ ] Kliknięcie przywraca standardowy tekst, kontrast i tryb z ustawień systemu, przycisk znika, fokus przechodzi na „A” standardowe
 - [ ] Po odświeżeniu strony widok zostaje domyślny (nic nie jest zapisane)
 
+## 2b. Tagi wspólników (T-104)
+
+- [ ] Wspólnicy: każda osoba ma chip Właściciel / Wspólnik / Członek / Gość, pod tytułem „Twój tag: …”
+- [ ] Właściciel rozwija osobę → lista „Tag tej osoby”, zmiana zapisuje się od razu
+- [ ] Twórca gospodarstwa: brak „Usuń”, brak listy tagów, opis „zawsze właściciel”
+- [ ] Wspólnik widzi „Usuń” tylko przy Członku i Gościu
+- [ ] Członek/Gość: brak formularza zaproszenia; próba dodania działki lub pola kończy się komunikatem „tylko oglądać”
+- [ ] Nowo zaproszona osoba ma tag Członek
+
 ## 3. Backend
 
 - [ ] Po restarcie kontenera backendu przy chwilowym braku Atlasa log pokazuje `MongoDB: next attempt in 15 s`, a potem `MongoDB connected` bez ręcznego restartu (`225693f`)

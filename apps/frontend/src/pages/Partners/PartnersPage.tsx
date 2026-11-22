@@ -1,4 +1,5 @@
 // UI-S-012 API-010 API-011 API-012 API-020 API-021 Partners and per-parcel access: filter by parcel, search person, edit access [T-090]
+// T-104 role tags: owner sets tags, owner and partner invite, member and guest only view
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Alert,
@@ -17,7 +18,7 @@ import { useAccountParcelsQuery } from '@/api/accountParcels';
 import { useAddMemberMutation, useMembersQuery, useRemoveMemberMutation } from '@/api/accounts';
 import { ApiError } from '@/api/client';
 import { PartnerAddForm } from '@/components/PartnerAddForm/PartnerAddForm';
-import { PartnerCard } from '@/components/PartnerCard/PartnerCard';
+import { PartnerCard, ROLE_LABELS, roleOf } from '@/components/PartnerCard/PartnerCard';
 import { useSessionStore } from '@/store/session';
 
 function toError(error: unknown): { code: string; message: string } | null {
@@ -49,6 +50,11 @@ export function PartnersPage() {
     return hasParcel && matches;
   });
   const activeCount = all.filter((member) => member.status === 'active').length;
+  const me = all.find(
+    (member) => user !== null && member.email.toLowerCase() === user.email.toLowerCase(),
+  );
+  const myRole = me ? roleOf(me) : 'guest';
+  const canInvite = myRole === 'owner' || myRole === 'partner';
   const loadError = toError(members.error) ?? toError(parcels.error);
   const isLoading = members.isPending || parcels.isPending;
 
@@ -100,6 +106,7 @@ export function PartnersPage() {
               isSelf={user !== null && member.email.toLowerCase() === user.email.toLowerCase()}
               isRemoving={remove.isPending}
               onRemove={(memberId) => remove.mutate(memberId)}
+              myRole={myRole}
             />
           </li>
         ))}
@@ -114,6 +121,16 @@ export function PartnersPage() {
       <Typography variant="h1" component="h1">
         Wspólnicy
       </Typography>
+      {me && (
+        <Typography>
+          Twój tag: <strong>{ROLE_LABELS[myRole]}</strong>.{' '}
+          {myRole === 'owner'
+            ? 'Masz pełne prawa i przydzielasz tagi: Właściciel, Wspólnik, Członek, Gość.'
+            : myRole === 'partner'
+              ? 'Możesz zmieniać działki i pola, zapraszać osoby i usuwać członków oraz gości.'
+              : 'Możesz oglądać szczegóły działek. Zmiany wprowadza właściciel albo wspólnik.'}
+        </Typography>
+      )}
       <Box
         sx={{
           display: 'grid',
@@ -172,11 +189,13 @@ export function PartnersPage() {
             </Alert>
           )}
         </Stack>
-        <PartnerAddForm
-          isAdding={add.isPending}
-          addError={toError(add.error)}
-          onAdd={(email) => add.mutate(email)}
-        />
+        {canInvite && (
+          <PartnerAddForm
+            isAdding={add.isPending}
+            addError={toError(add.error)}
+            onAdd={(email) => add.mutate(email)}
+          />
+        )}
       </Box>
     </Stack>
   );

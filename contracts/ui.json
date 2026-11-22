@@ -337,7 +337,8 @@
         "onClose": "() => void"
       },
       "states": ["ready"],
-      "accessibility": "nav aria-label=\"Panel boczny\", linki ≥ 48 px, szuflada zamyka się Esc i wraca fokusem do przycisku Menu"
+      "accessibility": "nav aria-label=\"Panel boczny\", linki ≥ 48 px, szuflada zamyka się Esc i wraca fokusem do przycisku Menu",
+      "_note_t104": "T-104: chip z tagiem (Właściciel/Wspólnik/Członek/Gość); właściciel widzi listę „Tag tej osoby” i edytor dostępu (nie dla siebie ani twórcy); „Usuń wspólnika” tylko gdy wolno (owner: każdy poza twórcą, partner: member/guest)"
     },
     {
       "id": "UI-C-017",
@@ -607,7 +608,8 @@
       "design_artboards": {
         "phone": null,
         "desktop": null
-      }
+      },
+      "_note_t104": "T-104: zdanie „Twój tag: …” pod tytułem; formularz zaproszenia tylko dla owner i partner"
     },
     {
       "id": "UI-S-013",

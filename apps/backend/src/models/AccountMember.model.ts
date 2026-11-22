@@ -1,6 +1,8 @@
-// DM-018 AccountMember model (collection account_members): active membership or pending invitation
+// DM-018 AccountMember model (collection account_members): active membership or pending invitation, role tag (T-104)
 import mongoose, { Schema } from 'mongoose';
 import type { InferSchemaType, Model } from 'mongoose';
+
+import { MEMBER_ROLES } from '@/models/memberRoles';
 
 const accountMemberSchema = new Schema(
   {
@@ -11,6 +13,8 @@ const accountMemberSchema = new Schema(
     addedAt: { type: Date, required: true },
     // T-092 DM-018: parcels this member may see; missing or null = every parcel of the account
     parcelIds: { type: [String], required: false, default: undefined },
+    // T-104 missing on older rows: the creator (oldest membership) is owner, everyone else partner
+    role: { type: String, enum: MEMBER_ROLES, required: false, default: undefined },
   },
   {
     collection: 'account_members',

@@ -321,6 +321,9 @@ export interface ApiErrorBody {
 // API-007…API-013 (T-044, kształt z contract_proposal; do potwierdzenia w T-040)
 export type MemberStatus = 'active' | 'pending';
 
+// T-104 DM-018 role tag: owner = full rights, partner = edits + removes member/guest, member/guest = view only
+export type MemberRole = 'owner' | 'partner' | 'member' | 'guest';
+
 export interface User {
   id: string;
   email: string;
@@ -331,6 +334,8 @@ export interface Account {
   id: string;
   name: string;
   memberCount: number;
+  // T-104 role of the signed-in user (missing in sessions saved before T-104)
+  role?: MemberRole;
 }
 
 export interface Session {
@@ -347,6 +352,9 @@ export interface Member {
   addedAt: string;
   // T-090 API-021: parcels this member may see; null or missing = every parcel of the account
   parcelIds?: string[] | null;
+  // T-104 missing in older mocks = partner; the creator is always owner
+  role?: MemberRole;
+  isCreator?: boolean;
 }
 
 // DM-026 API-020 One parcel of the account with its latest report (dashboard, my parcels, search)

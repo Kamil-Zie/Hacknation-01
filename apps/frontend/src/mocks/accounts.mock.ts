@@ -13,7 +13,12 @@ import {
 
 export async function mockGetMembers(accountId: string, token: string): Promise<Member[]> {
   await mockDelay();
-  return [...requireAccount(accountId, token).members];
+  // T-104 the first member is the creator (owner); untagged older mock rows are partners
+  return requireAccount(accountId, token).members.map((member, index) => ({
+    ...member,
+    role: index === 0 ? 'owner' : (member.role ?? 'partner'),
+    isCreator: index === 0,
+  }));
 }
 
 export async function mockAddMember(
@@ -37,6 +42,7 @@ export async function mockAddMember(
     name: existing?.name ?? null,
     status: existing ? 'active' : 'pending',
     addedAt: new Date().toISOString(),
+    role: 'member',
   };
   account.members.push(member);
   saveStore();
@@ -52,6 +58,13 @@ export async function mockRemoveMember(
   const account = requireAccount(accountId, token);
   const target = account.members.find((m) => m.id === memberId);
   if (!target) throw new ApiError('MEMBER_NOT_FOUND', 'Nie znaleziono członka', 404);
+  if (account.members[0]?.id === memberId) {
+    throw new ApiError(
+      'CANNOT_REMOVE_CREATOR',
+      'Nie można usunąć twórcy gospodarstwa: zawsze pozostaje jego właścicielem.',
+      409,
+    );
+  }
   const activeCount = account.members.filter((m) => m.status === 'active').length;
   if (target.status === 'active' && activeCount <= 1) {
     throw new ApiError('LAST_MEMBER', 'Nie można usunąć ostatniego członka konta', 409);

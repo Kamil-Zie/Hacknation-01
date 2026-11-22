@@ -1,4 +1,4 @@
-// T-042 API-010 API-011 API-012 HTTP tests of account members endpoints (in-memory model fakes, no Atlas)
+// T-042 API-010 API-011 API-012 (T-104 roles) HTTP tests of account members endpoints (in-memory model fakes, no Atlas)
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import type { Server } from 'node:http';
@@ -57,6 +57,18 @@ function fakeModel(rows: () => Row[]) {
       rows().push(row);
       return Promise.resolve(row);
     },
+    findOneAndUpdate: (
+      q: Record<string, unknown>,
+      update: { $set?: Record<string, unknown>; $unset?: Record<string, 1> },
+    ) => {
+      const row = rows().find((r) => matches(r, q));
+      if (row) {
+        Object.assign(row, update.$set ?? {});
+        Object.keys(update.$unset ?? {}).forEach((key) => delete row[key]);
+      }
+      return Promise.resolve(row ?? null);
+    },
+    findById: (id: string) => Promise.resolve(rows().find((r) => r._id === id) ?? null),
     deleteOne: (q: Record<string, unknown>) => {
       const index = rows().findIndex((r) => matches(r, q));
       if (index >= 0) rows().splice(index, 1);
@@ -166,10 +178,10 @@ test('GET lists active and pending with pagination', async () => {
   assert.equal((await call('GET', `${MEMBERS}?pageSize=500`, JAN)).status, 422);
 });
 
-test('DELETE the last active member: 409 LAST_MEMBER; pending removal: 204; unknown: 404', async () => {
+test('DELETE the creator: 409 CANNOT_REMOVE_CREATOR; pending removal: 204; unknown: 404', async () => {
   const last = await call('DELETE', `${MEMBERS}/${'1'.repeat(24)}`, JAN);
   assert.equal(last.status, 409);
-  assert.equal(last.json.code, 'LAST_MEMBER');
+  assert.equal(last.json.code, 'CANNOT_REMOVE_CREATOR');
   const pending = await call('POST', MEMBERS, JAN, { email: 'new@example.com' });
   const removed = await call('DELETE', `${MEMBERS}/${pending.json.id as string}`, JAN);
   assert.equal(removed.status, 204);
@@ -180,10 +192,54 @@ test('DELETE the last active member: 409 LAST_MEMBER; pending removal: 204; unkn
   assert.equal((await call('DELETE', `${MEMBERS}/xyz`, JAN)).status, 422);
 });
 
-test('DELETE self with another active member present: 204', async () => {
-  await call('POST', MEMBERS, JAN, { email: 'anna@example.com' });
-  const res = await call('DELETE', `${MEMBERS}/${'1'.repeat(24)}`, JAN);
-  assert.equal(res.status, 204);
+test('DELETE: the creator cannot leave, a member may leave the farm: 204', async () => {
+  const anna = await call('POST', MEMBERS, JAN, { email: 'anna@example.com' });
+  const creator = await call('DELETE', `${MEMBERS}/${'1'.repeat(24)}`, JAN);
+  assert.equal(creator.status, 409);
+  assert.equal(creator.json.code, 'CANNOT_REMOVE_CREATOR');
+  const leave = await call('DELETE', `${MEMBERS}/${anna.json.id as string}`, ANNA);
+  assert.equal(leave.status, 204);
+});
+
+test('T-104 roles: creator is owner, new person is member, only the owner sets tags', async () => {
+  const anna = await call('POST', MEMBERS, JAN, { email: 'anna@example.com' });
+  assert.equal(anna.json.role, 'member');
+  const list = await call('GET', MEMBERS, JAN);
+  assert.equal(list.json.items[0].role, 'owner');
+  assert.equal(list.json.items[0].isCreator, true);
+  // member only views: cannot invite, cannot tag
+  assert.equal(
+    (await call('POST', MEMBERS, ANNA, { email: 'x@example.com' })).json.code,
+    'READ_ONLY_ROLE',
+  );
+  const selfTag = await call('PATCH', `${MEMBERS}/${'1'.repeat(24)}`, ANNA, { role: 'guest' });
+  assert.equal(selfTag.status, 403);
+  // owner tags Anna as partner; the creator's tag cannot change; unknown tag 422
+  const tagged = await call('PATCH', `${MEMBERS}/${anna.json.id as string}`, JAN, {
+    role: 'partner',
+  });
+  assert.equal(tagged.status, 200);
+  assert.equal(tagged.json.role, 'partner');
+  assert.equal(
+    (await call('PATCH', `${MEMBERS}/${anna.json.id as string}`, JAN, { role: 'boss' })).status,
+    422,
+  );
+  assert.equal((await call('PATCH', `${MEMBERS}/${anna.json.id as string}`, JAN, {})).status, 422);
+});
+
+test('T-104 partner removes member and guest, but not another partner or the owner', async () => {
+  const anna = await call('POST', MEMBERS, JAN, { email: 'anna@example.com' });
+  await call('PATCH', `${MEMBERS}/${anna.json.id as string}`, JAN, { role: 'partner' });
+  const guest = await call('POST', MEMBERS, ANNA, { email: 'guest@example.com' });
+  await call('PATCH', `${MEMBERS}/${guest.json.id as string}`, JAN, { role: 'guest' });
+  const other = await call('POST', MEMBERS, JAN, { email: 'piotr@example.com' });
+  await call('PATCH', `${MEMBERS}/${other.json.id as string}`, JAN, { role: 'partner' });
+  assert.equal((await call('DELETE', `${MEMBERS}/${guest.json.id as string}`, ANNA)).status, 204);
+  const partner = await call('DELETE', `${MEMBERS}/${other.json.id as string}`, ANNA);
+  assert.equal(partner.status, 403);
+  assert.equal(partner.json.code, 'READ_ONLY_ROLE');
+  assert.equal((await call('DELETE', `${MEMBERS}/${'1'.repeat(24)}`, ANNA)).status, 409);
+  assert.equal((await call('DELETE', `${MEMBERS}/${other.json.id as string}`, JAN)).status, 204);
 });
 
 test('non-member: 403 NOT_A_MEMBER on all three; no token: 401', async () => {

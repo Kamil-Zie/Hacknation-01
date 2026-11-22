@@ -1,6 +1,11 @@
 // T-077 T-097 API-016 API-017 API-018 Fields: create from any 2-20 parcels of the account (ULDK), list, delete
 import { FieldModel } from '@/models/Field.model';
-import { allowedParcelIds, canSeeField, isMember } from '@/services/accounts.service';
+import {
+  allowedParcelIds,
+  assertCanEdit,
+  canSeeField,
+  isMember,
+} from '@/services/accounts.service';
 import { getParcelById } from '@/services/parcels.service';
 import type { Parcel } from '@/services/parcels.service';
 import { AppError } from '@/utils/AppError';
@@ -101,7 +106,8 @@ export async function createField(
   accountId: string,
   body: CreateFieldBody,
 ): Promise<FieldDto> {
-  await assertMember(userId, accountId);
+  assertDbConnected();
+  await assertCanEdit(userId, accountId);
   const allowed = await allowedParcelIds(userId, accountId);
   if (!canSeeField(allowed, body.parcelIds)) {
     throw new AppError('NOT_A_MEMBER', 'Nie masz dostępu do wszystkich wybranych działek.', 403, {
@@ -160,7 +166,8 @@ export async function deleteField(
   accountId: string,
   fieldId: string,
 ): Promise<void> {
-  await assertMember(userId, accountId);
+  assertDbConnected();
+  await assertCanEdit(userId, accountId);
   const field = await FieldModel.findOne({ _id: fieldId, accountId });
   const allowed = await allowedParcelIds(userId, accountId);
   if (!field || !canSeeField(allowed, field.parcelIds)) {

@@ -2927,7 +2927,8 @@
           "createdAt": "2026-11-21T10:19:41.198Z"
         }
       },
-      "examples_note": "Przykłady dotyczą głównej działki demo 061409_2.0009.612 (obręb Bronowice, gm. Puławy, lubelskie, pole uprawne, 0,55 ha). Rzeczywiste: geometria, numer, obręb, gmina, powiat i województwo (ULDK), powierzchnia i centroid (turf), piasek 60% i ił 13% (SoilGrids, T-002) oraz piasek i ił z SoilGrids. Ilustracyjne (nie odpytywane): pogoda, KBW, Sentinel-2, spadek terenu i wysokości, rowy OSM, pojemność wodna TAW i próg RAW. 201_complete: eumetsat missing + wpis w dataGaps, status nadal complete. 201_partial: sentinel2 timeout, status partial. Pomocnicza działka 061401_1.0001.691/9 (Miasto Puławy, zabudowa): SoilGrids zwraca 0, więc gleba = missing + dataGap (bez pełnego przykładu); służy do testu ukośnika w ID (w ścieżce %2F, np. GET /parcels/061401_1.0001.691%2F9) i ścieżki dataGaps. Wilgotność gleby (era5land, 2026-06-10) w przykładach jest ILUSTRACYJNA (Open-Meteo zwróciło 429, ADR-008 v2): percentyl 4, strefa korzeniowa 35,1% i θ w m3/m3 dobrane wiarygodnie dla piasku i suszy. nasa_power występuje w sources[] zawsze (ADR-009, role=climatology: percentyl, anomalia, klasa i podatność z 10 lat); przy fallbacku okna bieżącego (Open-Meteo 429/5xx/timeout) ma role=fallback, pewność −0,05, wpis w limitations i soilMoistureSatellite.fallback=true. Okno Open-Meteo (meteo, era5land, role=current) to D−90…D."
+      "examples_note": "Przykłady dotyczą głównej działki demo 061409_2.0009.612 (obręb Bronowice, gm. Puławy, lubelskie, pole uprawne, 0,55 ha). Rzeczywiste: geometria, numer, obręb, gmina, powiat i województwo (ULDK), powierzchnia i centroid (turf), piasek 60% i ił 13% (SoilGrids, T-002) oraz piasek i ił z SoilGrids. Ilustracyjne (nie odpytywane): pogoda, KBW, Sentinel-2, spadek terenu i wysokości, rowy OSM, pojemność wodna TAW i próg RAW. 201_complete: eumetsat missing + wpis w dataGaps, status nadal complete. 201_partial: sentinel2 timeout, status partial. Pomocnicza działka 061401_1.0001.691/9 (Miasto Puławy, zabudowa): SoilGrids zwraca 0, więc gleba = missing + dataGap (bez pełnego przykładu); służy do testu ukośnika w ID (w ścieżce %2F, np. GET /parcels/061401_1.0001.691%2F9) i ścieżki dataGaps. Wilgotność gleby (era5land, 2026-06-10) w przykładach jest ILUSTRACYJNA (Open-Meteo zwróciło 429, ADR-008 v2): percentyl 4, strefa korzeniowa 35,1% i θ w m3/m3 dobrane wiarygodnie dla piasku i suszy. nasa_power występuje w sources[] zawsze (ADR-009, role=climatology: percentyl, anomalia, klasa i podatność z 10 lat); przy fallbacku okna bieżącego (Open-Meteo 429/5xx/timeout) ma role=fallback, pewność −0,05, wpis w limitations i soilMoistureSatellite.fallback=true. Okno Open-Meteo (meteo, era5land, role=current) to D−90…D.",
+      "_note_t104": "T-104: zapis do konta (pole, usunięcie pola, działka, raport z accountId, raport pola) tylko owner i partner; member i guest dostają 403 READ_ONLY_ROLE i tylko oglądają"
     },
     {
       "id": "API-005",
@@ -3131,7 +3132,8 @@
             "field": "email"
           }
         }
-      }
+      },
+      "_note_t104": "T-104: AccountDto ma pole role (rola zalogowanego w tym koncie); zmiana nazwy (API-014) tylko dla owner"
     },
     {
       "id": "API-008",
@@ -3181,7 +3183,8 @@
           "message": "Nieprawidłowy e-mail lub hasło.",
           "details": null
         }
-      }
+      },
+      "_note_t104": "T-104: AccountDto ma pole role (rola zalogowanego w tym koncie); zmiana nazwy (API-014) tylko dla owner"
     },
     {
       "id": "API-009",
@@ -3228,7 +3231,8 @@
           "message": "Wymagane zalogowanie.",
           "details": null
         }
-      }
+      },
+      "_note_t104": "T-104: AccountDto ma pole role (rola zalogowanego w tym koncie); zmiana nazwy (API-014) tylko dla owner"
     },
     {
       "id": "API-010",
@@ -3289,14 +3293,15 @@
           "message": "Nie należysz do tego gospodarstwa.",
           "details": null
         }
-      }
+      },
+      "_note_t104": "T-104: role (enum owner|partner|member|guest) i isCreator (boolean) w każdym członku; twórca konta (najstarsze członkostwo) zawsze owner"
     },
     {
       "id": "API-011",
       "status": "agreed",
       "method": "POST",
       "path": "/accounts/:accountId/members",
-      "summary": "Dodaje członka po e-mailu (każdy członek może dodać innego). Gdy użytkownik z tym e-mailem istnieje, od razu active; inaczej pending (zaproszenie, bez wysyłki e-maili).",
+      "summary": "Dodaje członka po e-mailu (każdy członek może dodać innego). Gdy użytkownik z tym e-mailem istnieje, od razu active; inaczej pending (zaproszenie, bez wysyłki e-maili). T-104: zapraszają owner i partner (inaczej 403 READ_ONLY_ROLE); nowa osoba dostaje role = member.",
       "auth": "required",
       "request": {
         "params": {
@@ -3313,7 +3318,8 @@
         "401 UNAUTHORIZED",
         "403 NOT_A_MEMBER",
         "409 ALREADY_MEMBER (ten e-mail jest już członkiem lub ma zaproszenie)",
-        "422 VALIDATION_ERROR (zły e-mail lub accountId; details.field)"
+        "422 VALIDATION_ERROR (zły e-mail lub accountId; details.field)",
+        "403 READ_ONLY_ROLE"
       ],
       "data_refs": ["DM-016", "DM-018", "DM-022"],
       "consumers": [],
@@ -3333,14 +3339,15 @@
             "field": "email"
           }
         }
-      }
+      },
+      "_note_t104": "T-104: role (enum owner|partner|member|guest) i isCreator (boolean) w każdym członku; twórca konta (najstarsze członkostwo) zawsze owner"
     },
     {
       "id": "API-012",
       "status": "agreed",
       "method": "DELETE",
       "path": "/accounts/:accountId/members/:memberId",
-      "summary": "Usuwa członka lub zaproszenie (każdy członek może usunąć innego, także siebie). Nie wolno usunąć ostatniego członka active.",
+      "summary": "Usuwa członka lub zaproszenie (każdy członek może usunąć innego, także siebie). Nie wolno usunąć ostatniego członka active. T-104: twórcy nie można usunąć (409 CANNOT_REMOVE_CREATOR); owner usuwa każdego, partner tylko member/guest, każdy może odejść sam (inaczej 403 READ_ONLY_ROLE).",
       "auth": "required",
       "request": {
         "params": {
@@ -3356,7 +3363,9 @@
         "403 NOT_A_MEMBER",
         "404 MEMBER_NOT_FOUND (brak takiego członka w tym koncie)",
         "409 LAST_MEMBER (to ostatni członek konta)",
-        "422 VALIDATION_ERROR (zły format accountId lub memberId)"
+        "422 VALIDATION_ERROR (zły format accountId lub memberId)",
+        "403 READ_ONLY_ROLE",
+        "409 CANNOT_REMOVE_CREATOR"
       ],
       "data_refs": ["DM-018"],
       "consumers": [],
@@ -3473,7 +3482,8 @@
           "message": "Nie należysz do tego gospodarstwa.",
           "details": null
         }
-      }
+      },
+      "_note_t104": "T-104: AccountDto ma pole role (rola zalogowanego w tym koncie); zmiana nazwy (API-014) tylko dla owner"
     },
     {
       "id": "API-015",
@@ -3626,7 +3636,8 @@
             "maxDistanceM": 50
           }
         }
-      }
+      },
+      "_note_t104": "T-104: zapis do konta (pole, usunięcie pola, działka, raport z accountId, raport pola) tylko owner i partner; member i guest dostają 403 READ_ONLY_ROLE i tylko oglądają"
     },
     {
       "id": "API-017",
@@ -3746,7 +3757,8 @@
             "fieldId": "665f0c0ffee0000000000f99"
           }
         }
-      }
+      },
+      "_note_t104": "T-104: zapis do konta (pole, usunięcie pola, działka, raport z accountId, raport pola) tylko owner i partner; member i guest dostają 403 READ_ONLY_ROLE i tylko oglądają"
     },
     {
       "id": "API-019",
@@ -3784,7 +3796,8 @@
       ],
       "data_refs": ["DM-024", "DM-025", "DM-009"],
       "consumers": [],
-      "consumers_planned": ["UI-S-006"]
+      "consumers_planned": ["UI-S-006"],
+      "_note_t104": "T-104: zapis do konta (pole, usunięcie pola, działka, raport z accountId, raport pola) tylko owner i partner; member i guest dostają 403 READ_ONLY_ROLE i tylko oglądają"
     },
     {
       "id": "API-020",
@@ -3866,7 +3879,7 @@
       "status": "agreed",
       "method": "PATCH",
       "path": "/accounts/:accountId/members/:memberId",
-      "summary": "Ustawia, do których działek ma dostęp członek (wspólnik). parcelIds: null = wszystkie działki konta. Tylko aktywny członek konta; nie można ograniczyć samego siebie.",
+      "summary": "Ustawia, do których działek ma dostęp członek (wspólnik). parcelIds: null = wszystkie działki konta. Tylko aktywny członek konta; nie można ograniczyć samego siebie. T-104: także tag roli (role), zmienia tylko właściciel; nie można zmienić siebie ani twórcy.",
       "auth": "required",
       "request": {
         "headers": {
@@ -3877,7 +3890,8 @@
           "memberId": "string"
         },
         "body": {
-          "parcelIds": "string[] (TERYT, 1–200, unikalne) | null"
+          "parcelIds": "string[] (TERYT, 1–200, unikalne) | null, opcjonalne",
+          "role": "enum(owner|partner|member|guest), opcjonalne (T-104); wymagane co najmniej jedno z pól"
         }
       },
       "response": {
@@ -3891,7 +3905,9 @@
         "404 MEMBER_NOT_FOUND",
         "422 CANNOT_RESTRICT_SELF",
         "403 NOT_A_MEMBER także gdy wołający sam ma ograniczony dostęp (zmieniać dostęp mogą tylko osoby widzące wszystkie działki)",
-        "422 VALIDATION_ERROR dla pustej tablicy parcelIds (użyj null)"
+        "422 VALIDATION_ERROR dla pustej tablicy parcelIds (użyj null)",
+        "403 READ_ONLY_ROLE (nie właściciel)",
+        "409 CANNOT_CHANGE_CREATOR"
       ],
       "data_refs": ["DM-018", "DM-022"],
       "consumers": [],
@@ -3905,7 +3921,8 @@
           "addedAt": "2026-11-21T10:00:00.000Z",
           "parcelIds": ["061409_2.0009.612"]
         }
-      }
+      },
+      "_note_t104": "T-104: role (enum owner|partner|member|guest) i isCreator (boolean) w każdym członku; twórca konta (najstarsze członkostwo) zawsze owner"
     },
     {
       "id": "API-022",
@@ -3947,7 +3964,8 @@
           "request": "POST /accounts/<id>/parcels {\"parcelId\":\"040706_4.0004.15\"}",
           "response": "201 { parcel: { id: \"040706_4.0004.15\", parcelNumber: \"15\", region: \"Kruszwica Obr. 4\", areaHa: 0.3752, geometry: {...} }, lastReport: null, atRisk: false, fieldIds: [] }; ponownie → 200 to samo"
         }
-      ]
+      ],
+      "_note_t104": "T-104: zapis do konta (pole, usunięcie pola, działka, raport z accountId, raport pola) tylko owner i partner; member i guest dostają 403 READ_ONLY_ROLE i tylko oglądają"
     }
   ]
 }

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 
 import { AccountModel } from '@/models/Account.model';
 import { AccountMemberModel } from '@/models/AccountMember.model';
+import { assertCanEdit } from '@/services/accounts.service';
 import { FieldModel } from '@/models/Field.model';
 import { ReportModel } from '@/models/Report.model';
 import { getParcelById } from '@/services/parcels.service';
@@ -159,6 +160,7 @@ export async function addAccountParcel(
   }
   const self = await AccountMemberModel.findOne({ accountId, userId, status: 'active' });
   if (!self) throw new AppError('NOT_A_MEMBER', 'Nie należysz do tego gospodarstwa.', 403);
+  await assertCanEdit(userId, accountId);
   if (self.parcelIds && self.parcelIds.length > 0) {
     throw new AppError('NOT_A_MEMBER', 'Masz dostęp tylko do wybranych działek.', 403);
   }

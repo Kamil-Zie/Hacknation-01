@@ -1,13 +1,14 @@
-// API-020 API-021 API-022 DM-026 Account parcels overview and per-parcel member access: fetchers and hooks (mock or real API)
+// API-020 API-021 API-022 DM-026 (T-104 role tags) Account parcels overview and per-parcel member access: fetchers and hooks (mock or real API)
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { authHeaders } from '@/api/auth';
 import { apiFetch } from '@/api/client';
-import type { Member, ParcelOverview } from '@/api/types';
+import type { Member, MemberRole, ParcelOverview } from '@/api/types';
 import {
   mockAddAccountParcel,
   mockGetAccountParcels,
   mockUpdateMemberParcels,
+  mockUpdateMemberRole,
 } from '@/mocks/accountParcels.mock';
 
 // VITE_MOCK_ACCOUNT_PARCELS overrides VITE_USE_MOCKS for this resource only.
@@ -53,6 +54,31 @@ export function updateMemberParcels(
     method: 'PATCH',
     headers: authHeaders(token),
     body: JSON.stringify({ parcelIds }),
+  });
+}
+
+// T-104 API-021 the owner sets the role tag of a member
+export function updateMemberRole(
+  accountId: string,
+  memberId: string,
+  role: MemberRole,
+  token: string,
+): Promise<Member> {
+  if (shouldUseMocks) return mockUpdateMemberRole(accountId, memberId, role, token);
+  return apiFetch<Member>(`${accountPath(accountId)}/members/${encodeURIComponent(memberId)}`, {
+    method: 'PATCH',
+    headers: authHeaders(token),
+    body: JSON.stringify({ role }),
+  });
+}
+
+export function useUpdateMemberRoleMutation(accountId: string, token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { memberId: string; role: MemberRole }) =>
+      updateMemberRole(accountId, args.memberId, args.role, token),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['accounts', accountId, 'members'] }),
   });
 }
 
