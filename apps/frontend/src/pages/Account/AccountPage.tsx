@@ -163,19 +163,25 @@ export function AccountPage() {
           )}
         </Box>
         {/* one card: two columns from the top edge (drought counts | at-risk list and legend),
-            action buttons at the bottom; lg+: same height as the map box in ThreatMap */}
+            action buttons at the bottom; lg+: exactly the height of the map box in ThreatMap,
+            a long list scrolls inside the tile instead of making it taller than the map */}
         <Card
           sx={{
             gridArea: 'side',
             alignSelf: 'start',
             minWidth: 0,
-            minHeight: { lg: 'max(360px, 45vh)' },
+            height: { lg: 'max(360px, 45vh)' },
             display: 'flex',
             flexDirection: 'column',
           }}
         >
-          <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <CardContent
+            sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 2 }}
+          >
             <Box
+              role="region"
+              aria-label="Stan suszy i zagrożone działki"
+              tabIndex={0}
               sx={{
                 display: 'grid',
                 gap: 2,
@@ -184,6 +190,10 @@ export function AccountPage() {
                   sm: hasParcels ? 'repeat(2, minmax(0, 1fr))' : 'minmax(0, 1fr)',
                 },
                 alignItems: 'start',
+                flex: { lg: '1 1 auto' },
+                minHeight: 0,
+                overflowY: { lg: 'auto' },
+                '&:focus-visible': { outline: 2, outlineColor: 'primary.main', outlineOffset: 2 },
               }}
             >
               <Stack component="section" aria-labelledby="stan-suszy-title" spacing={2}>
