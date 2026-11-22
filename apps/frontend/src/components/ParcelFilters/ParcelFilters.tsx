@@ -1,4 +1,4 @@
-// UI-C-019 ParcelFilters: checkbox groups (area ranges, crop with icons, locality) and client-side filtering of account parcels [T-088, T-094]
+// UI-C-019 ParcelFilters: checkbox groups (drought, area ranges, crop with icons, locality) and client-side filtering of account parcels [T-088, T-094]
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
@@ -15,7 +15,7 @@ import {
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 
-import type { ParcelOverview } from '@/api/types';
+import type { DroughtClass, ParcelOverview } from '@/api/types';
 import { CropIcon } from '@/components/CropIcon/CropIcon';
 
 export const NO_REPORT = '__no_report__';
@@ -27,7 +27,21 @@ export const AREA_RANGES: { from: number; to: number; label: string }[] = [
   { from: 10, to: Infinity, label: 'Powyżej 10 ha' },
 ];
 
+// T-103 drought filter, most severe first; a parcel without a report counts as 'unknown'
+export const DROUGHT_FILTERS: { value: DroughtClass; label: string }[] = [
+  { value: 'severe', label: 'Silna susza' },
+  { value: 'moderate', label: 'Umiarkowana susza' },
+  { value: 'none', label: 'Brak suszy' },
+  { value: 'unknown', label: 'Brak danych' },
+];
+
+export function droughtKey(item: ParcelOverview): DroughtClass {
+  return item.lastReport?.droughtClass ?? 'unknown';
+}
+
 export interface Filters {
+  /** drought classes; OR inside the group */
+  droughts: DroughtClass[];
   /** indexes into AREA_RANGES; OR inside the group */
   areas: number[];
   /** locality keys, see localityKey() */
@@ -36,7 +50,7 @@ export interface Filters {
   crops: string[];
 }
 
-export const EMPTY_FILTERS: Filters = { areas: [], localities: [], crops: [] };
+export const EMPTY_FILTERS: Filters = { droughts: [], areas: [], localities: [], crops: [] };
 
 export function localityKey(item: ParcelOverview): string {
   return `${item.parcel.region} (${item.parcel.commune})`;
@@ -47,7 +61,12 @@ export function cropKey(item: ParcelOverview): string {
 }
 
 export function countActiveFilters(filters: Filters): number {
-  return filters.areas.length + filters.localities.length + filters.crops.length;
+  return (
+    filters.droughts.length +
+    filters.areas.length +
+    filters.localities.length +
+    filters.crops.length
+  );
 }
 
 function matchesArea(areaHa: number, areas: number[]): boolean {
@@ -62,6 +81,7 @@ function matchesArea(areaHa: number, areas: number[]): boolean {
 export function filterParcels(items: ParcelOverview[], filters: Filters): ParcelOverview[] {
   return items.filter(
     (item) =>
+      (filters.droughts.length === 0 || filters.droughts.includes(droughtKey(item))) &&
       matchesArea(item.parcel.areaHa, filters.areas) &&
       (filters.localities.length === 0 || filters.localities.includes(localityKey(item))) &&
       (filters.crops.length === 0 || filters.crops.includes(cropKey(item))),
@@ -230,9 +250,42 @@ export function ParcelFilters({ parcels, value, onChange }: ParcelFiltersProps) 
     })),
     ...(hasUnreported ? [{ value: NO_REPORT, label: 'Bez raportu' }] : []),
   ];
+  // T-103 drought group: only classes that occur, a dot in the drought colour and a count
+  const droughtOptions = DROUGHT_FILTERS.flatMap(({ value: drought, label }) => {
+    const count = parcels.filter((item) => droughtKey(item) === drought).length;
+    return count === 0
+      ? []
+      : [
+          {
+            value: drought,
+            label: `${label} (${count})`,
+            icon: (
+              <Box
+                component="span"
+                aria-hidden
+                sx={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: '50%',
+                  flexShrink: 0,
+                  bgcolor: (theme) => theme.palette.drought[drought],
+                }}
+              />
+            ),
+          },
+        ];
+  });
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+      <Group
+        legend="Stan suszy"
+        options={droughtOptions}
+        isChecked={(entry) => value.droughts.includes(entry as DroughtClass)}
+        onToggle={(entry) =>
+          onChange({ ...value, droughts: toggle(value.droughts, entry as DroughtClass) })
+        }
+      />
       <Group
         legend="Powierzchnia"
         options={AREA_RANGES.map((range, index) => ({ value: String(index), label: range.label }))}
