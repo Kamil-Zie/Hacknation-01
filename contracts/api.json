@@ -3909,7 +3909,7 @@
     },
     {
       "id": "API-022",
-      "status": "proposed",
+      "status": "agreed",
       "method": "POST",
       "path": "/accounts/:accountId/parcels",
       "summary": "Dodaje działkę do Moich działek konta bez robienia analizy (T-095/T-098). Działka pobierana z ULDK (cache), id zapisywane w DM-017.savedParcelIds (bez duplikatów, max 200). Działka już na koncie → 200 z tym samym ParcelOverview. Wspólnik z ograniczonym dostępem → 403. Tylko członek konta.",
@@ -3942,7 +3942,12 @@
       "data_refs": ["DM-017", "DM-026"],
       "consumers": [],
       "consumers_planned": ["UI-S-013"],
-      "examples": []
+      "examples": [
+        {
+          "request": "POST /accounts/<id>/parcels {\"parcelId\":\"040706_4.0004.15\"}",
+          "response": "201 { parcel: { id: \"040706_4.0004.15\", parcelNumber: \"15\", region: \"Kruszwica Obr. 4\", areaHa: 0.3752, geometry: {...} }, lastReport: null, atRisk: false, fieldIds: [] }; ponownie → 200 to samo"
+        }
+      ]
     }
   ]
 }

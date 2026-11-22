@@ -1,6 +1,7 @@
-// T-091 API-020 DM-026 Parcels of an account with their latest report: reports + fields, limited by the member's parcelIds
+// T-091 API-020 T-098 API-022 DM-026 Parcels of an account with their latest report: reports + fields + saved parcels, limited by the member's parcelIds
 import mongoose from 'mongoose';
 
+import { AccountModel } from '@/models/Account.model';
 import { AccountMemberModel } from '@/models/AccountMember.model';
 import { FieldModel } from '@/models/Field.model';
 import { ReportModel } from '@/models/Report.model';
@@ -77,7 +78,7 @@ export async function listAccountParcels(
   if (!self) throw new AppError('NOT_A_MEMBER', 'Nie należysz do tego gospodarstwa.', 403);
   const allowed = self.parcelIds && self.parcelIds.length > 0 ? new Set(self.parcelIds) : null;
 
-  const [reports, fields] = await Promise.all([
+  const [reports, fields, account] = await Promise.all([
     ReportModel.find(
       { accountId },
       { parcel: 1, crop: 1, analysisDate: 1, status: 1, 'assessment.droughtClass': 1 },
@@ -88,6 +89,9 @@ export async function listAccountParcels(
     FieldModel.find({ accountId }, { parcelIds: 1 }).lean<
       { _id: unknown; parcelIds: string[] }[]
     >(),
+    AccountModel.findById(accountId, { savedParcelIds: 1 }).lean<{
+      savedParcelIds?: string[];
+    } | null>(),
   ]);
 
   const fieldIdsOf = new Map<string, string[]>();
@@ -119,8 +123,9 @@ export async function listAccountParcels(
     if (items.length >= MAX_PARCELS) break;
   }
 
-  // Parcels that are only in fields, never analysed: geometry from the ULDK cache, skipped on failure
-  const fieldOnly = [...fieldIdsOf.keys()].filter(
+  // Parcels that are only in fields or saved by hand (API-022), never analysed: geometry from the ULDK
+  // cache, skipped on failure
+  const fieldOnly = [...new Set([...fieldIdsOf.keys(), ...(account?.savedParcelIds ?? [])])].filter(
     (id) => !seen.has(id) && (!allowed || allowed.has(id)),
   );
   for (let i = 0; i < fieldOnly.length && items.length < MAX_PARCELS; i += ULDK_BATCH) {
@@ -141,4 +146,39 @@ export async function listAccountParcels(
     });
   }
   return { items, total: items.length };
+}
+
+// API-022: save a parcel to the account without an analysis; created = false when it was already there
+export async function addAccountParcel(
+  userId: string,
+  accountId: string,
+  parcelId: string,
+): Promise<{ created: boolean; item: ParcelOverviewDto }> {
+  if (mongoose.connection.readyState !== 1) {
+    throw new AppError('DB_UNAVAILABLE', 'Baza danych jest niedostępna', 503);
+  }
+  const self = await AccountMemberModel.findOne({ accountId, userId, status: 'active' });
+  if (!self) throw new AppError('NOT_A_MEMBER', 'Nie należysz do tego gospodarstwa.', 403);
+  if (self.parcelIds && self.parcelIds.length > 0) {
+    throw new AppError('NOT_A_MEMBER', 'Masz dostęp tylko do wybranych działek.', 403);
+  }
+
+  const existing = (await listAccountParcels(userId, accountId)).items.find(
+    (item) => item.parcel.id === parcelId,
+  );
+  if (existing) return { created: false, item: existing };
+
+  // 404 PARCEL_NOT_FOUND / 502 / 504 from ULDK pass through
+  const parcel = await getParcelById(parcelId);
+  const updated = await AccountModel.updateOne(
+    { _id: accountId, [`savedParcelIds.${MAX_PARCELS - 1}`]: { $exists: false } },
+    { $addToSet: { savedParcelIds: parcel.id } },
+  );
+  if (updated.matchedCount === 0) {
+    throw new AppError('TOO_MANY_PARCELS', `Konto ma już ${MAX_PARCELS} zapisanych działek.`, 422);
+  }
+  return {
+    created: true,
+    item: { parcel: brief(parcel), lastReport: null, atRisk: false, fieldIds: [] },
+  };
 }

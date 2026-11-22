@@ -5,7 +5,7 @@
   "type": "data_update",
   "team": "backend",
   "assignee": "coord-1",
-  "status": "ready",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["DM-017", "DM-026"],
@@ -29,6 +29,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 02:20: pole addytywne, seed niepotrzebny; konta demo założone na nowo na bazie hacknation (Kamil 02:05 przełączył .env z hacknationS).",
     "coord-1 01:55: część T-098. Zmiana addytywna (nowe pole opcjonalne), seed niepotrzebny."
   ],
   "created_at": "2026-11-22",

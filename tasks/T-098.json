@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "coordinator",
   "assignee": "coord-1",
-  "status": "backlog",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["API-022", "API-020", "DM-017", "DM-026"],
@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 02:20: API-022 na main. Account.savedParcelIds ($addToSet, limit 200), API-020 dokłada zapisane działki (ULDK cache, lastReport null), wspólnik z ograniczeniem 403, ponowne dodanie 200. Test na żywo na hacknation: Kamil + działka 040706_4.0004.15 (0,38 ha) 201, potem 200, widoczna w API-020; nieistniejąca 404, zły id 422, Jan u Dawida 403. 326 testów OK.",
     "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu."
   ],
   "created_at": "2026-11-22",
