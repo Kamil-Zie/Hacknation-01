@@ -103,16 +103,13 @@ Pliki `.env*` z prawdziwymi wartościami są tylko na NAS-ie (uprawnienia 600), 
 5. Po szkielecie: `docker compose pull && docker compose up -d` w folderze projektu na NAS-ie.
 6. Sprawdź: `curl -s https://api.kamil-zielinski.pl/api/v1/health` zwraca 200, `https://app.kamil-zielinski.pl` ładuje aplikację, w konsoli przeglądarki brak błędów CORS.
 
-## Wdrożenie: obrazy z GitHub Actions, NAS tylko pobiera (zalecane, T-065)
+## Wdrożenie: cała budowa na Synology przez Container Manager (bez SSH, T-065)
 
-Na NAS-ie nic się nie buduje i nie działa npm (Container Manager zawieszał się na instalacji npm). Workflow `.github/workflows/images.yml` po każdym pushu na `main`: skan sekretów (pliki + cała historia), budowa obrazów backend i frontend dla `linux/amd64` i `linux/arm64`, push do `ghcr.io/kamil-zie/hacknation-{backend,frontend}:latest`.
+`deploy/Dockerfile.backend` i `deploy/Dockerfile.frontend` same klonują publiczne repo, skanują pliki i całą historię na sekrety (`git-checks.mjs`) i budują obraz na NAS-ie. Każdy obraz instaluje tylko swój workspace (backend ok. 100 MB zależności, frontend ok. 260 MB), frontend buduje `vite build` bez `tsc` (typy sprawdza CI). npm ma IPv4 first, długie timeouty, 5 ponowień, 4 gniazda i log `http`, żeby było widać postęp zamiast „zawieszenia”.
 
-Raz, w GitHubie: Profil → Packages → `hacknation-backend` i `hacknation-frontend` → Package settings → Change visibility → Public (bez tego NAS musi logować się do ghcr.io).
-
-Na NAS-ie bez SSH (DSM):
-1. File Station: folder `/docker/hacknation`, wgraj `deploy/docker-compose.yml` i `.env.prod` (wzór `deploy/env.prod.example`).
-2. Container Manager → Projekt → Utwórz: nazwa `hacknation`, ścieżka `/docker/hacknation`, źródło: istniejący `docker-compose.yml` → Dalej → Gotowe.
-3. Aktualizacja po nowym commicie (gdy workflow `images` jest zielony): Projekt `hacknation` → Akcja → Zbuduj (pobiera `:latest` ponownie).
+1. File Station: folder `/docker/hacknation`, wgraj `deploy/docker-compose.yml`, `deploy/Dockerfile.backend`, `deploy/Dockerfile.frontend` i `.env.prod` (wzór `deploy/env.prod.example`).
+2. Container Manager → Projekt → Utwórz: nazwa `hacknation`, ścieżka `/docker/hacknation`, „użyj istniejącego docker-compose.yml” → Dalej → Gotowe. Pierwsza budowa 5–15 min (log w oknie projektu).
+3. Aktualizacja po nowym commicie: Projekt `hacknation` → Akcja → Zbuduj.
 
 ## Wdrożenie krok po kroku (ręczny klon, budowanie na NAS-ie, T-065)
 

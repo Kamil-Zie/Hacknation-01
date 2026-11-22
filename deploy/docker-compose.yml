@@ -1,21 +1,27 @@
-# T-065 Prod on Synology (Container Manager → Project). Images are built and secret-scanned in GitHub Actions
-# (.github/workflows/images.yml) and only pulled here: no npm, no build on the NAS.
-# Project folder: /volume1/docker/hacknation with this file and .env.prod (template: deploy/env.prod.example).
-# Update after a new commit on main: Container Manager → Project → hacknation → Action → Build (pulls :latest again).
+# T-065 Prod on Synology, built ENTIRELY on the NAS (Container Manager → Project, no SSH needed).
+# Project folder /volume1/docker/hacknation: this file, Dockerfile.backend, Dockerfile.frontend, .env.prod
+# (template: deploy/env.prod.example). The Dockerfiles clone the public repo, scan it for secrets, then build.
+# Update after a new commit on main: Container Manager → Project → hacknation → Action → Build.
 name: hacknation
 
 services:
   frontend:
-    image: ghcr.io/kamil-zie/hacknation-frontend:latest
-    pull_policy: always
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_API_URL: https://api.kamil-zielinski.pl/api/v1
+    image: hacknation-frontend:latest
     restart: unless-stopped
     # only on localhost: Cloudflare Tunnel (host network) -> localhost:18080 = app.kamil-zielinski.pl
     ports: ['127.0.0.1:18080:80']
     networks: [hacknation]
 
   backend:
-    image: ghcr.io/kamil-zie/hacknation-backend:latest
-    pull_policy: always
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    image: hacknation-backend:latest
     restart: unless-stopped
     env_file: ./.env.prod
     # only on localhost: Cloudflare Tunnel (host network) -> localhost:13000 = api.kamil-zielinski.pl

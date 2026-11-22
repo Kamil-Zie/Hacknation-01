@@ -1,0 +1,47 @@
+# T-065 Backend prod image, built entirely on the Synology NAS (Container Manager project, deploy/docker-compose.yml).
+# Installs only the backend workspace; npm is hardened against hangs on the NAS network.
+# 1) Source: clone main from the public repo and scan all files + the whole history; a secret stops the build
+FROM node:22.13.0-alpine AS source
+RUN apk add --no-cache git
+# changes with every new commit on main, so the clone below is never served from cache
+ADD https://api.github.com/repos/Kamil-Zie/Hacknation-01/commits/main /tmp/main.json
+RUN git clone --branch main https://github.com/Kamil-Zie/Hacknation-01.git /src \
+ && cd /src \
+ && echo "[source] main = $(git log --oneline -1)" \
+ && node .claude/scripts/git-checks.mjs scan --all \
+ && node .claude/scripts/git-checks.mjs scan --history
+
+# 2) Build: backend deps only (esbuild bundle)
+FROM node:22.13.0-alpine AS build
+# npm hardened for the NAS: IPv4 first, long timeouts, retries, few parallel sockets, visible progress
+ENV NODE_OPTIONS="--dns-result-order=ipv4first --max-old-space-size=1536" \
+    NPM_CONFIG_FETCH_RETRIES=5 \
+    NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=20000 \
+    NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=120000 \
+    NPM_CONFIG_FETCH_TIMEOUT=600000 \
+    NPM_CONFIG_MAXSOCKETS=4 \
+    NPM_CONFIG_AUDIT=false \
+    NPM_CONFIG_FUND=false \
+    NPM_CONFIG_UPDATE_NOTIFIER=false \
+    NPM_CONFIG_LOGLEVEL=http
+WORKDIR /app
+COPY --from=source /src/package.json /src/package-lock.json ./
+COPY --from=source /src/apps/backend/package.json apps/backend/
+COPY --from=source /src/apps/frontend/package.json apps/frontend/
+COPY --from=source /src/database/package.json database/
+RUN npm ci --ignore-scripts -w apps/backend
+COPY --from=source /src/apps/backend apps/backend
+RUN npm run build -w apps/backend
+
+# 3) Runtime: reuses node_modules from the build stage (no second download on the NAS)
+FROM node:22.13.0-alpine
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=build /app/package.json /app/package-lock.json ./
+COPY --from=build /app/node_modules node_modules
+COPY --from=build /app/apps/backend/package.json apps/backend/
+COPY --from=build /app/apps/backend/dist apps/backend/dist
+WORKDIR /app/apps/backend
+USER node
+EXPOSE 3000
+CMD ["node", "dist/server.js"]
