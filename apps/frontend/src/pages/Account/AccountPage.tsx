@@ -28,6 +28,7 @@ import { KbwChart } from '@/components/KbwChart/KbwChart';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { DROUGHT_WORDS, ThreatList, ThreatMap } from '@/components/ThreatMap/ThreatMap';
 import { srOnly } from '@/app/a11yStyles';
+import { formatPlaceName } from '@/utils/format';
 import { useCanEdit, useSessionStore } from '@/store/session';
 
 const DROUGHT_ORDER: DroughtClass[] = ['severe', 'moderate', 'none', 'unknown'];
@@ -122,7 +123,10 @@ export function AccountPage() {
       current.includes(value) ? current.filter((entry) => entry !== value) : [...current, value],
     );
   const mapItems = items.filter((item) => shownClasses.includes(classOf(item)));
-  const top = mostThreatened(items);
+  // water balance chart: the most threatened parcel by default, the user can pick another one from the list
+  const withReport = items.filter((item) => item.lastReport);
+  const [chartParcelId, setChartParcelId] = useState<string | null>(null);
+  const top = withReport.find((item) => item.parcel.id === chartParcelId) ?? mostThreatened(items);
   const topReport = useReportQuery(top?.lastReport?.id);
 
   const openReport = (item: ParcelOverview) => {
@@ -432,16 +436,41 @@ export function AccountPage() {
                 charts={topReport.data.charts}
                 fill
                 title={
-                  <Typography id="bilans-wody-title" variant="h2" component="h2">
-                    <Link
-                      component={RouterLink}
-                      to={`/report/${top.lastReport?.id ?? ''}`}
-                      color="inherit"
-                      underline="hover"
-                    >
-                      {`Bilans wody · działka ${top.parcel.parcelNumber}`}
-                    </Link>
-                  </Typography>
+                  <Stack
+                    direction="row"
+                    spacing={1.5}
+                    useFlexGap
+                    sx={{ alignItems: 'center', flexWrap: 'wrap' }}
+                  >
+                    <Typography id="bilans-wody-title" variant="h2" component="h2">
+                      <Link
+                        component={RouterLink}
+                        to={`/report/${top.lastReport?.id ?? ''}`}
+                        color="inherit"
+                        underline="hover"
+                      >
+                        Bilans wody
+                      </Link>
+                    </Typography>
+                    {withReport.length > 1 ? (
+                      <TextField
+                        select
+                        size="small"
+                        label="Działka"
+                        value={top.parcel.id}
+                        onChange={(event) => setChartParcelId(event.target.value)}
+                        sx={{ minWidth: 220, maxWidth: '100%' }}
+                      >
+                        {withReport.map((item) => (
+                          <MenuItem key={item.parcel.id} value={item.parcel.id}>
+                            {`${item.parcel.parcelNumber} · ${formatPlaceName(item.parcel.region)}`}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    ) : (
+                      <Typography sx={bigText}>{`działka ${top.parcel.parcelNumber}`}</Typography>
+                    )}
+                  </Stack>
                 }
               />
             ) : (
