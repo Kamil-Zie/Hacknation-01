@@ -69,8 +69,8 @@ export function AccountPage() {
   const active = accounts.find((account) => account.id === activeAccountId);
 
   return (
-    <Stack spacing={2} sx={{ maxWidth: 1600, mx: 'auto' }}>
-      {/* page title for screen readers only; the visible page starts with the map */}
+    <Stack sx={{ maxWidth: 1600, mx: 'auto' }}>
+      {/* page title for screen readers only (no spacing after it, so the visible page starts at the top) */}
       <Typography variant="h1" component="h1" sx={srOnly}>
         {active?.name ?? 'Pulpit'}
       </Typography>
@@ -113,7 +113,7 @@ export function AccountPage() {
           id="zagrozone-dzialki-title"
           variant="h2"
           component="h2"
-          sx={{ gridArea: 'title', alignSelf: 'end', mb: { xs: -0.5, lg: -1 } }}
+          sx={{ gridArea: 'title', alignSelf: 'start', m: 0, mb: { xs: -0.5, lg: -1 } }}
         >
           Zagrożone działki
         </Typography>
