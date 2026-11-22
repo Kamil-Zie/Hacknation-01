@@ -119,7 +119,7 @@ export function FieldCreatePage() {
 
   return (
     // not a <form>: ParcelSearch has its own forms inside (nested forms are invalid)
-    <Stack spacing={3} sx={{ maxWidth: 960 }}>
+    <Stack spacing={3} sx={{ maxWidth: 1280 }}>
       <Box>
         <Typography variant="h1">Dodaj grupę działek</Typography>
         {/* T-103: short explanation of what a group is, before the form */}
@@ -146,68 +146,87 @@ export function FieldCreatePage() {
         sx={{ maxWidth: 560 }}
       />
 
-      <Box>
-        <Stack spacing={2}>
-          {/* T-103: the parcels already in the group sit above the search, so an added parcel
-              shows up right above the field it was typed into */}
-          <Box component="section" aria-labelledby="field-parcels-title">
-            <Typography id="field-parcels-title" variant="h2" sx={{ mb: 1 }}>
-              Działki w grupie ({parcels.length})
+      {/* T-103: lg+ two columns – the parcels in the group on the left (sticky, always in view
+          while clicking the map), the search with the map on the right; phones: list above */}
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 3,
+          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'minmax(0, 380px) minmax(0, 1fr)' },
+          alignItems: 'start',
+        }}
+      >
+        <Box
+          component="section"
+          aria-labelledby="field-parcels-title"
+          sx={{
+            position: { lg: 'sticky' },
+            top: { lg: 16 },
+            maxHeight: { lg: 'calc(100vh - 32px)' },
+            overflowY: { lg: 'auto' },
+            p: 2,
+            border: 1,
+            borderColor: 'kropla.line',
+            borderRadius: '16px',
+            bgcolor: 'background.paper',
+          }}
+        >
+          <Typography id="field-parcels-title" variant="h2" sx={{ mb: 1 }}>
+            Działki w grupie ({parcels.length})
+          </Typography>
+          {parcels.length === 0 ? (
+            <Typography color="text.secondary" sx={BIG_TEXT}>
+              Nie dodano jeszcze żadnej działki.
             </Typography>
-            {parcels.length === 0 ? (
-              <Typography color="text.secondary" sx={BIG_TEXT}>
-                Nie dodano jeszcze żadnej działki.
-              </Typography>
-            ) : (
-              <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
-                {parcels.map((parcel) => (
-                  <li key={parcel.id}>
-                    <Card variant="outlined">
-                      <CardContent
-                        sx={{
-                          display: 'flex',
-                          flexWrap: 'wrap',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          gap: 1,
-                          '&:last-child': { pb: 2 },
+          ) : (
+            <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
+              {parcels.map((parcel) => (
+                <li key={parcel.id}>
+                  <Card variant="outlined">
+                    <CardContent
+                      sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 1,
+                        '&:last-child': { pb: 2 },
+                      }}
+                    >
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography sx={{ ...BIG_TEXT, fontWeight: 600 }}>
+                          Działka {parcel.parcelNumber}
+                        </Typography>
+                        <Typography sx={{ fontSize: 16 }} color="text.secondary">
+                          {parcel.region} · {formatHa(parcel.areaHa)}
+                        </Typography>
+                      </Box>
+                      <Button
+                        type="button"
+                        color="inherit"
+                        startIcon={<DeleteOutlineIcon aria-hidden />}
+                        onClick={() => {
+                          resetErrors();
+                          setParcels((current) => current.filter((item) => item.id !== parcel.id));
                         }}
+                        sx={{ minHeight: 48, fontSize: 16 }}
                       >
-                        <Box sx={{ minWidth: 0 }}>
-                          <Typography sx={{ ...BIG_TEXT, fontWeight: 600 }}>
-                            Działka {parcel.parcelNumber}
-                          </Typography>
-                          <Typography sx={{ fontSize: 16 }} color="text.secondary">
-                            {parcel.region} · {formatHa(parcel.areaHa)}
-                          </Typography>
-                        </Box>
-                        <Button
-                          type="button"
-                          color="inherit"
-                          startIcon={<DeleteOutlineIcon aria-hidden />}
-                          onClick={() => {
-                            resetErrors();
-                            setParcels((current) =>
-                              current.filter((item) => item.id !== parcel.id),
-                            );
-                          }}
-                          sx={{ minHeight: 48, fontSize: 16 }}
-                        >
-                          Usuń z listy
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </li>
-                ))}
-              </Stack>
-            )}
-            {parcels.length > 0 && (
-              <Typography sx={{ ...BIG_TEXT, fontWeight: 700, mt: 1 }}>
-                Razem: {formatHa(totalHa)}
-              </Typography>
-            )}
-          </Box>
+                        Usuń z listy
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </li>
+              ))}
+            </Stack>
+          )}
+          {parcels.length > 0 && (
+            <Typography sx={{ ...BIG_TEXT, fontWeight: 700, mt: 1 }}>
+              Razem: {formatHa(totalHa)}
+            </Typography>
+          )}
+        </Box>
 
+        <Stack spacing={2} sx={{ minWidth: 0 }}>
           {/* T-103: same search as „Dodaj działkę” (number / address / GPS / map); every parcel
               found or clicked goes into the group */}
           <ParcelSearch
