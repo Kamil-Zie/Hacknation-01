@@ -21,6 +21,10 @@ export function ReportBody({ report }: ReportBodyProps) {
         <Typography variant="h2" component="h2" sx={{ fontSize: '1.75rem', fontWeight: 800 }}>
           Więcej informacji
         </Typography>
+        {/* T-103 order: most useful first, more detail further down –
+            what to do → why (vulnerability, causes) → detailed water figures → sources */}
+        <RecommendationList recommendations={report.recommendations} dataGaps={report.dataGaps} />
+        <VulnerabilityCauses vulnerability={report.vulnerability} causes={report.causes} />
         <AssessmentSection
           assessment={report.assessment}
           cropName={report.crop.name}
@@ -28,8 +32,6 @@ export function ReportBody({ report }: ReportBodyProps) {
           dataGaps={report.dataGaps}
           charts={report.charts ?? null}
         />
-        <VulnerabilityCauses vulnerability={report.vulnerability} causes={report.causes} />
-        <RecommendationList recommendations={report.recommendations} dataGaps={report.dataGaps} />
         <SourcesLimitations
           sources={report.sources}
           limitations={report.limitations}

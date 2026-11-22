@@ -3,9 +3,9 @@ import { Box, Chip, List, ListItemButton, ListItemText } from '@mui/material';
 import { useState } from 'react';
 
 export const REPORT_SECTIONS = [
-  { id: 'stan-wody', label: 'Stan wody' },
-  { id: 'podatnosc', label: 'Podatność i przyczyny' },
   { id: 'co-zrobic', label: 'Co zrobić' },
+  { id: 'podatnosc', label: 'Podatność i przyczyny' },
+  { id: 'stan-wody', label: 'Stan wody' },
   { id: 'zrodla', label: 'Źródła i ograniczenia' },
 ] as const;
 
