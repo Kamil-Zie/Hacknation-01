@@ -202,8 +202,9 @@ export function AnalysisForm({
                       lg: 'repeat(4, minmax(0, 1fr))',
                     },
                     gap: 2,
-                    // lg+: all columns as tall as the tallest one; the last category in each
-                    // column stretches, so every column ends on the same line
+                    // lg+: all columns as tall as the tallest one; spare height is shared by every
+                    // category below the first one in a column (a single one takes it all), so
+                    // every column ends on the same line
                     alignItems: { xs: 'start', lg: 'stretch' },
                   }}
                 >
@@ -221,7 +222,7 @@ export function AnalysisForm({
                             p: 1.5,
                             minWidth: 0,
                             bgcolor: 'background.paper',
-                            flexGrow: { lg: index === column.length - 1 ? 1 : 0 },
+                            flexGrow: { lg: index > 0 || column.length === 1 ? 1 : 0 },
                           }}
                         >
                           <Typography
