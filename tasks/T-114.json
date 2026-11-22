@@ -1,0 +1,25 @@
+{
+  "id": "T-114",
+  "title": "Mapa zagrożonych działek: dopisek „Kliknij pinezkę, aby przejść do działki”",
+  "description": "Decyzja Kamila 08:20. Na mapie Pulpitu (UI-C-017) w prawym górnym rogu stały dopisek z ikoną: kliknięcie pinezki (albo obrysu) otwiera raport działki. Nie przechwytuje kliknięć (pointer-events: none).",
+  "type": "bugfix",
+  "team": "frontend",
+  "assignee": "coord-1",
+  "status": "done",
+  "priority": "low",
+  "depends_on": [],
+  "contract_refs": ["UI-C-017", "UI-S-009"],
+  "acceptance_criteria": [
+    "Dopisek widoczny na mapie Pulpitu, nie zasłania przycisków zoomu ani komunikatu filtra"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 08:25: sprawdzone na mocku /konto (1440 px, tryb ciemny). ThreatMap wolny po T-106 Dawida (08:04)."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

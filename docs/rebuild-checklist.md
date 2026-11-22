@@ -30,6 +30,8 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 - [ ] Telefon 390 px: pulpit się układa w kolumnę, nic nie wychodzi poza ekran
 - [ ] Tryb ciemny i wysoki kontrast: pulpit czytelny
 
+- [ ] Mapa zagrożonych działek: w prawym górnym rogu „Kliknij pinezkę, aby przejść do działki”; kliknięcie pinezki otwiera raport (T-114), na 390 px dopisek nie zasłania mapy
+
 ## 2a. Ułatwienia dostępu
 
 - [ ] Po zmianie rozmiaru tekstu, kontrastu albo trybu ciemnego na pasku pojawia się „Widok domyślny”

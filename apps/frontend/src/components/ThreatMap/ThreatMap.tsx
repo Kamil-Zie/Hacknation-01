@@ -1,5 +1,6 @@
 // UI-C-017 ThreatMap: Leaflet map of account parcels colored by drought class, fit to at-risk parcels; ThreatList: at-risk list and legend for the drought tile
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import TouchAppIcon from '@mui/icons-material/TouchApp';
 import { Alert, Box, Button, Skeleton, Stack, Typography, useTheme } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -224,6 +225,33 @@ export function ThreatMap({
           <FitToItems items={fitted} programmatic={programmatic} />
           <ZoomOutWatcher programmatic={programmatic} onZoomOut={() => setIsNoticeOpen(true)} />
         </MapContainer>
+        {/* T-114 hint: a pin (or parcel outline) opens that parcel's report */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            zIndex: 1000,
+            maxWidth: 'calc(100% - 70px)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.75,
+            px: 1.5,
+            py: 0.75,
+            borderRadius: 2,
+            border: 1,
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
+            color: 'text.primary',
+            boxShadow: 2,
+            fontSize: '1rem',
+            fontWeight: 600,
+            pointerEvents: 'none',
+          }}
+        >
+          <TouchAppIcon aria-hidden sx={{ fontSize: '1.25rem', color: 'primary.main' }} />
+          Kliknij pinezkę, aby przejść do działki
+        </Box>
         {/* T-106 notice over the map; role=status so a screen reader announces it */}
         <Box
           role="status"
