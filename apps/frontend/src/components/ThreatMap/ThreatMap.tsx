@@ -85,7 +85,12 @@ export function ThreatMap({ items, isLoading = false, onSelect }: ThreatMapProps
       <Box
         role="region"
         aria-label="Mapa działek pokolorowanych według suszy"
-        sx={{ width: '100%', height: { xs: 320, lg: 460 }, borderRadius: 2, overflow: 'hidden' }}
+        sx={{
+          width: '100%',
+          height: { xs: 320, lg: 'max(360px, 45vh)' },
+          borderRadius: 2,
+          overflow: 'hidden',
+        }}
       >
         <MapContainer
           center={[52, 19.4]}

@@ -1,46 +1,40 @@
-// UI-S-009 T-086 Dashboard: account header, tiles with ThreatMap (UI-C-017), parcels, drought, advice, reports, sources (members live on /wspolnicy, fields on /pola)
+// UI-S-009 T-093 Dashboard: account header, 2×2 grid with ThreatMap (UI-C-017), drought + parcels, water balance (UI-C-011), quick report link (UI-S-014)
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import { Box, Button, Link, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
-import { useAccountReportsQuery, useRenameAccountMutation } from '@/api/accounts';
+import { useRenameAccountMutation } from '@/api/accounts';
 import { useAccountParcelsQuery } from '@/api/accountParcels';
 import { useReportQuery } from '@/api/analyses';
-import { useSources } from '@/api/sources';
-import type { DroughtClass, ParcelOverview, Recommendation } from '@/api/types';
+import type { DroughtClass, ParcelOverview } from '@/api/types';
 import { DashboardTile } from '@/components/DashboardTile/DashboardTile';
+import { KbwChart } from '@/components/KbwChart/KbwChart';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { DROUGHT_WORDS, ThreatMap } from '@/components/ThreatMap/ThreatMap';
 import { useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
-
-// retention first, then agrotechnics, then irrigation
-const CATEGORY_ORDER: Record<Recommendation['category'], number> = {
-  retention_landscape: 0,
-  retention_soil: 0,
-  agrotechnics: 1,
-  irrigation: 2,
-};
 
 const DROUGHT_ORDER: DroughtClass[] = ['severe', 'moderate', 'none', 'unknown'];
 
 const bigText = { fontSize: '1.125rem' } as const;
 const linkSx = { ...bigText, minHeight: 48, display: 'inline-flex', alignItems: 'center' } as const;
 
-function formatDate(iso: string): string {
-  const date = new Date(iso);
-  return Number.isNaN(date.getTime()) ? iso : date.toLocaleDateString('pl-PL');
+function formatHa(value: number): string {
+  return `${value.toLocaleString('pl-PL', { maximumFractionDigits: 2 })} ha`;
 }
 
+// parcel for the water-balance chart: at-risk first, then by drought class; only parcels with a report
 function mostThreatened(items: ParcelOverview[]): ParcelOverview | null {
-  const atRisk = items.filter((item) => item.atRisk && item.lastReport);
-  atRisk.sort(
+  const withReport = items.filter((item) => item.lastReport);
+  withReport.sort(
     (a, b) =>
+      Number(b.atRisk) - Number(a.atRisk) ||
       DROUGHT_ORDER.indexOf(a.lastReport?.droughtClass ?? 'unknown') -
-      DROUGHT_ORDER.indexOf(b.lastReport?.droughtClass ?? 'unknown'),
+        DROUGHT_ORDER.indexOf(b.lastReport?.droughtClass ?? 'unknown'),
   );
-  return atRisk[0] ?? null;
+  return withReport[0] ?? null;
 }
 
 export function AccountPage() {
@@ -48,9 +42,7 @@ export function AccountPage() {
   const { token, accounts, activeAccountId, setActiveAccount } = useSessionStore();
   const accountId = activeAccountId ?? '';
   const rename = useRenameAccountMutation(accountId, token ?? '');
-  const reports = useAccountReportsQuery(activeAccountId, token);
   const parcels = useAccountParcelsQuery(activeAccountId, token);
-  const sources = useSources();
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const renameError = rename.error ? errorMessage(rename.error) : null;
@@ -58,13 +50,11 @@ export function AccountPage() {
   const items = parcels.data ?? [];
   const atRisk = items.filter((item) => item.atRisk);
   const totalHa = items.reduce((sum, item) => sum + item.parcel.areaHa, 0);
+  const atRiskHa = atRisk.reduce((sum, item) => sum + item.parcel.areaHa, 0);
   const countByClass = (value: DroughtClass) =>
     items.filter((item) => (item.lastReport?.droughtClass ?? 'unknown') === value).length;
   const top = mostThreatened(items);
   const topReport = useReportQuery(top?.lastReport?.id);
-  const advice = [...(topReport.data?.recommendations ?? [])].sort(
-    (a, b) => CATEGORY_ORDER[a.category] - CATEGORY_ORDER[b.category] || a.order - b.order,
-  )[0];
 
   const openReport = (item: ParcelOverview) => {
     if (item.lastReport) navigate(`/report/${item.lastReport.id}`);
@@ -76,9 +66,6 @@ export function AccountPage() {
   return (
     <Stack spacing={3} sx={{ maxWidth: 1600, mx: 'auto' }}>
       <Box>
-        <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-          Pulpit gospodarstwa
-        </Typography>
         {isEditing && active ? (
           <Stack
             component="form"
@@ -156,7 +143,11 @@ export function AccountPage() {
         sx={{
           display: 'grid',
           gap: 3,
-          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(3, minmax(0, 1fr))' },
+          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
+          gridTemplateAreas: {
+            xs: '"map" "side" "chart" "quick"',
+            lg: '"map side" "chart quick"',
+          },
         }}
       >
         <DashboardTile
@@ -166,7 +157,7 @@ export function AccountPage() {
           isError={parcels.isError}
           onRetry={retryParcels}
           errorText="Nie udało się pobrać działek."
-          sx={{ gridColumn: { lg: 'span 2' }, gridRow: { lg: 'span 2' } }}
+          sx={{ gridArea: 'map' }}
         >
           {items.length === 0 ? (
             <Typography sx={bigText}>
@@ -183,24 +174,7 @@ export function AccountPage() {
             </Stack>
           )}
         </DashboardTile>
-        <Stack spacing={3} sx={{ gridRow: { lg: 'span 2' }, minWidth: 0, alignSelf: 'start' }}>
-          <DashboardTile
-            id="twoje-dzialki"
-            title="Twoje działki"
-            isLoading={parcels.isPending}
-            isError={parcels.isError}
-            onRetry={retryParcels}
-            isEmpty={items.length === 0}
-            emptyText="Nie masz jeszcze działek."
-          >
-            <Stack spacing={0.5}>
-              <Typography sx={bigText}>Liczba działek: {items.length}</Typography>
-              <Typography sx={bigText}>
-                Razem: {totalHa.toLocaleString('pl-PL', { maximumFractionDigits: 2 })} ha
-              </Typography>
-              <Typography sx={bigText}>Zagrożone: {atRisk.length}</Typography>
-            </Stack>
-          </DashboardTile>
+        <Stack spacing={3} sx={{ gridArea: 'side', minWidth: 0 }}>
           <DashboardTile
             id="stan-suszy"
             title="Stan suszy"
@@ -217,70 +191,83 @@ export function AccountPage() {
                   <Typography sx={bigText}>{countByClass(value)}</Typography>
                 </Stack>
               ))}
+              <Typography
+                sx={{ ...bigText, fontWeight: 700, pt: 1, borderTop: 1, borderColor: 'divider' }}
+              >
+                Zagrożony obszar: {formatHa(atRiskHa)}
+              </Typography>
+            </Stack>
+          </DashboardTile>
+          <DashboardTile
+            id="twoje-dzialki"
+            title="Twoje działki"
+            isLoading={parcels.isPending}
+            isError={parcels.isError}
+            onRetry={retryParcels}
+            isEmpty={items.length === 0}
+            emptyText="Nie masz jeszcze działek."
+          >
+            <Stack spacing={0.5}>
+              <Typography sx={bigText}>Liczba działek: {items.length}</Typography>
+              <Typography sx={bigText}>Razem: {formatHa(totalHa)}</Typography>
+              <Link component={RouterLink} to="/dzialki" sx={linkSx}>
+                Zobacz wszystkie działki
+              </Link>
             </Stack>
           </DashboardTile>
         </Stack>
         <DashboardTile
-          id="najwazniejsze-teraz"
-          title="Najważniejsze teraz"
+          id="bilans-wody"
+          title="Bilans wody"
           isLoading={parcels.isPending || (top !== null && topReport.isPending)}
           isError={parcels.isError || topReport.isError}
+          errorText="Nie udało się pobrać wykresu bilansu wody."
           onRetry={() => {
             retryParcels();
             void topReport.refetch();
           }}
-          isEmpty={top === null || !advice}
-          emptyText="Na razie nic pilnego. Gdy działka będzie zagrożona, podpowiemy, co zrobić."
+          sx={{ gridArea: 'chart' }}
         >
-          {top && advice && (
+          {top && topReport.data ? (
             <Stack spacing={1}>
-              <Typography sx={{ ...bigText, fontWeight: 700 }}>{advice.title}</Typography>
-              <Typography sx={bigText}>{advice.action}</Typography>
+              <Typography sx={bigText}>
+                {`Działka ${top.parcel.parcelNumber}, ${top.parcel.region}`}
+                {top.lastReport ? ` · ${top.lastReport.crop.name}` : ''}
+              </Typography>
+              <KbwChart charts={topReport.data.charts} />
               <Link component={RouterLink} to={`/report/${top.lastReport?.id ?? ''}`} sx={linkSx}>
-                {`Działka ${top.parcel.parcelNumber}, ${top.parcel.region} – zobacz raport`}
+                Zobacz pełny raport
+              </Link>
+            </Stack>
+          ) : (
+            <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
+              <Typography sx={bigText}>
+                Brak raportu. Sprawdź działkę, a pokażemy tu jej bilans wody.
+              </Typography>
+              <Link component={RouterLink} to="/" sx={linkSx}>
+                Sprawdź działkę
               </Link>
             </Stack>
           )}
         </DashboardTile>
         <DashboardTile
-          id="ostatnie-raporty"
-          title="Ostatnie raporty"
-          isLoading={reports.isPending}
-          isError={reports.isError}
-          onRetry={() => void reports.refetch()}
-          errorText="Nie udało się pobrać historii raportów."
-          isEmpty={(reports.data ?? []).length === 0}
-          emptyText="Brak zapisanych raportów."
+          id="szybki-raport"
+          title="Szybki raport"
+          sx={{ gridArea: 'quick', alignSelf: 'start' }}
         >
-          <Box component="ul" sx={{ m: 0, pl: 0, listStyle: 'none' }}>
-            {(reports.data ?? []).slice(0, 3).map((report) => (
-              <Box component="li" key={report.id} sx={{ py: 0.5 }}>
-                <Link component={RouterLink} to={`/report/${report.id}`} sx={linkSx}>
-                  {`${report.parcel.parcelNumber}, ${report.parcel.region} – ${formatDate(report.createdAt)}`}
-                </Link>
-                <Typography component="span" sx={bigText}>
-                  {` · ${DROUGHT_WORDS[report.droughtClass]}`}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-        </DashboardTile>
-        <DashboardTile
-          id="skad-dane"
-          title="Skąd dane"
-          isLoading={sources.isPending}
-          isError={sources.isError}
-          onRetry={() => void sources.refetch()}
-          isEmpty={(sources.data?.items ?? []).length === 0}
-          emptyText="Brak informacji o źródłach."
-        >
-          <Box component="ul" sx={{ m: 0, pl: 3 }}>
-            {(sources.data?.items ?? []).map((source) => (
-              <Typography component="li" key={source.id} sx={bigText}>
-                {`${source.name} (${source.provider})`}
-              </Typography>
-            ))}
-          </Box>
+          <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
+            <Typography sx={bigText}>Sprawdź kilka działek naraz, do 5 jednocześnie.</Typography>
+            <Button
+              component={RouterLink}
+              to="/szybki-raport"
+              variant="contained"
+              size="large"
+              startIcon={<PlaylistAddCheckIcon />}
+              sx={{ minHeight: 64, fontSize: '1.25rem', px: 4 }}
+            >
+              Szybki raport
+            </Button>
+          </Stack>
         </DashboardTile>
       </Box>
       {accounts.length > 1 && (

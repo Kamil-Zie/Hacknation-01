@@ -20,6 +20,8 @@ export const demoPartialReport: Report = { ...EXAMPLES['201_partial'], id: 'demo
 export function findMockReport(id: string): Report | null {
   if (id === demoReport.id) return demoReport;
   if (id === demoPartialReport.id) return demoPartialReport;
+  // account parcels mock (API-020) links its latest reports as mock_report_N
+  if (id.startsWith('mock_report_')) return { ...demoReport, id };
   return null;
 }
 
