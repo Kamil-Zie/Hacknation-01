@@ -16,6 +16,8 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import type { Theme } from '@mui/material/styles';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
@@ -39,15 +41,20 @@ function formatHa(value: number): string {
 
 // main container bottom padding on md+ (AppLayout py: 4)
 const PAGE_BOTTOM_PADDING = 32;
-// the two action buttons in the drought tile: identical look, a clear hover (lift + shadow)
+// the two action buttons in the drought tile: both outlined, hover like the drought toggles
+// (tinted fill in the button colour + a small shift)
 const actionButtonSx = {
   minHeight: 56,
   fontSize: '1.125rem',
   whiteSpace: 'nowrap',
-  boxShadow: 'none',
-  transition: 'transform 120ms, box-shadow 120ms, filter 120ms',
-  '&:hover': { transform: 'translateY(-2px)', boxShadow: 4, filter: 'brightness(1.08)' },
-  '&:active': { transform: 'translateY(0)', boxShadow: 1 },
+  borderWidth: 2,
+  transition: 'background-color 120ms, transform 120ms',
+  '&:hover': {
+    borderWidth: 2,
+    bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.2),
+    transform: 'translateX(2px)',
+  },
+  '&:active': { transform: 'translateX(0)' },
 } as const;
 // tighter tile padding than the MUI default (16 px, 24 px at the bottom)
 const tilePadding = { p: 1.5, '&:last-child': { pb: 1.5 } } as const;
@@ -314,8 +321,11 @@ export function AccountPage() {
                             cursor: 'pointer',
                             opacity: isShown ? 1 : 0.4,
                             transition: 'background-color 120ms, transform 120ms',
-                            '&:hover': { bgcolor: 'action.hover', transform: 'translateX(2px)' },
-                            '&:hover .MuiChip-root': { bgcolor: 'action.selected' },
+                            // hover tints the badge in its own drought colour (red, yellow, green, grey)
+                            '&:hover': { transform: 'translateX(2px)' },
+                            '&:hover .MuiChip-root': {
+                              bgcolor: alpha(theme.palette.drought[value], 0.25),
+                            },
                             '&:active': { transform: 'translateX(0)' },
                             '&:focus-visible': {
                               outline: 2,
@@ -370,7 +380,7 @@ export function AccountPage() {
               }}
             >
               <Button
-                variant="contained"
+                variant="outlined"
                 size="large"
                 fullWidth
                 startIcon={<AddLocationAltIcon />}
@@ -382,7 +392,7 @@ export function AccountPage() {
               <Button
                 component={RouterLink}
                 to="/szybki-raport"
-                variant="contained"
+                variant="outlined"
                 size="large"
                 fullWidth
                 startIcon={<PlaylistAddCheckIcon />}
