@@ -10,7 +10,7 @@ Rolnicy w Polsce coraz częściej tracą plony przez suszę, a dane, które mog�
 
 Kropelka to aplikacja webowa. Rolnik podaje numer działki ewidencyjnej albo klika ją na mapie, wybiera uprawę i datę analizy. Aplikacja pobiera na żywo dane z pięciu kategorii: meteorologiczne (Open-Meteo/ERA5, NASA POWER), satelitarne (Sentinel-2: NDVI, NDMI), glebowe (SoilGrids), hydrologiczne i terenowe (OpenStreetMap, model terenu) oraz geometrię działki (ULDK GUGiK). Na tej podstawie liczy bilans wodny według FAO-56 i podatność działki na suszę z 10 lat.
 
-Wynik to raport w prostym języku: stan i przyczyny niedoboru z liczbami, rekomendacje w kolejności retencja, agrotechnika, nawadnianie (opcjonalnie), każda z uzasadnieniem w danych, ze źródłami, datami, poziomem pewności i ograniczeniami. Wynik i rekomendacje oblicza aplikacja według jawnych reguł, nie model AI i nie gotowe teksty. Raport można zapisać, wydrukować lub zapisać jako PDF; konto jest opcjonalne.
+Wynik to raport w prostym języku: stan i przyczyny niedoboru z liczbami, rekomendacje w kolejności retencja, agrotechnika, nawadnianie (opcjonalnie), każda z uzasadnieniem w danych, ze źródłami, datami, poziomem pewności i ograniczeniami. Wynik i rekomendacje oblicza aplikacja według jawnych reguł, nie model AI i nie gotowe teksty. Raport można zapisać, wydrukować lub zapisać jako PDF. Konto gospodarstwa daje pulpit z mapą zagrożonych działek, grupy działek i wspólników z rolami; pojedynczą działkę można sprawdzić też bez logowania.
 
 Korzyści: rolnik w kilkanaście sekund dostaje czytelną decyzję dla swojej działki bez GIS i bez wiedzy o źródłach danych, wie, od czego zacząć (zatrzymanie wody przed nawadnianiem) i jak bardzo może ufać wynikowi.
 
@@ -18,12 +18,18 @@ Korzyści: rolnik w kilkanaście sekund dostaje czytelną decyzję dla swojej dz
 
 | Element | Status |
 |---|---|
-| Repozytorium kodu | prywatne do końca wydarzenia; link do uzupełnienia: ______ (dostęp dla jury wg instrukcji Platformy) |
-| README | gotowe (w repozytorium: `README.md`) |
-| Prezentacja PDF | gotowa: `docs/pitch/Kropelka-prezentacja.pdf` (10 slajdów) |
-| Prototyp | instrukcja uruchomienia w README (sekcja 1); link do wersji produkcyjnej w przygotowaniu |
-| Film | w przygotowaniu |
-| Raporty | gotowe: 3 PDF w `docs/reports/`, wygenerowane na prod 22.11.2026 (dane bieżące ERA5/ERA5-Land, tło 10 lat NASA POWER). Bronowice 061409_2.0009.612, pszenica ozima, 25.05.2026 (demo, susza silna): https://app.kamil-zielinski.pl/report/6b02b1b29a3df2abfff702ad · Środa Wlkp. 302504_5.0029.66, pszenica ozima, 20.07.2023 (susza wg IUNG, Kropelka: susza silna): https://app.kamil-zielinski.pl/report/6b02b1b39a3df2abfff702af · Kruszwica 040706_4.0004.15, burak cukrowy, 31.05.2024 (brak suszy wg IUNG, Kropelka: brak suszy): https://app.kamil-zielinski.pl/report/6b02b1b49a3df2abfff702b1 |
+| Repozytorium kodu | prywatne do końca wydarzenia, dostęp dla jury według instrukcji Platformy; historia sprawdzona skanerem sekretów 2026-11-22 (675 commitów, czysto) |
+| README | gotowe (`README.md`, 9 sekcji KOWR + „Dla jury”) |
+| Prezentacja PDF | gotowa (`docs/pitch/Kropelka-prezentacja.pdf`, 10 slajdów) |
+| Prototyp | https://app.kamil-zielinski.pl; uruchomienie lokalne w README (sekcja 1) |
+| Film | gotowy (dodany w HackTribe) |
+| Raporty | gotowe: 3 PDF w `docs/reports/` i w HackTribe, wygenerowane na prod 22.11.2026 (dane bieżące ERA5/ERA5-Land, tło 10 lat NASA POWER); linki publiczne poniżej |
+
+Przykładowe raporty w aplikacji:
+
+- Bronowice (gm. Puławy) `061409_2.0009.612`, pszenica ozima, 25.05.2026 (demo), susza silna: https://app.kamil-zielinski.pl/report/6b02b1b29a3df2abfff702ad
+- Środa Wlkp. `302504_5.0029.66`, pszenica ozima, 20.07.2023 (susza wg IUNG), Kropelka: susza silna: https://app.kamil-zielinski.pl/report/6b02b1b39a3df2abfff702af
+- Kruszwica `040706_4.0004.15`, burak cukrowy, 31.05.2024 (brak suszy wg IUNG), Kropelka: brak suszy: https://app.kamil-zielinski.pl/report/6b02b1b49a3df2abfff702b1
 
 ## Dlaczego chcemy zrealizować ten projekt (do wklejenia)
 
@@ -44,9 +50,9 @@ Rolnik wpisuje numer działki ewidencyjnej albo klika ją na mapie, wybiera upra
 Korzyści dla rolnika:
 - decyzja o wodzie na podstawie danych z jego działki, a nie ogólnego komunikatu dla gminy;
 - tańsze działania najpierw: retencja i agrotechnika przed kosztownym nawadnianiem;
-- działa na telefonie w polu, bez instalacji, logowania i opłat;
+- działa na telefonie w polu, bez instalacji i opłat; pojedynczą działkę sprawdzi bez zakładania konta;
 - raport do zapisania w PDF, wydruku albo udostępnienia linkiem, np. doradcy;
-- opcjonalne konto gospodarstwa: wspólna historia raportów dla rodziny albo wspólników.
+- konto gospodarstwa: pulpit z mapą zagrożonych działek, grupy działek z raportem zbiorczym, wspólnicy z rolami (właściciel, wspólnik, członek, gość) i wspólna historia raportów.
 
 ## Co było przed wydarzeniem i co robimy w trakcie (do wklejenia)
 
@@ -59,13 +65,13 @@ Korzyści dla rolnika:
 - weryfikacja: porównanie wyników z Monitoringiem Suszy IUNG-PIB (12 porównań) i poprawka metodyki;
 - dokumentacja README według wymagań KOWR, prezentacja i scenariusz pokazu.
 
-**Do końca wydarzenia planujemy:** wdrożenie produkcyjne z publicznym linkiem dla jury, poprawki bezpieczeństwa przed produkcją (limity zapytań, nagłówki, CORS), od 7:00 zamrożenie funkcji i tylko poprawki błędów, rozgrzanie cache i pomiar czasu na produkcji, raporty PDF z przykładowych działek, film do 3 minut i próbę pokazu na żywo.
+**Do końca wydarzenia planujemy:** wdrożenie produkcyjne z publicznym linkiem dla jury, poprawki bezpieczeństwa przed produkcją (limity zapytań, nagłówki, CORS), od 9:00 zamrożenie funkcji i tylko poprawki błędów, rozgrzanie cache i pomiar czasu na produkcji, raporty PDF z przykładowych działek, film do 3 minut i próbę pokazu na żywo.
 
 ## Instrukcja dla jury (do wklejenia, skrót README „Dla jury”)
 
-1. Otwórz https://app.kamil-zielinski.pl (bez instalacji i logowania, komputer lub telefon).
-2. Wpisz numer działki TERYT (np. 061409_2.0009.612) albo kliknij działkę na mapie → „Podgląd tej działki” → „To moja działka – dalej”.
+1. Otwórz https://app.kamil-zielinski.pl (bez instalacji, komputer lub telefon). Bez konta: „Sprawdź działkę bez logowania”. Pełna wersja: „Załóż konto” (dowolny e-mail, hasło min. 8 znaków) albo konto demonstracyjne: ______.
+2. Wyszukaj działkę: mapa, GPS albo numer TERYT (np. 061409_2.0009.612) → „To moja działka – dalej”.
 3. Wybierz uprawę i datę analizy (dziś lub dowolna z ostatnich 10 lat) → „Pokaż raport o wodzie”. Raport po ok. 8–20 s.
-4. „Pobierz PDF” albo „Drukuj” zapisuje raport; „Dodaj działkę” w nagłówku zaczyna kolejną analizę.
+4. „Pobierz PDF” albo „Drukuj” zapisuje raport. Po zalogowaniu Pulpit pokazuje mapę zagrożonych działek, stan suszy i bilans wody; „Dodaj działkę” w panelu bocznym zaczyna kolejną analizę.
 
 Uruchomienie lokalne (ok. 5 min, Node.js 20.19+, git, darmowy MongoDB Atlas M0 lub lokalny MongoDB): `cp .env.example .env` (uzupełnić MONGODB_URI), `npm install`, `npm run dev`, potem http://localhost:5173. Szczegóły i rozwiązywanie problemów: README, sekcja „Dla jury”.

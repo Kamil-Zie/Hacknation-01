@@ -5,7 +5,7 @@
   "type": "docs",
   "team": "coordinator",
   "assignee": "coord-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "critical",
   "depends_on": ["T-001"],
   "contract_refs": ["API-006", "DM-005"],
@@ -31,7 +31,8 @@
     "coord-1 18:15: Robi coord-1 (decyzja Kamila 18:17, przekazanie cofnięte). Zostało: (1) ceny do potwierdzenia w §8: Open-Meteo plan komercyjny z Historical API (open-meteo.com/en/pricing) i MongoDB Atlas najmniejszy płatny tier – podać kwotę/mies. i datę sprawdzenia; (2) test 'czysty klon': git clone do /tmp, kroki z README §1 dosłownie, popraw instrukcję, jeśli coś nie działa; (3) README §2 opisz nowe: Podgląd tej działki, nawigacja Panel/Szukaj/Dodaj działkę, nazwa gospodarstwa (T-056..T-059); (4) później: link prod (T-065) i tabela IUNG na ERA5 (Jan, T-055).",
     "coord-1 17:45: LICENSE (MIT, Zespół HackNation), README: koszty i skalowalność (KOWR 5.4/5.5), bezpieczeństwo i dane osobowe (5.6), podstawy naukowe z bibliografią załącznika; docs/zgloszenie.md (tekst do HackTribe, opis 1411 znaków). Zostaje: link repo w zgloszenie.md, ceny Open-Meteo/Atlas do potwierdzenia, wynik porównania z IUNG.",
     "coord-1 17:00: README draft (coord-docs) na main; stary README przeniesiony do docs/hacknation-workflow.md (linki poprawione). Otwarte TODO: licencje zależności + licencja kodu (sekcja 7), koszty skalowania (8), porównanie z IUNG/EDO (9). Kryterium 'czysty klon' do sprawdzenia.",
-    "Agent: coord-docs. Szacunek: 2h. Faza: draft 20:00. Punkt 9 uzupełnić po T-036; finalizacja po zamrożeniu."
+    "Agent: coord-docs. Szacunek: 2h. Faza: draft 20:00. Punkt 9 uzupełnić po T-036; finalizacja po zamrożeniu.",
+    "coord-1 10:20: README zaktualizowany: Dla jury (wejście bez konta i z kontem, Pulpit, panel boczny, przykładowe raporty), funkcje 8–12, dane osobowe."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-22"

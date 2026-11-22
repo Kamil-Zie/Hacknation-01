@@ -12,13 +12,22 @@ Aplikacja webowa dla rolnika (zadanie KOWR „Zatrzymaj wodę, chroń plony”).
 
 ### Wariant A: w przeglądarce, bez instalacji (zalecany)
 
-1. Otwórz **https://app.kamil-zielinski.pl** (Chrome, Edge, Firefox, Safari, Opera; komputer lub telefon). Bez logowania.
-2. Wpisz numer działki ewidencyjnej w formacie TERYT, np. `061409_2.0009.612`, i naciśnij Enter. Możesz też przybliżyć mapę i kliknąć działkę.
-3. Kliknij **„Podgląd tej działki”**, żeby zobaczyć obrys z ULDK, potem **„To moja działka – dalej”**.
-4. Wybierz uprawę i **datę analizy** (dziś lub dowolny dzień z ostatnich 10 lat), kliknij **„Pokaż raport o wodzie”**.
-5. Raport pojawia się zwykle po 8–20 s (ta sama działka, uprawa i data drugi raz: poniżej 1 s). Zawiera stan wody, przyczyny, rekomendacje, źródła z datami, pewność i braki danych.
-6. **„Pobierz PDF”** albo **„Drukuj”** w raporcie: wersja do druku (w oknie druku można wybrać „Zapisz jako PDF”). Raport ma stały link, który można skopiować z paska adresu.
-7. Kolejna działka: **„Dodaj działkę”** w nagłówku.
+Otwórz **https://app.kamil-zielinski.pl** (Chrome, Edge, Firefox, Safari, Opera; komputer lub telefon). Są dwa wejścia:
+
+**A1. Bez konta (najszybciej):** na ekranie logowania kliknij **„Sprawdź działkę bez logowania”**.
+
+1. Wyszukaj działkę: **mapa** (kliknij działkę), **GPS** albo **numer działki** w formacie TERYT, np. `061409_2.0009.612`. Obrys przychodzi z ULDK.
+2. Kliknij **„To moja działka – dalej”**.
+3. Wybierz uprawę i **datę analizy** (dziś lub dowolny dzień z ostatnich 10 lat), kliknij **„Pokaż raport o wodzie”**.
+4. Raport pojawia się zwykle po 8–20 s (ta sama działka, uprawa i data drugi raz: poniżej 2 s). Na górze: wynik, ile wody było w glebie na ten dzień, bilans wody i norma z 10 lat oraz najważniejsza rada. Niżej „Więcej informacji”: liczby „Teraz / Zwykle”, przyczyny, wszystkie rekomendacje, źródła z datami, pewność i braki danych.
+5. **„Pobierz PDF”** albo **„Drukuj”**: wersja do druku (w oknie druku „Zapisz jako PDF”). Raport ma stały link z paska adresu.
+
+**A2. Z kontem gospodarstwa (pełna wersja):** zakładka **„Załóż konto”** (dowolny e-mail, hasło min. 8 znaków, nazwa gospodarstwa) albo konto demonstracyjne podane w zgłoszeniu. Po zalogowaniu otwiera się **Pulpit** (`/konto`):
+
+- mapa zagrożonych działek (kliknięcie pinezki otwiera działkę), stan suszy z przełącznikami klas, lista zagrożonych, wykres bilansu wody, **„Sprawdź nową działkę”** i **„Szybki raport”**;
+- panel boczny: **Dodaj działkę** (po dodaniu wybór uprawy, potem okienko „Zobacz raport” / „Dodaj kolejną działkę”), **Moje działki** z filtrami, **Dodaj grupę działek** (min. 2 działki, raport zbiorczy), **Moje grupy działek**, **Wspólnicy** (tagi Właściciel, Wspólnik, Członek, Gość).
+
+Logowanie uzgodniliśmy z jury jako dopuszczalne; analiza pojedynczej działki działa też bez konta (A1).
 
 Działki, na których sprawdzaliśmy wyniki (porównanie z IUNG-PIB w sekcji 9):
 
@@ -29,7 +38,11 @@ Działki, na których sprawdzaliśmy wyniki (porównanie z IUNG-PIB w sekcji 9):
 | `040706_4.0004.15` | Kruszwica | burak cukrowy, 2024-05-31 |
 | `221002_4.0004.136` | Nowy Dwór Gdański | rzepak ozimy, 2023-07-10 |
 
-Konto gospodarstwa jest opcjonalne (przycisk „Zaloguj” → „Załóż konto”, dowolny e-mail, hasło min. 8 znaków); analiza działa bez niego.
+Przykładowe raporty (zapisane na produkcji, link publiczny; PDF w `docs/reports/`):
+
+- Bronowice, pszenica ozima, 2026-05-25, susza silna: https://app.kamil-zielinski.pl/report/6b02b1b29a3df2abfff702ad
+- Środa Wlkp., pszenica ozima, 2023-07-20, susza silna: https://app.kamil-zielinski.pl/report/6b02b1b39a3df2abfff702af
+- Kruszwica, burak cukrowy, 2024-05-31, brak suszy: https://app.kamil-zielinski.pl/report/6b02b1b49a3df2abfff702b1
 
 ### Wariant B: lokalnie na własnym komputerze (ok. 5 minut)
 
@@ -88,9 +101,11 @@ Aplikacja działa w przeglądarce bez instalowania czegokolwiek po stronie użyt
 5. **Przyczyny niedoboru** z dowodami w liczbach (deficyt opadów i upał, niska retencja gleby, spływ powierzchniowy, zapotrzebowanie uprawy, niska wilgotność roślinności).
 6. **Rekomendacje w stałej kolejności:** retencja krajobrazowa, retencja glebowa, agrotechnika, nawadnianie (zasadność, termin, dawka). Każda z uzasadnieniem w danych.
 7. **Raport:** data i źródła, poziom pewności z jego powodami, jawne braki danych, ograniczenia. Zapis w systemie (link do raportu), wydruk lub PDF (`/report/:id/print`, w oknie druku „Zapisz jako PDF”).
-8. **Konto gospodarstwa (opcjonalne, ADR-010):** e-mail i hasło, własna nazwa gospodarstwa (podana przy rejestracji, do zmiany na ekranie konta), wielu członków konta, historia zapisanych raportów. Analiza bez logowania działa w całości.
-9. **Podgląd działki przed analizą:** przycisk „Podgląd tej działki” przybliża mapę do granicy z ULDK, żeby rolnik upewnił się, że to jego działka.
-10. **Nawigacja:** w nagłówku „Panel” (konto gospodarstwa), „Szukaj działki” (powrót z zachowaną działką) i „Dodaj działkę” (nowa analiza od zera), na ekranach kroków przycisk „Wstecz”.
+8. **Konto gospodarstwa (ADR-010):** e-mail i hasło, nazwa gospodarstwa, wspólnicy z tagami Właściciel / Wspólnik / Członek / Gość (twórcy nie da się usunąć; Członek i Gość tylko oglądają), wybór gospodarstwa, historia zapisanych raportów. Pojedynczą działkę można sprawdzić też bez konta („Sprawdź działkę bez logowania”).
+9. **Pulpit:** mapa zagrożonych działek pokolorowana klasą suszy (kliknięcie pinezki otwiera działkę), przełączniki klas suszy, lista zagrożonych od najgorszej, zagrożony obszar w ha, wykres bilansu wody z normą 10 lat dla wybranej działki, „Szybki raport”.
+10. **Moje działki i grupy działek:** lista z filtrami (zagrożenie, uprawa, miejscowość, powierzchnia), grupa min. 2 działek z raportem zbiorczym i wydrukiem wszystkich raportów.
+11. **Wyszukiwanie działki:** mapa, GPS, numer działki lub adres; po dodaniu działki od razu wybór uprawy i daty.
+12. **Ułatwienia dostępu:** trzy rozmiary tekstu, wysoki kontrast, tryb ciemny, „Widok domyślny”, tekst łatwy do czytania, deklaracja dostępności, mapa strony.
 
 ## 3. Skrócony opis architektury
 
@@ -171,7 +186,7 @@ Cache działki demo (061409_2.0009.612, pszenica, 2026-05-25) rozgrzany 2026-11-
 - API OpenStreetMap 0.6: zasady użycia zniechęcają do intensywnego odczytu; przy pojedynczych analizach i cache 30 dni akceptowalne. Docelowo: własny ekstrakt OSM dla Polski (np. Geofabrik) lub dane MPHP.
 - Dane ULDK/EGiB: udostępniane bezpłatnie przez GUGiK na zasadach Prawa geodezyjnego i kartograficznego.
 - Komponenty: biblioteki z sekcji 6 na licencjach open source (głównie MIT, Apache-2.0, BSD); wykaz w `package.json` i `package-lock.json`.
-- Aplikacja nie zbiera danych osobowych poza opcjonalnym kontem (e-mail i hasło zapisane jako skrót scrypt).
+- Aplikacja nie zbiera danych osobowych poza kontem gospodarstwa (e-mail i hasło zapisane jako skrót scrypt).
 - Kod aplikacji: MIT (plik LICENSE).
 
 ## 8. Znane ograniczenia
@@ -205,7 +220,7 @@ Cache działki demo (061409_2.0009.612, pszenica, 2026-05-25) rozgrzany 2026-11-
 
 ## Bezpieczeństwo i dane osobowe
 
-- **Co zbieramy i po co:** tylko dla opcjonalnego konta (ADR-010): e-mail (identyfikator logowania), hasło i imię (do wyświetlania członków konta). Analiza i raport działają bez konta, a raport anonimowy nie zawiera danych osobowych (`GET /analyses/:id` jest publiczny, więc link do raportu może otworzyć każdy, kto go zna).
+- **Co zbieramy i po co:** tylko dla konta gospodarstwa (ADR-010): e-mail (identyfikator logowania), hasło i imię (do wyświetlania członków konta). Pojedyncza analiza i raport działają też bez konta, a raport anonimowy nie zawiera danych osobowych (`GET /analyses/:id` jest publiczny, więc link do raportu może otworzyć każdy, kto go zna).
 - **Hasła:** zapisywane wyłącznie jako skrót `crypto.scrypt`; sesja to token JWT HS256 ważny 7 dni; limit 10 nieudanych logowań na 15 minut.
 - **Sekrety:** `MONGODB_URI` i `JWT_SECRET` tylko w `.env` (poza repozytorium); w produkcji `JWT_SECRET` jest wymagany.
 - **CORS:** API przyjmuje żądania z origin ustawionego w `CORS_ORIGIN`.
