@@ -1,5 +1,18 @@
 // UI-C-019 ParcelFilters: checkbox groups (area ranges, crop with icons, locality) and client-side filtering of account parcels [T-088, T-094]
-import { Box, Button, Checkbox, FormControlLabel, FormGroup, Typography } from '@mui/material';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SearchIcon from '@mui/icons-material/Search';
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  InputAdornment,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 
 import type { ParcelOverview } from '@/api/types';
@@ -74,14 +87,19 @@ interface GroupProps {
   options: { value: string; label: string; icon?: ReactNode }[];
   isChecked: (value: string) => boolean;
   onToggle: (value: string) => void;
+  /** shown between the legend and the checkboxes (e.g. a search field) */
+  top?: ReactNode;
+  /** shown under the checkboxes (e.g. „Pokaż wszystkie”) */
+  footer?: ReactNode;
 }
 
-function Group({ legend, options, isChecked, onToggle }: GroupProps) {
+function Group({ legend, options, isChecked, onToggle, top, footer }: GroupProps) {
   return (
     <Box component="fieldset" sx={{ border: 0, m: 0, p: 0, minWidth: 0 }}>
       <Typography component="legend" sx={{ fontWeight: 800, fontSize: '1.125rem', mb: 0.5 }}>
         {legend}
       </Typography>
+      {top}
       <FormGroup>
         {options.map((option) => (
           <FormControlLabel
@@ -111,7 +129,81 @@ function Group({ legend, options, isChecked, onToggle }: GroupProps) {
           />
         ))}
       </FormGroup>
+      {footer}
     </Box>
+  );
+}
+
+// T-103: localities collapsed to a few entries (checked ones always stay), with a search field
+const LOCALITIES_COLLAPSED = 4;
+
+function LocalityGroup({
+  localities,
+  selected,
+  onToggle,
+}: {
+  localities: string[];
+  selected: string[];
+  onToggle: (value: string) => void;
+}) {
+  const [query, setQuery] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const needle = query.trim().toLocaleLowerCase('pl-PL');
+  const matches = needle
+    ? localities.filter((name) => name.toLocaleLowerCase('pl-PL').includes(needle))
+    : localities;
+  const isCollapsible = !needle && matches.length > LOCALITIES_COLLAPSED;
+  const shown =
+    isCollapsible && !isExpanded
+      ? matches.filter((name, index) => index < LOCALITIES_COLLAPSED || selected.includes(name))
+      : matches;
+  const hiddenCount = matches.length - shown.length;
+  return (
+    <Group
+      legend="Miejscowość"
+      options={shown.map((name) => ({ value: name, label: name }))}
+      isChecked={(entry) => selected.includes(entry)}
+      onToggle={onToggle}
+      top={
+        localities.length > LOCALITIES_COLLAPSED && (
+          <TextField
+            size="small"
+            fullWidth
+            label="Szukaj miejscowości"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon aria-hidden />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            sx={{ my: 1 }}
+          />
+        )
+      }
+      footer={
+        <>
+          {needle && matches.length === 0 && (
+            <Typography color="text.secondary" sx={{ fontSize: '1.0625rem', py: 1 }}>
+              Brak miejscowości „{query.trim()}”
+            </Typography>
+          )}
+          {isCollapsible && (hiddenCount > 0 || isExpanded) && (
+            <Button
+              onClick={() => setIsExpanded((value) => !value)}
+              endIcon={isExpanded ? <ExpandLessIcon aria-hidden /> : <ExpandMoreIcon aria-hidden />}
+              sx={{ minHeight: 48, fontSize: '1.0625rem', px: 1 }}
+            >
+              {isExpanded ? 'Zwiń' : `Pokaż wszystkie (${hiddenCount} więcej)`}
+            </Button>
+          )}
+        </>
+      }
+    />
   );
 }
 
@@ -146,10 +238,9 @@ export function ParcelFilters({ parcels, value, onChange }: ParcelFiltersProps) 
         isChecked={(entry) => value.crops.includes(entry)}
         onToggle={(entry) => onChange({ ...value, crops: toggle(value.crops, entry) })}
       />
-      <Group
-        legend="Miejscowość"
-        options={localities.map((name) => ({ value: name, label: name }))}
-        isChecked={(entry) => value.localities.includes(entry)}
+      <LocalityGroup
+        localities={localities}
+        selected={value.localities}
         onToggle={(entry) => onChange({ ...value, localities: toggle(value.localities, entry) })}
       />
       <Button
