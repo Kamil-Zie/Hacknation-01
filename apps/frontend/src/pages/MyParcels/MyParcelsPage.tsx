@@ -81,7 +81,7 @@ function ParcelRow({ item }: { item: ParcelOverview }) {
           variant={lastReport ? 'outlined' : 'contained'}
           sx={{ minHeight: 48, fontSize: '1.125rem' }}
         >
-          Sprawdź
+          Sprawdź według plonu
         </Button>
       </Stack>
     </Card>
