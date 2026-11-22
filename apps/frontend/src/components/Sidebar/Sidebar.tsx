@@ -91,7 +91,7 @@ function GuestLinks() {
             <ListItemIcon sx={{ minWidth: 44, color: 'text.secondary' }}>{link.icon}</ListItemIcon>
             <ListItemText
               primary={link.label}
-              secondary="Po zalogowaniu"
+              secondary="Wymaga zalogowania"
               slotProps={{ primary: { sx: { ...labelSx, fontWeight: 500 } } }}
             />
             <LockOutlinedIcon aria-hidden fontSize="small" sx={{ color: 'text.secondary' }} />

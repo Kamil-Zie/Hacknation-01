@@ -24,6 +24,7 @@ import { useParcelQuery } from '@/api/parcels';
 import { useSources } from '@/api/sources';
 import type { CropCode, Report } from '@/api/types';
 import { AnalysisForm } from '@/components/AnalysisForm/AnalysisForm';
+import { GuestNotice } from '@/components/GuestNotice/GuestNotice';
 import { SourceProgressList } from '@/components/SourceProgressList/SourceProgressList';
 import { useSelectionStore } from '@/store/selection';
 import { useCanEdit, useSessionStore } from '@/store/session';
@@ -265,6 +266,9 @@ export function ParcelPage() {
             Raport zapiszemy w: {activeAccountName}
           </Typography>
         )}
+        <GuestNotice>
+          aby zapisać ten raport w swoich działkach. Bez logowania raport tylko obejrzysz.
+        </GuestNotice>
       </Stack>
     );
   }

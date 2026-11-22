@@ -1,20 +1,22 @@
-// UI-S-001 Start i wybór działki (krok 1 z 3): search by TERYT ID / address / GPS or map click, selected parcel card, next step button
+// UI-S-001 Start i wybór działki (krok 1 z 3): same search as „Dodaj działkę” (number / address / GPS / map as the 4th option), selected parcel card, next step button (guest: „To moja działka” locked)
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import TouchAppOutlinedIcon from '@mui/icons-material/TouchAppOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ApiError } from '@/api/client';
 import { useParcelByPointMutation, useParcelQuery } from '@/api/parcels';
 import { ExampleParcelButton } from '@/components/ExampleParcelButton/ExampleParcelButton';
+import { GuestNotice } from '@/components/GuestNotice/GuestNotice';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ParcelSearch } from '@/components/ParcelSearch/ParcelSearch';
 import { RecentParcels } from '@/components/RecentParcels/RecentParcels';
 import { useRecentParcelsStore } from '@/store/recentParcels';
 import { useSelectionStore } from '@/store/selection';
+import { useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
+import { formatPlaceName } from '@/utils/format';
 
 function toError(error: unknown): { code: string; message: string; canRetry: boolean } | null {
   if (!error) return null;
@@ -25,6 +27,7 @@ function toError(error: unknown): { code: string; message: string; canRetry: boo
 export function StartPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const isGuest = !useSessionStore((state) => state.token);
   const parcel = useSelectionStore((state) => state.parcel);
   const setParcel = useSelectionStore((state) => state.setParcel);
   const setIsExample = useSelectionStore((state) => state.setIsExample);
@@ -32,9 +35,13 @@ export function StartPage() {
   const [searchId, setSearchId] = useState<string | null>(null);
   const searchQuery = useParcelQuery(searchId);
   const pickMutation = useParcelByPointMutation();
-  const [focus, setFocus] = useState<{ lat: number; lon: number } | null>(null);
+  const [focus, setFocus] = useState<{
+    lat: number;
+    lon: number;
+    bounds?: [[number, number], [number, number]];
+  } | null>(null);
   const [focusKey, setFocusKey] = useState(0);
-  const mapSectionRef = useRef<HTMLDivElement>(null);
+  const [isPickedOnMap, setIsPickedOnMap] = useState(false);
 
   // T-058 "Dodaj działkę" navigates here with a reset stamp: forget the previous search
   const resetStamp = (location.state as { resetAt?: number } | null)?.resetAt;
@@ -58,6 +65,7 @@ export function StartPage() {
 
   function search(parcelId: string) {
     pickMutation.reset();
+    setIsPickedOnMap(false);
     if (parcelId === searchId) {
       void searchQuery.refetch();
     } else {
@@ -78,6 +86,7 @@ export function StartPage() {
   function handlePick(lat: number, lon: number) {
     setIsExample(false);
     setSearchId(null);
+    setIsPickedOnMap(true);
     lastPoint.current = { lat, lon };
     pickMutation.mutate(
       { lat, lon },
@@ -96,19 +105,15 @@ export function StartPage() {
     else if (lastPoint.current) pickMutation.mutate(lastPoint.current, { onSuccess: setParcel });
   }
 
+  const goNext = () => parcel && navigate(`/parcel/${encodeURIComponent(parcel.id)}`);
+
   const isSearching = searchId !== null && searchQuery.isFetching;
   const isLoading = isSearching || pickMutation.isPending;
-  const error = toError(searchId !== null ? searchQuery.error : pickMutation.error);
+  const byId = searchId !== null;
+  const error = toError(byId ? searchQuery.error : pickMutation.error);
 
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 560px) minmax(0, 1fr)' },
-        gap: { xs: 3, md: 4 },
-        alignItems: 'stretch',
-      }}
-    >
+    <Box sx={{ maxWidth: 960 }}>
       <Stack spacing={3} component="section" aria-label="Wybór działki">
         <Stack spacing={1.25}>
           <Typography sx={{ fontWeight: 700, fontSize: '1.125rem', color: 'primary.main' }}>
@@ -116,23 +121,136 @@ export function StartPage() {
           </Typography>
           <Typography variant="h1">Gdzie jest Twoja działka?</Typography>
           <Typography color="text.secondary" sx={{ fontSize: { xs: '1.125rem', md: '1.25rem' } }}>
-            Wpisz numer lub adres, użyj GPS <b>albo</b> kliknij działkę na mapie.
+            Znajdź działkę po numerze, adresie, GPS albo na mapie.
           </Typography>
         </Stack>
+        <GuestNotice>
+          aby zapisywać działki i raporty. Bez logowania możesz sprawdzić raport dowolnej działki.
+        </GuestNotice>
         <ParcelSearch
           key={parcel?.id ?? 'empty'}
           defaultValue={parcel?.id}
+          defaultMode={isPickedOnMap ? 'map' : 'number'}
           isLoading={isLoading}
-          error={searchId !== null ? error : null}
-          pickError={searchId === null ? error : null}
+          error={byId ? error : null}
+          pickError={byId ? null : error}
           onSearch={handleSearch}
           onLocate={handlePick}
-          onPlaceFound={(lat, lon) => setFocus({ lat, lon })}
+          onPlaceFound={(lat, lon, bounds) => setFocus({ lat, lon, bounds })}
+          mapSlot={
+            <Box
+              component="section"
+              aria-label="Mapa: kliknij swoją działkę"
+              sx={{
+                minWidth: 0,
+                border: 1,
+                borderColor: 'kropla.line',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                display: 'flex',
+              }}
+            >
+              <ParcelMap
+                parcel={parcel}
+                focus={focus}
+                focusKey={focusKey}
+                height={{ xs: 320, md: 480 }}
+                isLoading={isLoading}
+                errorMessage={null}
+                layerToggleInCorner
+                showParcelBoundaries
+                onPick={handlePick}
+              />
+            </Box>
+          }
         />
         {error?.canRetry && !isLoading && (
-          <Button variant="outlined" onClick={handleRetry} sx={{ alignSelf: 'flex-start' }}>
+          <Button
+            variant="outlined"
+            onClick={handleRetry}
+            sx={{ alignSelf: 'flex-start', minHeight: 48 }}
+          >
             Ponów
           </Button>
+        )}
+        {isLoading && (
+          <Stack direction="row" spacing={1.5} role="status" alignItems="center">
+            <CircularProgress size={24} aria-hidden />
+            <Typography sx={{ fontSize: '1.125rem' }}>Szukamy działki…</Typography>
+          </Stack>
+        )}
+        {parcel && !isLoading && (
+          <Box
+            component="section"
+            aria-label="Wybrana działka"
+            sx={{
+              border: 1,
+              borderColor: 'kropla.line',
+              borderRadius: '16px',
+              p: { xs: 2, md: 3 },
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Typography variant="h2" component="h2" sx={{ fontSize: '1.375rem', mb: 1.5 }}>
+              Działka {parcel.parcelNumber}
+            </Typography>
+            <Box component="dl" sx={{ m: 0, display: 'grid', gap: 1, mb: 2.5 }}>
+              {[
+                ['Numer działki', parcel.parcelNumber],
+                ['Miejscowość', formatPlaceName(parcel.region)],
+                ['Gmina', parcel.commune],
+                ['Powierzchnia', `${parcel.areaHa.toLocaleString('pl-PL')} ha`],
+              ].map(([label, value]) => (
+                <Box
+                  key={label}
+                  sx={{ display: 'flex', flexWrap: 'wrap', columnGap: 1.5, fontSize: '1.125rem' }}
+                >
+                  <Box component="dt" sx={{ color: 'text.secondary', minWidth: 140 }}>
+                    {label}
+                  </Box>
+                  <Box component="dd" sx={{ m: 0, fontWeight: 600 }}>
+                    {value}
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+            {isGuest ? (
+              <Stack spacing={1.5}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    endIcon={<ArrowForwardIcon aria-hidden />}
+                    onClick={goNext}
+                    sx={{ minHeight: 64, px: 3.5, fontSize: '1.3125rem' }}
+                  >
+                    Sprawdź tę działkę – dalej
+                  </Button>
+                  {/* guest mode: claiming the parcel needs an account */}
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    disabled
+                    startIcon={<LockOutlinedIcon aria-hidden />}
+                    sx={{ minHeight: 64, px: 3, fontSize: '1.125rem' }}
+                  >
+                    To moja działka
+                  </Button>
+                </Stack>
+                <GuestNotice>aby zapisać tę działkę jako swoją.</GuestNotice>
+              </Stack>
+            ) : (
+              <Button
+                variant="contained"
+                size="large"
+                endIcon={<ArrowForwardIcon aria-hidden />}
+                onClick={goNext}
+                sx={{ minHeight: 64, px: 3.5, fontSize: '1.3125rem' }}
+              >
+                To moja działka – dalej
+              </Button>
+            )}
+          </Box>
         )}
         <ExampleParcelButton disabled={isLoading} onSelect={handleExample} />
         <RecentParcels
@@ -141,146 +259,6 @@ export function StartPage() {
           onSelect={handleSearch}
         />
       </Stack>
-      <Box
-        component="section"
-        aria-label="Mapa"
-        ref={mapSectionRef}
-        sx={{
-          position: { xs: 'relative', md: 'sticky' },
-          minWidth: 0,
-          minHeight: { xs: 'auto', md: 560 },
-          // phones: card goes under the map so 'Podgląd tej działki' really shows the outline (T-071)
-          flexDirection: { xs: 'column', md: 'row' },
-          // md+: fit the viewport under header + stepper so the "Wybrana działka" buttons are
-          // never below the fold on a 1920×1080 projector (map used to stretch to the left column)
-          height: { md: 'calc(100vh - 248px)' },
-          alignSelf: { md: 'start' },
-          top: { md: 16 },
-          display: 'flex',
-          border: 1,
-          borderColor: 'kropla.line',
-          borderRadius: '16px',
-          overflow: 'hidden',
-        }}
-      >
-        <ParcelMap
-          parcel={parcel}
-          focus={focus}
-          focusKey={focusKey}
-          height={{ xs: 380, md: '100%' }}
-          isLoading={isLoading}
-          errorMessage={searchId === null ? (error?.message ?? null) : null}
-          onPick={handlePick}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            top: { xs: 12, md: 24 },
-            left: { xs: 56, md: 64 },
-            right: { xs: 12, md: 24 },
-            zIndex: 1000,
-            pointerEvents: 'none',
-          }}
-        >
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 1.5,
-              bgcolor: 'background.paper',
-              borderRadius: '12px',
-              px: 2,
-              py: 1.25,
-              boxShadow: 3,
-              maxWidth: '100%',
-            }}
-          >
-            <TouchAppOutlinedIcon aria-hidden sx={{ color: 'kropla.iconMuted', flexShrink: 0 }} />
-            <Typography sx={{ fontWeight: 600, fontSize: { xs: '1rem', md: '1.125rem' } }}>
-              Przybliż mapę i kliknij swoją działkę
-            </Typography>
-          </Box>
-        </Box>
-        {parcel && (
-          <Box
-            sx={{
-              // phones: static under the map (overlay hid the outline); md+: floating over the map
-              position: { xs: 'static', md: 'absolute' },
-              left: { md: 24 },
-              right: { md: 24 },
-              bottom: { md: 32 },
-              p: { xs: 1.5, md: 0 },
-              zIndex: 1000,
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            <Box
-              component="section"
-              aria-label="Wybrana działka"
-              sx={{
-                bgcolor: 'background.paper',
-                borderRadius: '16px',
-                p: { xs: 2, md: 2.5 },
-                boxShadow: 4,
-                width: '100%',
-                maxWidth: 640,
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 2,
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Box sx={{ minWidth: 0 }}>
-                <Typography color="text.secondary" sx={{ fontSize: '1rem' }}>
-                  Wybrana działka
-                </Typography>
-                <Typography
-                  sx={{
-                    fontWeight: 700,
-                    fontSize: '1.375rem',
-                    fontVariantNumeric: 'tabular-nums',
-                    overflowWrap: 'anywhere',
-                  }}
-                >
-                  {parcel.id}
-                </Typography>
-                <Typography color="text.secondary" sx={{ fontSize: '1rem' }}>
-                  {parcel.commune} · {parcel.areaHa.toLocaleString('pl-PL')} ha
-                </Typography>
-              </Box>
-              <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                spacing={1.5}
-                sx={{ width: { xs: '100%', sm: 'auto' } }}
-              >
-                <Button
-                  variant="contained"
-                  size="large"
-                  endIcon={<ArrowForwardIcon aria-hidden />}
-                  onClick={() => navigate(`/parcel/${encodeURIComponent(parcel.id)}`)}
-                  sx={{ minHeight: 64, px: 3.5, fontSize: '1.3125rem' }}
-                >
-                  To moja działka – dalej
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="large"
-                  startIcon={<VisibilityOutlinedIcon aria-hidden />}
-                  onClick={() => {
-                    setFocusKey((key) => key + 1);
-                    mapSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  }}
-                  sx={{ minHeight: 48, px: 2.5, fontSize: '1.125rem' }}
-                >
-                  Podgląd tej działki
-                </Button>
-              </Stack>
-            </Box>
-          </Box>
-        )}
-      </Box>
     </Box>
   );
 }
