@@ -233,10 +233,17 @@ export function ThreatMap({
           {showNotice && (
             <Alert
               severity="info"
-              variant="filled"
               onClose={() => setIsNoticeOpen(false)}
               slotProps={{ closeButton: { title: 'Zamknij', sx: { width: 48, height: 48 } } }}
-              sx={{ fontSize: '1.125rem', alignItems: 'center', boxShadow: 3 }}
+              sx={{
+                fontSize: '1.125rem',
+                alignItems: 'center',
+                boxShadow: 3,
+                border: 2,
+                borderColor: 'primary.main',
+                bgcolor: 'background.paper',
+                color: 'text.primary',
+              }}
             >
               <Box>
                 Mapa pokazuje tylko działki z wybranych klas suszy. Pozostałe działki są ukryte.
@@ -244,12 +251,11 @@ export function ThreatMap({
               {onShowAll && (
                 <Button
                   variant="contained"
-                  color="inherit"
                   onClick={() => {
                     setIsNoticeOpen(false);
                     onShowAll();
                   }}
-                  sx={{ mt: 1, minHeight: 48, fontSize: '1.125rem', color: 'text.primary' }}
+                  sx={{ mt: 1, minHeight: 48, fontSize: '1.125rem' }}
                 >
                   Pokaż wszystkie działki
                 </Button>

@@ -231,7 +231,14 @@ export function AccountPage() {
           ) : (
             <Stack spacing={1} sx={{ height: { lg: '100%' } }}>
               <Box sx={{ flex: { lg: '1 1 0' }, minHeight: 0 }}>
-                <ThreatMap items={mapItems} fill onSelect={openReport} />
+                {/* T-106 notice when zooming out with a drought filter; the button turns all classes back on */}
+                <ThreatMap
+                  items={mapItems}
+                  fill
+                  onSelect={openReport}
+                  isFiltered={shownClasses.length < DROUGHT_ORDER.length}
+                  onShowAll={() => setShownClasses(DROUGHT_ORDER)}
+                />
               </Box>
               {atRisk.length === 0 && (
                 <Typography sx={{ ...bigText, fontWeight: 700, flexShrink: 0 }}>
