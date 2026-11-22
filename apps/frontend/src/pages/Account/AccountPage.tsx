@@ -67,20 +67,26 @@ export function AccountPage() {
           gap: 2,
           gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
           gridTemplateAreas: {
-            xs: '"map" "side" "chart"',
-            lg: '"map side" "chart chart"',
+            xs: '"title" "map" "side" "chart"',
+            lg: '"title ." "map side" "chart chart"',
           },
           alignItems: 'start',
         }}
       >
+        {/* heading in its own row, so the drought tile starts level with the top edge of the map */}
+        <Typography
+          id="zagrozone-dzialki-title"
+          variant="h2"
+          component="h2"
+          sx={{ gridArea: 'title', mb: { xs: -0.5, lg: -1 } }}
+        >
+          Zagrożone działki
+        </Typography>
         <Box
           component="section"
           aria-labelledby="zagrozone-dzialki-title"
           sx={{ gridArea: 'map', minWidth: 0 }}
         >
-          <Typography id="zagrozone-dzialki-title" variant="h2" component="h2" sx={{ mb: 1.5 }}>
-            Zagrożone działki
-          </Typography>
           {parcels.isPending ? (
             <ThreatMap items={[]} isLoading onSelect={openReport} />
           ) : parcels.isError ? (
@@ -112,16 +118,26 @@ export function AccountPage() {
             </Stack>
           ) : (
             <Stack spacing={2}>
+              <ThreatMap items={items} onSelect={openReport} />
               {atRisk.length === 0 && (
                 <Typography sx={{ ...bigText, fontWeight: 700 }}>
                   Żadna działka nie jest zagrożona
                 </Typography>
               )}
-              <ThreatMap items={items} onSelect={openReport} />
             </Stack>
           )}
         </Box>
-        <Stack spacing={2} sx={{ gridArea: 'side', alignSelf: 'start', minWidth: 0 }}>
+        {/* lg+: same height as the map box in ThreatMap, buttons pushed to its bottom edge */}
+        <Stack
+          spacing={2}
+          sx={{
+            gridArea: 'side',
+            alignSelf: 'start',
+            minWidth: 0,
+            minHeight: { lg: 'max(360px, 45vh)' },
+            justifyContent: 'space-between',
+          }}
+        >
           <DashboardTile
             id="stan-suszy"
             title="Stan suszy"
