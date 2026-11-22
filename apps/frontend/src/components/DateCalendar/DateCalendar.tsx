@@ -221,9 +221,12 @@ export function DateCalendar({ value, min, max, disabled = false, onChange }: Da
               onClick={() => onChange(iso)}
               onKeyDown={(event) => handleKey(event, iso)}
               sx={(theme) => ({
-                minHeight: 52,
+                // square cells; tabular digits and one font weight on hover, so numbers do not move
+                aspectRatio: '1',
+                minHeight: 44,
                 fontSize: '1.125rem',
-                fontWeight: isSelected || isToday ? 800 : 500,
+                fontVariantNumeric: 'tabular-nums',
+                fontWeight: isSelected || isToday ? 800 : 600,
                 color: isSelected ? theme.palette.primary.contrastText : 'text.primary',
                 bgcolor: isSelected ? theme.palette.primary.main : theme.palette.background.paper,
                 // today: ring inside the cell (the grid lines stay straight)
@@ -235,7 +238,6 @@ export function DateCalendar({ value, min, max, disabled = false, onChange }: Da
                     ? theme.palette.primary.main
                     : alpha(theme.palette.primary.main, 0.2),
                   boxShadow: `inset 0 0 0 3px ${theme.palette.primary.main}`,
-                  fontWeight: 800,
                 },
                 '&.Mui-disabled': {
                   color: 'text.disabled',
