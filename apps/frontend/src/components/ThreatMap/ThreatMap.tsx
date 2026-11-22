@@ -171,8 +171,13 @@ export function ThreatList({
       sx={{ alignSelf: 'start', minWidth: 0 }}
     >
       {/* same heading level and style as the „Stan suszy” title next to it */}
-      <Typography id="lista-zagrozonych-title" variant="h2" component="h2">
-        Lista zagrożonych ({atRisk.length})
+      <Typography
+        id="lista-zagrozonych-title"
+        variant="h2"
+        component="h2"
+        sx={{ whiteSpace: 'nowrap' }}
+      >
+        Zagrożone ({atRisk.length})
       </Typography>
       {atRisk.length === 0 ? (
         <Typography sx={{ fontSize: '1.125rem' }}>Brak</Typography>
