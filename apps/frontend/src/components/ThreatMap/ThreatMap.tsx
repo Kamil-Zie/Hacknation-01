@@ -44,6 +44,8 @@ function ZoomWatcher({ onZoom }: { onZoom: (zoom: number) => void }) {
 
 const classOf = (item: ParcelOverview): DroughtClass => item.lastReport?.droughtClass ?? 'unknown';
 
+const SEVERITY_ORDER: DroughtClass[] = ['severe', 'moderate', 'unknown', 'none'];
+
 function FitToItems({ items }: { items: ParcelOverview[] }) {
   const map = useMap();
   useEffect(() => {
@@ -171,7 +173,10 @@ export function ThreatList({
   onSelect: (item: ParcelOverview) => void;
 }) {
   const { palette } = useTheme();
-  const atRisk = items.filter((item) => item.atRisk);
+  // most severe first: Susza silna, then Susza umiarkowana, then the rest
+  const atRisk = items
+    .filter((item) => item.atRisk)
+    .sort((a, b) => SEVERITY_ORDER.indexOf(classOf(a)) - SEVERITY_ORDER.indexOf(classOf(b)));
   return (
     <Stack
       component="section"
@@ -284,9 +289,6 @@ export function ThreatList({
           })}
         </Box>
       )}
-      <Typography sx={{ fontSize: '1rem', color: 'text.secondary', pt: 1, flexShrink: 0 }}>
-        Kolory jak na mapie. Linia przerywana: {DROUGHT_WORDS.unknown.toLowerCase()}.
-      </Typography>
     </Stack>
   );
 }
