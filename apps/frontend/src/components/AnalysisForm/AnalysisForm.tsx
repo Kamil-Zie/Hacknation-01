@@ -202,15 +202,15 @@ export function AnalysisForm({
                       lg: 'repeat(4, minmax(0, 1fr))',
                     },
                     gap: 2,
-                    // lg+: all columns as tall as the tallest one; spare height is shared by every
-                    // category below the first one in a column (a single one takes it all), so
-                    // every column ends on the same line
+                    // lg+: all columns as tall as the tallest one; spare height is shared equally
+                    // by every category in a column (e.g. Sady i jagodowe and Użytki zielone each
+                    // get half), so every column ends on the same line
                     alignItems: { xs: 'start', lg: 'stretch' },
                   }}
                 >
                   {balanceColumns(groups, CROP_COLUMNS).map((column) => (
                     <Stack key={column.map((group) => group.category).join('|')} spacing={2}>
-                      {column.map((group, index) => (
+                      {column.map((group) => (
                         <Box
                           key={group.category}
                           role="radiogroup"
@@ -222,7 +222,7 @@ export function AnalysisForm({
                             p: 1.5,
                             minWidth: 0,
                             bgcolor: 'background.paper',
-                            flexGrow: { lg: index > 0 || column.length === 1 ? 1 : 0 },
+                            flexGrow: { lg: 1 },
                           }}
                         >
                           <Typography
