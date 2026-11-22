@@ -21,6 +21,8 @@ export interface ThreatMapProps {
   items: ParcelOverview[];
   isLoading?: boolean;
   onSelect: (item: ParcelOverview) => void;
+  /** T-103: on lg+ fill the parent's height (dashboard one-screen layout) instead of 45vh */
+  fill?: boolean;
 }
 
 export const DROUGHT_WORDS: Record<DroughtClass, string> = {
@@ -68,12 +70,19 @@ function FitToItems({ items }: { items: ParcelOverview[] }) {
   return null;
 }
 
-export function ThreatMap({ items, isLoading = false, onSelect }: ThreatMapProps) {
+export function ThreatMap({ items, isLoading = false, onSelect, fill = false }: ThreatMapProps) {
   const { palette } = useTheme();
   const [zoom, setZoom] = useState(6);
+  const mapHeight = fill ? { xs: 320, lg: '100%' } : { xs: 320, lg: 'max(360px, 45vh)' };
 
   if (isLoading) {
-    return <Skeleton variant="rounded" height={420} aria-label="Ładowanie mapy" />;
+    return (
+      <Skeleton
+        variant="rounded"
+        aria-label="Ładowanie mapy"
+        sx={{ height: fill ? { xs: 320, lg: '100%' } : 420 }}
+      />
+    );
   }
 
   const atRisk = items.filter((item) => item.atRisk);
@@ -81,13 +90,13 @@ export function ThreatMap({ items, isLoading = false, onSelect }: ThreatMapProps
   const fitted = atRisk.length > 0 ? atRisk : items;
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} sx={fill ? { height: { lg: '100%' } } : undefined}>
       <Box
         role="region"
         aria-label="Mapa działek pokolorowanych według suszy"
         sx={{
           width: '100%',
-          height: { xs: 320, lg: 'max(360px, 45vh)' },
+          height: mapHeight,
           borderRadius: 2,
           overflow: 'hidden',
         }}

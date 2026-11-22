@@ -73,7 +73,7 @@ export function DashboardTile({
           <Typography id={`${id}-title`} variant="h2" component="h2">
             {title}
           </Typography>
-          <Box sx={{ minWidth: 0, flexGrow: 1 }}>{body}</Box>
+          <Box sx={{ minWidth: 0, minHeight: 0, flexGrow: 1 }}>{body}</Box>
         </Stack>
       </CardContent>
     </Card>

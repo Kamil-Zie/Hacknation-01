@@ -13,7 +13,10 @@ import {
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import { useAccountParcelsQuery } from '@/api/accountParcels';
@@ -35,6 +38,35 @@ function formatHa(value: number): string {
   return `${value.toLocaleString('pl-PL', { maximumFractionDigits: 2 })} ha`;
 }
 
+// main container bottom padding on md+ (AppLayout py: 4)
+const PAGE_BOTTOM_PADDING = 32;
+// below this the one-screen layout would crush the tiles, so the page scrolls instead
+const MIN_FIT_HEIGHT = 560;
+
+// lg+: height from the grid's top edge to the bottom of the window, so the whole dashboard fits one screen
+function useFitHeight(enabled: boolean) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    if (!enabled) {
+      setHeight(null);
+      return;
+    }
+    const measure = () => {
+      const element = ref.current;
+      if (!element) return;
+      const top = element.getBoundingClientRect().top + window.scrollY;
+      setHeight(
+        Math.max(MIN_FIT_HEIGHT, Math.floor(window.innerHeight - top - PAGE_BOTTOM_PADDING)),
+      );
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [enabled]);
+  return { ref, height };
+}
+
 // parcel for the water-balance chart: at-risk first, then by drought class; only parcels with a report
 function mostThreatened(items: ParcelOverview[]): ParcelOverview | null {
   const withReport = items.filter((item) => item.lastReport);
@@ -49,6 +81,9 @@ function mostThreatened(items: ParcelOverview[]): ParcelOverview | null {
 
 export function AccountPage() {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
+  const fit = useFitHeight(isDesktop);
   const { token, accounts, activeAccountId, setActiveAccount } = useSessionStore();
   const parcels = useAccountParcelsQuery(activeAccountId, token);
 
@@ -74,16 +109,21 @@ export function AccountPage() {
       <Typography variant="h1" component="h1" sx={srOnly}>
         {active?.name ?? 'Pulpit'}
       </Typography>
+      {/* lg+: one screen without scrolling – the grid gets the window height left below the header,
+          map row and chart row share it (rows: heading, map + drought, water balance) */}
       <Box
+        ref={fit.ref}
         sx={{
           display: 'grid',
           gap: 2,
           gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
+          gridTemplateRows: { lg: 'auto minmax(0, 1.25fr) minmax(0, 1fr)' },
           gridTemplateAreas: {
             xs: '"switch" "title" "map" "side" "chart"',
             lg: '"title switch" "map side" "chart chart"',
           },
-          alignItems: 'start',
+          alignItems: { xs: 'start', lg: 'stretch' },
+          height: fit.height ?? undefined,
         }}
       >
         {/* account switcher top right (lg+), top of the page on a phone */}
@@ -113,17 +153,17 @@ export function AccountPage() {
           id="zagrozone-dzialki-title"
           variant="h2"
           component="h2"
-          sx={{ gridArea: 'title', alignSelf: 'start', m: 0, mb: { xs: -0.5, lg: -1 } }}
+          sx={{ gridArea: 'title', alignSelf: 'center', m: 0, mb: { xs: -0.5, lg: 0 } }}
         >
           Zagrożone działki
         </Typography>
         <Box
           component="section"
           aria-labelledby="zagrozone-dzialki-title"
-          sx={{ gridArea: 'map', minWidth: 0 }}
+          sx={{ gridArea: 'map', minWidth: 0, minHeight: 0 }}
         >
           {parcels.isPending ? (
-            <ThreatMap items={[]} isLoading onSelect={openReport} />
+            <ThreatMap items={[]} isLoading fill onSelect={openReport} />
           ) : parcels.isError ? (
             <Alert
               severity="error"
@@ -152,10 +192,12 @@ export function AccountPage() {
               </Button>
             </Stack>
           ) : (
-            <Stack spacing={2}>
-              <ThreatMap items={items} onSelect={openReport} />
+            <Stack spacing={1} sx={{ height: { lg: '100%' } }}>
+              <Box sx={{ flex: { lg: '1 1 0' }, minHeight: 0 }}>
+                <ThreatMap items={items} fill onSelect={openReport} />
+              </Box>
               {atRisk.length === 0 && (
-                <Typography sx={{ ...bigText, fontWeight: 700 }}>
+                <Typography sx={{ ...bigText, fontWeight: 700, flexShrink: 0 }}>
                   Żadna działka nie jest zagrożona
                 </Typography>
               )}
@@ -163,14 +205,13 @@ export function AccountPage() {
           )}
         </Box>
         {/* one card: two columns from the top edge (drought counts | at-risk list and legend),
-            action buttons at the bottom; lg+: exactly the height of the map box in ThreatMap,
-            a long list scrolls inside the tile instead of making it taller than the map */}
+            action buttons at the bottom; lg+: stretched to the map row, only the list scrolls */}
         <Card
           sx={{
             gridArea: 'side',
-            alignSelf: 'start',
+            alignSelf: { xs: 'start', lg: 'stretch' },
             minWidth: 0,
-            minHeight: { lg: 'max(360px, 45vh)' },
+            minHeight: 0,
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -298,12 +339,18 @@ export function AccountPage() {
             retryParcels();
             void topReport.refetch();
           }}
-          sx={{ gridArea: 'chart' }}
+          sx={{ gridArea: 'chart', minHeight: 0 }}
         >
           {top && topReport.data ? (
-            <Stack spacing={1}>
-              <KbwChart charts={topReport.data.charts} />
-              <Link component={RouterLink} to={`/report/${top.lastReport?.id ?? ''}`} sx={linkSx}>
+            <Stack spacing={1} sx={{ height: { lg: '100%' } }}>
+              <Box sx={{ flex: { lg: '1 1 0' }, minHeight: 0 }}>
+                <KbwChart charts={topReport.data.charts} fill />
+              </Box>
+              <Link
+                component={RouterLink}
+                to={`/report/${top.lastReport?.id ?? ''}`}
+                sx={{ ...linkSx, flexShrink: 0 }}
+              >
                 Pełny raport
               </Link>
             </Stack>

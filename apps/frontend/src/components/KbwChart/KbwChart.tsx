@@ -17,6 +17,8 @@ import { formatNumber, formatSigned } from '@/utils/format';
 
 interface KbwChartProps {
   charts: Report['charts'];
+  /** T-103: on lg+ fill the parent's height (dashboard one-screen layout) instead of a fixed 300 px */
+  fill?: boolean;
 }
 
 type WindowDays = 30 | 60;
@@ -72,7 +74,7 @@ function LegendSwatch({ kind }: { kind: SwatchKind }) {
   );
 }
 
-export function KbwChart({ charts }: KbwChartProps) {
+export function KbwChart({ charts, fill = false }: KbwChartProps) {
   const theme = useTheme();
   const isNarrow = useMediaQuery(theme.breakpoints.down('sm'));
   const [windowDays, setWindowDays] = useState<WindowDays>(60);
@@ -137,7 +139,7 @@ export function KbwChart({ charts }: KbwChartProps) {
   const hidden = { display: 'none' };
 
   return (
-    <Stack spacing={1.5}>
+    <Stack spacing={1.5} sx={fill ? { height: { lg: '100%' }, minHeight: 0 } : undefined}>
       <Stack
         direction="row"
         spacing={1}
@@ -203,7 +205,8 @@ export function KbwChart({ charts }: KbwChartProps) {
         aria-label={ariaLabel}
         sx={{
           width: '100%',
-          height: { xs: 220, md: 300 },
+          height: fill ? { xs: 220, md: 300, lg: 'auto' } : { xs: 220, md: 300 },
+          ...(fill && { flex: { lg: '1 1 0' }, minHeight: { lg: 140 } }),
           overflow: 'hidden',
           '& .MuiLineElement-series-p10': hidden,
           '& .MuiMarkElement-series-p10': hidden,
