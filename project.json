@@ -652,12 +652,22 @@
       "builtin_agents": ["Explore", "Plan"],
       "paths": {
         "write": ["**"]
-      }
+      },
+      "_note": "Kamil (coord-1) tylko koordynuje od 2026-11-22 02:20; backend przekazany Janowi."
     },
     "backend": {
       "description": "API, logika biznesowa, baza danych",
       "lead_agent": "backend-lead",
-      "members": [],
+      "members": [
+        {
+          "id": "backend-1",
+          "name": "Jan Mickiewicz",
+          "focus": "complex",
+          "folder": "team/jan",
+          "os": "windows",
+          "note": "Od 2026-11-22 02:20 znowu w teamie backend (decyzja Kamila); 21.11 22:00–22.11 02:20 był w frontendzie."
+        }
+      ],
       "agents": [
         "backend-lead",
         "be-api",
@@ -678,7 +688,7 @@
           ".claude/sync/**"
         ]
       },
-      "_note": "Od 2026-11-21 22:00 backend prowadzi koordynator (coord-1, Kamil). Wiadomości „to: backend” czyta coord-1 (inbox.mjs --team backend)."
+      "_note": "Od 2026-11-22 02:20 backend prowadzi Jan (backend-1, sesja: claude --agent backend-lead). Wiadomości „to: backend” czyta Jan. Wcześniej (21.11 22:00–02:20) backend prowadził coord-1."
     },
     "frontend": {
       "description": "UI/UX, komponenty, ekrany, warstwa klienta API",
@@ -697,14 +707,6 @@
           "focus": "standard",
           "folder": "team/jakub",
           "os": "ubuntu"
-        },
-        {
-          "id": "backend-1",
-          "name": "Jan Mickiewicz",
-          "focus": "complex",
-          "folder": "team/jan",
-          "os": "windows",
-          "note": "Od 2026-11-21 22:00 w teamie frontend (decyzja Kamila); ID bez zmian, żeby historia zadań, wiadomości i rezerwacji się zgadzała."
         },
         {
           "id": "backend-2",
