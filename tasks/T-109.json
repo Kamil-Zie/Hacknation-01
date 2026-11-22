@@ -1,0 +1,26 @@
+{
+  "id": "T-109",
+  "title": "Raport: „Ile wody było w glebie <data>?” albo „Ile wody jest dziś w glebie?”",
+  "description": "Decyzja Kamila 07:45. Nagłówek karty gleby w raporcie zależy od daty analizy: dla dziś „Ile wody jest dziś w glebie?”, dla wcześniejszej daty „Ile wody było w glebie 10 czerwca 2026?”.",
+  "type": "bugfix",
+  "team": "frontend",
+  "assignee": "coord-1",
+  "status": "done",
+  "priority": "medium",
+  "depends_on": [],
+  "contract_refs": ["UI-S-003"],
+  "acceptance_criteria": [
+    "Raport z przeszłą datą: „Ile wody było w glebie <data>?”",
+    "Raport na dziś: „Ile wody jest dziś w glebie?”"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 07:47: sprawdzone na mocku /report/demo (10 czerwca 2026). Zmiana tylko w SoilWaterCard, nie koliduje z T-108 Dawida (nagłówek i „Wynik na”)."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

@@ -61,6 +61,11 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 - [ ] Po analizie okienko „Działka sprawdzona”: „Zobacz raport” otwiera raport, „Dodaj kolejną działkę” wraca do dodawania
 - [ ] Zwykłe „Sprawdź działkę” (bez dodawania) dalej od razu otwiera raport
 
+## 2e. Raport: data w karcie gleby (T-109)
+
+- [ ] Raport z wcześniejszą datą: „Ile wody było w glebie 10 czerwca 2026?”
+- [ ] Raport na dziś: „Ile wody jest dziś w glebie?”
+
 ## 3. Backend
 
 - [ ] Po restarcie kontenera backendu przy chwilowym braku Atlasa log pokazuje `MongoDB: next attempt in 15 s`, a potem `MongoDB connected` bez ręcznego restartu (`225693f`)

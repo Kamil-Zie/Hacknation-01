@@ -16,6 +16,7 @@ import { AlertLabel } from '@/components/AlertLabel/AlertLabel';
 import { Expandable } from '@/components/MoreButton/Expandable';
 import { MoreButton } from '@/components/MoreButton/MoreButton';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
+import { getTodayIso } from '@/components/AnalysisForm/AnalysisForm.schema';
 import { formatDate, formatNumber } from '@/utils/format';
 import { soilWaterState } from '@/utils/reportState';
 import { formatEvidence } from '@/utils/sourceLabels';
@@ -267,6 +268,8 @@ function ParcelColumn({ report }: ReportOverviewProps) {
 
 function SoilWaterCard({ report }: ReportOverviewProps) {
   const { soilWater } = report.assessment;
+  // T-109 the report may be for a past day: say "was" with the date, "is today" only for today
+  const isToday = report.analysisDate.slice(0, 10) === getTodayIso();
   const state = soilWater
     ? soilWaterState(soilWater.depletionMm, soilWater.tawMm, soilWater.rawMm)
     : null;
@@ -284,7 +287,9 @@ function SoilWaterCard({ report }: ReportOverviewProps) {
         component="h2"
         sx={{ fontSize: { xs: '1.375rem', md: '1.625rem' }, fontWeight: 800 }}
       >
-        Ile wody jest w glebie?
+        {isToday
+          ? 'Ile wody jest dziś w glebie?'
+          : `Ile wody było w glebie ${formatDate(report.analysisDate)}?`}
       </Typography>
       {!soilWater || !state ? (
         <>
