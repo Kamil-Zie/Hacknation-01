@@ -43,7 +43,7 @@ export async function mockCreateField(
   }
   const ids = body.parcelIds;
   if (ids.length < MIN_PARCELS || ids.length > MAX_PARCELS || new Set(ids).size !== ids.length) {
-    throw validationError('parcelIds', 'Pole to od 2 do 20 różnych działek');
+    throw validationError('parcelIds', 'Grupa działek to od 2 do 20 różnych działek');
   }
   const parcels = ids.map((id) => {
     const parcel = MOCK_PARCELS.find((item) => item.id === id);
@@ -95,7 +95,7 @@ export async function mockDeleteField(
   requireAccount(accountId, token);
   const fields = readFields();
   if (!fields.some((field) => field.id === fieldId && field.accountId === accountId)) {
-    throw new ApiError('FIELD_NOT_FOUND', 'Nie znaleziono pola.', 404, { fieldId });
+    throw new ApiError('FIELD_NOT_FOUND', 'Nie znaleziono grupy działek.', 404, { fieldId });
   }
   writeFields(fields.filter((field) => field.id !== fieldId));
 }

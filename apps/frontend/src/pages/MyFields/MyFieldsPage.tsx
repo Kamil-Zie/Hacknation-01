@@ -12,11 +12,11 @@ export function MyFieldsPage() {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box>
         <Typography variant="h1" component="h1" sx={{ mb: 1 }}>
-          Moje pola
+          Moje grupy działek
         </Typography>
         <Typography color="text.secondary" sx={{ fontSize: 18, maxWidth: '60ch' }}>
-          Pole to kilka działek obok siebie, np. jedna uprawa na kilku działkach. Kliknij nazwę
-          pola, aby zobaczyć jego działki.
+          Grupa działek to kilka działek obok siebie, np. jedna uprawa na kilku działkach. Kliknij
+          nazwę grupy, aby zobaczyć jej działki.
         </Typography>
       </Box>
       {canEdit && (
@@ -28,7 +28,7 @@ export function MyFieldsPage() {
             startIcon={<AddIcon aria-hidden />}
             sx={{ minHeight: 48, fontSize: 18 }}
           >
-            Utwórz pole
+            Dodaj grupę działek
           </Button>
         </Box>
       )}

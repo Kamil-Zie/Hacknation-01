@@ -50,9 +50,9 @@ export function FieldCreatePage() {
   if (!token || !accountId) {
     return (
       <Stack spacing={2} sx={{ maxWidth: 720, mx: 'auto' }}>
-        <Typography variant="h1">Utwórz pole</Typography>
+        <Typography variant="h1">Dodaj grupę działek</Typography>
         <Alert severity="info" sx={BIG_TEXT}>
-          Aby utworzyć pole, zaloguj się.
+          Aby dodać grupę działek, zaloguj się.
         </Alert>
         <Button
           component={RouterLink}
@@ -81,7 +81,7 @@ export function FieldCreatePage() {
     if (parcels.some((item) => item.id === parcel.id)) {
       setAddError(`Działka ${parcel.parcelNumber} jest już na liście.`);
     } else if (parcels.length >= MAX_PARCELS) {
-      setAddError('Pole może mieć najwyżej 20 działek.');
+      setAddError('Grupa działek może mieć najwyżej 20 działek.');
     } else {
       setParcels((current) => [...current, parcel]);
     }
@@ -121,14 +121,14 @@ export function FieldCreatePage() {
   return (
     <Stack spacing={3} sx={{ maxWidth: 1200, mx: 'auto' }} component="form" onSubmit={handleSubmit}>
       <Box>
-        <Typography variant="h1">Utwórz pole</Typography>
+        <Typography variant="h1">Dodaj grupę działek</Typography>
         <Typography color="text.secondary" sx={BIG_TEXT}>
-          Podaj nazwę pola i wybierz co najmniej 2 działki.
+          Podaj nazwę grupy i wybierz co najmniej 2 działki.
         </Typography>
       </Box>
 
       <TextField
-        label="Nazwa pola"
+        label="Nazwa grupy działek"
         placeholder="np. Pole za stodołą"
         value={name}
         onChange={(event) => setName(event.target.value)}
@@ -216,7 +216,7 @@ export function FieldCreatePage() {
 
           <Box component="section" aria-labelledby="field-parcels-title">
             <Typography id="field-parcels-title" variant="h2" sx={{ mb: 1 }}>
-              Działki w polu ({parcels.length})
+              Działki w grupie ({parcels.length})
             </Typography>
             {parcels.length === 0 ? (
               <Typography color="text.secondary" sx={BIG_TEXT}>
@@ -300,7 +300,7 @@ export function FieldCreatePage() {
           }
           sx={BIG_BUTTON}
         >
-          Zapisz pole
+          Zapisz grupę działek
         </Button>
         {parcels.length < 2 && (
           <Typography color="text.secondary" sx={{ fontSize: 16 }}>

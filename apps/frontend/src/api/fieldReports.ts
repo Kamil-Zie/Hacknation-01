@@ -13,11 +13,11 @@ export const FIELD_REPORTS_KEY = ['fieldReports'] as const;
 const CREATE_TIMEOUT_MS = 120_000;
 
 const FIELD_REPORT_ERRORS: Record<string, string> = {
-  FIELD_NOT_FOUND: 'Nie znaleziono tego pola. Mogło zostać usunięte.',
+  FIELD_NOT_FOUND: 'Nie znaleziono tej grupy działek. Mogło zostać usunięte.',
   VALIDATION_ERROR: 'Sprawdź uprawę i datę analizy, a potem spróbuj ponownie.',
-  RATE_LIMITED: 'Za dużo raportów pola naraz. Odczekaj minutę i spróbuj ponownie.',
+  RATE_LIMITED: 'Za dużo raportów grup działek naraz. Odczekaj minutę i spróbuj ponownie.',
   UPSTREAM_UNAVAILABLE:
-    'Nie udało się pobrać danych dla żadnej działki pola. Spróbuj ponownie za chwilę.',
+    'Nie udało się pobrać danych dla żadnej działki z grupy. Spróbuj ponownie za chwilę.',
 };
 
 export function fieldReportErrorMessage(error: unknown): string {

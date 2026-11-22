@@ -71,7 +71,7 @@ export function AddParcelPage() {
           return current.filter((item) => item.id !== found.id);
         }
         if (current.length >= FIELD_MAX_PARCELS) {
-          setFieldPickError(`Pole może mieć najwyżej ${FIELD_MAX_PARCELS} działek.`);
+          setFieldPickError(`Grupa działek może mieć najwyżej ${FIELD_MAX_PARCELS} działek.`);
           return current;
         }
         return [...current, found];
@@ -167,7 +167,7 @@ export function AddParcelPage() {
                     }}
                   />
                 }
-                label="Utwórz pole z kilku działek"
+                label="Dodaj grupę z kilku działek"
                 sx={{
                   m: 0,
                   minHeight: 48,
@@ -177,7 +177,9 @@ export function AddParcelPage() {
               <Box
                 component="section"
                 aria-label={
-                  fieldMode ? 'Mapa: klikaj działki do nowego pola' : 'Mapa: kliknij swoją działkę'
+                  fieldMode
+                    ? 'Mapa: klikaj działki do nowej grupy działek'
+                    : 'Mapa: kliknij swoją działkę'
                 }
                 sx={{
                   minWidth: 0,

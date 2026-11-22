@@ -1,4 +1,4 @@
-// UI-S-006 UI-S-011 API-017 API-018 FieldList: "Moje pola" section of the account page (list, report link, delete with confirmation) (T-104 view-only roles)
+// UI-S-006 UI-S-011 API-017 API-018 FieldList: "Moje grupy działek" section of the account page (list, report link, delete with confirmation) (T-104 view-only roles)
 import AddIcon from '@mui/icons-material/Add';
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -57,7 +57,7 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
   let body;
   if (query.isPending) {
     body = (
-      <Stack spacing={1} aria-label="Ładowanie pól">
+      <Stack spacing={1} aria-label="Ładowanie grup działek">
         {[0, 1].map((key) => (
           <Skeleton key={key} variant="rounded" height={104} />
         ))}
@@ -75,18 +75,18 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
           </Button>
         }
       >
-        Nie udało się pobrać listy pól.
+        Nie udało się pobrać listy grup działek.
       </Alert>
     );
   } else if (query.data.length === 0) {
     body = (
       <Typography color="text.secondary" sx={{ fontSize: 18 }}>
-        {/* T-102 the Moje pola page already explains what a field is above the list */}
+        {/* T-102 the Moje grupy działek page already explains what a field is above the list */}
         {!canEdit
-          ? 'W tym gospodarstwie nie ma jeszcze pól.'
+          ? 'W tym gospodarstwie nie ma jeszcze grup działek.'
           : hideHeader
-            ? 'Nie masz jeszcze pól. Kliknij „Utwórz pole”, aby połączyć działki w jedno pole.'
-            : 'Nie masz jeszcze pól. Pole to kilka działek obok siebie – np. jedna uprawa na kilku działkach.'}
+            ? 'Nie masz jeszcze grup działek. Kliknij „Dodaj grupę działek”, aby połączyć działki w jedną grupę.'
+            : 'Nie masz jeszcze grup działek. Grupa działek to kilka działek obok siebie – np. jedna uprawa na kilku działkach.'}
       </Typography>
     );
   } else {
@@ -153,7 +153,7 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
                     startIcon={<AssessmentOutlinedIcon aria-hidden />}
                     sx={BIG_BUTTON}
                   >
-                    Raport pola
+                    Raport grupy działek
                   </Button>
                   {canEdit && (
                     <Button
@@ -175,7 +175,7 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
                 <Box
                   id={`field-parcels-${field.id}`}
                   role="region"
-                  aria-label={`Działki pola ${field.name}`}
+                  aria-label={`Działki grupy ${field.name}`}
                   sx={{ px: 2, pb: 2 }}
                 >
                   <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
@@ -229,7 +229,7 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
     <Box
       component="section"
       aria-labelledby={hideHeader ? undefined : 'account-fields-heading'}
-      aria-label={hideHeader ? 'Lista pól' : undefined}
+      aria-label={hideHeader ? 'Lista grup działek' : undefined}
     >
       {!hideHeader && (
         <Stack
@@ -240,7 +240,7 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
           sx={{ mb: 2 }}
         >
           <Typography id="account-fields-heading" variant="h2">
-            Moje pola
+            Moje grupy działek
           </Typography>
           {canEdit && (
             <Button
@@ -250,17 +250,17 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
               startIcon={<AddIcon aria-hidden />}
               sx={BIG_BUTTON}
             >
-              Utwórz pole
+              Dodaj grupę działek
             </Button>
           )}
         </Stack>
       )}
       {body}
       <Dialog open={toDelete !== null} onClose={() => setToDelete(null)} fullWidth maxWidth="xs">
-        <DialogTitle>Usunąć pole?</DialogTitle>
+        <DialogTitle>Usunąć grupę działek?</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ fontSize: 18 }}>
-            Pole „{toDelete?.name}” zniknie z listy. Działki i zapisane raporty zostają.
+            Grupa działek „{toDelete?.name}” zniknie z listy. Działki i zapisane raporty zostają.
           </DialogContentText>
           {remove.isError && (
             <Alert severity="error" role="alert" sx={{ mt: 2, fontSize: 18 }}>
@@ -282,7 +282,7 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
               remove.mutate(toDelete.id, { onSuccess: () => setToDelete(null) });
             }}
           >
-            Usuń pole
+            Usuń grupę działek
           </Button>
         </DialogActions>
       </Dialog>

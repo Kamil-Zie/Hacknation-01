@@ -8,7 +8,7 @@ const GROUPS: { title: string; links: { to: string; label: string; note?: string
     links: [
       { to: '/', label: 'Znajdź działkę', note: 'wymaga logowania' },
       { to: '/konto', label: 'Panel gospodarstwa', note: 'wymaga logowania' },
-      { to: '/pole/nowe', label: 'Nowe pole z kilku działek', note: 'wymaga logowania' },
+      { to: '/pole/nowe', label: 'Nowa grupa z kilku działek', note: 'wymaga logowania' },
     ],
   },
   {

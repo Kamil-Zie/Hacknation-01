@@ -74,15 +74,15 @@ export function FieldFromMap({
   }
 
   return (
-    <Stack spacing={1.5} component="section" aria-label="Nowe pole z działek na mapie">
+    <Stack spacing={1.5} component="section" aria-label="Nowa grupa z działek na mapie">
       <Typography sx={{ fontSize: '1.125rem' }}>
-        Klikaj działki na mapie, żeby dodać je do pola. Ponowne kliknięcie usuwa działkę.
+        Klikaj działki na mapie, żeby dodać je do grupy. Ponowne kliknięcie usuwa działkę.
       </Typography>
 
       {parcels.length > 0 && (
         <Box
           component="ul"
-          aria-label="Działki w nowym polu"
+          aria-label="Działki w nowej grupie"
           sx={{ m: 0, p: 0, listStyle: 'none', display: 'flex', flexWrap: 'wrap', gap: 1 }}
         >
           {parcels.map((item) => (
@@ -90,7 +90,7 @@ export function FieldFromMap({
               <Chip
                 label={`Działka ${item.parcelNumber} · ${item.region}`}
                 onDelete={() => onRemove(item.id)}
-                deleteIcon={<CloseIcon aria-label={`Usuń działkę ${item.parcelNumber} z pola`} />}
+                deleteIcon={<CloseIcon aria-label={`Usuń działkę ${item.parcelNumber} z grupy`} />}
                 sx={{ fontSize: '1rem', height: 40 }}
               />
             </li>
@@ -119,7 +119,7 @@ export function FieldFromMap({
         sx={{ alignItems: { sm: 'flex-start' } }}
       >
         <TextField
-          label="Nazwa pola"
+          label="Nazwa grupy działek"
           placeholder="np. Pszenica za stodołą"
           value={name}
           onChange={(event) => setName(event.target.value)}
@@ -139,7 +139,7 @@ export function FieldFromMap({
           startIcon={isSaving ? <CircularProgress size={20} color="inherit" /> : undefined}
           sx={{ minHeight: 56, fontSize: '1.125rem', flexShrink: 0, px: 3, whiteSpace: 'nowrap' }}
         >
-          {isSaving ? 'Tworzę pole…' : `Utwórz pole (${parcels.length})`}
+          {isSaving ? 'Tworzę grupę działek…' : `Dodaj grupę działek (${parcels.length})`}
         </Button>
       </Stack>
 
@@ -158,10 +158,10 @@ export function FieldFromMap({
         >
           <CheckCircleOutlineIcon aria-hidden color="success" />
           <Typography sx={{ fontSize: '1.125rem', fontWeight: 600 }}>
-            Utworzono pole „{created}”. Działki są też w Twoich działkach.
+            Utworzono grupę działek „{created}”. Działki są też w Twoich działkach.
           </Typography>
           <Button component={RouterLink} to="/pola" variant="outlined" sx={{ minHeight: 48 }}>
-            Przejdź do Moich pól
+            Przejdź do Moich grup działek
           </Button>
         </Stack>
       )}

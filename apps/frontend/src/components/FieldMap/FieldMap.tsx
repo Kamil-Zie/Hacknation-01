@@ -52,7 +52,7 @@ export function FieldMap({ shapes }: FieldMapProps) {
   return (
     <Box
       role="region"
-      aria-label="Mapa pola z działkami pokolorowanymi według suszy"
+      aria-label="Mapa grupy działek pokolorowanych według suszy"
       sx={{
         width: '100%',
         height: { xs: 320, md: 440 },

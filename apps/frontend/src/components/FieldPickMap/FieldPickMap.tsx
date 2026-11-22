@@ -48,7 +48,7 @@ export function FieldPickMap({ parcels, onPick }: FieldPickMapProps) {
   return (
     <Box
       role="region"
-      aria-label="Mapa pola. Kliknij działkę na mapie, aby ją dodać."
+      aria-label="Mapa grupy działek. Kliknij działkę na mapie, aby ją dodać."
       sx={{
         position: 'relative',
         width: '100%',

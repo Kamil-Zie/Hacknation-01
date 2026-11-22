@@ -43,13 +43,18 @@ const LINKS: SidebarLink[] = [
   },
   { label: 'Moje działki', to: '/dzialki', icon: <MapIcon aria-hidden />, match: ['/dzialki'] },
   {
-    label: 'Utwórz pole',
+    label: 'Dodaj grupę działek',
     to: '/pole/nowe',
     icon: <AddLocationAltIcon aria-hidden />,
     match: ['/pole/nowe'],
     edits: true,
   },
-  { label: 'Moje pola', to: '/pola', icon: <LandscapeIcon aria-hidden />, match: ['/pola'] },
+  {
+    label: 'Moje grupy działek',
+    to: '/pola',
+    icon: <LandscapeIcon aria-hidden />,
+    match: ['/pola'],
+  },
   { label: 'Wspólnicy', to: '/wspolnicy', icon: <GroupsIcon aria-hidden />, match: ['/wspolnicy'] },
 ];
 

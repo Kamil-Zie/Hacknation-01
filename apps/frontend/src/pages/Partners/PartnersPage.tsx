@@ -147,7 +147,7 @@ export function PartnersPage() {
           {myRole === 'owner'
             ? 'Masz pełne prawa i przydzielasz tagi: Właściciel, Wspólnik, Członek, Gość.'
             : myRole === 'partner'
-              ? 'Możesz zmieniać działki i pola, zapraszać osoby i usuwać członków oraz gości.'
+              ? 'Możesz zmieniać działki i grupy działek, zapraszać osoby i usuwać członków oraz gości.'
               : 'Możesz oglądać szczegóły działek. Zmiany wprowadza właściciel albo wspólnik.'}
         </Typography>
       )}

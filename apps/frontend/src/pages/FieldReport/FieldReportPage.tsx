@@ -1,4 +1,4 @@
-// UI-S-008 Raport pola: uprawa i dzień, liczenie działek (API-019), wynik z mapą, podsumowaniem i kartami działek
+// UI-S-008 Raport grupy działek: uprawa i dzień, liczenie działek (API-019), wynik z mapą, podsumowaniem i kartami działek
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import EventIcon from '@mui/icons-material/EventOutlined';
 import GrassIcon from '@mui/icons-material/Grass';
@@ -87,7 +87,7 @@ function SummaryCard({ report }: { report: FieldReport }) {
         component="h2"
         sx={{ fontSize: '1.625rem' }}
       >
-        Jak jest na całym polu
+        Jak jest w całej grupie działek
       </Typography>
       <Box>
         <AlertLabel
@@ -98,8 +98,8 @@ function SummaryCard({ report }: { report: FieldReport }) {
       </Box>
       <Typography sx={{ fontSize: '1.25rem', maxWidth: '60ch' }}>
         {inDrought > 0
-          ? `Susza obejmuje ${formatNumber(inDrought, 0)}% powierzchni pola.`
-          : 'Na żadnej części pola nie ma suszy.'}
+          ? `Susza obejmuje ${formatNumber(inDrought, 0)}% powierzchni grupy działek.`
+          : 'W żadnej części grupy działek nie ma suszy.'}
       </Typography>
       <Box
         sx={{
@@ -108,10 +108,13 @@ function SummaryCard({ report }: { report: FieldReport }) {
           gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4, minmax(0, 1fr))' },
         }}
       >
-        <Stat label="Susza silna" value={`${formatNumber(summary.severeAreaPct, 0)}% pola`} />
+        <Stat
+          label="Susza silna"
+          value={`${formatNumber(summary.severeAreaPct, 0)}% powierzchni`}
+        />
         <Stat
           label="Susza umiarkowana"
-          value={`${formatNumber(summary.moderateAreaPct, 0)}% pola`}
+          value={`${formatNumber(summary.moderateAreaPct, 0)}% powierzchni`}
         />
         <Stat
           label="Woda w korzeniach (średnia)"
@@ -275,7 +278,7 @@ function FieldResult({ report, onNew }: { report: FieldReport; onNew: () => void
             direction="row"
             className="no-print"
             role="toolbar"
-            aria-label="Akcje raportu pola"
+            aria-label="Akcje raportu grupy działek"
             sx={{ gap: 1.25, flexWrap: 'wrap' }}
           >
             <Button
@@ -332,7 +335,7 @@ function FieldResult({ report, onNew }: { report: FieldReport; onNew: () => void
 
       <SectionCard
         id="field-map"
-        title="Mapa pola"
+        title="Mapa grupy działek"
         subtitle="Każda działka ma kolor i podpis stanu."
       >
         <FieldMap shapes={shapes} />
@@ -369,10 +372,10 @@ function FieldResult({ report, onNew }: { report: FieldReport; onNew: () => void
       <SectionCard
         id="field-recommendations"
         title="Co zrobić"
-        subtitle="Porady połączone dla całego pola, bez powtórzeń."
+        subtitle="Porady połączone dla całej grupy działek, bez powtórzeń."
       >
         {report.recommendations.length === 0 ? (
-          <Typography sx={{ fontSize: '1.125rem' }}>Brak porad dla tego pola.</Typography>
+          <Typography sx={{ fontSize: '1.125rem' }}>Brak porad dla tej grupy działek.</Typography>
         ) : (
           <Box component="ul" sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 0, m: 0 }}>
             {report.recommendations.map((item) => (
@@ -469,7 +472,7 @@ export function FieldReportPage() {
           RAPORT POLA
         </Typography>
         <Typography variant="h1" component="h1">
-          Jaka uprawa na tym polu?
+          Jaka uprawa w tej grupie działek?
         </Typography>
       </Box>
       {mutation.isError && (

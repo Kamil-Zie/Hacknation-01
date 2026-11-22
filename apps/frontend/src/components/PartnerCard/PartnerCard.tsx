@@ -40,7 +40,7 @@ export const ROLE_LABELS: Record<MemberRole, string> = {
 
 const ROLE_HINTS: Record<MemberRole, string> = {
   owner: 'pełne prawa',
-  partner: 'zmienia działki i pola, usuwa członków i gości',
+  partner: 'zmienia działki i grupy działek, usuwa członków i gości',
   member: 'tylko ogląda',
   guest: 'tylko ogląda',
 };
