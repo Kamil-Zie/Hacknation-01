@@ -691,7 +691,7 @@
         ]
       },
       "_note": "Od 2026-11-22 02:20 backend prowadzi Jan (backend-1, sesja: claude --agent backend-lead). Wiadomości „to: backend” czyta Jan. Wcześniej (21.11 22:00–02:20) backend prowadził coord-1.",
-      "_note_t107": "T-107 (07:40): Jan tymczasowo pisze też w apps/frontend/src/** (zmiana nazwy Pole -> Grupa działek). Cofnąć po T-107."
+      "_note_t107": "T-107 (07:40): Jan pisze też w apps/frontend/src/**. Decyzja Kamila 08:10: prawo zostaje na stałe."
     },
     "frontend": {
       "description": "UI/UX, komponenty, ekrany, warstwa klienta API",
