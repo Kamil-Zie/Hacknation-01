@@ -56,6 +56,8 @@ export function AppLayout() {
   }, [pathname]);
   const isLogin = pathname === '/logowanie';
   const isWide = pathname.startsWith('/report/');
+  // T-103 dashboard: tiles use the full width next to the sidebar, with a narrow side gutter
+  const isDashboard = pathname === '/konto';
   const token = useSessionStore((state) => state.token);
   const showSidebar = Boolean(token) && !isLogin && !isWide;
   const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
@@ -184,9 +186,9 @@ export function AppLayout() {
             sx={{
               flexGrow: 1,
               width: '100%',
-              maxWidth: isWide ? 1600 : 1536,
+              maxWidth: isDashboard ? 'none' : isWide ? 1600 : 1536,
               py: { xs: 2, md: 4 },
-              px: { xs: 2, md: 4 },
+              px: isDashboard ? { xs: 2, md: 2 } : { xs: 2, md: 4 },
             }}
           >
             <ReportBackButton />

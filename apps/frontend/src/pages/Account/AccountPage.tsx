@@ -105,7 +105,7 @@ export function AccountPage() {
   const active = accounts.find((account) => account.id === activeAccountId);
 
   return (
-    <Stack sx={{ maxWidth: 1600, mx: 'auto' }}>
+    <Stack sx={{ width: '100%' }}>
       {/* page title for screen readers only (no spacing after it, so the visible page starts at the top) */}
       <Typography variant="h1" component="h1" sx={srOnly}>
         {active?.name ?? 'Pulpit'}
