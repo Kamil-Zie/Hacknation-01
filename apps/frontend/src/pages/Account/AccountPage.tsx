@@ -10,7 +10,7 @@ import type { DroughtClass, ParcelOverview } from '@/api/types';
 import { DashboardTile } from '@/components/DashboardTile/DashboardTile';
 import { KbwChart } from '@/components/KbwChart/KbwChart';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
-import { DROUGHT_WORDS, ThreatMap } from '@/components/ThreatMap/ThreatMap';
+import { DROUGHT_WORDS, ThreatList, ThreatMap } from '@/components/ThreatMap/ThreatMap';
 import { srOnly } from '@/app/a11yStyles';
 import { useSessionStore } from '@/store/session';
 
@@ -152,19 +152,28 @@ export function AccountPage() {
               </Link>
             }
           >
-            <Stack spacing={1}>
-              {DROUGHT_ORDER.map((value) => (
-                <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                  <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
-                  <Typography sx={bigText}>{countByClass(value)}</Typography>
-                </Stack>
-              ))}
-              <Typography
-                sx={{ ...bigText, fontWeight: 700, pt: 1, borderTop: 1, borderColor: 'divider' }}
-              >
-                Zagrożony obszar: {formatHa(atRiskHa)}
-              </Typography>
-            </Stack>
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 2,
+                gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
+              }}
+            >
+              <Stack spacing={1}>
+                {DROUGHT_ORDER.map((value) => (
+                  <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                    <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
+                    <Typography sx={bigText}>{countByClass(value)}</Typography>
+                  </Stack>
+                ))}
+                <Typography
+                  sx={{ ...bigText, fontWeight: 700, pt: 1, borderTop: 1, borderColor: 'divider' }}
+                >
+                  Zagrożony obszar: {formatHa(atRiskHa)}
+                </Typography>
+              </Stack>
+              <ThreatList items={items} onSelect={openReport} />
+            </Box>
           </DashboardTile>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}

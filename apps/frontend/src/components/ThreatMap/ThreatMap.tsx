@@ -1,6 +1,7 @@
-// UI-C-017 ThreatMap: Leaflet map of account parcels colored by drought class, fit to at-risk parcels, legend and text list below
+// UI-C-017 ThreatMap: Leaflet map of account parcels colored by drought class, fit to at-risk parcels; ThreatList: at-risk list and legend for the drought tile
 import { Box, Link, Skeleton, Stack, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   CircleMarker,
   GeoJSON,
@@ -147,45 +148,56 @@ export function ThreatMap({ items, isLoading = false, onSelect }: ThreatMapProps
           <FitToItems items={fitted} />
         </MapContainer>
       </Box>
-      {/* T-093 (coord): legend and text list folded under the map, so the map tile stays half the panel high */}
-      <Box
-        component="details"
-        sx={{
-          '& > summary': {
-            cursor: 'pointer',
-            py: 1.5,
-            fontSize: '1.125rem',
-            fontWeight: 700,
-          },
-        }}
-      >
-        <summary>Lista zagrożonych działek ({atRisk.length}) i legenda</summary>
-        <Typography component="p" sx={{ fontSize: '1.125rem' }}>
-          Kolory obrysów: {DROUGHT_WORDS.severe}, {DROUGHT_WORDS.moderate}, {DROUGHT_WORDS.none},{' '}
-          {DROUGHT_WORDS.unknown} (linia przerywana).
-        </Typography>
-        {atRisk.length > 0 && (
-          <Box component="ul" aria-label="Zagrożone działki" sx={{ m: 0, pl: 3 }}>
-            {atRisk.map((item) => (
-              <Typography
-                component="li"
-                key={item.parcel.id}
-                sx={{ fontSize: '1.125rem', py: 0.5 }}
+    </Stack>
+  );
+}
+
+// T-103: text list of at-risk parcels and the map legend, shown next to the drought counts on the dashboard
+const LIST_LIMIT = 5;
+
+export function ThreatList({
+  items,
+  onSelect,
+}: {
+  items: ParcelOverview[];
+  onSelect: (item: ParcelOverview) => void;
+}) {
+  const atRisk = items.filter((item) => item.atRisk);
+  return (
+    <Stack spacing={1}>
+      <Typography variant="h3" component="h3" sx={{ fontSize: '1.125rem', fontWeight: 800 }}>
+        Lista zagrożonych ({atRisk.length})
+      </Typography>
+      {atRisk.length === 0 ? (
+        <Typography sx={{ fontSize: '1.125rem' }}>Brak</Typography>
+      ) : (
+        <Box component="ul" aria-label="Zagrożone działki" sx={{ m: 0, pl: 0, listStyle: 'none' }}>
+          {atRisk.slice(0, LIST_LIMIT).map((item) => (
+            <Typography component="li" key={item.parcel.id} sx={{ fontSize: '1.125rem' }}>
+              <Link
+                component="button"
+                type="button"
+                onClick={() => onSelect(item)}
+                sx={{ fontSize: 'inherit', minHeight: 48, textAlign: 'left' }}
               >
-                <Link
-                  component="button"
-                  type="button"
-                  onClick={() => onSelect(item)}
-                  sx={{ fontSize: 'inherit', minHeight: 48, textAlign: 'left' }}
-                >
-                  {`Działka ${item.parcel.parcelNumber}, ${item.parcel.region}`}
-                </Link>
-                {` – ${DROUGHT_WORDS[classOf(item)]}`}
-              </Typography>
-            ))}
-          </Box>
-        )}
-      </Box>
+                {`Działka ${item.parcel.parcelNumber}, ${item.parcel.region}`}
+              </Link>
+            </Typography>
+          ))}
+        </Box>
+      )}
+      {atRisk.length > LIST_LIMIT && (
+        <Link
+          component={RouterLink}
+          to="/dzialki"
+          sx={{ fontSize: '1.125rem', minHeight: 48, display: 'inline-flex', alignItems: 'center' }}
+        >
+          {`+${atRisk.length - LIST_LIMIT} więcej`}
+        </Link>
+      )}
+      <Typography sx={{ fontSize: '1rem', color: 'text.secondary', pt: 1 }}>
+        Kolory jak na mapie. Linia przerywana: {DROUGHT_WORDS.unknown.toLowerCase()}.
+      </Typography>
     </Stack>
   );
 }
