@@ -155,17 +155,16 @@ export function AppLayout() {
             sx={{
               width: 280,
               flexShrink: 0,
-              position: 'sticky',
-              top: 0,
-              alignSelf: 'flex-start',
-              maxHeight: '100vh',
-              overflowY: 'auto',
+              // T-099 panel background runs to the bottom of the page; only the menu itself is sticky
+              alignSelf: 'stretch',
               borderRight: 1,
               borderColor: 'divider',
               bgcolor: 'background.paper',
             }}
           >
-            <Sidebar />
+            <Box sx={{ position: 'sticky', top: 0, maxHeight: '100vh', overflowY: 'auto' }}>
+              <Sidebar />
+            </Box>
           </Box>
         )}
         <Box
