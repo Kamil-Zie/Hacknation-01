@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "backend-2",
-  "status": "integration",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-094"],
   "contract_refs": ["UI-S-013", "API-001", "API-002", "API-022"],
@@ -16,11 +16,12 @@
     "Dodawanie działa z klawiatury"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "coord-1 02:35 przegląd na prawdziwym API-022: wyszukanie 040706_4.0004.7, „Dodaj do moich działek” → „Dodano do Twoich działek” + link. axe 0 na 390 i 1440."
   },
   "notes": [
+    "coord-1 02:35 przegląd na prawdziwym API-022: wyszukanie 040706_4.0004.7, „Dodaj do moich działek” → „Dodano do Twoich działek” + link. axe 0 na 390 i 1440.",
     "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu.",
     "backend-2 02:02: AddParcelPage gotowa na mocku API-022 (ParcelSearch bez zmian: numer/adres/GPS/klik w mapę; ParcelMap; „Już na koncie” z useAccountParcelsQuery; 403 osobny komunikat; fokus na wyniku). tsc, eslint, prettier OK, Vite kompiluje. Brak testu w przeglądarce 390/1440 px i na prawdziwym API (czeka na T-098)."
   ],

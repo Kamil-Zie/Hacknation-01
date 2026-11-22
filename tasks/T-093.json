@@ -18,11 +18,12 @@
     "axe na /konto: 0 naruszeń"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "coord-1 02:35 przegląd: układ przywrócony do opisu Kamila (poprawka koordynatora po zmianie Nataniela 85deca0): mapa lewa góra, Stan suszy + Twoje działki obok, Bilans wody pod mapą, kafelek Szybki raport obok wykresu; lista zagrożonych działek i legenda zwinięte pod mapą (details), żeby mapa miała pół wysokości; pole Aktywne gospodarstwo nie rozpycha strony na 390 px. axe 0 (jasny i ciemny, 390 i 1440)."
   },
   "notes": [
+    "coord-1 02:35 przegląd: układ przywrócony do opisu Kamila (poprawka koordynatora po zmianie Nataniela 85deca0): mapa lewa góra, Stan suszy + Twoje działki obok, Bilans wody pod mapą, kafelek Szybki raport obok wykresu; lista zagrożonych działek i legenda zwinięte pod mapą (details), żeby mapa miała pół wysokości; pole Aktywne gospodarstwo nie rozpycha strony na 390 px. axe 0 (jasny i ciemny, 390 i 1440).",
     "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu.",
     "frontend-1 02:20: zrobione w e47cbae. Siatka 2x2 od lg (1200 px); na md panel boczny 280 px zostawia za mało miejsca, więc jedna kolumna. Sprawdzone 390 i 1440 px na mocku, Dawid potwierdził w przeglądarce. axe nie puszczony lokalnie (brak axe-core), proszę o sprawdzenie /konto na prod. Mock: mock_report_N otwiera raport demo."
   ],

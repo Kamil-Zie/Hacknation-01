@@ -147,27 +147,45 @@ export function ThreatMap({ items, isLoading = false, onSelect }: ThreatMapProps
           <FitToItems items={fitted} />
         </MapContainer>
       </Box>
-      <Typography component="p" sx={{ fontSize: '1.125rem' }}>
-        Kolory obrysów: {DROUGHT_WORDS.severe}, {DROUGHT_WORDS.moderate}, {DROUGHT_WORDS.none},{' '}
-        {DROUGHT_WORDS.unknown} (linia przerywana).
-      </Typography>
-      {atRisk.length > 0 && (
-        <Box component="ul" aria-label="Zagrożone działki" sx={{ m: 0, pl: 3 }}>
-          {atRisk.map((item) => (
-            <Typography component="li" key={item.parcel.id} sx={{ fontSize: '1.125rem', py: 0.5 }}>
-              <Link
-                component="button"
-                type="button"
-                onClick={() => onSelect(item)}
-                sx={{ fontSize: 'inherit', minHeight: 48, textAlign: 'left' }}
+      {/* T-093 (coord): legend and text list folded under the map, so the map tile stays half the panel high */}
+      <Box
+        component="details"
+        sx={{
+          '& > summary': {
+            cursor: 'pointer',
+            py: 1.5,
+            fontSize: '1.125rem',
+            fontWeight: 700,
+          },
+        }}
+      >
+        <summary>Lista zagrożonych działek ({atRisk.length}) i legenda</summary>
+        <Typography component="p" sx={{ fontSize: '1.125rem' }}>
+          Kolory obrysów: {DROUGHT_WORDS.severe}, {DROUGHT_WORDS.moderate}, {DROUGHT_WORDS.none},{' '}
+          {DROUGHT_WORDS.unknown} (linia przerywana).
+        </Typography>
+        {atRisk.length > 0 && (
+          <Box component="ul" aria-label="Zagrożone działki" sx={{ m: 0, pl: 3 }}>
+            {atRisk.map((item) => (
+              <Typography
+                component="li"
+                key={item.parcel.id}
+                sx={{ fontSize: '1.125rem', py: 0.5 }}
               >
-                {`Działka ${item.parcel.parcelNumber}, ${item.parcel.region}`}
-              </Link>
-              {` – ${DROUGHT_WORDS[classOf(item)]}`}
-            </Typography>
-          ))}
-        </Box>
-      )}
+                <Link
+                  component="button"
+                  type="button"
+                  onClick={() => onSelect(item)}
+                  sx={{ fontSize: 'inherit', minHeight: 48, textAlign: 'left' }}
+                >
+                  {`Działka ${item.parcel.parcelNumber}, ${item.parcel.region}`}
+                </Link>
+                {` – ${DROUGHT_WORDS[classOf(item)]}`}
+              </Typography>
+            ))}
+          </Box>
+        )}
+      </Box>
     </Stack>
   );
 }

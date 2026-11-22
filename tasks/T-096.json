@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "backend-1",
-  "status": "integration",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-014", "API-020", "API-003"],
@@ -17,11 +17,12 @@
     "Postęp jest ogłaszany czytnikowi (aria-live)"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "coord-1 02:35 przegląd: 2 działki (jedna bez raportu z wyborem uprawy) → postęp „1 z 2”, oba raporty z klasą i linkiem. axe 0 na 390 i 1440. Drobne: pierwszy klik „Zrób raport” zaraz po zamknięciu selecta uprawy tylko zamyka menu (zachowanie MUI), drugi działa."
   },
   "notes": [
+    "coord-1 02:35 przegląd: 2 działki (jedna bez raportu z wyborem uprawy) → postęp „1 z 2”, oba raporty z klasą i linkiem. axe 0 na 390 i 1440. Drobne: pierwszy klik „Zrób raport” zaraz po zamknięciu selecta uprawy tylko zamyka menu (zachowanie MUI), drugi działa.",
     "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu.",
     "backend-1 2796765: QuickReportPage na main (max 5, analizy po kolei w for/await, błąd przy działce bez przerywania, postęp aria-live, StatusBadge + Otwórz raport); typecheck, eslint, build OK. Brak kontroli wizualnej 390/1440 i axe (sesja bez Claude in Chrome). Pominięte opcjonalne „Drukuj wszystkie”."
   ],

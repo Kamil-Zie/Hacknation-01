@@ -16,11 +16,12 @@
     "Tekst pomocy mówi „wybierz co najmniej 2 działki”"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "coord-1 02:35 przegląd: tekst „wybierz co najmniej 2 działki”, axe /pole/nowe 0; backend bez sąsiedztwa."
   },
   "notes": [
+    "coord-1 02:35 przegląd: tekst „wybierz co najmniej 2 działki”, axe /pole/nowe 0; backend bez sąsiedztwa.",
     "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu.",
     "frontend-2 02:00: start (fe-developer), T-097 i T-099 równolegle.",
     "frontend-2 02:10: usunięte PARCELS_NOT_ADJACENT, invalidIds, czerwone podświetlanie i sprawdzanie w mocku (2–20 działek, inaczej VALIDATION_ERROR). Podpowiedź 'Wybierz co najmniej 2 działki'. tsc/eslint/prettier OK; na żywo nie klikane."

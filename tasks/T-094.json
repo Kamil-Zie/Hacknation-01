@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "backend-2",
-  "status": "integration",
+  "status": "done",
   "priority": "medium",
   "depends_on": [],
   "contract_refs": ["UI-C-019", "UI-S-010"],
@@ -16,11 +16,12 @@
     "Testy filtrów (jeśli są) przechodzą"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "coord-1 02:35 przegląd: „Poniżej 1 ha” pokazuje działkę 0,4 ha, ikony upraw przy checkboxach są. axe /dzialki 0."
   },
   "notes": [
+    "coord-1 02:35 przegląd: „Poniżej 1 ha” pokazuje działkę 0,4 ha, ikony upraw przy checkboxach są. axe /dzialki 0.",
     "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu.",
     "backend-2 01:59: „Poniżej 1 ha” (BELOW_ONE_HA) w grupie Powierzchnia, OR z progami „Powyżej”; CropIcon przy każdej uprawie (kod z lastReport.crop.code), „Bez raportu” bez ikony. tsc, eslint, prettier OK; testów filtrów brak. Do sprawdzenia w przeglądarce na koncie z działką < 1 ha."
   ],
