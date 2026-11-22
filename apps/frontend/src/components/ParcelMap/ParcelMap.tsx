@@ -46,6 +46,8 @@ interface ParcelMapProps {
   /** Changing the value re-fits the map to the parcel and briefly highlights its boundary (0 = never) */
   focusKey?: number;
   markers?: { lat: number; lon: number; label: string }[];
+  /** T-103: parcels chosen for a new field (drawn together, each with its number) */
+  selectedParcels?: Parcel[];
   isInteractive?: boolean;
   /** Mapa / Satelita switch; defaults to isInteractive (off in print) */
   showLayerToggle?: boolean;
@@ -132,6 +134,7 @@ export function ParcelMap({
   focus = null,
   focusKey = 0,
   markers,
+  selectedParcels,
   isInteractive = true,
   showLayerToggle = isInteractive,
   layerToggleInCorner = false,
@@ -216,6 +219,23 @@ export function ParcelMap({
         )}
         <FitToParcel parcel={parcel} focusKey={focusKey} />
         <FocusPlace focus={focus} />
+        {selectedParcels?.map((item) => (
+          <GeoJSON
+            key={`field-${item.id}`}
+            data={item.geometry as unknown as GeoJsonObject}
+            interactive={false}
+            style={{
+              color: theme.palette.warning.main,
+              weight: 4,
+              fillColor: theme.palette.warning.main,
+              fillOpacity: 0.3,
+            }}
+          >
+            <Tooltip permanent direction="center" opacity={0.95}>
+              {item.parcelNumber}
+            </Tooltip>
+          </GeoJSON>
+        ))}
         {markers?.map((marker, index) => (
           <CircleMarker
             key={`${marker.lat},${marker.lon}-${index}`}

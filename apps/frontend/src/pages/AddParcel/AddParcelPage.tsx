@@ -1,17 +1,26 @@
 // UI-S-013 T-095 Add a parcel to my parcels: search (API-001/002) with the map as the 4th search option, "Dodaj do moich działek" (API-022)
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  FormControlLabel,
+  Stack,
+  Switch,
+  Typography,
+} from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { useAccountParcelsQuery, useAddAccountParcelMutation } from '@/api/accountParcels';
 import { ApiError } from '@/api/client';
-import { useParcelByPointMutation, useParcelQuery } from '@/api/parcels';
+import { getParcelByPoint, useParcelByPointMutation, useParcelQuery } from '@/api/parcels';
 import type { Parcel } from '@/api/types';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ParcelSearch } from '@/components/ParcelSearch/ParcelSearch';
 import { useSessionStore } from '@/store/session';
+import { FIELD_MAX_PARCELS, FieldFromMap } from '@/pages/AddParcel/FieldFromMap';
 import { errorMessage } from '@/utils/errorMessages';
 
 function toError(error: unknown): { code: string; message: string; canRetry: boolean } | null {
@@ -43,6 +52,33 @@ export function AddParcelPage() {
   } | null>(null);
   const [picked, setPicked] = useState<Parcel | null>(null);
   const [added, setAdded] = useState(false);
+  // T-103 field mode: map clicks collect parcels for a new field instead of picking one
+  const [fieldMode, setFieldMode] = useState(false);
+  const [fieldParcels, setFieldParcels] = useState<Parcel[]>([]);
+  const [fieldPicking, setFieldPicking] = useState(false);
+  const [fieldPickError, setFieldPickError] = useState<string | null>(null);
+
+  async function toggleFieldParcel(lat: number, lon: number) {
+    setFieldPicking(true);
+    setFieldPickError(null);
+    try {
+      const found = await getParcelByPoint(lat, lon);
+      setFieldParcels((current) => {
+        if (current.some((item) => item.id === found.id)) {
+          return current.filter((item) => item.id !== found.id);
+        }
+        if (current.length >= FIELD_MAX_PARCELS) {
+          setFieldPickError(`Pole może mieć najwyżej ${FIELD_MAX_PARCELS} działek.`);
+          return current;
+        }
+        return [...current, found];
+      });
+    } catch (reason) {
+      setFieldPickError(toError(reason)?.message ?? 'Nie znaleziono działki w tym miejscu.');
+    } finally {
+      setFieldPicking(false);
+    }
+  }
 
   const parcel = picked ?? searchQuery.data ?? null;
   const isSearching = searchId !== null && searchQuery.isFetching;
@@ -105,30 +141,66 @@ export function AddParcelPage() {
           onLocate={handlePick}
           onPlaceFound={(lat, lon, bounds) => setFocus({ lat, lon, bounds })}
           mapSlot={
-            <Box
-              component="section"
-              aria-label="Mapa: kliknij swoją działkę"
-              sx={{
-                minWidth: 0,
-                border: 1,
-                borderColor: 'kropla.line',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                display: 'flex',
-              }}
-            >
-              <ParcelMap
-                parcel={parcel}
-                focus={focus}
-                focusKey={parcel ? 1 : 0}
-                height={{ xs: 320, md: 480 }}
-                isLoading={isLoading}
-                errorMessage={null}
-                layerToggleInCorner
-                showParcelBoundaries
-                onPick={handlePick}
+            <Stack spacing={1.5}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={fieldMode}
+                    onChange={(event) => {
+                      setFieldMode(event.target.checked);
+                      setFieldPickError(null);
+                    }}
+                  />
+                }
+                label="Utwórz pole z kilku działek"
+                sx={{
+                  m: 0,
+                  minHeight: 48,
+                  '& .MuiFormControlLabel-label': { fontSize: '1.125rem', fontWeight: 600 },
+                }}
               />
-            </Box>
+              <Box
+                component="section"
+                aria-label={
+                  fieldMode ? 'Mapa: klikaj działki do nowego pola' : 'Mapa: kliknij swoją działkę'
+                }
+                sx={{
+                  minWidth: 0,
+                  border: 1,
+                  borderColor: 'kropla.line',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                }}
+              >
+                <ParcelMap
+                  // the searched parcel stays: switching to field mode must not move the map
+                  parcel={parcel}
+                  selectedParcels={fieldMode ? fieldParcels : undefined}
+                  focus={focus}
+                  focusKey={parcel ? 1 : 0}
+                  height={{ xs: 320, md: 480 }}
+                  isLoading={fieldMode ? fieldPicking : isLoading}
+                  errorMessage={null}
+                  layerToggleInCorner
+                  showParcelBoundaries
+                  onPick={fieldMode ? (lat, lon) => void toggleFieldParcel(lat, lon) : handlePick}
+                />
+              </Box>
+              {fieldMode && (
+                <FieldFromMap
+                  accountId={accountId}
+                  token={token}
+                  parcels={fieldParcels}
+                  isPicking={fieldPicking}
+                  pickError={fieldPickError}
+                  onRemove={(parcelId) =>
+                    setFieldParcels((current) => current.filter((item) => item.id !== parcelId))
+                  }
+                  onCreated={() => setFieldParcels([])}
+                />
+              )}
+            </Stack>
           }
         />
         {error?.canRetry && !isLoading && byId && searchId !== null && (
