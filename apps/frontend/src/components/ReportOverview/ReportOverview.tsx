@@ -104,8 +104,12 @@ function ResultCard({ report }: ReportOverviewProps) {
             })}
           />
           <Box>
+            {/* T-108 date in bold primary text so it does not get lost */}
             <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>
-              Wynik na {formatDate(analysisDate)}
+              Wynik na{' '}
+              <Box component="b" sx={{ color: 'text.primary', fontWeight: 800 }}>
+                {formatDate(analysisDate)}
+              </Box>
             </Typography>
             <Typography
               id="wynik-title"

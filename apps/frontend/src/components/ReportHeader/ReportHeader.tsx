@@ -50,6 +50,26 @@ export function ReportHeader({
           <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: 'primary.main' }}>
             {kicker}
           </Typography>
+          {/* T-108 report date as the first stand-out element of the header (read once, here) */}
+          <Box
+            sx={(theme) => ({
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 1,
+              my: 1,
+              px: 2,
+              py: 0.75,
+              borderRadius: 9999,
+              bgcolor: theme.palette.kropla.tint,
+              border: `2px solid ${theme.palette.primary.main}`,
+              color: 'text.primary',
+              fontSize: { xs: '1.125rem', md: '1.25rem' },
+              fontWeight: 800,
+            })}
+          >
+            <EventIcon aria-hidden sx={{ color: 'primary.main' }} />
+            Raport na dzień {formatDate(report.analysisDate)}
+          </Box>
           <Typography variant="h1" component="h1" sx={{ overflowWrap: 'anywhere' }}>
             Raport wody: działka {parcel.parcelNumber}
           </Typography>
@@ -69,23 +89,6 @@ export function ReportHeader({
         <span>
           {place} · <b style={{ fontWeight: 700 }}>{formatNumber(parcel.areaHa, 1)} ha</b>
         </span>
-        {/* separator only on one-line layouts; on phones the date wraps and a lone dot looked like a glitch */}
-        <Box component="span" aria-hidden sx={{ display: { xs: 'none', md: 'inline' } }}>
-          ·
-        </Box>
-        <Box
-          component="span"
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 1,
-            fontWeight: 700,
-            color: 'text.primary',
-          }}
-        >
-          <EventIcon aria-hidden sx={{ color: 'kropla.iconMuted' }} />
-          Stan na {formatDate(report.analysisDate)}
-        </Box>
       </Typography>
       <Box>
         <Box
