@@ -3,7 +3,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Box } from '@mui/material';
 
 export interface MoreButtonProps {
-  variant?: 'primary' | 'red';
+  /** neutral: grey, for tiles whose own colour already carries the status (T-103 drought tile) */
+  variant?: 'primary' | 'red' | 'neutral';
   size?: 'medium' | 'large';
   open?: boolean;
 }
@@ -13,14 +14,25 @@ export function MoreButton({
   size = 'medium',
   open = false,
 }: MoreButtonProps) {
-  const isRed = variant === 'red';
   return (
     <Box
       component="span"
       className="more-btn"
       sx={(theme) => {
-        const main = isRed ? theme.palette.error.main : theme.palette.primary.main;
-        const hover = isRed ? theme.palette.kropla.alertHigh : theme.palette.primary.main;
+        const main =
+          variant === 'red'
+            ? theme.palette.error.main
+            : variant === 'neutral'
+              ? theme.palette.text.secondary
+              : theme.palette.primary.main;
+        const hover =
+          variant === 'red'
+            ? theme.palette.kropla.alertHigh
+            : variant === 'neutral'
+              ? theme.palette.text.primary
+              : theme.palette.primary.main;
+        const hoverText =
+          variant === 'neutral' ? theme.palette.background.paper : theme.palette.common.white;
         return {
           boxSizing: 'border-box',
           width: '100%',
@@ -41,7 +53,7 @@ export function MoreButton({
           '[role=button]:hover &, [role=button]:focus-visible &': {
             bgcolor: hover,
             borderColor: hover,
-            color: theme.palette.common.white,
+            color: hoverText,
           },
         };
       }}

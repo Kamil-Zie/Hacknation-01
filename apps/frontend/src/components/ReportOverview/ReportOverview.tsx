@@ -153,7 +153,7 @@ function ResultCard({ report }: ReportOverviewProps) {
         sx={{ mt: 'auto', pt: 1 }}
         header={null}
         headerSx={{ display: 'flex' }}
-        renderHeader={(open) => <MoreButton variant="red" size="large" open={open} />}
+        renderHeader={(open) => <MoreButton variant="neutral" size="large" open={open} />}
       >
         <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 1.75 }}>
           {assessment.confidenceReasons.length > 0 && (
