@@ -1,4 +1,4 @@
-// UI-C-019 ParcelFilters: checkbox groups (area, locality, crop with icons) and client-side filtering of account parcels [T-088, T-094]
+// UI-C-019 ParcelFilters: checkbox groups (area ranges, crop with icons, locality) and client-side filtering of account parcels [T-088, T-094]
 import { Box, Button, Checkbox, FormControlLabel, FormGroup, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 
@@ -6,12 +6,16 @@ import type { ParcelOverview } from '@/api/types';
 import { CropIcon } from '@/components/CropIcon/CropIcon';
 
 export const NO_REPORT = '__no_report__';
-// "below 1 ha" option, stored in Filters.areas next to the "above N ha" thresholds
-export const BELOW_ONE_HA = 0;
-export const AREA_THRESHOLDS = [1, 5, 10] as const;
+// T-103 area ranges [from, to) in ha; Filters.areas keeps their indexes
+export const AREA_RANGES: { from: number; to: number; label: string }[] = [
+  { from: 0, to: 1, label: 'Poniżej 1 ha' },
+  { from: 1, to: 5, label: '1–5 ha' },
+  { from: 5, to: 10, label: '5–10 ha' },
+  { from: 10, to: Infinity, label: 'Powyżej 10 ha' },
+];
 
 export interface Filters {
-  /** BELOW_ONE_HA and/or thresholds in ha (above the smallest selected one); OR inside the group */
+  /** indexes into AREA_RANGES; OR inside the group */
   areas: number[];
   /** locality keys, see localityKey() */
   localities: string[];
@@ -35,13 +39,13 @@ export function countActiveFilters(filters: Filters): number {
 
 function matchesArea(areaHa: number, areas: number[]): boolean {
   if (areas.length === 0) return true;
-  const thresholds = areas.filter((ha) => ha !== BELOW_ONE_HA);
-  const below = areas.includes(BELOW_ONE_HA) && areaHa < 1;
-  const above = thresholds.length > 0 && areaHa > Math.min(...thresholds);
-  return below || above;
+  return areas.some((index) => {
+    const range = AREA_RANGES[index];
+    return range !== undefined && areaHa >= range.from && areaHa < range.to;
+  });
 }
 
-// groups are joined with AND, values inside a group with OR (area: below 1 ha or above the smallest threshold)
+// groups are joined with AND, values inside a group with OR
 export function filterParcels(items: ParcelOverview[], filters: Filters): ParcelOverview[] {
   return items.filter(
     (item) =>
@@ -132,24 +136,21 @@ export function ParcelFilters({ parcels, value, onChange }: ParcelFiltersProps) 
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
       <Group
         legend="Powierzchnia"
-        options={[
-          { value: String(BELOW_ONE_HA), label: 'Poniżej 1 ha' },
-          ...AREA_THRESHOLDS.map((ha) => ({ value: String(ha), label: `Powyżej ${ha} ha` })),
-        ]}
+        options={AREA_RANGES.map((range, index) => ({ value: String(index), label: range.label }))}
         isChecked={(entry) => value.areas.includes(Number(entry))}
         onToggle={(entry) => onChange({ ...value, areas: toggle(value.areas, Number(entry)) })}
-      />
-      <Group
-        legend="Miejscowość"
-        options={localities.map((name) => ({ value: name, label: name }))}
-        isChecked={(entry) => value.localities.includes(entry)}
-        onToggle={(entry) => onChange({ ...value, localities: toggle(value.localities, entry) })}
       />
       <Group
         legend="Uprawa"
         options={cropOptions}
         isChecked={(entry) => value.crops.includes(entry)}
         onToggle={(entry) => onChange({ ...value, crops: toggle(value.crops, entry) })}
+      />
+      <Group
+        legend="Miejscowość"
+        options={localities.map((name) => ({ value: name, label: name }))}
+        isChecked={(entry) => value.localities.includes(entry)}
+        onToggle={(entry) => onChange({ ...value, localities: toggle(value.localities, entry) })}
       />
       <Button
         variant="outlined"
