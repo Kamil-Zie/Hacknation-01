@@ -164,12 +164,14 @@ export function ThreatList({
 }) {
   const atRisk = items.filter((item) => item.atRisk);
   return (
-    <Stack spacing={1} sx={{ alignSelf: 'start', justifyContent: 'flex-start' }}>
-      <Typography
-        variant="h3"
-        component="h3"
-        sx={{ fontSize: '1.125rem', fontWeight: 800, m: 0, lineHeight: 1.5 }}
-      >
+    <Stack
+      component="section"
+      aria-labelledby="lista-zagrozonych-title"
+      spacing={2}
+      sx={{ alignSelf: 'start', minWidth: 0 }}
+    >
+      {/* same heading level and style as the „Stan suszy” title next to it */}
+      <Typography id="lista-zagrozonych-title" variant="h2" component="h2">
         Lista zagrożonych ({atRisk.length})
       </Typography>
       {atRisk.length === 0 ? (

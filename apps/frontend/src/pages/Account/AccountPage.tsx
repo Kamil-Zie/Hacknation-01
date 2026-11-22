@@ -1,7 +1,19 @@
 // UI-S-009 T-093 Dashboard: ThreatMap (UI-C-017) top left without a tile, drought tile + new parcel / quick report (UI-S-014) buttons top right, water balance (UI-C-011) full width below
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
-import { Alert, Box, Button, Link, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Link,
+  MenuItem,
+  Skeleton,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import { useAccountParcelsQuery } from '@/api/accountParcels';
@@ -43,6 +55,7 @@ export function AccountPage() {
   const items = parcels.data ?? [];
   const atRisk = items.filter((item) => item.atRisk);
   const atRiskHa = atRisk.reduce((sum, item) => sum + item.parcel.areaHa, 0);
+  const hasParcels = !parcels.isPending && !parcels.isError && items.length > 0;
   const countByClass = (value: DroughtClass) =>
     items.filter((item) => (item.lastReport?.droughtClass ?? 'unknown') === value).length;
   const top = mostThreatened(items);
@@ -138,45 +151,81 @@ export function AccountPage() {
             justifyContent: 'space-between',
           }}
         >
-          <DashboardTile
-            id="stan-suszy"
-            title="Stan suszy"
-            isLoading={parcels.isPending}
-            isError={parcels.isError}
-            onRetry={retryParcels}
-            isEmpty={items.length === 0}
-            emptyText="Stan suszy pokażemy po sprawdzeniu pierwszej działki."
-            emptyAction={
-              <Link component={RouterLink} to="/" sx={linkSx}>
-                Sprawdź działkę
-              </Link>
-            }
-          >
-            <Box
-              sx={{
-                display: 'grid',
-                gap: 2,
-                gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
-                alignItems: 'start',
-                alignContent: 'start',
-              }}
-            >
-              <Stack spacing={1}>
-                {DROUGHT_ORDER.map((value) => (
-                  <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                    <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
-                    <Typography sx={bigText}>{countByClass(value)}</Typography>
-                  </Stack>
-                ))}
-                <Typography
-                  sx={{ ...bigText, fontWeight: 700, pt: 1, borderTop: 1, borderColor: 'divider' }}
-                >
-                  Zagrożony obszar: {formatHa(atRiskHa)}
-                </Typography>
-              </Stack>
-              <ThreatList items={items} onSelect={openReport} />
-            </Box>
-          </DashboardTile>
+          {/* one card, two columns from the top edge: drought counts | at-risk list and legend */}
+          <Card>
+            <CardContent>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gap: 2,
+                  gridTemplateColumns: {
+                    xs: 'minmax(0, 1fr)',
+                    sm: hasParcels ? 'repeat(2, minmax(0, 1fr))' : 'minmax(0, 1fr)',
+                  },
+                  alignItems: 'start',
+                }}
+              >
+                <Stack component="section" aria-labelledby="stan-suszy-title" spacing={2}>
+                  <Typography id="stan-suszy-title" variant="h2" component="h2">
+                    Stan suszy
+                  </Typography>
+                  {parcels.isPending ? (
+                    <Stack spacing={1} aria-label="Ładowanie: Stan suszy">
+                      <Skeleton variant="rounded" height={32} />
+                      <Skeleton variant="rounded" height={32} width="70%" />
+                    </Stack>
+                  ) : parcels.isError ? (
+                    <Alert
+                      severity="error"
+                      role="alert"
+                      action={
+                        <Button color="inherit" sx={{ minHeight: 48 }} onClick={retryParcels}>
+                          Spróbuj ponownie
+                        </Button>
+                      }
+                    >
+                      Nie udało się pobrać danych.
+                    </Alert>
+                  ) : !hasParcels ? (
+                    <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
+                      <Typography sx={bigText}>
+                        Stan suszy pokażemy po sprawdzeniu pierwszej działki.
+                      </Typography>
+                      <Link component={RouterLink} to="/" sx={linkSx}>
+                        Sprawdź działkę
+                      </Link>
+                    </Stack>
+                  ) : (
+                    <Stack spacing={1}>
+                      {DROUGHT_ORDER.map((value) => (
+                        <Stack
+                          key={value}
+                          direction="row"
+                          spacing={1}
+                          sx={{ alignItems: 'center' }}
+                        >
+                          <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
+                          <Typography sx={bigText}>{countByClass(value)}</Typography>
+                        </Stack>
+                      ))}
+                      <Typography
+                        sx={{
+                          ...bigText,
+                          fontWeight: 700,
+                          pt: 1,
+                          borderTop: 1,
+                          borderColor: 'divider',
+                        }}
+                      >
+                        Zagrożony obszar: {formatHa(atRiskHa)}
+                      </Typography>
+                    </Stack>
+                  )}
+                </Stack>
+                {hasParcels && <ThreatList items={items} onSelect={openReport} />}
+              </Box>
+            </CardContent>
+          </Card>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={1.5}
