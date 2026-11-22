@@ -34,3 +34,8 @@ Rolnik pracuje sam albo dzieli działki z rodziną, wspólnikiem czy doradcą OD
 - **Logowanie jest ekranem startowym.** Bez sesji aplikacja otwiera `/logowanie` (zakładki „Zaloguj się” / „Załóż konto”), po zalogowaniu domyślnie Panel (`/konto`: działki, pola, historia, „Sprawdź nową działkę”). Wyszukiwanie działki i krok uprawy wymagają sesji (T-081).
 - **Publiczne zostają linki do raportów** `/report/:id` i `/report/:id/print` (pkt 5). Backend bez zmian: `POST /analyses` dalej przyjmuje żądania bez tokenu.
 - Konsekwencja dla jury: README i instrukcja w zgłoszeniu muszą podać konto demonstracyjne albo krok „Załóż konto” (T-034).
+
+## Aktualizacja 2026-11-22 08:40 (decyzja Kamila)
+
+- **Logowanie zostaje** (uzgodnione z jury: logowanie jest dopuszczalne). Odpowiedź na decision_request Dawida 20261122-0820: bez zmian w trasach.
+- Tryb gościa Nataniela (T-103: Start, działka, raport bez konta) zostaje jako dodatek; README (T-034) opisuje oba wejścia: konto demonstracyjne / „Załóż konto” oraz gościa.
