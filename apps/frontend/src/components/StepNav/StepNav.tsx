@@ -1,6 +1,7 @@
 // T-026 UI-S-001 UI-S-002 StepNav: 3-step progress tiles under the header (Kropla design), active step derived from the route
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Box, ButtonBase } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import type { Theme } from '@mui/material/styles';
 import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom';
 
@@ -120,6 +121,18 @@ function StepTile({ number, step, state, href, isCurrent }: StepTileProps) {
         : theme.palette.kropla.line,
     background: isActive ? theme.palette.kropla.ctaGradient : theme.palette.background.paper,
     color: isActive ? theme.palette.kropla.ctaText : theme.palette.text.primary,
+    // T-103 hover only on steps you can go back to (links): primary border, tint, lift
+    ...(href && {
+      cursor: 'pointer',
+      transition: 'transform 120ms, box-shadow 120ms, border-color 120ms, background-color 120ms',
+      '&:hover': {
+        borderColor: theme.palette.primary.main,
+        background: alpha(theme.palette.primary.main, 0.14),
+        transform: 'translateY(-2px)',
+        boxShadow: theme.shadows[4],
+      },
+      '&:active': { transform: 'translateY(0)', boxShadow: theme.shadows[1] },
+    }),
     '&:focus-visible': { outline: `3px solid ${theme.palette.primary.main}`, outlineOffset: 2 },
   });
   const content = (
