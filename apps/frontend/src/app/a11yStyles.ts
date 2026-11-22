@@ -74,6 +74,20 @@ export const a11yStyles: Interpolation<Theme> = {
   // Chips: the label's black box covered the rounded border; colour the chip, keep the label transparent.
   'html.high-contrast #root .MuiChip-root': { backgroundColor: `${HC_BG} !important` },
   'html.high-contrast #root .MuiChip-label': { backgroundColor: 'transparent !important' },
+  // T-103 a chip inside a pressed toggle (dashboard drought classes): the pressed rule paints its text
+  // black and the chip rule paints its background black, so keep the chip black with white text.
+  'html.high-contrast #root [aria-pressed] .MuiChip-root, html.high-contrast #root [aria-pressed] .MuiChip-root *':
+    {
+      color: `${HC_TEXT} !important`,
+    },
+  // T-103 chart axes (MUI X Charts SVG): grey tick labels vanish on black.
+  'html.high-contrast #root .MuiChartsAxis-tickLabel, html.high-contrast #root .MuiChartsAxis-label':
+    {
+      fill: `${HC_TEXT} !important`,
+    },
+  'html.high-contrast #root .MuiChartsAxis-line, html.high-contrast #root .MuiChartsAxis-tick': {
+    stroke: `${HC_TEXT} !important`,
+  },
   // Outline frame sits on top of the field text: border only, no background.
   'html.high-contrast #root .MuiOutlinedInput-notchedOutline, html.high-contrast #root .MuiOutlinedInput-notchedOutline *':
     {
