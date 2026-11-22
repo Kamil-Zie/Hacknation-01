@@ -5,7 +5,7 @@
   "type": "bugfix",
   "team": "frontend",
   "assignee": "frontend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "medium",
   "depends_on": [],
   "contract_refs": ["UI-S-003"],
@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "frontend-1 08:05: done w 0cad782. Plakietka „Raport na dzień …” z ikoną kalendarza nad tytułem (tło kropla.tint, ramka primary, tekst text.primary); data usunięta z szarej linii z miejscowością, więc w nagłówku czytnik czyta ją raz. „Wynik na” z datą pogrubioną w text.primary. Układ bez zmian. Sprawdzone 1440 i 390 px, jasny i ciemny, widok druku /report/demo/print OK.",
     "Pliki: src/components/ReportHeader/ReportHeader.tsx, src/components/ReportOverview/ReportOverview.tsx. Zamrożenie o 9:00: to poprawka wyglądu, po 9:00 jako fix."
   ],
   "created_at": "2026-11-22",
