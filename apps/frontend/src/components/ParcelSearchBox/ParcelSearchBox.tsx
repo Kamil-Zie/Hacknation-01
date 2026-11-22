@@ -1,4 +1,4 @@
-// UI-C-018 API-020 API-001 Parcel search with history hints for the sidebar [T-087]
+// UI-C-018 API-001 Parcel search with recent-search hints for the sidebar [T-087, T-103]
 import CloseIcon from '@mui/icons-material/Close';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HistoryIcon from '@mui/icons-material/History';
@@ -12,23 +12,19 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { useId, useMemo, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useAccountParcelsQuery } from '@/api/accountParcels';
 import { getParcelById, PARCEL_ID_REGEX } from '@/api/parcels';
 import { useSearchHistoryStore } from '@/store/searchHistory';
-import { useSessionStore } from '@/store/session';
 
 const HISTORY_GROUP = 'Ostatnio wyszukiwane';
-const ACCOUNT_GROUP = 'Twoje działki';
 const NOT_FOUND_MESSAGE = 'Nie znaleziono działki';
 const FORMAT_MESSAGE = 'Wpisz pełny numer działki, np. 061409_2.0009.612';
-const LIST_ERROR_MESSAGE = 'Nie udało się wczytać Twoich działek. Możesz wpisać numer.';
 
 // "612, Bronowice (Puławy)" → title "Działka 612", place "Bronowice · gm. Puławy"
-// (history keeps only the label, so both groups are split the same way)
 function splitLabel(label: string): { title: string; place: string | null } {
   const match = /^(.+?), (.+?)(?: \((.+)\))?$/.exec(label);
   if (!match) return { title: label, place: null };
@@ -55,33 +51,25 @@ export interface ParcelSearchBoxProps {
 export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
   const navigate = useNavigate();
   const helperId = useId();
-  const token = useSessionStore((state) => state.token);
-  const accountId = useSessionStore((state) => state.activeAccountId);
   const history = useSearchHistoryStore((state) => state.items);
   const addToHistory = useSearchHistoryStore((state) => state.add);
   const removeFromHistory = useSearchHistoryStore((state) => state.remove);
-  const accountParcels = useAccountParcelsQuery(accountId, token);
 
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
 
-  const options = useMemo<SearchOption[]>(() => {
-    const historyOptions = history.map((item) => ({
-      id: item.id,
-      label: item.label,
-      group: HISTORY_GROUP,
-      haystack: `${item.id} ${item.label}`.toLowerCase(),
-    }));
-    const accountOptions = (accountParcels.data ?? []).map(({ parcel }) => ({
-      id: parcel.id,
-      label: `${parcel.parcelNumber}, ${parcel.region} (${parcel.commune})`,
-      group: ACCOUNT_GROUP,
-      haystack:
-        `${parcel.id} ${parcel.parcelNumber} ${parcel.region} ${parcel.commune}`.toLowerCase(),
-    }));
-    return [...historyOptions, ...accountOptions];
-  }, [history, accountParcels.data]);
+  // T-103: only the recent searches are suggested (no „Twoje działki” group)
+  const options = useMemo<SearchOption[]>(
+    () =>
+      history.map((item) => ({
+        id: item.id,
+        label: item.label,
+        group: HISTORY_GROUP,
+        haystack: `${item.id} ${item.label}`.toLowerCase(),
+      })),
+    [history],
+  );
 
   function go(id: string, label: string) {
     addToHistory({ id, label });
@@ -143,9 +131,7 @@ export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
           if (value && typeof value !== 'string') go(value.id, value.label);
         }}
         disabled={isChecking}
-        loading={accountParcels.isLoading}
-        loadingText="Wczytuję Twoje działki…"
-        noOptionsText="Brak podpowiedzi. Wpisz pełny numer działki i naciśnij Enter."
+        noOptionsText="Brak ostatnich wyszukiwań. Wpisz pełny numer działki i naciśnij Enter."
         renderOption={(props, option) => {
           const { key, ...rest } = props as typeof props & { key: string };
           const isHistory = option.group === HISTORY_GROUP;
@@ -160,9 +146,9 @@ export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
               {/* T-103: two clear lines – "Działka 612" bold, place muted below, no wrapping */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
                 {isHistory ? (
-                  <HistoryIcon aria-hidden sx={{ color: 'text.secondary', flexShrink: 0 }} />
+                  <HistoryIcon aria-hidden sx={{ color: 'primary.main', flexShrink: 0 }} />
                 ) : (
-                  <SearchIcon aria-hidden sx={{ color: 'text.secondary', flexShrink: 0 }} />
+                  <SearchIcon aria-hidden sx={{ color: 'primary.main', flexShrink: 0 }} />
                 )}
                 <Box sx={{ minWidth: 0 }}>
                   <Typography
@@ -206,29 +192,50 @@ export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
             placement: 'bottom-start',
             sx: { minWidth: 'min(380px, calc(100vw - 32px))' },
           },
+          // T-103 colours: a blue-tinted list (stands out from the side panel in light and dark
+          // mode), group headers on a stronger tint, the pointed / keyboard item clearly blue
           paper: {
             elevation: 8,
-            sx: {
-              fontSize: '1.125rem',
-              border: 1,
-              borderColor: 'divider',
-              borderRadius: 2,
-              mt: 0.5,
-              '& .MuiAutocomplete-groupLabel': {
-                fontSize: '0.875rem',
-                fontWeight: 800,
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                color: 'primary.main',
-                bgcolor: 'background.paper',
-                lineHeight: 2.5,
-              },
-              '& .MuiAutocomplete-option': { px: 1.5 },
-              '& .MuiAutocomplete-option:not(:last-of-type)': {
-                borderBottom: 1,
-                borderColor: 'divider',
-              },
-              '& .MuiAutocomplete-noOptions, & .MuiAutocomplete-loading': { fontSize: '1.125rem' },
+            sx: (theme) => {
+              const tint = (amount: number) =>
+                `linear-gradient(${alpha(theme.palette.primary.main, amount)}, ${alpha(theme.palette.primary.main, amount)})`;
+              return {
+                fontSize: '1.125rem',
+                border: 1,
+                borderColor: alpha(theme.palette.primary.main, 0.5),
+                borderRadius: 2,
+                mt: 0.5,
+                backgroundColor: theme.palette.background.paper,
+                backgroundImage: tint(0.06),
+                '& .MuiAutocomplete-groupLabel': {
+                  fontSize: '0.875rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  color: theme.palette.primary.main,
+                  backgroundColor: theme.palette.background.paper,
+                  backgroundImage: tint(0.16),
+                  lineHeight: 2.5,
+                },
+                '& .MuiAutocomplete-option': {
+                  px: 1.5,
+                  borderLeft: '4px solid transparent',
+                  transition: 'background-color 100ms, border-color 100ms',
+                },
+                '& .MuiAutocomplete-option:not(:last-of-type)': {
+                  borderBottom: `1px solid ${theme.palette.divider}`,
+                },
+                '& .MuiAutocomplete-option.Mui-focused, & .MuiAutocomplete-option:hover': {
+                  backgroundColor: `${alpha(theme.palette.primary.main, 0.22)} !important`,
+                  borderLeftColor: theme.palette.primary.main,
+                },
+                '& .MuiAutocomplete-option[aria-selected="true"]': {
+                  backgroundColor: `${alpha(theme.palette.primary.main, 0.3)} !important`,
+                },
+                '& .MuiAutocomplete-noOptions, & .MuiAutocomplete-loading': {
+                  fontSize: '1.125rem',
+                },
+              };
             },
           },
         }}
@@ -248,8 +255,6 @@ export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
                   />
                   <span>{error}</span>
                 </Box>
-              ) : accountParcels.isError ? (
-                LIST_ERROR_MESSAGE
               ) : undefined
             }
             onKeyDown={handleKeyDown}
