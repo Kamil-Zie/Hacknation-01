@@ -27,6 +27,18 @@ const NOT_FOUND_MESSAGE = 'Nie znaleziono działki';
 const FORMAT_MESSAGE = 'Wpisz pełny numer działki, np. 061409_2.0009.612';
 const LIST_ERROR_MESSAGE = 'Nie udało się wczytać Twoich działek. Możesz wpisać numer.';
 
+// "612, Bronowice (Puławy)" → title "Działka 612", place "Bronowice · gm. Puławy"
+// (history keeps only the label, so both groups are split the same way)
+function splitLabel(label: string): { title: string; place: string | null } {
+  const match = /^(.+?), (.+?)(?: \((.+)\))?$/.exec(label);
+  if (!match) return { title: label, place: null };
+  const [, number, region, commune] = match;
+  return {
+    title: `Działka ${number}`,
+    place: commune && commune !== region ? `${region} · gm. ${commune}` : (region ?? null),
+  };
+}
+
 interface SearchOption {
   id: string;
   label: string;
@@ -137,21 +149,39 @@ export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
         renderOption={(props, option) => {
           const { key, ...rest } = props as typeof props & { key: string };
           const isHistory = option.group === HISTORY_GROUP;
+          const { title, place } = splitLabel(option.label);
           return (
             <Box
               component="li"
               key={key}
               {...rest}
-              sx={{ minHeight: 48, gap: 1, justifyContent: 'space-between' }}
+              sx={{ minHeight: 56, gap: 1, justifyContent: 'space-between' }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-                {isHistory ? <HistoryIcon aria-hidden /> : <SearchIcon aria-hidden />}
-                <Typography
-                  component="span"
-                  sx={{ fontSize: '1.125rem', overflowWrap: 'anywhere' }}
-                >
-                  {option.label}
-                </Typography>
+              {/* T-103: two clear lines – "Działka 612" bold, place muted below, no wrapping */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
+                {isHistory ? (
+                  <HistoryIcon aria-hidden sx={{ color: 'text.secondary', flexShrink: 0 }} />
+                ) : (
+                  <SearchIcon aria-hidden sx={{ color: 'text.secondary', flexShrink: 0 }} />
+                )}
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    component="span"
+                    noWrap
+                    sx={{ display: 'block', fontSize: '1.125rem', fontWeight: 700 }}
+                  >
+                    {title}
+                  </Typography>
+                  {place && (
+                    <Typography
+                      component="span"
+                      noWrap
+                      sx={{ display: 'block', fontSize: '1rem', color: 'text.secondary' }}
+                    >
+                      {place}
+                    </Typography>
+                  )}
+                </Box>
               </Box>
               {isHistory && (
                 <IconButton
@@ -170,11 +200,34 @@ export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
           );
         }}
         slotProps={{
-          listbox: { 'aria-label': 'Podpowiedzi działek' },
+          listbox: { 'aria-label': 'Podpowiedzi działek', sx: { maxHeight: '60vh' } },
+          // T-103: wider than the 248 px field, with a border and shadow so it stands out from the panel
+          popper: {
+            placement: 'bottom-start',
+            sx: { minWidth: 'min(380px, calc(100vw - 32px))' },
+          },
           paper: {
+            elevation: 8,
             sx: {
               fontSize: '1.125rem',
-              '& .MuiAutocomplete-groupLabel': { fontSize: '1rem', fontWeight: 800 },
+              border: 1,
+              borderColor: 'divider',
+              borderRadius: 2,
+              mt: 0.5,
+              '& .MuiAutocomplete-groupLabel': {
+                fontSize: '0.875rem',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                color: 'primary.main',
+                bgcolor: 'background.paper',
+                lineHeight: 2.5,
+              },
+              '& .MuiAutocomplete-option': { px: 1.5 },
+              '& .MuiAutocomplete-option:not(:last-of-type)': {
+                borderBottom: 1,
+                borderColor: 'divider',
+              },
               '& .MuiAutocomplete-noOptions, & .MuiAutocomplete-loading': { fontSize: '1.125rem' },
             },
           },
