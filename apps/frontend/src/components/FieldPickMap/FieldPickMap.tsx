@@ -1,4 +1,4 @@
-// UI-S-007 FieldPickMap: Leaflet map with many numbered parcel outlines at once, invalid ones in red, click to add a parcel
+// UI-S-007 FieldPickMap: Leaflet map with many numbered parcel outlines at once, click to add a parcel
 import { Box, useTheme } from '@mui/material';
 import { useEffect } from 'react';
 import { GeoJSON, MapContainer, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet';
@@ -11,12 +11,8 @@ import { MAP_LAYERS, useMapLayer } from '@/components/MapLayerToggle/mapLayers';
 
 import 'leaflet/dist/leaflet.css';
 
-const INVALID_COLOR = '#C62828';
-
 interface FieldPickMapProps {
   parcels: Parcel[];
-  /** Ids drawn in red (PARCELS_NOT_ADJACENT) */
-  invalidIds?: string[];
   onPick?: (lat: number, lon: number) => void;
 }
 
@@ -45,7 +41,7 @@ function FitToParcels({ parcels }: { parcels: Parcel[] }) {
   return null;
 }
 
-export function FieldPickMap({ parcels, invalidIds = [], onPick }: FieldPickMapProps) {
+export function FieldPickMap({ parcels, onPick }: FieldPickMapProps) {
   const { palette } = useTheme();
   const [layer, setLayer] = useMapLayer();
   const layerConfig = MAP_LAYERS[layer];
@@ -75,13 +71,12 @@ export function FieldPickMap({ parcels, invalidIds = [], onPick }: FieldPickMapP
         />
         <ClickHandler onPick={onPick} />
         {parcels.map((parcel) => {
-          const isInvalid = invalidIds.includes(parcel.id);
-          const color = isInvalid ? INVALID_COLOR : palette.parcel.stroke;
+          const color = palette.parcel.stroke;
           return (
             <GeoJSON
-              key={`${parcel.id}-${isInvalid}`}
+              key={parcel.id}
               data={parcel.geometry as unknown as GeoJsonObject}
-              style={{ color, weight: 3, fillColor: color, fillOpacity: isInvalid ? 0.35 : 0.2 }}
+              style={{ color, weight: 3, fillColor: color, fillOpacity: 0.2 }}
             >
               <Tooltip permanent direction="center">
                 {parcel.parcelNumber}

@@ -1,4 +1,4 @@
-// UI-S-007 API-016 Create a field: name + 2-20 adjacent parcels added by number or by clicking the map
+// UI-S-007 API-016 Create a field: name + 2-20 parcels added by number or by clicking the map
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
@@ -19,7 +19,6 @@ import type { FormEvent } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import { useCreateFieldMutation } from '@/api/fields';
-import { ApiError } from '@/api/client';
 import { getParcelById, getParcelByPoint } from '@/api/parcels';
 import type { Parcel } from '@/api/types';
 import { FieldPickMap } from '@/components/FieldPickMap/FieldPickMap';
@@ -29,7 +28,6 @@ import { errorMessage } from '@/utils/errorMessages';
 
 const MAX_PARCELS = 20;
 const MAX_NAME = 120;
-const INVALID_COLOR = '#C62828';
 const BIG_TEXT = { fontSize: 18 } as const;
 const BIG_BUTTON = { minHeight: 48, fontSize: 18 } as const;
 
@@ -48,7 +46,6 @@ export function FieldCreatePage() {
   const [parcels, setParcels] = useState<Parcel[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
-  const [invalidIds, setInvalidIds] = useState<string[]>([]);
 
   if (!token || !accountId) {
     return (
@@ -72,12 +69,9 @@ export function FieldCreatePage() {
   const trimmedName = name.trim();
   const canSave = parcels.length >= 2 && trimmedName.length > 0 && !create.isPending;
   const totalHa = parcels.reduce((sum, parcel) => sum + parcel.areaHa, 0);
-  const isNotAdjacent =
-    create.error instanceof ApiError && create.error.code === 'PARCELS_NOT_ADJACENT';
-  const submitError = create.error && !isNotAdjacent ? errorMessage(create.error).message : null;
+  const submitError = create.error ? errorMessage(create.error).message : null;
 
   function resetErrors() {
-    setInvalidIds([]);
     setAddError(null);
     create.reset();
   }
@@ -118,15 +112,7 @@ export function FieldCreatePage() {
     resetErrors();
     create.mutate(
       { name: trimmedName, parcelIds: parcels.map((parcel) => parcel.id) },
-      {
-        onSuccess: () => void navigate('/konto'),
-        onError: (error) => {
-          if (error instanceof ApiError && error.code === 'PARCELS_NOT_ADJACENT') {
-            const ids = error.details?.parcelIds;
-            setInvalidIds(Array.isArray(ids) ? (ids as string[]) : []);
-          }
-        },
-      },
+      { onSuccess: () => void navigate('/konto') },
     );
   }
 
@@ -137,7 +123,7 @@ export function FieldCreatePage() {
       <Box>
         <Typography variant="h1">Utwórz pole</Typography>
         <Typography color="text.secondary" sx={BIG_TEXT}>
-          Pole to kilka działek obok siebie. Podaj nazwę i dodaj co najmniej dwie działki.
+          Podaj nazwę pola i wybierz co najmniej 2 działki.
         </Typography>
       </Box>
 
@@ -239,13 +225,9 @@ export function FieldCreatePage() {
             ) : (
               <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
                 {parcels.map((parcel) => {
-                  const isInvalid = invalidIds.includes(parcel.id);
                   return (
                     <li key={parcel.id}>
-                      <Card
-                        variant="outlined"
-                        sx={isInvalid ? { borderColor: INVALID_COLOR, borderWidth: 2 } : undefined}
-                      >
+                      <Card variant="outlined">
                         <CardContent
                           sx={{
                             display: 'flex',
@@ -263,13 +245,6 @@ export function FieldCreatePage() {
                             <Typography sx={{ fontSize: 16 }} color="text.secondary">
                               {parcel.region} · {formatHa(parcel.areaHa)}
                             </Typography>
-                            {isInvalid && (
-                              <Typography
-                                sx={{ fontSize: 16, color: INVALID_COLOR, fontWeight: 600 }}
-                              >
-                                Nie leży obok pozostałych
-                              </Typography>
-                            )}
                           </Box>
                           <Button
                             type="button"
@@ -302,19 +277,12 @@ export function FieldCreatePage() {
 
         <FieldPickMap
           parcels={parcels}
-          invalidIds={invalidIds}
           onPick={(lat, lon) => {
             if (!isAdding) void load(() => getParcelByPoint(lat, lon));
           }}
         />
       </Box>
 
-      {isNotAdjacent && (
-        <Alert severity="error" role="alert" sx={BIG_TEXT}>
-          Te działki nie leżą obok siebie. Usuń zaznaczone na czerwono albo dodaj działki, które je
-          łączą.
-        </Alert>
-      )}
       {submitError && (
         <Alert severity="error" role="alert" sx={BIG_TEXT}>
           {submitError}
@@ -336,7 +304,7 @@ export function FieldCreatePage() {
         </Button>
         {parcels.length < 2 && (
           <Typography color="text.secondary" sx={{ fontSize: 16 }}>
-            Dodaj co najmniej 2 działki i wpisz nazwę.
+            Wybierz co najmniej 2 działki
           </Typography>
         )}
       </Stack>

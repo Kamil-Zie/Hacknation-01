@@ -1,4 +1,4 @@
-// API-016 API-017 API-018 DM-024 Mock of fields (stored in localStorage), adjacency simplified to centroids < 0.5 km
+// API-016 API-017 API-018 DM-024 Mock of fields (stored in localStorage)
 import { ApiError } from '@/api/client';
 import type { CreateFieldRequest, Field } from '@/api/types';
 import { mockDelay, requireAccount, requireUser } from '@/mocks/auth.mock';
@@ -8,7 +8,6 @@ const STORAGE_KEY = 'kropelka.mock.fields.v1';
 const MAX_NAME = 120;
 const MIN_PARCELS = 2;
 const MAX_PARCELS = 20;
-const MAX_CENTROID_KM = 0.5;
 
 function readFields(): Field[] {
   try {
@@ -24,12 +23,6 @@ function writeFields(fields: Field[]): void {
   } catch {
     // Persistence is best-effort in the mock
   }
-}
-
-function distanceKm(a: { lat: number; lon: number }, b: { lat: number; lon: number }): number {
-  const dLat = (a.lat - b.lat) * 111;
-  const dLon = (a.lon - b.lon) * 111 * Math.cos((a.lat * Math.PI) / 180);
-  return Math.hypot(dLat, dLon);
 }
 
 function validationError(field: string, message: string): ApiError {
@@ -61,22 +54,6 @@ export async function mockCreateField(
     }
     return parcel;
   });
-  // Parcels without any neighbour closer than 0.5 km are reported as not connected
-  const lonely = parcels.filter(
-    (parcel) =>
-      !parcels.some(
-        (other) =>
-          other.id !== parcel.id && distanceKm(parcel.centroid, other.centroid) < MAX_CENTROID_KM,
-      ),
-  );
-  if (lonely.length > 0) {
-    throw new ApiError(
-      'PARCELS_NOT_ADJACENT',
-      'Działki nie tworzą spójnego obszaru (maks. 50 m między granicami).',
-      422,
-      { parcelIds: lonely.map((parcel) => parcel.id), maxDistanceM: 50 },
-    );
-  }
   const now = new Date().toISOString();
   const field: Field = {
     id: `f_${Date.now().toString(36)}`,

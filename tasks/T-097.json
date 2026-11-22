@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["API-016", "UI-S-007"],
@@ -22,7 +22,8 @@
   },
   "notes": [
     "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu.",
-    "frontend-2 02:00: start (fe-developer), T-097 i T-099 równolegle."
+    "frontend-2 02:00: start (fe-developer), T-097 i T-099 równolegle.",
+    "frontend-2 02:10: usunięte PARCELS_NOT_ADJACENT, invalidIds, czerwone podświetlanie i sprawdzanie w mocku (2–20 działek, inaczej VALIDATION_ERROR). Podpowiedź 'Wybierz co najmniej 2 działki'. tsc/eslint/prettier OK; na żywo nie klikane."
   ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
