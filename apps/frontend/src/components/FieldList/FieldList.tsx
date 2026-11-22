@@ -20,6 +20,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -164,7 +165,16 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
                         remove.reset();
                         setToDelete(field);
                       }}
-                      sx={BIG_BUTTON}
+                      // T-103: neutral at rest, red on hover / keyboard focus (a destructive action)
+                      sx={{
+                        ...BIG_BUTTON,
+                        transition: 'background-color 120ms, color 120ms, border-color 120ms',
+                        '&:hover, &:focus-visible': {
+                          color: 'error.main',
+                          borderColor: 'error.main',
+                          bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+                        },
+                      }}
                     >
                       Usuń
                     </Button>
