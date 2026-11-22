@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "backend-1",
-  "status": "in_progress",
+  "status": "integration",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-014", "API-020", "API-003"],
@@ -22,7 +22,8 @@
     "note": ""
   },
   "notes": [
-    "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu."
+    "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu.",
+    "backend-1 2796765: QuickReportPage na main (max 5, analizy po kolei w for/await, błąd przy działce bez przerywania, postęp aria-live, StatusBadge + Otwórz raport); typecheck, eslint, build OK. Brak kontroli wizualnej 390/1440 i axe (sesja bez Claude in Chrome). Pominięte opcjonalne „Drukuj wszystkie”."
   ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
