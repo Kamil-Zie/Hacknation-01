@@ -18,6 +18,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -42,7 +43,8 @@ const DROUGHT: Record<DroughtClass, { label: string; Icon: typeof ErrorOutlineIc
 
 function ParcelRow({ item }: { item: ParcelOverview }) {
   const { parcel, lastReport } = item;
-  const drought = lastReport ? DROUGHT[lastReport.droughtClass] : null;
+  const droughtClass: DroughtClass = lastReport?.droughtClass ?? 'unknown';
+  const drought = lastReport ? DROUGHT[droughtClass] : null;
   return (
     <Card
       component="li"
@@ -50,6 +52,9 @@ function ParcelRow({ item }: { item: ParcelOverview }) {
       sx={{
         listStyle: 'none',
         p: 2,
+        // T-103 drought colour (same as the dashboard): a stripe on the left of each parcel
+        borderLeft: 8,
+        borderLeftColor: (theme) => theme.palette.drought[droughtClass],
         display: 'flex',
         flexDirection: { xs: 'column', sm: 'row' },
         gap: 2,
@@ -71,9 +76,25 @@ function ParcelRow({ item }: { item: ParcelOverview }) {
           Uprawa: {lastReport ? lastReport.crop.name : 'Bez raportu'}
         </Typography>
         {drought && (
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mt: 0.5 }}>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={(theme) => ({
+              display: 'inline-flex',
+              alignItems: 'center',
+              mt: 1,
+              px: 1.25,
+              py: 0.5,
+              borderRadius: 2,
+              bgcolor: alpha(theme.palette.drought[droughtClass], 0.14),
+              border: `2px solid ${theme.palette.drought[droughtClass]}`,
+              color: theme.palette.drought[droughtClass],
+            })}
+          >
             <drought.Icon aria-hidden />
-            <Typography sx={{ fontSize: '1.125rem', fontWeight: 700 }}>{drought.label}</Typography>
+            <Typography sx={{ fontSize: '1.125rem', fontWeight: 800, color: 'text.primary' }}>
+              {drought.label}
+            </Typography>
           </Stack>
         )}
       </Box>
