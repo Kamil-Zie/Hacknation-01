@@ -124,6 +124,13 @@ function Group({ legend, options, isChecked, onToggle, top, footer }: GroupProps
             sx={{
               minHeight: 48,
               m: 0,
+              pr: 1,
+              borderRadius: 2,
+              // T-103 hover: the whole row tints, so it is clear the label is clickable too
+              transition: 'background-color 120ms',
+              '&:hover': { bgcolor: 'action.hover' },
+              '&:hover .MuiFormControlLabel-label': { color: 'primary.main' },
+              '&:has(input:focus-visible)': { bgcolor: 'action.hover' },
               '& .MuiFormControlLabel-label': { fontSize: '1.125rem', overflowWrap: 'anywhere' },
             }}
           />

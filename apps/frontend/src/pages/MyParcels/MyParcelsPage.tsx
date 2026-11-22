@@ -1,10 +1,23 @@
 // UI-S-010 My parcels with filters [T-088]: account parcels list (API-020) with client-side checkbox filters
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CloseIcon from '@mui/icons-material/Close';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import SearchIcon from '@mui/icons-material/Search';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { Alert, Box, Button, Card, Skeleton, Stack, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  IconButton,
+  InputAdornment,
+  Skeleton,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -93,9 +106,25 @@ export function MyParcelsPage() {
   const query = useAccountParcelsQuery(activeAccountId, token);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [open, setOpen] = useState(false);
+  // T-103: text search above the filters (number, place, commune, crop), combined with the filters
+  const [search, setSearch] = useState('');
+  const needle = search.trim().toLocaleLowerCase('pl-PL');
 
   const all = query.data ?? [];
-  const shown = filterParcels(all, filters);
+  const shown = filterParcels(all, filters).filter(
+    (item) =>
+      !needle ||
+      [
+        item.parcel.parcelNumber,
+        item.parcel.id,
+        item.parcel.region,
+        item.parcel.commune,
+        item.lastReport?.crop.name ?? '',
+      ]
+        .join(' ')
+        .toLocaleLowerCase('pl-PL')
+        .includes(needle),
+  );
   const active = countActiveFilters(filters);
 
   let content;
@@ -148,7 +177,38 @@ export function MyParcelsPage() {
           alignItems: 'start',
         }}
       >
-        <Box component="aside" aria-label="Filtry">
+        <Box component="aside" aria-label="Wyszukiwanie i filtry">
+          <TextField
+            type="search"
+            fullWidth
+            label="Szukaj działki"
+            placeholder="Numer, miejscowość, uprawa"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon aria-hidden />
+                  </InputAdornment>
+                ),
+                endAdornment: search ? (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="Wyczyść wyszukiwanie"
+                      onClick={() => setSearch('')}
+                      edge="end"
+                      sx={{ width: 44, height: 44 }}
+                    >
+                      <CloseIcon aria-hidden />
+                    </IconButton>
+                  </InputAdornment>
+                ) : undefined,
+                sx: { fontSize: '1.125rem' },
+              },
+            }}
+            sx={{ mb: 2 }}
+          />
           <Button
             variant="outlined"
             startIcon={<FilterListIcon aria-hidden />}
@@ -175,10 +235,13 @@ export function MyParcelsPage() {
               <Typography sx={{ fontSize: '1.25rem', mb: 2 }}>Żadna działka nie pasuje</Typography>
               <Button
                 variant="outlined"
-                onClick={() => setFilters(EMPTY_FILTERS)}
+                onClick={() => {
+                  setFilters(EMPTY_FILTERS);
+                  setSearch('');
+                }}
                 sx={{ minHeight: 48, fontSize: '1.125rem' }}
               >
-                Wyczyść filtry
+                Wyczyść wyszukiwanie i filtry
               </Button>
             </Card>
           ) : (
