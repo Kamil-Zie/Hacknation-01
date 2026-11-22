@@ -1,4 +1,4 @@
-// UI-S-009 T-093 Dashboard 2x2 (Kamil's layout): ThreatMap (UI-C-017) top left, drought + parcels top right, water balance (UI-C-011) under the map, quick report (UI-S-014) next to the chart
+// UI-S-009 T-093 Dashboard 2x2 (Kamil's layout): ThreatMap (UI-C-017) top left, drought top right, water balance (UI-C-011) under the map, quick report (UI-S-014) next to the chart
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import { Box, Button, Link, MenuItem, Stack, TextField, Typography } from '@mui/material';
@@ -49,7 +49,6 @@ export function AccountPage() {
 
   const items = parcels.data ?? [];
   const atRisk = items.filter((item) => item.atRisk);
-  const totalHa = items.reduce((sum, item) => sum + item.parcel.areaHa, 0);
   const atRiskHa = atRisk.reduce((sum, item) => sum + item.parcel.areaHa, 0);
   const countByClass = (value: DroughtClass) =>
     items.filter((item) => (item.lastReport?.droughtClass ?? 'unknown') === value).length;
@@ -183,56 +182,30 @@ export function AccountPage() {
             </Stack>
           )}
         </DashboardTile>
-        <Box
-          sx={{
-            gridArea: 'side',
-            minWidth: 0,
-            display: 'grid',
-            gap: 2,
-            gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
-          }}
+        <DashboardTile
+          id="stan-suszy"
+          title="Stan suszy"
+          isLoading={parcels.isPending}
+          isError={parcels.isError}
+          onRetry={retryParcels}
+          isEmpty={items.length === 0}
+          emptyText="Brak działek do oceny."
+          sx={{ gridArea: 'side' }}
         >
-          <DashboardTile
-            id="stan-suszy"
-            title="Stan suszy"
-            isLoading={parcels.isPending}
-            isError={parcels.isError}
-            onRetry={retryParcels}
-            isEmpty={items.length === 0}
-            emptyText="Brak działek do oceny."
-          >
-            <Stack spacing={1}>
-              {DROUGHT_ORDER.map((value) => (
-                <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                  <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
-                  <Typography sx={bigText}>{countByClass(value)}</Typography>
-                </Stack>
-              ))}
-              <Typography
-                sx={{ ...bigText, fontWeight: 700, pt: 1, borderTop: 1, borderColor: 'divider' }}
-              >
-                Zagrożony obszar: {formatHa(atRiskHa)}
-              </Typography>
-            </Stack>
-          </DashboardTile>
-          <DashboardTile
-            id="twoje-dzialki"
-            title="Twoje działki"
-            isLoading={parcels.isPending}
-            isError={parcels.isError}
-            onRetry={retryParcels}
-            isEmpty={items.length === 0}
-            emptyText="Nie masz jeszcze działek."
-          >
-            <Stack spacing={0.5}>
-              <Typography sx={bigText}>Liczba działek: {items.length}</Typography>
-              <Typography sx={bigText}>Razem: {formatHa(totalHa)}</Typography>
-              <Link component={RouterLink} to="/dzialki" sx={linkSx}>
-                Wszystkie działki
-              </Link>
-            </Stack>
-          </DashboardTile>
-        </Box>
+          <Stack spacing={1}>
+            {DROUGHT_ORDER.map((value) => (
+              <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
+                <Typography sx={bigText}>{countByClass(value)}</Typography>
+              </Stack>
+            ))}
+            <Typography
+              sx={{ ...bigText, fontWeight: 700, pt: 1, borderTop: 1, borderColor: 'divider' }}
+            >
+              Zagrożony obszar: {formatHa(atRiskHa)}
+            </Typography>
+          </Stack>
+        </DashboardTile>
         <DashboardTile
           id="bilans-wody"
           title={top ? `Bilans wody · działka ${top.parcel.parcelNumber}` : 'Bilans wody'}

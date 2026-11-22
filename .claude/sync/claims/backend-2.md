@@ -2,4 +2,4 @@
 
 Brak aktywnych rezerwacji w backendzie. Od 2026-11-21 22:00 Nataniel jest w teamie frontend; T-077 i T-082 przejął coord-1 (Kamil). Rezerwacje frontendu dopisuj tutaj.
 
-Brak aktywnych rezerwacji (T-094, T-095 done; AccountPage zwolniony 2026-11-22 02:16).
+- T-103 · Poprawki z przejścia jurora i przeglądów: pliki ekranu, którego dotyczy błąd (`src/pages/**`, `src/components/**`), bez `QuickReportPage.tsx` (Dawid, T-100); teraz `src/pages/Account/AccountPage.tsx` · UI-S-009 · od 2026-11-22 02:29
