@@ -1,4 +1,4 @@
-// UI-S-002 Uprawa, data i analiza: parcel from API-001, AnalysisForm, SourceProgressList during API-004, redirect to report
+// UI-S-002 Uprawa, data i analiza: parcel from API-001, AnalysisForm, SourceProgressList during API-004, redirect to report (T-104 view-only roles)
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 import { Alert, Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
@@ -13,7 +13,7 @@ import type { CropCode, Report } from '@/api/types';
 import { AnalysisForm } from '@/components/AnalysisForm/AnalysisForm';
 import { SourceProgressList } from '@/components/SourceProgressList/SourceProgressList';
 import { useSelectionStore } from '@/store/selection';
-import { useSessionStore } from '@/store/session';
+import { useCanEdit, useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
 
 const EXAMPLE_PARCEL_ID = '061409_2.0009.612';
@@ -63,6 +63,8 @@ export function ParcelPage() {
   const mutation = useCreateAnalysisMutation();
   const token = useSessionStore((state) => state.token);
   const activeAccountId = useSessionStore((state) => state.activeAccountId);
+  // T-104 member and guest: the analysis is shown but not saved in the account
+  const canEdit = useCanEdit();
   const activeAccountName = useSessionStore(
     (state) => state.accounts.find((account) => account.id === state.activeAccountId)?.name,
   );
@@ -114,7 +116,7 @@ export function ParcelPage() {
           cropCode: formValues.cropCode as CropCode,
           analysisDate: formValues.analysisDate,
         },
-        options: { accountId: token ? activeAccountId : null, token },
+        options: { accountId: token && canEdit ? activeAccountId : null, token },
       },
       {
         onSuccess: (created) => {

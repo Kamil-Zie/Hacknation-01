@@ -1,4 +1,4 @@
-// T-045 UI-C-013 UI-C-015 Zustand store: auth session (token, user, accounts, active account) kept in localStorage (remember me) or sessionStorage (T-074)
+// T-045 UI-C-013 UI-C-015 Zustand store: auth session (token, user, accounts, active account) kept in localStorage (remember me) or sessionStorage (T-074); T-104 useCanEdit
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -97,4 +97,12 @@ export function readSessionExpired(): boolean {
 
 export function clearSessionExpired(): void {
   safe(() => sessionStorage.removeItem(EXPIRED_KEY));
+}
+
+// T-104 member and guest only view the active account; a session saved before T-104 has no role = may edit
+export function useCanEdit(): boolean {
+  const role = useSessionStore(
+    (state) => state.accounts.find((account) => account.id === state.activeAccountId)?.role,
+  );
+  return role === undefined || role === 'owner' || role === 'partner';
 }

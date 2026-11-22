@@ -1,4 +1,4 @@
-// UI-C-016 T-085 Sidebar: search box and "Menu gospodarstwa" links (fixed panel on desktop, drawer content on phones)
+// UI-C-016 T-085 Sidebar: search box and "Menu gospodarstwa" links (fixed panel on desktop, drawer content on phones) (T-104 view-only roles)
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -10,6 +10,7 @@ import type { ReactNode } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 import { ParcelSearchBox } from '@/components/ParcelSearchBox/ParcelSearchBox';
+import { useCanEdit } from '@/store/session';
 
 interface SidebarLink {
   label: string;
@@ -17,6 +18,8 @@ interface SidebarLink {
   icon: ReactNode;
   // Pathname prefixes that mark the link as current
   match: string[];
+  // T-104 hidden for member and guest (view only)
+  edits?: boolean;
 }
 
 const LINKS: SidebarLink[] = [
@@ -26,6 +29,7 @@ const LINKS: SidebarLink[] = [
     to: '/dodaj-dzialke',
     icon: <AddCircleOutlineIcon aria-hidden />,
     match: ['/dodaj-dzialke'],
+    edits: true,
   },
   { label: 'Moje działki', to: '/dzialki', icon: <MapIcon aria-hidden />, match: ['/dzialki'] },
   {
@@ -33,6 +37,7 @@ const LINKS: SidebarLink[] = [
     to: '/pole/nowe',
     icon: <AddLocationAltIcon aria-hidden />,
     match: ['/pole/nowe'],
+    edits: true,
   },
   { label: 'Moje pola', to: '/pola', icon: <LandscapeIcon aria-hidden />, match: ['/pola'] },
   { label: 'Wspólnicy', to: '/wspolnicy', icon: <GroupsIcon aria-hidden />, match: ['/wspolnicy'] },
@@ -48,13 +53,14 @@ export interface SidebarProps {
 }
 
 export function Sidebar({ onNavigate }: SidebarProps) {
+  const canEdit = useCanEdit();
   const { pathname } = useLocation();
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
       <ParcelSearchBox onNavigate={onNavigate} />
       <Box component="nav" aria-label="Menu gospodarstwa">
         <List disablePadding sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-          {LINKS.map((link) => {
+          {LINKS.filter((link) => canEdit || !link.edits).map((link) => {
             const active = isActive(pathname, link);
             return (
               <li key={link.to}>

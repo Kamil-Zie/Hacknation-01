@@ -1,8 +1,9 @@
-// T-006 T-081 T-084 All routes in one place (UI-S-001..UI-S-006); everything except /logowanie and shared reports needs a session
+// T-006 T-081 T-084 All routes in one place (UI-S-001..UI-S-006); everything except /logowanie and shared reports needs a session (T-104 view-only roles)
 import { createBrowserRouter } from 'react-router-dom';
 
 import { setUnauthorizedHandler } from '@/api/client';
 import { AppLayout } from '@/components/AppLayout/AppLayout';
+import { EditOnly } from '@/components/EditOnly/EditOnly';
 import { RequireAuth } from '@/components/RequireAuth/RequireAuth';
 import { A11yStatementPage } from '@/pages/A11yStatement/A11yStatementPage';
 import { AccountPage } from '@/pages/Account/AccountPage';
@@ -34,13 +35,34 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <StartPage /> },
           { path: '/parcel/:parcelId', element: <ParcelPage /> },
-          { path: '/pole/nowe', element: <FieldCreatePage /> },
+          {
+            path: '/pole/nowe',
+            element: (
+              <EditOnly>
+                <FieldCreatePage />
+              </EditOnly>
+            ),
+          },
           { path: '/pole/:fieldId/raport', element: <FieldReportPage /> },
           { path: '/konto', element: <AccountPage /> },
           { path: '/konto/profil', element: <ProfilePage /> },
-          { path: '/dodaj-dzialke', element: <AddParcelPage /> },
+          {
+            path: '/dodaj-dzialke',
+            element: (
+              <EditOnly>
+                <AddParcelPage />
+              </EditOnly>
+            ),
+          },
           { path: '/dzialki', element: <MyParcelsPage /> },
-          { path: '/szybki-raport', element: <QuickReportPage /> },
+          {
+            path: '/szybki-raport',
+            element: (
+              <EditOnly>
+                <QuickReportPage />
+              </EditOnly>
+            ),
+          },
           { path: '/pola', element: <MyFieldsPage /> },
           { path: '/wspolnicy', element: <PartnersPage /> },
         ],

@@ -1,4 +1,4 @@
-// UI-S-009 T-093 Dashboard: ThreatMap (UI-C-017) top left without a tile, drought tile + new parcel / quick report (UI-S-014) buttons top right, water balance (UI-C-011) full width below
+// UI-S-009 T-093 Dashboard: ThreatMap (UI-C-017) top left without a tile, drought tile + new parcel / quick report (UI-S-014) buttons top right, water balance (UI-C-011) full width below (T-104 view-only roles)
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import {
@@ -28,7 +28,7 @@ import { KbwChart } from '@/components/KbwChart/KbwChart';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { DROUGHT_WORDS, ThreatList, ThreatMap } from '@/components/ThreatMap/ThreatMap';
 import { srOnly } from '@/app/a11yStyles';
-import { useSessionStore } from '@/store/session';
+import { useCanEdit, useSessionStore } from '@/store/session';
 
 const DROUGHT_ORDER: DroughtClass[] = ['severe', 'moderate', 'none', 'unknown'];
 
@@ -103,6 +103,8 @@ export function AccountPage() {
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const fit = useFitHeight(isDesktop);
   const { token, accounts, activeAccountId, setActiveAccount } = useSessionStore();
+  // T-104 member and guest only view: no add parcel / quick report buttons
+  const canEdit = useCanEdit();
   const parcels = useAccountParcelsQuery(activeAccountId, token);
 
   const items = parcels.data ?? [];
@@ -206,17 +208,21 @@ export function AccountPage() {
           ) : items.length === 0 ? (
             <Stack spacing={1.5} sx={{ alignItems: 'flex-start' }}>
               <Typography sx={bigText}>
-                Nie masz jeszcze działek. Dodaj pierwszą, a pokażemy ją tu na mapie.
+                {canEdit
+                  ? 'Nie masz jeszcze działek. Dodaj pierwszą, a pokażemy ją tu na mapie.'
+                  : 'W tym gospodarstwie nie ma jeszcze działek, które możesz oglądać.'}
               </Typography>
-              <Button
-                component={RouterLink}
-                to="/dodaj-dzialke"
-                variant="contained"
-                startIcon={<AddLocationAltIcon />}
-                sx={{ minHeight: 48, fontSize: '1.125rem' }}
-              >
-                Dodaj działkę
-              </Button>
+              {canEdit && (
+                <Button
+                  component={RouterLink}
+                  to="/dodaj-dzialke"
+                  variant="contained"
+                  startIcon={<AddLocationAltIcon />}
+                  sx={{ minHeight: 48, fontSize: '1.125rem' }}
+                >
+                  Dodaj działkę
+                </Button>
+              )}
             </Stack>
           ) : (
             <Stack spacing={1} sx={{ height: { lg: '100%' } }}>
@@ -389,17 +395,19 @@ export function AccountPage() {
               >
                 Sprawdź nową działkę
               </Button>
-              <Button
-                component={RouterLink}
-                to="/szybki-raport"
-                variant="outlined"
-                size="large"
-                fullWidth
-                startIcon={<PlaylistAddCheckIcon />}
-                sx={actionButtonSx}
-              >
-                Szybki raport
-              </Button>
+              {canEdit && (
+                <Button
+                  component={RouterLink}
+                  to="/szybki-raport"
+                  variant="outlined"
+                  size="large"
+                  fullWidth
+                  startIcon={<PlaylistAddCheckIcon />}
+                  sx={actionButtonSx}
+                >
+                  Szybki raport
+                </Button>
+              )}
             </Box>
           </CardContent>
         </Card>

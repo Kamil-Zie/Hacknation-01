@@ -1,4 +1,4 @@
-// UI-S-006 UI-S-011 API-017 API-018 FieldList: "Moje pola" section of the account page (list, report link, delete with confirmation)
+// UI-S-006 UI-S-011 API-017 API-018 FieldList: "Moje pola" section of the account page (list, report link, delete with confirmation) (T-104 view-only roles)
 import AddIcon from '@mui/icons-material/Add';
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -25,7 +25,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 import { useDeleteFieldMutation, useFieldsQuery } from '@/api/fields';
 import type { Field } from '@/api/types';
-import { useSessionStore } from '@/store/session';
+import { useCanEdit, useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
 
 const BIG_BUTTON = { minHeight: 48, fontSize: 18 } as const;
@@ -42,6 +42,8 @@ interface FieldListProps {
 export function FieldList({ hideHeader = false }: FieldListProps) {
   const token = useSessionStore((state) => state.token);
   const accountId = useSessionStore((state) => state.activeAccountId);
+  // T-104 member and guest only view: no create or delete
+  const canEdit = useCanEdit();
   const query = useFieldsQuery(accountId, token);
   const remove = useDeleteFieldMutation(accountId ?? '', token ?? '');
   const [toDelete, setToDelete] = useState<Field | null>(null);
@@ -80,9 +82,11 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
     body = (
       <Typography color="text.secondary" sx={{ fontSize: 18 }}>
         {/* T-102 the Moje pola page already explains what a field is above the list */}
-        {hideHeader
-          ? 'Nie masz jeszcze pól. Kliknij „Utwórz pole”, aby połączyć działki w jedno pole.'
-          : 'Nie masz jeszcze pól. Pole to kilka działek obok siebie – np. jedna uprawa na kilku działkach.'}
+        {!canEdit
+          ? 'W tym gospodarstwie nie ma jeszcze pól.'
+          : hideHeader
+            ? 'Nie masz jeszcze pól. Kliknij „Utwórz pole”, aby połączyć działki w jedno pole.'
+            : 'Nie masz jeszcze pól. Pole to kilka działek obok siebie – np. jedna uprawa na kilku działkach.'}
       </Typography>
     );
   } else {
@@ -151,18 +155,20 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
                   >
                     Raport pola
                   </Button>
-                  <Button
-                    color="inherit"
-                    variant="outlined"
-                    startIcon={<DeleteOutlineIcon aria-hidden />}
-                    onClick={() => {
-                      remove.reset();
-                      setToDelete(field);
-                    }}
-                    sx={BIG_BUTTON}
-                  >
-                    Usuń
-                  </Button>
+                  {canEdit && (
+                    <Button
+                      color="inherit"
+                      variant="outlined"
+                      startIcon={<DeleteOutlineIcon aria-hidden />}
+                      onClick={() => {
+                        remove.reset();
+                        setToDelete(field);
+                      }}
+                      sx={BIG_BUTTON}
+                    >
+                      Usuń
+                    </Button>
+                  )}
                 </Stack>
               </CardContent>
               <Collapse in={expandedIds.includes(field.id)} unmountOnExit>
@@ -236,15 +242,17 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
           <Typography id="account-fields-heading" variant="h2">
             Moje pola
           </Typography>
-          <Button
-            component={RouterLink}
-            to="/pole/nowe"
-            variant="contained"
-            startIcon={<AddIcon aria-hidden />}
-            sx={BIG_BUTTON}
-          >
-            Utwórz pole
-          </Button>
+          {canEdit && (
+            <Button
+              component={RouterLink}
+              to="/pole/nowe"
+              variant="contained"
+              startIcon={<AddIcon aria-hidden />}
+              sx={BIG_BUTTON}
+            >
+              Utwórz pole
+            </Button>
+          )}
         </Stack>
       )}
       {body}

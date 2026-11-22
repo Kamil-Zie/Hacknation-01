@@ -6,7 +6,6 @@ import {
   canEdit,
   canSeeField,
   isMember,
-  readOnlyError,
   roleOf,
 } from '@/services/accounts.service';
 import { createAnalysis, defaultAnalysesDeps } from '@/services/analyses.service';
@@ -72,7 +71,8 @@ export type FieldReportDeps = {
   // T-104 optional so older test doubles keep working; missing = may edit
   canEditAccount?: (userId: string, accountId: string) => Promise<boolean>;
   analyze: (
-    body: { parcelId: string; cropCode: string; analysisDate: string; accountId: string },
+    // T-104 accountId missing = member/guest: computed for viewing, not saved in the account
+    body: { parcelId: string; cropCode: string; analysisDate: string; accountId?: string },
     userId: string,
   ) => Promise<ReportDto>;
   now: () => number;
@@ -125,9 +125,8 @@ export async function createFieldReport(
   if (!canSeeField(await deps.allowedParcelIds(userId, field.accountId), field.parcelIds)) {
     throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono pola.', 404);
   }
-  if (deps.canEditAccount && !(await deps.canEditAccount(userId, field.accountId))) {
-    throw readOnlyError();
-  }
+  // T-104 member and guest may view a field report; their per-parcel analyses are not saved
+  const saves = deps.canEditAccount ? await deps.canEditAccount(userId, field.accountId) : true;
 
   const startedAt = deps.now();
   const outcomes = await mapWithLimit(
@@ -141,7 +140,7 @@ export async function createFieldReport(
             parcelId,
             cropCode: body.cropCode,
             analysisDate: body.analysisDate,
-            accountId: field.accountId,
+            ...(saves ? { accountId: field.accountId } : {}),
           },
           userId,
         );
