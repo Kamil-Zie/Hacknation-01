@@ -3,6 +3,7 @@ import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import AgricultureOutlinedIcon from '@mui/icons-material/AgricultureOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
+import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Card, CardContent, Chip, Stack, Typography, useTheme } from '@mui/material';
 import { alpha } from '@mui/material/styles';
@@ -10,24 +11,46 @@ import type { ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import type { DroughtClass } from '@/api/types';
+import { srOnly } from '@/app/a11yStyles';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { DROUGHT_WORDS } from '@/components/ThreatMap/ThreatMap';
 
-const STEPS: { icon: ReactNode; title: string; text: string }[] = [
+// each step has its own accent colour (palette key), so the three cards are easy to tell apart
+const STEPS: {
+  icon: ReactNode;
+  title: string;
+  text: ReactNode;
+  color: 'primary' | 'warning' | 'success';
+}[] = [
   {
     icon: <SearchIcon aria-hidden />,
     title: 'Znajdź działkę',
-    text: 'Po numerze, adresie, GPS albo kliknięciem na mapie.',
+    text: (
+      <>
+        Wpisz <b>numer</b> lub <b>adres</b> albo kliknij na <b>mapie</b>.
+      </>
+    ),
+    color: 'primary',
   },
   {
     icon: <AgricultureOutlinedIcon aria-hidden />,
-    title: 'Wybierz uprawę i datę',
-    text: 'Policzymy wodę dla tego, co rośnie na działce.',
+    title: 'Wybierz uprawę',
+    text: (
+      <>
+        Podaj, <b>co rośnie</b> i <b>na kiedy</b> liczymy.
+      </>
+    ),
+    color: 'warning',
   },
   {
     icon: <DescriptionOutlinedIcon aria-hidden />,
-    title: 'Dostaniesz raport',
-    text: 'Stan suszy, przyczyny i co zrobić: najpierw zatrzymać wodę, potem nawadniać.',
+    title: 'Odbierz raport',
+    text: (
+      <>
+        <b>Stan suszy</b> i <b>co zrobić</b> z wodą na działce.
+      </>
+    ),
+    color: 'success',
   },
 ];
 
@@ -105,15 +128,21 @@ export function DashboardEmpty({ canEdit }: DashboardEmptyProps) {
         }}
       >
         <CardContent sx={{ p: { xs: 2.5, md: 4 }, '&:last-child': { pb: { xs: 2.5, md: 4 } } }}>
-          <Typography id="witaj-title" variant="h2" component="h2" sx={{ mb: 1 }}>
-            Witaj w Kropelce! Dodaj swoją pierwszą działkę
+          <Typography
+            sx={{ fontWeight: 700, fontSize: '1.125rem', color: 'primary.main', mb: 0.5 }}
+          >
+            Witaj w Kropelce!
           </Typography>
           <Typography
-            sx={{ fontSize: { xs: '1.125rem', md: '1.25rem' }, maxWidth: 720, mb: 2.5 }}
-            color="text.secondary"
+            id="witaj-title"
+            variant="h2"
+            component="h2"
+            sx={{ mb: 1, fontSize: { xs: '1.75rem', md: '2.25rem' }, fontWeight: 800 }}
           >
-            Sprawdzimy, ile wody ma Twoja działka i czy grozi jej susza. Wystarczy numer działki
-            albo kliknięcie na mapie.
+            Dodaj swoją pierwszą działkę
+          </Typography>
+          <Typography sx={{ fontSize: { xs: '1.125rem', md: '1.25rem' }, maxWidth: 720, mb: 2.5 }}>
+            Sprawdzimy, <b>ile wody</b> ma działka i <b>czy grozi jej susza</b>.
           </Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
             <Button
@@ -136,10 +165,28 @@ export function DashboardEmpty({ canEdit }: DashboardEmptyProps) {
               Najpierw tylko sprawdź działkę
             </Button>
           </Stack>
-          <Typography sx={{ mt: 2, fontSize: '1rem' }} color="text.secondary">
-            Działkę dodasz też w każdej chwili w menu po lewej: <b>Dodaj działkę</b> (na telefonie
-            pod przyciskiem <b>Menu</b> u góry).
-          </Typography>
+          <Stack direction="row" spacing={1} sx={{ mt: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            <LightbulbOutlinedIcon aria-hidden sx={{ color: 'warning.main' }} />
+            <Typography sx={{ fontSize: '1rem' }}>
+              Później znajdziesz to w menu:{' '}
+              {/* phones: the panel opens from the Menu button at the top */}
+              <Box component="span" sx={{ display: { md: 'none' } }}>
+                <b>Menu</b> →{' '}
+              </Box>
+              <Box
+                component="b"
+                sx={{
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: 1,
+                  bgcolor: alpha(palette.primary.main, 0.12),
+                  color: 'primary.main',
+                }}
+              >
+                Dodaj działkę
+              </Box>
+            </Typography>
+          </Stack>
         </CardContent>
       </Card>
 
@@ -161,35 +208,63 @@ export function DashboardEmpty({ canEdit }: DashboardEmptyProps) {
         >
           Jak to działa
         </Typography>
-        {STEPS.map((step, index) => (
-          <Card key={step.title} variant="outlined">
-            <CardContent sx={{ display: 'flex', gap: 1.5, p: 2, '&:last-child': { pb: 2 } }}>
-              <Box
-                aria-hidden
-                sx={{
-                  flexShrink: 0,
-                  width: 44,
-                  height: 44,
-                  borderRadius: '50%',
-                  display: 'grid',
-                  placeItems: 'center',
-                  bgcolor: alpha(palette.primary.main, 0.12),
-                  color: 'primary.main',
-                }}
-              >
-                {step.icon}
-              </Box>
-              <Box sx={{ minWidth: 0 }}>
-                <Typography sx={{ fontWeight: 700, fontSize: '1.125rem' }}>
-                  {index + 1}. {step.title}
-                </Typography>
-                <Typography sx={{ fontSize: '1rem' }} color="text.secondary">
-                  {step.text}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
+        {STEPS.map((step, index) => {
+          const accent = palette[step.color].main;
+          return (
+            <Card
+              key={step.title}
+              variant="outlined"
+              sx={{ borderTop: 4, borderTopColor: accent, bgcolor: alpha(accent, 0.04) }}
+            >
+              <CardContent sx={{ display: 'flex', gap: 1.5, p: 2, '&:last-child': { pb: 2 } }}>
+                <Box
+                  aria-hidden
+                  sx={{
+                    position: 'relative',
+                    flexShrink: 0,
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    display: 'grid',
+                    placeItems: 'center',
+                    bgcolor: alpha(accent, 0.15),
+                    color: accent,
+                  }}
+                >
+                  {step.icon}
+                  <Box
+                    component="span"
+                    sx={{
+                      position: 'absolute',
+                      top: -6,
+                      right: -6,
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      display: 'grid',
+                      placeItems: 'center',
+                      bgcolor: accent,
+                      color: palette.getContrastText(accent),
+                      fontWeight: 800,
+                      fontSize: '0.875rem',
+                    }}
+                  >
+                    {index + 1}
+                  </Box>
+                </Box>
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography component="h3" sx={{ fontWeight: 800, fontSize: '1.25rem' }}>
+                    <Box component="span" sx={srOnly}>
+                      Krok {index + 1}:{' '}
+                    </Box>
+                    {step.title}
+                  </Typography>
+                  <Typography sx={{ fontSize: '1.0625rem' }}>{step.text}</Typography>
+                </Box>
+              </CardContent>
+            </Card>
+          );
+        })}
       </Box>
 
       {/* invite other people to the farm (T-104 roles) */}
@@ -225,11 +300,11 @@ export function DashboardEmpty({ canEdit }: DashboardEmptyProps) {
               component="h2"
               sx={{ fontWeight: 700, fontSize: '1.125rem' }}
             >
-              Pracujesz z kimś? Dodaj wspólników
+              Pracujesz z kimś? Zaproś go do gospodarstwa
             </Typography>
-            <Typography sx={{ fontSize: '1rem' }} color="text.secondary">
-              Zaproś rodzinę, wspólnika albo doradcę do swojego gospodarstwa. Wspólnik może razem z
-              Tobą dodawać działki i grupy działek, a członek lub gość tylko ogląda raporty.
+            <Typography sx={{ fontSize: '1.0625rem' }}>
+              <b>Wspólnik</b> dodaje działki razem z Tobą. <b>Członek</b> i <b>gość</b> tylko
+              oglądają raporty.
             </Typography>
           </Box>
           <Button
@@ -249,8 +324,8 @@ export function DashboardEmpty({ canEdit }: DashboardEmptyProps) {
         <Typography id="podglad-title" variant="h2" component="h2" sx={{ mb: 0.5 }}>
           Co zobaczysz tutaj po dodaniu działek
         </Typography>
-        <Typography sx={{ fontSize: '1rem', mb: 1.5 }} color="text.secondary">
-          Poniżej przykład – Twoje dane pojawią się tu po pierwszym raporcie.
+        <Typography sx={{ fontSize: '1.0625rem', mb: 1.5 }}>
+          To <b>przykład</b>. Twoje dane pojawią się po <b>pierwszym raporcie</b>.
         </Typography>
         <Box
           sx={{
