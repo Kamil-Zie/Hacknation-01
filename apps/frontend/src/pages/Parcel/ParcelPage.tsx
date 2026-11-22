@@ -1,8 +1,21 @@
 // UI-S-002 Uprawa, data i analiza: parcel from API-001, AnalysisForm, SourceProgressList during API-004, redirect to report (T-104 view-only roles)
+// T-105 ?z=dodaj (from „Dodaj działkę”): after the analysis a popup asks „Zobacz raport” or „Dodaj kolejną działkę”
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
-import { Alert, Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  LinearProgress,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
-import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { useCreateAnalysisMutation } from '@/api/analyses';
 import { ApiError } from '@/api/client';
@@ -52,6 +65,9 @@ function toMessage(error: unknown): { message: string; canRetry: boolean } {
 export function ParcelPage() {
   const navigate = useNavigate();
   const parcelId = decodeId(useParams().parcelId);
+  const [searchParams] = useSearchParams();
+  const fromAdd = searchParams.get('z') === 'dodaj';
+  const [choice, setChoice] = useState<Report | null>(null);
   const storedParcel = useSelectionStore((state) => state.parcel);
   const setParcel = useSelectionStore((state) => state.setParcel);
   const isExample = useSelectionStore((state) => state.isExample);
@@ -122,6 +138,11 @@ export function ParcelPage() {
         onSuccess: (created) => {
           if (attempt !== attemptRef.current) return;
           setReport(created);
+          // T-105 coming from „Dodaj działkę”: let the farmer choose instead of opening the report
+          if (fromAdd) {
+            setChoice(created);
+            return;
+          }
           navTimer.current = setTimeout(
             () => navigate(`/report/${encodeURIComponent(created.id)}`),
             RESULT_PREVIEW_MS,
@@ -296,6 +317,36 @@ export function ParcelPage() {
           </Box>
         )}
       </Box>
+      <Dialog
+        open={choice !== null}
+        onClose={() => setChoice(null)}
+        aria-labelledby="after-add-title"
+        aria-describedby="after-add-text"
+      >
+        <DialogTitle id="after-add-title">Działka sprawdzona</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="after-add-text">
+            Raport jest gotowy i zapisany w Twoich działkach. Co chcesz zrobić teraz?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ flexWrap: 'wrap', gap: 1, p: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/dodaj-dzialke')}
+            sx={{ minHeight: 48 }}
+          >
+            Dodaj kolejną działkę
+          </Button>
+          <Button
+            variant="contained"
+            autoFocus
+            onClick={() => choice && navigate(`/report/${encodeURIComponent(choice.id)}`)}
+            sx={{ minHeight: 48 }}
+          >
+            Zobacz raport
+          </Button>
+        </DialogActions>
+      </Dialog>
       {/* Always-mounted live region; focus moves here after „Pokaż raport” (T-026 a11y) */}
       <Box ref={panelRef} tabIndex={-1} aria-live="polite" sx={{ outline: 'none' }}>
         {panel}

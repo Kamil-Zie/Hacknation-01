@@ -1,4 +1,4 @@
-// UI-S-013 T-095 Add a parcel to my parcels: search (API-001/002) with the map as the 4th search option, "Dodaj do moich działek" (API-022)
+// UI-S-013 T-095 Add a parcel to my parcels: search (API-001/002) with the map as the 4th search option, "Dodaj do moich działek" (API-022) (T-105: after saving go to crop choice)
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import {
@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import { useAccountParcelsQuery, useAddAccountParcelMutation } from '@/api/accountParcels';
 import { ApiError } from '@/api/client';
@@ -19,6 +19,7 @@ import { getParcelByPoint, useParcelByPointMutation, useParcelQuery } from '@/ap
 import type { Parcel } from '@/api/types';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ParcelSearch } from '@/components/ParcelSearch/ParcelSearch';
+import { useSelectionStore } from '@/store/selection';
 import { useSessionStore } from '@/store/session';
 import { FIELD_MAX_PARCELS, FieldFromMap } from '@/pages/AddParcel/FieldFromMap';
 import { errorMessage } from '@/utils/errorMessages';
@@ -37,6 +38,8 @@ function saveErrorMessage(error: unknown): string {
 }
 
 export function AddParcelPage() {
+  const navigate = useNavigate();
+  const setSelectedParcel = useSelectionStore((state) => state.setParcel);
   const accountId = useSessionStore((state) => state.activeAccountId);
   const token = useSessionStore((state) => state.token);
   const [searchId, setSearchId] = useState<string | null>(null);
@@ -108,9 +111,21 @@ export function AddParcelPage() {
     pickMutation.mutate({ lat, lon }, { onSuccess: setPicked });
   }
 
+  // After saving: crop and date on the parcel page; there a popup asks „Zobacz raport” or „Dodaj kolejną działkę”
+  function goToCrop(target: Parcel) {
+    setSelectedParcel(target);
+    navigate(`/parcel/${encodeURIComponent(target.id)}?z=dodaj`);
+  }
+
   function handleAdd() {
     if (!parcel || !accountId || !token) return;
-    addMutation.mutate(parcel.id, { onSuccess: () => setAdded(true) });
+    const target = parcel;
+    addMutation.mutate(target.id, {
+      onSuccess: () => {
+        setAdded(true);
+        goToCrop(target);
+      },
+    });
   }
 
   // move focus to the outcome message so keyboard and screen reader users get it
@@ -283,14 +298,25 @@ export function AddParcelPage() {
                         : 'Ta działka jest już w Twoich działkach'}
                     </Typography>
                   </Stack>
-                  <Button
-                    component={RouterLink}
-                    to="/dzialki"
-                    variant="outlined"
-                    sx={{ minHeight: 48, alignSelf: 'flex-start' }}
-                  >
-                    Przejdź do Moich działek
-                  </Button>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                    {parcel && (
+                      <Button
+                        variant="contained"
+                        onClick={() => goToCrop(parcel)}
+                        sx={{ minHeight: 48, alignSelf: 'flex-start' }}
+                      >
+                        Wybierz uprawę i sprawdź
+                      </Button>
+                    )}
+                    <Button
+                      component={RouterLink}
+                      to="/dzialki"
+                      variant="outlined"
+                      sx={{ minHeight: 48, alignSelf: 'flex-start' }}
+                    >
+                      Przejdź do Moich działek
+                    </Button>
+                  </Stack>
                 </Stack>
               )}
             </Box>

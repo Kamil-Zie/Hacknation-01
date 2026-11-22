@@ -1,0 +1,28 @@
+{
+  "id": "T-105",
+  "title": "Dodaj działkę → wybór uprawy → okienko „Zobacz raport” / „Dodaj kolejną działkę”",
+  "description": "Decyzja Kamila 04:50. Po zapisaniu działki (API-022) przejście na /parcel/:id?z=dodaj (UI-S-002, wybór uprawy i daty). Po analizie zamiast automatycznego raportu okienko z dwoma przyciskami: Zobacz raport (/report/:id) albo Dodaj kolejną działkę (/dodaj-dzialke). Bez ?z=dodaj zachowanie jak dotąd (raport otwiera się sam).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "coord-1",
+  "status": "done",
+  "priority": "high",
+  "depends_on": ["T-095"],
+  "contract_refs": ["UI-S-013", "UI-S-002", "API-022", "API-004"],
+  "acceptance_criteria": [
+    "Dodaj do moich działek → /parcel/:id?z=dodaj",
+    "Działka już na koncie → przycisk Wybierz uprawę i sprawdź",
+    "Po analizie okienko z dwoma przyciskami, oba działają, Wstecz bez okienka",
+    "Sprawdź działkę z wyszukiwarki: raport jak dotąd"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 04:55: sprawdzone w przeglądarce na test@test.pl (142807_2.0038.72, pszenica ozima)."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

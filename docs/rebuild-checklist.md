@@ -54,6 +54,13 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 - [ ] Osoba w kilku gospodarstwach widzi nad listą pole „Gospodarstwo” z tagiem przy każdym
 - [ ] Zmiana gospodarstwa pokazuje jego wspólników i przełącza aktywne gospodarstwo (menu konta w nagłówku)
 
+## 2d. Dodaj działkę → raport (T-105)
+
+- [ ] „Dodaj do moich działek” przenosi na wybór uprawy i daty (`/parcel/:id?z=dodaj`)
+- [ ] Działka już na koncie: przycisk „Wybierz uprawę i sprawdź”
+- [ ] Po analizie okienko „Działka sprawdzona”: „Zobacz raport” otwiera raport, „Dodaj kolejną działkę” wraca do dodawania
+- [ ] Zwykłe „Sprawdź działkę” (bez dodawania) dalej od razu otwiera raport
+
 ## 3. Backend
 
 - [ ] Po restarcie kontenera backendu przy chwilowym braku Atlasa log pokazuje `MongoDB: next attempt in 15 s`, a potem `MongoDB connected` bez ręcznego restartu (`225693f`)
