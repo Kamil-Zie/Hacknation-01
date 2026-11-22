@@ -92,8 +92,17 @@ export function AccountPage() {
   const atRisk = items.filter((item) => item.atRisk);
   const atRiskHa = atRisk.reduce((sum, item) => sum + item.parcel.areaHa, 0);
   const hasParcels = !parcels.isPending && !parcels.isError && items.length > 0;
+  const classOf = (item: ParcelOverview): DroughtClass =>
+    item.lastReport?.droughtClass ?? 'unknown';
   const countByClass = (value: DroughtClass) =>
-    items.filter((item) => (item.lastReport?.droughtClass ?? 'unknown') === value).length;
+    items.filter((item) => classOf(item) === value).length;
+  // drought classes shown on the map; the badges in „Stan suszy” toggle them (all on by default)
+  const [shownClasses, setShownClasses] = useState<DroughtClass[]>(DROUGHT_ORDER);
+  const toggleClass = (value: DroughtClass) =>
+    setShownClasses((current) =>
+      current.includes(value) ? current.filter((entry) => entry !== value) : [...current, value],
+    );
+  const mapItems = items.filter((item) => shownClasses.includes(classOf(item)));
   const top = mostThreatened(items);
   const topReport = useReportQuery(top?.lastReport?.id);
 
@@ -195,7 +204,7 @@ export function AccountPage() {
           ) : (
             <Stack spacing={1} sx={{ height: { lg: '100%' } }}>
               <Box sx={{ flex: { lg: '1 1 0' }, minHeight: 0 }}>
-                <ThreatMap items={items} fill onSelect={openReport} />
+                <ThreatMap items={mapItems} fill onSelect={openReport} />
               </Box>
               {atRisk.length === 0 && (
                 <Typography sx={{ ...bigText, fontWeight: 700, flexShrink: 0 }}>
@@ -267,12 +276,46 @@ export function AccountPage() {
                   </Stack>
                 ) : (
                   <Stack spacing={1}>
-                    {DROUGHT_ORDER.map((value) => (
-                      <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                        <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
-                        <Typography sx={bigText}>{countByClass(value)}</Typography>
-                      </Stack>
-                    ))}
+                    {/* each class is a toggle: show / hide its parcels on the map */}
+                    {DROUGHT_ORDER.map((value) => {
+                      const isShown = shownClasses.includes(value);
+                      return (
+                        <Box
+                          key={value}
+                          component="button"
+                          type="button"
+                          aria-pressed={isShown}
+                          title={isShown ? 'Ukryj na mapie' : 'Pokaż na mapie'}
+                          onClick={() => toggleClass(value)}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            alignSelf: 'flex-start',
+                            minHeight: 44,
+                            px: 0.5,
+                            border: 0,
+                            borderRadius: 2,
+                            bgcolor: 'transparent',
+                            color: 'text.primary',
+                            font: 'inherit',
+                            cursor: 'pointer',
+                            opacity: isShown ? 1 : 0.4,
+                            '&:hover': { bgcolor: 'action.hover' },
+                            '&:focus-visible': {
+                              outline: 2,
+                              outlineColor: 'primary.main',
+                              outlineOffset: 1,
+                            },
+                          }}
+                        >
+                          <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
+                          <Typography component="span" sx={bigText}>
+                            {countByClass(value)}
+                          </Typography>
+                        </Box>
+                      );
+                    })}
                     <Typography
                       sx={{
                         ...bigText,
