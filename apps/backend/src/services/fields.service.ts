@@ -1,7 +1,6 @@
-// T-077 API-016 API-017 API-018 Fields: create from adjacent parcels (ULDK), list, delete
+// T-077 T-097 API-016 API-017 API-018 Fields: create from any 2-20 parcels of the account (ULDK), list, delete
 import { FieldModel } from '@/models/Field.model';
 import { allowedParcelIds, canSeeField, isMember } from '@/services/accounts.service';
-import { disconnectedParcelIds, MAX_DISTANCE_M } from '@/services/fields/adjacency';
 import { getParcelById } from '@/services/parcels.service';
 import type { Parcel } from '@/services/parcels.service';
 import { AppError } from '@/utils/AppError';
@@ -110,15 +109,7 @@ export async function createField(
     });
   }
   const parcels = await loadParcels(body.parcelIds);
-  const loose = disconnectedParcelIds(parcels.map((p) => ({ id: p.id, geometry: p.geometry })));
-  if (loose.length > 0) {
-    throw new AppError(
-      'PARCELS_NOT_ADJACENT',
-      'Działki nie tworzą spójnego obszaru (maks. 50 m między granicami).',
-      422,
-      { parcelIds: loose, maxDistanceM: MAX_DISTANCE_M },
-    );
-  }
+  // T-097: parcels no longer have to touch; any 2-20 parcels make a field (Kamil 01:55)
   const totalHa = parcels.reduce((sum, p) => sum + p.areaHa, 0);
   const field = await FieldModel.create({
     accountId,

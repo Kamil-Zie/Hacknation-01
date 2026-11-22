@@ -3551,7 +3551,7 @@
       "status": "agreed",
       "method": "POST",
       "path": "/accounts/:accountId/fields",
-      "summary": "Utworzenie pola z 2–20 działek (T-077, ADR-011). Każda działka pobierana z ULDK (cache); dwie działki sąsiadują, gdy minimalna odległość ich granic ≤ 50 m (własna funkcja); zbiór musi być spójny (każda działka połączona z resztą), inaczej 422. Zapisuje kopie metadanych działek, sumę powierzchni i centroid (bez geometrii). Tylko członek konta. UWAGA: 061409_2.0009.613 w examples to przykładowy numer sąsiada (niezweryfikowany w ULDK). T-092: wspólnik z ograniczonym dostępem może założyć pole tylko ze swoich działek, inaczej 403 NOT_A_MEMBER z details.parcelIds.",
+      "summary": "Utworzenie pola z 2–20 dowolnych działek konta (T-077, ADR-011; T-097: od 01:55 działki NIE muszą sąsiadować). Każda działka pobierana z ULDK (cache). Zapisuje kopie metadanych działek, sumę powierzchni i centroid (bez geometrii). Tylko członek konta. T-092: wspólnik z ograniczonym dostępem może założyć pole tylko ze swoich działek, inaczej 403 NOT_A_MEMBER z details.parcelIds.",
       "auth": "required",
       "request": {
         "headers": {
@@ -3573,7 +3573,6 @@
         "403 NOT_A_MEMBER (także gdy konto nie istnieje)",
         "404 PARCEL_NOT_FOUND (ULDK nie zna działki; details.parcelId)",
         "422 VALIDATION_ERROR (zła nazwa, mniej niż 2 lub więcej niż 20 działek, duplikaty, zły accountId; details.field)",
-        "422 PARCELS_NOT_ADJACENT (zbiór niespójny; details.parcelIds = działki niepołączone z główną grupą, details.maxDistanceM = 50)",
         "504 UPSTREAM_TIMEOUT (ULDK nie odpowiedział w czasie i brak cache)",
         "502 UPSTREAM_UNAVAILABLE (błąd ULDK bez timeoutu i brak cache)",
         "503 DB_UNAVAILABLE (brak połączenia z bazą; odpowiedź natychmiast)"
@@ -3792,7 +3791,7 @@
       "status": "agreed",
       "method": "GET",
       "path": "/accounts/:accountId/parcels",
-      "summary": "Działki konta z ostatnim raportem i flagą zagrożenia suszą, bez paginacji (max 200, od najnowszego raportu). Członek z parcelIds widzi tylko swoje działki. Tylko członek konta.",
+      "summary": "Działki konta z ostatnim raportem i flagą zagrożenia suszą, bez paginacji (max 200, od najnowszego raportu). Członek z parcelIds widzi tylko swoje działki. Tylko członek konta. T-098: zawiera też działki dodane ręcznie (API-022, DM-017.savedParcelIds) z lastReport = null.",
       "auth": "required",
       "request": {
         "headers": {
@@ -3907,6 +3906,43 @@
           "parcelIds": ["061409_2.0009.612"]
         }
       }
+    },
+    {
+      "id": "API-022",
+      "status": "proposed",
+      "method": "POST",
+      "path": "/accounts/:accountId/parcels",
+      "summary": "Dodaje działkę do Moich działek konta bez robienia analizy (T-095/T-098). Działka pobierana z ULDK (cache), id zapisywane w DM-017.savedParcelIds (bez duplikatów, max 200). Działka już na koncie → 200 z tym samym ParcelOverview. Wspólnik z ograniczonym dostępem → 403. Tylko członek konta.",
+      "auth": "required",
+      "request": {
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
+        "params": {
+          "accountId": "string, id konta (ObjectId)"
+        },
+        "body": {
+          "parcelId": "string, id działki TERYT (jak DM-003.id)"
+        }
+      },
+      "response": {
+        "201": "ParcelOverview (DM-026), lastReport null gdy brak raportu",
+        "200": "ParcelOverview, działka była już na koncie"
+      },
+      "errors": [
+        "401 UNAUTHORIZED",
+        "403 NOT_A_MEMBER (także wspólnik z ograniczonym dostępem)",
+        "404 PARCEL_NOT_FOUND (ULDK nie zna działki)",
+        "422 VALIDATION_ERROR (brak parcelId, zły accountId; details.field)",
+        "422 TOO_MANY_PARCELS (konto ma już 200 zapisanych działek)",
+        "502 UPSTREAM_UNAVAILABLE",
+        "504 UPSTREAM_TIMEOUT",
+        "503 DB_UNAVAILABLE"
+      ],
+      "data_refs": ["DM-017", "DM-026"],
+      "consumers": [],
+      "consumers_planned": ["UI-S-013"],
+      "examples": []
     }
   ]
 }

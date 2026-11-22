@@ -182,14 +182,12 @@ test('POST two adjacent parcels: 201 with summed area and copies of parcel metad
   assert.equal(res.json.createdAt, '2026-11-21T21:30:00.000Z');
 });
 
-test('POST non-adjacent parcel: 422 PARCELS_NOT_ADJACENT with the loose id', async () => {
+test('POST parcels far apart: 201, adjacency is no longer required (T-097)', async () => {
   const res = await call('POST', FIELDS, JAN, {
     name: 'Daleko',
     parcelIds: ['061409_2.0009.612', '061409_2.0009.700'],
   });
-  assert.equal(res.status, 422);
-  assert.equal(res.json.code, 'PARCELS_NOT_ADJACENT');
-  assert.deepEqual(res.json.details, { parcelIds: ['061409_2.0009.700'], maxDistanceM: 50 });
+  assert.equal(res.status, 201);
 });
 
 test('POST by a non-member: 403 NOT_A_MEMBER', async () => {

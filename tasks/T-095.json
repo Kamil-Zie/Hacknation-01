@@ -1,0 +1,28 @@
+{
+  "id": "T-095",
+  "title": "Dodaj działkę: wyszukanie działki i dodanie do Moich działek",
+  "description": "Nowa pozycja panelu bocznego między Pulpit a Moje działki (link, trasa /dodaj-dzialke i strona-stub już są na main). Wyszukiwarka działki jak na stronie startowej (numer albo miejscowość + numer), po znalezieniu karta działki z mapą podglądu i przyciskiem „Dodaj do moich działek”. Hook useAddAccountParcelMutation (src/api/accountParcels.ts, API-022) działa na mocku od razu; prawdziwe API po handoffie coord-1 (T-098).\n\nPliki: src/pages/AddParcel/AddParcelPage.tsx (stub). Wzór: src/components/ParcelSearch/ParcelSearch.tsx i src/pages/Start/StartPage.tsx (szukanie), src/components/ParcelMap/ParcelMap.tsx (podgląd).\n\nUX dla wieku 18–99: tekst ≥ 18 px w rem, przyciski ≥ 48 px, kontrast AA (też w Wysokim kontraście i przy największym A), proste słowa, ikony z podpisem. Stany loading/error/empty/ready, 390 i 1440 px. Termin: na main do 6:00 (zamrożenie 7:00).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "backend-2",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": ["T-094"],
+  "contract_refs": ["UI-S-013", "API-001", "API-002", "API-022"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Po dodaniu działka jest widoczna w Moich działkach bez przeładowania strony",
+    "Działka już na koncie daje komunikat zamiast błędu",
+    "Dodawanie działa z klawiatury"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

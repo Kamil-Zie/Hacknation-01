@@ -1,4 +1,4 @@
-// DM-024 Field model (collection fields): named set of adjacent parcels of an account (ADR-011)
+// DM-024 Field model (collection fields): named set of 2-20 parcels of an account (ADR-011; adjacency dropped in T-097)
 import mongoose, { Schema } from 'mongoose';
 import type { InferSchemaType, Model } from 'mongoose';
 

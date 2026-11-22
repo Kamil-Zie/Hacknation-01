@@ -1,0 +1,29 @@
+{
+  "id": "T-099",
+  "title": "Dostępność tylko na górze strony i tryb ciemny",
+  "description": "1) Opcje dostępności zostają tylko w górnym pasku (A11yBar). Usuń je ze stopki (AppFooter importuje A11Y_LINKS); na telefonie linki Tekst łatwy do czytania, Deklaracja dostępności, Mapa strony mają być w górnym pasku (np. w menu „Więcej” albo zawinięte), nie w stopce.\n2) Tryb ciemny (nocny): przełącznik „Tryb ciemny” w A11yBar obok Wysokiego kontrastu (aria-pressed), zapis w localStorage jak kontrast (src/store/a11y.ts + skrypt w index.html, żeby nie migało), bez zapisu: prefers-color-scheme. MUI palette.mode = 'dark' z ciemnymi odpowiednikami kolorów kropla (kontrast AA). Wysoki kontrast ma pierwszeństwo przed trybem ciemnym. Mapy zostają jasne.\n\nPliki: src/components/A11yBar/A11yBar.tsx, src/components/AppFooter/AppFooter.tsx, src/store/a11y.ts, src/app/theme.ts, src/app/App.tsx, index.html. Opis obecnego rozwiązania: docs/accessibility-report.md.\n\nUX dla wieku 18–99: tekst ≥ 18 px w rem, przyciski ≥ 48 px, kontrast AA (też w Wysokim kontraście i przy największym A), proste słowa, ikony z podpisem. Stany loading/error/empty/ready, 390 i 1440 px. Termin: na main do 6:00 (zamrożenie 7:00).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "backlog",
+  "priority": "medium",
+  "depends_on": [],
+  "contract_refs": ["UI-C-001"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "W stopce nie ma opcji dostępności",
+    "Tryb ciemny przeżywa odświeżenie strony bez mignięcia",
+    "axe w trybie ciemnym na /konto, /dzialki i /report/:id: 0 naruszeń kontrastu",
+    "Wysoki kontrast włączony razem z ciemnym wygląda jak sam wysoki kontrast"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "T-097",
+  "title": "Utwórz pole: bez wymogu sąsiedztwa, min. 2 dowolne działki",
+  "description": "Backend już nie sprawdza sąsiedztwa (coord-1, na main): pole tworzy się z 2–20 dowolnych działek konta, błąd PARCELS_NOT_ADJACENT zniknął. Usuń z frontendu wszystko o sąsiedztwie: komunikaty, blokadę przycisku, podświetlanie „niesąsiadujących”, obsługę PARCELS_NOT_ADJACENT i sprawdzanie w mocku. Przycisk „Utwórz pole” aktywny od 2 zaznaczonych działek.\n\nPliki: src/pages/FieldCreate/FieldCreatePage.tsx, src/components/FieldPickMap/FieldPickMap.tsx, src/mocks/fields.mock.ts (grep PARCELS_NOT_ADJACENT / sąsiad).\n\nUX dla wieku 18–99: tekst ≥ 18 px w rem, przyciski ≥ 48 px, kontrast AA (też w Wysokim kontraście i przy największym A), proste słowa, ikony z podpisem. Stany loading/error/empty/ready, 390 i 1440 px. Termin: na main do 6:00 (zamrożenie 7:00).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-2",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["API-016", "UI-S-007"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Pole z dwóch odległych działek tworzy się na mocku i na prawdziwym API",
+    "W kodzie frontendu nie ma już PARCELS_NOT_ADJACENT",
+    "Tekst pomocy mówi „wybierz co najmniej 2 działki”"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

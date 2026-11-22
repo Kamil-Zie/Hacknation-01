@@ -1,5 +1,6 @@
 // UI-C-016 T-085 Sidebar: search box and "Menu gospodarstwa" links (fixed panel on desktop, drawer content on phones)
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupsIcon from '@mui/icons-material/Groups';
 import LandscapeIcon from '@mui/icons-material/Landscape';
@@ -20,6 +21,12 @@ interface SidebarLink {
 
 const LINKS: SidebarLink[] = [
   { label: 'Pulpit', to: '/konto', icon: <DashboardIcon aria-hidden />, match: ['/konto'] },
+  {
+    label: 'Dodaj działkę',
+    to: '/dodaj-dzialke',
+    icon: <AddCircleOutlineIcon aria-hidden />,
+    match: ['/dodaj-dzialke'],
+  },
   { label: 'Moje działki', to: '/dzialki', icon: <MapIcon aria-hidden />, match: ['/dzialki'] },
   {
     label: 'Utwórz pole',

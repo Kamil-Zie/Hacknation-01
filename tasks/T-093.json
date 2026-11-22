@@ -1,0 +1,30 @@
+{
+  "id": "T-093",
+  "title": "Pulpit: przebudowa układu (mapa, Stan suszy, Twoje działki, Bilans wody, Szybki raport)",
+  "description": "Przebudowa /konto według nowego opisu UI-S-009 (contracts/ui.json). Siatka 2×2: mapa zagrożonych działek w lewym górnym rogu (ok. pół szerokości i pół wysokości panelu), obok po prawej „Stan suszy” (na dole kafelka „Zagrożony obszar: X ha”, przeniesiony z osobnego miejsca) i „Twoje działki”; pod mapą „Bilans wody” (KbwChart dla najbardziej zagrożonej działki: useReportQuery(lastReport.id) z src/api/analyses.ts, prop charts = report.charts), obok przycisk „Szybki raport” → /szybki-raport (strona-stub już jest, robi ją Jan w T-096). USUŃ: nadtytuł „Pulpit gospodarstwa”, „Najważniejsze teraz”, „Ostatnie raporty”, „Skąd dane”.\n\nPliki: src/pages/Account/AccountPage.tsx, src/components/DashboardTile/DashboardTile.tsx, src/components/ThreatMap/ThreatMap.tsx (tylko wysokość). Wzór wykresu: src/components/AssessmentSection/AssessmentSection.tsx (jak używa KbwChart).\n\nUX dla wieku 18–99: tekst ≥ 18 px w rem, przyciski ≥ 48 px, kontrast AA (też w Wysokim kontraście i przy największym A), proste słowa, ikony z podpisem. Stany loading/error/empty/ready, 390 i 1440 px. Termin: na main do 6:00 (zamrożenie 7:00).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-009", "UI-C-017", "UI-C-011", "API-020", "API-004"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Na 1440 px mapa zajmuje lewą górną ćwiartkę, Stan suszy i Twoje działki są obok",
+    "Zagrożony obszar w ha jest na dole kafelka Stan suszy",
+    "Wykres bilansu ma podpis, której działki dotyczy, a bez raportu pokazuje stan pusty",
+    "Na telefonie jedna kolumna: mapa, Stan suszy, Twoje działki, Bilans wody, Szybki raport",
+    "axe na /konto: 0 naruszeń"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

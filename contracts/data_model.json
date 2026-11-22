@@ -1239,6 +1239,12 @@
           "name": "createdAt",
           "type": "datetime",
           "required": true
+        },
+        {
+          "name": "savedParcelIds",
+          "type": "string[]",
+          "required": false,
+          "note": "T-098 API-022: działki dodane ręcznie do Moich działek (bez analizy), unikalne, max 200; brak pola = []"
         }
       ],
       "relations": [],
@@ -1493,7 +1499,7 @@
       "status": "agreed",
       "name": "Field",
       "storage": "collection fields",
-      "description": "Pole: nazwany zbiór sąsiadujących działek jednego konta gospodarstwa (ADR-011). Ułatwia analizę wilgotności dla całego kawałka ziemi uprawianego razem. Geometria nie jest zapisywana (tylko kopie metadanych działek i centroid); sąsiedztwo liczone przy tworzeniu z granic ULDK.",
+      "description": "Pole: nazwany zbiór działek jednego konta gospodarstwa (ADR-011). Ułatwia analizę wilgotności dla całego kawałka ziemi uprawianego razem. Geometria nie jest zapisywana (tylko kopie metadanych działek i centroid); sąsiedztwo liczone przy tworzeniu z granic ULDK. T-097: działki nie muszą sąsiadować.",
       "fields": [
         {
           "name": "_id",
@@ -1608,7 +1614,7 @@
       "status": "agreed",
       "name": "ParcelOverview",
       "storage": "dto",
-      "description": "Działka konta z ostatnim raportem (API-020): unikalne działki z raportów konta (DM-001.accountId) i z pól (DM-024), geometria z cache ULDK. Źródło dla pulpitu (mapa zagrożonych działek), listy Moje działki z filtrami, podpowiedzi wyszukiwarki i Wspólników.",
+      "description": "Działka konta z ostatnim raportem (API-020): unikalne działki z raportów konta (DM-001.accountId) i z pól (DM-024), geometria z cache ULDK. Źródło dla pulpitu (mapa zagrożonych działek), listy Moje działki z filtrami, podpowiedzi wyszukiwarki i Wspólników. T-098: plus działki z DM-017.savedParcelIds.",
       "fields": [
         {
           "name": "parcel",

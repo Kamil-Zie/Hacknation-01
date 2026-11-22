@@ -6,6 +6,7 @@ import { AppLayout } from '@/components/AppLayout/AppLayout';
 import { RequireAuth } from '@/components/RequireAuth/RequireAuth';
 import { A11yStatementPage } from '@/pages/A11yStatement/A11yStatementPage';
 import { AccountPage } from '@/pages/Account/AccountPage';
+import { AddParcelPage } from '@/pages/AddParcel/AddParcelPage';
 import { EasyReadPage } from '@/pages/EasyRead/EasyReadPage';
 import { FieldCreatePage } from '@/pages/FieldCreate/FieldCreatePage';
 import { FieldReportPage } from '@/pages/FieldReport/FieldReportPage';
@@ -13,6 +14,7 @@ import { LoginPage } from '@/pages/Login/LoginPage';
 import { MyFieldsPage } from '@/pages/MyFields/MyFieldsPage';
 import { MyParcelsPage } from '@/pages/MyParcels/MyParcelsPage';
 import { ProfilePage } from '@/pages/Profile/ProfilePage';
+import { QuickReportPage } from '@/pages/QuickReport/QuickReportPage';
 import { NotFoundPage } from '@/pages/NotFound/NotFoundPage';
 import { ParcelPage } from '@/pages/Parcel/ParcelPage';
 import { PartnersPage } from '@/pages/Partners/PartnersPage';
@@ -35,7 +37,9 @@ export const router = createBrowserRouter([
           { path: '/pole/:fieldId/raport', element: <FieldReportPage /> },
           { path: '/konto', element: <AccountPage /> },
           { path: '/konto/profil', element: <ProfilePage /> },
+          { path: '/dodaj-dzialke', element: <AddParcelPage /> },
           { path: '/dzialki', element: <MyParcelsPage /> },
+          { path: '/szybki-raport', element: <QuickReportPage /> },
           { path: '/pola', element: <MyFieldsPage /> },
           { path: '/wspolnicy', element: <PartnersPage /> },
         ],

@@ -366,7 +366,7 @@
       "id": "UI-C-019",
       "status": "proposed",
       "name": "ParcelFilters",
-      "description": "T-088. Trzy grupy checkboxów (fieldset + legend): Powierzchnia, Miejscowość, Uprawa. Na telefonie zwinięte w przycisk „Filtry (n)”.",
+      "description": "T-088. Trzy grupy checkboxów (fieldset + legend): Powierzchnia, Miejscowość, Uprawa. Na telefonie zwinięte w przycisk „Filtry (n)”. T-094: powierzchnia ma też opcję „Poniżej 1 ha”; przy każdej uprawie ikona CropIcon (aria-hidden, nazwa uprawy zostaje tekstem).",
       "props": {
         "items": "ParcelOverview[]",
         "value": "Filters",
@@ -542,7 +542,7 @@
       "status": "proposed",
       "name": "Pulpit (strona główna po zalogowaniu)",
       "route": "/konto",
-      "description": "T-086. Zastępuje dotychczasową treść UI-S-006. Siatka kafelków z danymi wymaganymi w zadaniu KOWR. Kafelek DOMINUJĄCY (największy, pierwszy, na desktopie ok. 2/3 szerokości i 2 rzędy): „Zagrożone działki” – mapa (ThreatMap UI-C-017) z fitBounds na wszystkie działki atRisk, obrysy w kolorze klasy suszy + słowo, klik → raport działki; pusta lista: „Żadna działka nie jest zagrożona” i mapa wszystkich działek. Pozostałe kafelki: Twoje działki (liczba, suma ha, ile zagrożonych), Stan suszy (liczba działek wg klasy: silna / umiarkowana / brak / brak danych), Najważniejsze teraz (porada z ostatniego raportu najbardziej zagrożonej działki, kolejność retencja → agrotechnika → nawadnianie), Ostatnie raporty (3 z API-013), Skąd dane (źródła i aktualność, API-006). Duży przycisk „Sprawdź nową działkę”. Stany loading/error/empty/ready.",
+      "description": "T-093 (przebudowa 01:55, prośba Kamila). Bez nadtytułu „Pulpit gospodarstwa”. Nagłówek h1 = nazwa gospodarstwa (Zmień nazwę i Sprawdź nową działkę zostają). Siatka 2×2 na desktopie (md+): LEWA GÓRA: kafelek „Zagrożone działki” z mapą (ThreatMap UI-C-017), ok. połowy szerokości i połowy wysokości panelu (wysokość mapy ok. 45–50vh). PRAWA GÓRA (obok mapy): kafelek „Stan suszy” (liczby działek wg klasy suszy, na dole kafelka wiersz „Zagrożony obszar: X ha”), pod nim kafelek „Twoje działki” (liczba, razem ha). LEWY DÓŁ (pod mapą): kafelek „Bilans wody” z wykresem KbwChart (UI-C-011) dla najbardziej zagrożonej działki (raport z lastReport.id, useReportQuery) z podpisem, której działki dotyczy; brak raportu → stan pusty z linkiem do analizy. PRAWY DÓŁ (obok wykresu): kafelek z dużym przyciskiem „Szybki raport” → /szybki-raport (UI-S-014). USUNIĘTE z pulpitu: Najważniejsze teraz, Ostatnie raporty, Skąd dane, nadtytuł Pulpit gospodarstwa. Telefon: jedna kolumna w kolejności mapa, Stan suszy, Twoje działki, Bilans wody, Szybki raport.",
       "components": ["UI-C-016", "UI-C-017"],
       "api_refs": ["API-020", "API-013", "API-006"],
       "responsive": {
@@ -599,6 +599,42 @@
       "description": "T-090. Na górze: filtr „Działka” (select z działek API-020, domyślnie Wszystkie) i wyszukiwarka osoby (imię lub e-mail). Lista osób z dostępem: przy wybranej działce tylko ci, którzy ją widzą (parcelIds null albo zawiera działkę). Klik w osobę → karta: imię, e-mail, status, lista działek, do których ma dostęp, edycja dostępu (checkboxy działek + „Wszystkie działki”, API-021). Dodawanie i usuwanie wspólnika przeniesione z dawnego /konto (MemberList, API-011/012).",
       "components": ["UI-C-016"],
       "api_refs": ["API-010", "API-011", "API-012", "API-020", "API-021"],
+      "responsive": {
+        "xs": "panel boczny jako szuflada z przycisku Menu, treść w jednej kolumnie",
+        "md": "panel boczny stały 280 px po lewej, treść obok",
+        "lg": "treść do 1600 px"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-013",
+      "status": "proposed",
+      "name": "Dodaj działkę",
+      "route": "/dodaj-dzialke",
+      "description": "T-095. Pozycja panelu bocznego między Pulpit a Moje działki. Wyszukiwarka działki (numer działki albo miejscowość + numer, jak ParcelSearch na / , API-001/002), po znalezieniu karta działki (numer, miejscowość, gmina, powierzchnia) z mapą podglądu (ParcelMap) i przyciskiem „Dodaj do moich działek” (API-022). Po dodaniu komunikat „Dodano do Twoich działek” z linkiem do /dzialki; działka już na koncie → „Ta działka jest już w Twoich działkach”.",
+      "components": ["UI-C-016"],
+      "api_refs": ["API-001", "API-002", "API-022"],
+      "responsive": {
+        "xs": "panel boczny jako szuflada z przycisku Menu, treść w jednej kolumnie",
+        "md": "panel boczny stały 280 px po lewej, treść obok",
+        "lg": "treść do 1600 px"
+      },
+      "design_artboards": {
+        "phone": null,
+        "desktop": null
+      }
+    },
+    {
+      "id": "UI-S-014",
+      "status": "proposed",
+      "name": "Szybki raport",
+      "route": "/szybki-raport",
+      "description": "T-096. Lista działek konta (API-020) z checkboxami (max 5 naraz), przy każdej numer, miejscowość, uprawa z ostatniego raportu i ikona uprawy (CropIcon). Przycisk „Zrób raport” uruchamia po kolei analizę każdej działki (API-003 z accountId, data dzisiejsza, uprawa z lastReport albo wybór uprawy, gdy brak) z postępem „2 z 5”. Wynik: lista działek ze słowem i kolorem klasy suszy i linkiem „Otwórz raport” (/report/:id), plus „Drukuj wszystkie” (otwiera /report/:id/print kolejno) – opcjonalnie.",
+      "components": ["UI-C-016"],
+      "api_refs": ["API-020", "API-003"],
       "responsive": {
         "xs": "panel boczny jako szuflada z przycisku Menu, treść w jednej kolumnie",
         "md": "panel boczny stały 280 px po lewej, treść obok",

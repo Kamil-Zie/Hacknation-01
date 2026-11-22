@@ -1,10 +1,14 @@
-// API-020 API-021 DM-026 Account parcels overview and per-parcel member access: fetchers and hooks (mock or real API)
+// API-020 API-021 API-022 DM-026 Account parcels overview and per-parcel member access: fetchers and hooks (mock or real API)
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { authHeaders } from '@/api/auth';
 import { apiFetch } from '@/api/client';
 import type { Member, ParcelOverview } from '@/api/types';
-import { mockGetAccountParcels, mockUpdateMemberParcels } from '@/mocks/accountParcels.mock';
+import {
+  mockAddAccountParcel,
+  mockGetAccountParcels,
+  mockUpdateMemberParcels,
+} from '@/mocks/accountParcels.mock';
 
 // VITE_MOCK_ACCOUNT_PARCELS overrides VITE_USE_MOCKS for this resource only.
 const shouldUseMocks =
@@ -22,6 +26,20 @@ export async function getAccountParcels(
     headers: authHeaders(token),
   });
   return data.items;
+}
+
+// API-022 Save a parcel to the account (sidebar "Dodaj działkę", T-095) without running an analysis
+export function addAccountParcel(
+  accountId: string,
+  parcelId: string,
+  token: string,
+): Promise<ParcelOverview> {
+  if (shouldUseMocks) return mockAddAccountParcel(accountId, parcelId, token);
+  return apiFetch<ParcelOverview>(`${accountPath(accountId)}/parcels`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({ parcelId }),
+  });
 }
 
 export function updateMemberParcels(
@@ -55,5 +73,14 @@ export function useUpdateMemberParcelsMutation(accountId: string, token: string)
       updateMemberParcels(accountId, args.memberId, args.parcelIds, token),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['accounts', accountId, 'members'] }),
+  });
+}
+
+export function useAddAccountParcelMutation(accountId: string, token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (parcelId: string) => addAccountParcel(accountId, parcelId, token),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['accounts', accountId, 'parcels'] }),
   });
 }

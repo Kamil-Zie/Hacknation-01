@@ -1,0 +1,29 @@
+{
+  "id": "T-096",
+  "title": "Szybki raport: wybór działek i raporty po kolei",
+  "description": "Strona /szybki-raport (stub i trasa są na main, przycisk na pulpicie robi Dawid w T-093). Lista działek konta (useAccountParcelsQuery) z checkboxami (max 5), ikona i nazwa uprawy z lastReport. „Zrób raport” uruchamia po kolei createAnalysis (src/api/analyses.ts) dla każdej działki: accountId z sesji, data dzisiejsza, uprawa z lastReport.crop.code; działka bez raportu → select uprawy przy niej. Postęp „2 z 5”, błąd jednej działki nie zatrzymuje reszty. Wynik: lista ze słowem i kolorem klasy suszy (StatusBadge) i linkiem „Otwórz raport”. Limit API: 10 analiz/min/IP, więc max 5 naraz.\n\nPliki: src/pages/QuickReport/QuickReportPage.tsx (stub). Wzór: src/components/AnalysisForm/AnalysisForm.tsx (wywołanie analizy), src/components/ParcelFilters/ParcelFilters.tsx (checkboxy).\n\nUX dla wieku 18–99: tekst ≥ 18 px w rem, przyciski ≥ 48 px, kontrast AA (też w Wysokim kontraście i przy największym A), proste słowa, ikony z podpisem. Stany loading/error/empty/ready, 390 i 1440 px. Termin: na main do 6:00 (zamrożenie 7:00).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "backend-1",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-014", "API-020", "API-003"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "5 działek daje 5 linków do raportów",
+    "Błąd jednej działki pokazuje komunikat przy niej, reszta się wykonuje",
+    "Przycisk jest nieaktywny bez zaznaczonej działki",
+    "Postęp jest ogłaszany czytnikowi (aria-live)"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

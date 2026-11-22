@@ -57,7 +57,7 @@
         {
           "step": 1,
           "user_action": "Rolnik otwiera aplikację w przeglądarce (telefon albo desktop) bez instalacji, loguje się albo zakłada konto w jednym kroku.",
-          "result": "Ekran logowania „Sprawdź wodę na swojej działce”, po zalogowaniu Pulpit: kafelki z danymi z zadania, największy kafelek to mapa zagrożonych działek, a stały panel boczny ma wyszukiwarkę z historią, Moje działki z filtrami, Utwórz pole, Moje pola i Wspólników; przycisk „Sprawdź nową działkę” prowadzi do pola na numer działki i mapy Polski (ADR-010, aktualizacja 00:20).",
+          "result": "Ekran logowania „Sprawdź wodę na swojej działce”, po zalogowaniu Pulpit: mapa zagrożonych działek w lewym górnym rogu, obok Stan suszy (z zagrożonym obszarem) i Twoje działki, pod mapą wykres bilansu wody, obok przycisk Szybki raport; stały panel boczny ma wyszukiwarkę z historią, Dodaj działkę, Moje działki z filtrami, Utwórz pole (min. 2 dowolne działki), Moje pola i Wspólników; przycisk „Sprawdź nową działkę” prowadzi do pola na numer działki i mapy Polski (ADR-010, aktualizacja 01:55).",
           "contract_refs": ["UI-S-001", "UI-C-001", "UI-C-002", "UI-S-009", "UI-C-016", "UI-C-017"]
         },
         {

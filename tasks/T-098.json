@@ -1,0 +1,28 @@
+{
+  "id": "T-098",
+  "title": "API-022: dodawanie działki do Moich działek (backend)",
+  "description": "Backend dla T-095: POST /accounts/:accountId/parcels, Account.savedParcelIds, API-020 zwraca też zapisane działki. Handoff do frontendu po skończeniu.\n\nPliki: apps/backend/src/routes/accounts.routes.ts, controllers/accounts.controller.ts, services/accountParcels.service.ts, models/Account.model.ts, validation/*.",
+  "type": "feature",
+  "team": "coordinator",
+  "assignee": "coord-1",
+  "status": "backlog",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["API-022", "API-020", "DM-017", "DM-026"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "Dodana działka jest w API-020 z lastReport null",
+    "Ponowne dodanie zwraca 200",
+    "Testy backendu przechodzą"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 01:55: poprawki Kamila po przeglądzie pulpitu. Stuby stron, trasy, link w panelu, hook API-022 z mockiem i kontrakty są już na main, więc zaczynasz od razu."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

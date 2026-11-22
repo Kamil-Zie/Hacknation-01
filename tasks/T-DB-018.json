@@ -1,0 +1,36 @@
+{
+  "id": "T-DB-018",
+  "title": "[DATA] Account.savedParcelIds: parcels added to my parcels without an analysis (API-022)",
+  "description": "Obowiązkowe zadanie update danych po zmianie w bazie. Zmienione pliki: apps/backend/src/models/Field.model.ts.",
+  "type": "data_update",
+  "team": "backend",
+  "assignee": "coord-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["DM-017", "DM-026"],
+  "data_change": {
+    "changed_files": ["apps/backend/src/models/Field.model.ts"],
+    "data_model_version": "0.6.0",
+    "breaking": false,
+    "created_by": "coord-1"
+  },
+  "acceptance_criteria": [
+    "contracts/data_model.json opisuje nowy stan i ma podbite version",
+    "Model/schemat w kodzie zgadza się z contracts/data_model.json",
+    "Seed w database/ zaktualizowany pod nowy model, idempotentny, z realistycznymi danymi demo",
+    "npm run seed przechodzi na wspólnej bazie dev w MongoDB Atlas (hacknation) bez błędów",
+    "Wysłana wiadomość contract_change (lub breaking_change) do frontendu, żeby zaktualizował mocki",
+    "Przy najbliższym wdrożeniu baza prod (hacknation_prod) odtworzona tym samym seedem (robi koordynator / coord-devops)"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 01:55: część T-098. Zmiana addytywna (nowe pole opcjonalne), seed niepotrzebny."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}
