@@ -111,6 +111,8 @@ export function ParcelSearch({
   const [validationError, setValidationError] = useState<string | null>(null);
   const [addressError, setAddressError] = useState<string | null>(null);
   const [gpsError, setGpsError] = useState<string | null>(null);
+  const [placeQuery, setPlaceQuery] = useState('');
+  const [placeError, setPlaceError] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const helperId = useId();
   const groupRef = useRef<HTMLDivElement>(null);
@@ -140,10 +142,34 @@ export function ParcelSearch({
     setIsBusy(true);
     try {
       const place = await geocodeAddress(query);
-      if (place) onPlaceFound?.(place.lat, place.lon);
-      else setAddressError(NOT_FOUND_MESSAGE);
+      if (place) {
+        onPlaceFound?.(place.lat, place.lon);
+        // the map is hidden behind „Mapa” on pages that pass mapSlot: open it to show the place
+        if (mapSlot) setMode('map');
+      } else setAddressError(NOT_FOUND_MESSAGE);
     } catch {
       setAddressError('Nie udało się wyszukać adresu. Sprawdź internet albo kliknij mapę.');
+    } finally {
+      setIsBusy(false);
+    }
+  }
+
+  // „Mapa” option: find a town / village and move the map there, then the user clicks the parcel
+  async function handlePlace(event: FormEvent) {
+    event.preventDefault();
+    const query = placeQuery.trim();
+    if (query.length < 2) {
+      setPlaceError('Wpisz nazwę miejscowości.');
+      return;
+    }
+    setPlaceError(null);
+    setIsBusy(true);
+    try {
+      const place = await geocodeAddress(query);
+      if (place) onPlaceFound?.(place.lat, place.lon);
+      else setPlaceError('Nie znaleziono takiej miejscowości. Sprawdź pisownię.');
+    } catch {
+      setPlaceError('Nie udało się wyszukać miejscowości. Sprawdź internet.');
     } finally {
       setIsBusy(false);
     }
@@ -406,6 +432,43 @@ export function ParcelSearch({
 
       {mode === 'map' && (
         <Stack spacing={1.5}>
+          <Stack
+            component="form"
+            role="search"
+            aria-label="Szukaj miejscowości na mapie"
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1}
+            noValidate
+            onSubmit={(event) => void handlePlace(event)}
+            sx={{ alignItems: { sm: 'flex-start' } }}
+          >
+            <TextField
+              label="Miejscowość"
+              value={placeQuery}
+              onChange={(event) => {
+                setPlaceQuery(event.target.value);
+                setPlaceError(null);
+              }}
+              error={placeError !== null}
+              helperText={placeError ? <FieldError>{placeError}</FieldError> : undefined}
+              slotProps={{ formHelperText: { role: placeError ? 'alert' : undefined } }}
+              placeholder="np. Puławy"
+              fullWidth
+              autoComplete="address-level2"
+              disabled={disabled}
+              sx={inputSx}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              disabled={disabled}
+              startIcon={submitIcon}
+              sx={{ minHeight: 56, fontSize: '1.125rem', flexShrink: 0, px: 3 }}
+            >
+              {isBusy ? 'Szukam…' : 'Szukaj'}
+            </Button>
+          </Stack>
           {/* a failed map click shows here, next to the map it came from */}
           {pickError?.message && (
             <Typography
