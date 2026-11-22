@@ -178,6 +178,8 @@ export function Sidebar({ onNavigate, showLogo = false, footer }: SidebarProps) 
           </Box>
         </Link>
       )}
+      {/* guest mode: the login info sits right under the logo, first thing in the panel */}
+      {isGuest && <GuestLogin onNavigate={onNavigate} />}
       <ParcelSearchBox onNavigate={onNavigate} />
       <Box component="nav" aria-label="Menu gospodarstwa">
         {isGuest ? (
@@ -221,13 +223,7 @@ export function Sidebar({ onNavigate, showLogo = false, footer }: SidebarProps) 
           </List>
         )}
       </Box>
-      {isGuest ? (
-        <Box sx={{ mt: 'auto', pt: 1 }}>
-          <GuestLogin onNavigate={onNavigate} />
-        </Box>
-      ) : (
-        footer && <Box sx={{ mt: 'auto', pt: 1 }}>{footer}</Box>
-      )}
+      {!isGuest && footer && <Box sx={{ mt: 'auto', pt: 1 }}>{footer}</Box>}
     </Box>
   );
 }
