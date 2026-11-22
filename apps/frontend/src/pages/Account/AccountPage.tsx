@@ -218,18 +218,25 @@ export function AccountPage() {
               </Stack>
               {hasParcels && <ThreatList items={items} onSelect={openReport} />}
             </Box>
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={1.5}
-              useFlexGap
-              sx={{ flexWrap: 'wrap', mt: 'auto' }}
+            {/* two equal buttons across the full tile width, side by side; they stack only when too narrow */}
+            <Box
+              sx={{
+                mt: 'auto',
+                pt: 2,
+                borderTop: 1,
+                borderColor: 'divider',
+                display: 'grid',
+                gap: 1.5,
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 15rem), 1fr))',
+              }}
             >
               <Button
                 variant="contained"
                 size="large"
+                fullWidth
                 startIcon={<AddLocationAltIcon />}
                 onClick={() => navigate('/')}
-                sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
+                sx={{ minHeight: 56, fontSize: '1.125rem', whiteSpace: 'nowrap' }}
               >
                 Sprawdź nową działkę
               </Button>
@@ -238,12 +245,13 @@ export function AccountPage() {
                 to="/szybki-raport"
                 variant="outlined"
                 size="large"
+                fullWidth
                 startIcon={<PlaylistAddCheckIcon />}
-                sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
+                sx={{ minHeight: 56, fontSize: '1.125rem', whiteSpace: 'nowrap' }}
               >
                 Szybki raport
               </Button>
-            </Stack>
+            </Box>
           </CardContent>
         </Card>
         <DashboardTile
