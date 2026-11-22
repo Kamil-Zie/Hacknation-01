@@ -162,7 +162,7 @@ export function ThreatMap({
           center={[52, 19.4]}
           zoom={6}
           style={{ height: '100%', width: '100%' }}
-          scrollWheelZoom={false}
+          scrollWheelZoom
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
