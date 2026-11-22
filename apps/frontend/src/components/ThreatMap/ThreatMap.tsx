@@ -1,7 +1,7 @@
 // UI-C-017 ThreatMap: Leaflet map of account parcels colored by drought class, fit to at-risk parcels; ThreatList: at-risk list and legend for the drought tile
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Skeleton, Stack, Typography, useTheme } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Alert, Box, Button, Skeleton, Stack, Typography, useTheme } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
 import {
   CircleMarker,
   GeoJSON,
@@ -24,6 +24,10 @@ export interface ThreatMapProps {
   onSelect: (item: ParcelOverview) => void;
   /** T-103: on lg+ fill the parent's height (dashboard one-screen layout) instead of 45vh */
   fill?: boolean;
+  /** T-106: the drought filter hides some parcels; zooming out then shows a notice */
+  isFiltered?: boolean;
+  /** T-106: "Pokaż wszystkie działki" in the notice clears the drought filter */
+  onShowAll?: () => void;
 }
 
 export const DROUGHT_WORDS: Record<DroughtClass, string> = {
@@ -46,10 +50,23 @@ const classOf = (item: ParcelOverview): DroughtClass => item.lastReport?.drought
 
 const SEVERITY_ORDER: DroughtClass[] = ['severe', 'moderate', 'unknown', 'none'];
 
-function FitToItems({ items }: { items: ParcelOverview[] }) {
+// T-106: fit only when the set of parcels changes (key from ids), not on every render, so a zoom
+// (which re-renders through ZoomWatcher) no longer snaps the map back; marks its own zooms as programmatic
+function FitToItems({
+  items,
+  programmatic,
+}: {
+  items: ParcelOverview[];
+  programmatic: { current: boolean };
+}) {
   const map = useMap();
+  const itemsKey = items.map((item) => item.parcel.id).join(',');
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
   useEffect(() => {
     const fit = () => {
+      const items = itemsRef.current;
+      programmatic.current = true;
       map.invalidateSize();
       const points: [number, number][] = [];
       for (const item of items) {
@@ -64,18 +81,53 @@ function FitToItems({ items }: { items: ParcelOverview[] }) {
       if (points.length > 0) {
         map.fitBounds(points as LatLngBoundsExpression, { padding: [24, 24], maxZoom: 15 });
       }
+      // zoomend of this fit (if any) arrives before the user can act; release the flag after it
+      window.setTimeout(() => {
+        programmatic.current = false;
+      }, 400);
     };
     map.whenReady(fit);
     const observer = new ResizeObserver(fit);
     observer.observe(map.getContainer());
     return () => observer.disconnect();
-  }, [map, items]);
+  }, [map, itemsKey, programmatic]);
   return null;
 }
 
-export function ThreatMap({ items, isLoading = false, onSelect, fill = false }: ThreatMapProps) {
+// T-106: the user zoomed out by hand (not one of our fits)
+function ZoomOutWatcher({
+  programmatic,
+  onZoomOut,
+}: {
+  programmatic: { current: boolean };
+  onZoomOut: () => void;
+}) {
+  const last = useRef<number | null>(null);
+  const map = useMapEvents({
+    zoomend: () => {
+      const zoom = map.getZoom();
+      if (!programmatic.current && last.current !== null && zoom < last.current) onZoomOut();
+      last.current = zoom;
+    },
+  });
+  return null;
+}
+
+export function ThreatMap({
+  items,
+  isLoading = false,
+  onSelect,
+  fill = false,
+  isFiltered = false,
+  onShowAll,
+}: ThreatMapProps) {
   const { palette } = useTheme();
   const [zoom, setZoom] = useState(6);
+  const programmatic = useRef(false);
+  const [isNoticeOpen, setIsNoticeOpen] = useState(false);
+  const showNotice = isFiltered && isNoticeOpen;
+  // a new filter is a fresh start: hide the notice until the user zooms out again
+  useEffect(() => setIsNoticeOpen(false), [isFiltered]);
   const mapHeight = fill ? { xs: 320, lg: '100%' } : { xs: 320, lg: 'max(360px, 45vh)' };
 
   if (isLoading) {
@@ -98,6 +150,7 @@ export function ThreatMap({ items, isLoading = false, onSelect, fill = false }: 
         role="region"
         aria-label="Mapa działek pokolorowanych według suszy"
         sx={{
+          position: 'relative',
           width: '100%',
           height: mapHeight,
           borderRadius: 2,
@@ -157,8 +210,42 @@ export function ThreatMap({ items, isLoading = false, onSelect, fill = false }: 
               );
             })}
           <ZoomWatcher onZoom={setZoom} />
-          <FitToItems items={fitted} />
+          <FitToItems items={fitted} programmatic={programmatic} />
+          <ZoomOutWatcher programmatic={programmatic} onZoomOut={() => setIsNoticeOpen(true)} />
         </MapContainer>
+        {/* T-106 notice over the map; role=status so a screen reader announces it */}
+        <Box
+          role="status"
+          aria-live="polite"
+          sx={{ position: 'absolute', left: 12, right: 12, bottom: 12, zIndex: 1000 }}
+        >
+          {showNotice && (
+            <Alert
+              severity="info"
+              variant="filled"
+              onClose={() => setIsNoticeOpen(false)}
+              slotProps={{ closeButton: { title: 'Zamknij', sx: { width: 48, height: 48 } } }}
+              sx={{ fontSize: '1.125rem', alignItems: 'center', boxShadow: 3 }}
+            >
+              <Box>
+                Mapa pokazuje tylko działki z wybranych klas suszy. Pozostałe działki są ukryte.
+              </Box>
+              {onShowAll && (
+                <Button
+                  variant="contained"
+                  color="inherit"
+                  onClick={() => {
+                    setIsNoticeOpen(false);
+                    onShowAll();
+                  }}
+                  sx={{ mt: 1, minHeight: 48, fontSize: '1.125rem', color: 'text.primary' }}
+                >
+                  Pokaż wszystkie działki
+                </Button>
+              )}
+            </Alert>
+          )}
+        </Box>
       </Box>
     </Stack>
   );
