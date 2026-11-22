@@ -132,7 +132,8 @@ export function ThreatMap({ items, isLoading = false, onSelect, fill = false }: 
               >
                 {zoom >= DOT_MAX_ZOOM && (
                   <Tooltip permanent direction="center">
-                    {`${item.parcel.parcelNumber} · ${DROUGHT_WORDS[droughtClass]}`}
+                    {/* T-103: place name on the map; the drought class is shown by the colour */}
+                    {`${item.parcel.parcelNumber} · ${item.parcel.region}`}
                   </Tooltip>
                 )}
               </GeoJSON>
@@ -150,7 +151,7 @@ export function ThreatMap({ items, isLoading = false, onSelect, fill = false }: 
                   eventHandlers={{ click: () => item.lastReport && onSelect(item) }}
                 >
                   <Tooltip permanent direction="top" offset={[0, -10]}>
-                    {`${item.parcel.parcelNumber} · ${DROUGHT_WORDS[classOf(item)]}`}
+                    {`${item.parcel.parcelNumber} · ${item.parcel.region}`}
                   </Tooltip>
                 </CircleMarker>
               );
