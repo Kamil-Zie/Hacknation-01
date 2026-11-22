@@ -47,6 +47,15 @@ function ZoomWatcher({ onZoom }: { onZoom: (zoom: number) => void }) {
   return null;
 }
 
+// MapContainer reads scrollWheelZoom only when the map is created; turn the handler on explicitly
+function WheelZoom() {
+  const map = useMap();
+  useEffect(() => {
+    map.scrollWheelZoom.enable();
+  }, [map]);
+  return null;
+}
+
 const classOf = (item: ParcelOverview): DroughtClass => item.lastReport?.droughtClass ?? 'unknown';
 
 const SEVERITY_ORDER: DroughtClass[] = ['severe', 'moderate', 'unknown', 'none'];
@@ -211,6 +220,7 @@ export function ThreatMap({
               );
             })}
           <ZoomWatcher onZoom={setZoom} />
+          <WheelZoom />
           <FitToItems items={fitted} programmatic={programmatic} />
           <ZoomOutWatcher programmatic={programmatic} onZoomOut={() => setIsNoticeOpen(true)} />
         </MapContainer>
