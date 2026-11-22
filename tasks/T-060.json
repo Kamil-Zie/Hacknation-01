@@ -21,11 +21,12 @@
     "note": ""
   },
   "notes": [
+    "coord-1 02:25: po T-101: podmienić zrzuty na nowe (pulpit 2×2, Szybki raport) w docs/pitch/slides.md.",
     "coord-1 18:42: slajd 10 z zespołem, bez linku do prototypu; slajd 7 z wynikiem ERA5. Treść kompletna, PDF do pobrania z prezentacji.",
     "coord-1 18:35: prezentacja 10 slajdów w Claude Design (Slides): https://claude.ai/artifact/TMDihezY9H9nW4NvJyEEqS, źródła w docs/pitch/deck/. PDF: pobranie z prezentacji. Zostaje: [link do prototypu] (T-065), [imiona i role], wynik IUNG na ERA5, opcjonalnie zrzuty ekranu.",
     "coord-1 18:15: treść 10 slajdów w docs/pitch/slides.md (coord-docs). Zostaje: [DO UZUPEŁNIENIA] (statystyka strat, IUNG na ERA5, wycena skalowania, zespół, partnerzy) i skład PDF.",
     "coord-1 18:10: zgłoszenie KOWR pkt 4.1, oddanie nd 11:00."
   ],
   "created_at": "2026-11-21",
-  "updated_at": "2026-11-21"
+  "updated_at": "2026-11-22"
 }

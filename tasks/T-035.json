@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 02:25: warm-cache na prod robi Jan w ramach T-082 po T-065.",
     "coord-1 00:25: skrypt npm run warm-cache [apiUrl] (database/scripts/warm-cache.ts, 8 analiz x2, odstęp 6,5 s pod limit 10/min). Dev rozgrzany: wszystkie complete, zimny 1,2–13 s, ciepły 0,3–1,6 s (tabela w docs/pitch/scenariusz.md). Zostaje: prod po T-065 i rano przed pokazem. Limiter bierze teraz IP z CF-Connecting-IP (tunel).",
     "coord-1 17:25: z powrotem u coord-1 (Kamil) – decyzja Kamila; przydział do backend-2 z 17:10 nieaktualny.",
     "coord-1 17:10: PRZEPISANE na backend-2 decyzją Kamila. Zrobione wcześniej: dev cache Bronowice 2026-05-25 i 2026-07-15 (15:36, VPN). Do zrobienia: (1) 3–5 działek demo z uzasadnieniem (Bronowice; Żuławy – susza bieżąca silna przy niskiej podatności, z testu Jana 14:25; piasek np. Sulechów; mała działka; ID z '/'), (2) skrypt npm run warm-cache (POST /analyses po liście działek i dat na API z URL w argumencie, bez zapisu poza source_cache/reports, bez seeda), pomiar zimny/ciepły w notes, (3) uruchomienie na prod po wdrożeniu i rano przed pitchem. Open-Meteo z sieci hackathonu daje 429 – rozgrzewanie z innej sieci (VPN) albo na prod.",

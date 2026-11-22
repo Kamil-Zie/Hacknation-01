@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "backend",
   "assignee": "coord-1",
-  "status": "backlog",
+  "status": "done",
   "priority": "low",
   "depends_on": ["T-002", "T-031", "T-DB-002"],
   "contract_refs": ["API-004", "DM-005", "DM-011", "DM-015", "DM-002"],
@@ -17,11 +17,12 @@
     "Jeśli T-002 wykaże BUFR-only: zadanie zamknięte jako missing + decision_request do koordynatora"
   ],
   "review": {
-    "status": "pending",
-    "by": null,
-    "note": ""
+    "status": "approved",
+    "by": "coord-1",
+    "note": "anulowane (wont)"
   },
   "notes": [
+    "coord-1 02:25: ANULOWANE decyzją Kamila (przeniesione do mvp_scope.wont): EUMETSAT ASCAT nie wchodzi przed zamrożeniem; raport ma wilgotność gleby z innych źródeł.",
     "coord-1 22:00: backend przejmuje Kamil (wcześniej coord-1).",
     "backend-1 22:25: decyzja Jana – zadania backendu przejmuje Kamil (coord-1); status bez zmian.",
     "coord-1 21:30: Kamil – nie zamykać, zostaje w backlogu.",
@@ -29,5 +30,5 @@
     "Agent: be-api. Szacunek: 2h. Faza: 8 ASCAT (ostatnie, opcjonalne). Nowe zależności: h5wasm, fflate (drobne, dopisać do notatek)."
   ],
   "created_at": "2026-11-21",
-  "updated_at": "2026-11-21"
+  "updated_at": "2026-11-22"
 }

@@ -23,6 +23,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 02:25: po T-101 (zrzuty Jakuba): opisać w README nowy pulpit, Dodaj działkę, Szybki raport, tryb ciemny, Utwórz pole bez sąsiedztwa; konta demo zespołu NIE do README (tylko konto DEMO z prod).",
     "coord-1 21:30: Kamil zakłada konto DEMO na prod – dane logowania do instrukcji dla jury (tylko w zgłoszeniu/README, nie na Discord).",
     "coord-1 21:20: po T-081 zaktualizować instrukcję dla jury (README, docs/zgloszenie.md, slajdy, scenariusz): start od logowania + konto demonstracyjne na prod.",
     "coord-1 20:00: draft w HackTribe zgłoszony przez Kamila. README zostaje do aktualizacji (link prod) do oddania nd 11:00.",
@@ -33,5 +34,5 @@
     "Agent: coord-docs. Szacunek: 2h. Faza: draft 20:00. Punkt 9 uzupełnić po T-036; finalizacja po zamrożeniu."
   ],
   "created_at": "2026-11-21",
-  "updated_at": "2026-11-21"
+  "updated_at": "2026-11-22"
 }
