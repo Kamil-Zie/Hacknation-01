@@ -1,3 +1,3 @@
 # Claims: frontend-1 (Dawid)
 
-Brak aktywnych rezerwacji. T-085 i T-089 zakończone 2026-11-22.
+- T-093 · UI-S-009, UI-C-017, UI-C-011 · pages/Account/AccountPage.tsx, components/DashboardTile, components/ThreatMap (wysokość) · od 2026-11-22 02:00
