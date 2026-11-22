@@ -183,7 +183,7 @@ export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
           <TextField
             {...params}
             label="Szukaj działki"
-            placeholder="Numer, miejscowość lub gmina"
+            placeholder="Numer lub miejscowość"
             error={error !== null}
             helperText={
               error ? (
