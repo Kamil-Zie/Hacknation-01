@@ -80,18 +80,40 @@ export function AccountPage() {
           gap: 2,
           gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
           gridTemplateAreas: {
-            xs: '"title" "map" "side" "chart"',
-            lg: '"title ." "map side" "chart chart"',
+            xs: '"switch" "title" "map" "side" "chart"',
+            lg: '"title switch" "map side" "chart chart"',
           },
           alignItems: 'start',
         }}
       >
+        {/* account switcher top right (lg+), top of the page on a phone */}
+        {accounts.length > 1 && (
+          <TextField
+            select
+            label="Aktywne gospodarstwo"
+            value={activeAccountId ?? ''}
+            onChange={(event) => setActiveAccount(event.target.value)}
+            sx={{
+              gridArea: 'switch',
+              justifySelf: { xs: 'stretch', sm: 'start', lg: 'end' },
+              alignSelf: 'end',
+              minWidth: { sm: 260 },
+              maxWidth: '100%',
+            }}
+          >
+            {accounts.map((account) => (
+              <MenuItem key={account.id} value={account.id} sx={{ minHeight: 48 }}>
+                {account.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        )}
         {/* heading in its own row, so the drought tile starts level with the top edge of the map */}
         <Typography
           id="zagrozone-dzialki-title"
           variant="h2"
           component="h2"
-          sx={{ gridArea: 'title', mb: { xs: -0.5, lg: -1 } }}
+          sx={{ gridArea: 'title', alignSelf: 'end', mb: { xs: -0.5, lg: -1 } }}
         >
           Zagrożone działki
         </Typography>
@@ -285,25 +307,6 @@ export function AccountPage() {
           )}
         </DashboardTile>
       </Box>
-      {accounts.length > 1 && (
-        <TextField
-          select
-          label="Aktywne gospodarstwo"
-          value={activeAccountId ?? ''}
-          onChange={(event) => setActiveAccount(event.target.value)}
-          sx={{
-            minWidth: { sm: 260 },
-            maxWidth: '100%',
-            alignSelf: { xs: 'stretch', sm: 'flex-start' },
-          }}
-        >
-          {accounts.map((account) => (
-            <MenuItem key={account.id} value={account.id} sx={{ minHeight: 48 }}>
-              {account.name}
-            </MenuItem>
-          ))}
-        </TextField>
-      )}
     </Stack>
   );
 }
