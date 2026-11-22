@@ -61,7 +61,8 @@ const actionButtonSx = {
 // tighter tile padding than the MUI default (16 px, 24 px at the bottom)
 const tilePadding = { p: 1.5, '&:last-child': { pb: 1.5 } } as const;
 // below this the one-screen layout would crush the tiles, so the page scrolls instead
-const MIN_FIT_HEIGHT = 560;
+// (T-103: 560 crushed the map and chart on a 768 px high laptop; now the page scrolls there)
+const MIN_FIT_HEIGHT = 760;
 
 // lg+: height from the grid's top edge to the bottom of the window, so the whole dashboard fits one screen
 function useFitHeight(enabled: boolean) {

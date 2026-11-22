@@ -71,6 +71,12 @@ export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
     [history],
   );
 
+  // freeSolo with no matching hint opened an empty list (only its border, a stray line under the
+  // field): open the list only when there is something to show
+  const [isOpen, setIsOpen] = useState(false);
+  const query = inputValue.trim().toLowerCase();
+  const hasMatches = options.some((option) => !query || option.haystack.includes(query));
+
   function go(id: string, label: string) {
     addToHistory({ id, label });
     setError(null);
@@ -110,6 +116,9 @@ export function ParcelSearchBox({ onNavigate }: ParcelSearchBoxProps) {
       <Autocomplete<SearchOption, false, false, true>
         freeSolo
         openOnFocus
+        open={isOpen && hasMatches}
+        onOpen={() => setIsOpen(true)}
+        onClose={() => setIsOpen(false)}
         blurOnSelect
         options={options}
         groupBy={(option) => option.group}
