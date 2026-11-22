@@ -105,32 +105,35 @@ export function AppLayout() {
         sx={{ background: (theme) => theme.palette.kropla.headerGradient, color: 'common.white' }}
       >
         <Toolbar sx={{ minHeight: { xs: 64, md: 80 }, gap: 2, px: { xs: 2, md: 4 } }}>
-          {/* T-103: logged in → the dashboard (Pulpit), otherwise the start page */}
-          <Link
-            component={RouterLink}
-            to={token ? '/konto' : '/'}
-            color="inherit"
-            underline="none"
-            sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5, minHeight: 44 }}
-          >
-            <OpacityIcon aria-hidden sx={{ fontSize: { xs: 30, md: 36 } }} />
-            <Typography
-              component="span"
-              sx={{ fontWeight: 800, fontSize: { xs: '1.5rem', md: '1.75rem' } }}
+          {/* T-103: logged in → the dashboard (Pulpit), otherwise the start page; on desktop
+              with the side panel the logo lives on top of the panel instead */}
+          {!(showSidebar && isDesktop) && (
+            <Link
+              component={RouterLink}
+              to={token ? '/konto' : '/'}
+              color="inherit"
+              underline="none"
+              sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5, minHeight: 44 }}
             >
-              Kropelka
-            </Typography>
-            <Typography
-              component="span"
-              sx={{ display: { xs: 'none', md: 'inline' }, opacity: 0.95, fontSize: '1.125rem' }}
-            >
-              Woda na Twojej działce
-            </Typography>
-            <Box component="span" sx={srOnly}>
-              {' '}
-              {token ? '– pulpit' : '– strona główna'}
-            </Box>
-          </Link>
+              <OpacityIcon aria-hidden sx={{ fontSize: { xs: 30, md: 36 } }} />
+              <Typography
+                component="span"
+                sx={{ fontWeight: 800, fontSize: { xs: '1.5rem', md: '1.75rem' } }}
+              >
+                Kropelka
+              </Typography>
+              <Typography
+                component="span"
+                sx={{ display: { xs: 'none', md: 'inline' }, opacity: 0.95, fontSize: '1.125rem' }}
+              >
+                Woda na Twojej działce
+              </Typography>
+              <Box component="span" sx={srOnly}>
+                {' '}
+                {token ? '– pulpit' : '– strona główna'}
+              </Box>
+            </Link>
+          )}
           <Box sx={{ flexGrow: 1 }} />
           {showSidebar && !isDesktop && (
             <Button
@@ -165,7 +168,7 @@ export function AppLayout() {
             }}
           >
             <Box sx={{ position: 'sticky', top: 0, maxHeight: '100vh', overflowY: 'auto' }}>
-              <Sidebar />
+              <Sidebar showLogo />
             </Box>
           </Box>
         )}

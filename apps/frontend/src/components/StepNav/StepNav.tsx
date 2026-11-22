@@ -51,7 +51,15 @@ export function StepNav() {
       component="nav"
       aria-label="Kroki"
       className="no-print"
-      sx={{ bgcolor: 'background.paper', borderBottom: 1, borderColor: 'kropla.line' }}
+      // T-103: stays at the top of the screen while the page scrolls
+      sx={{
+        bgcolor: 'background.paper',
+        borderBottom: 1,
+        borderColor: 'kropla.line',
+        position: 'sticky',
+        top: 0,
+        zIndex: (theme) => theme.zIndex.appBar,
+      }}
     >
       <Box
         component="ol"

@@ -5,10 +5,20 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupsIcon from '@mui/icons-material/Groups';
 import LandscapeIcon from '@mui/icons-material/Landscape';
 import MapIcon from '@mui/icons-material/Map';
-import { Box, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import OpacityIcon from '@mui/icons-material/Opacity';
+import {
+  Box,
+  Link,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from '@mui/material';
 import type { ReactNode } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
+import { srOnly } from '@/app/a11yStyles';
 import { ParcelSearchBox } from '@/components/ParcelSearchBox/ParcelSearchBox';
 import { useCanEdit } from '@/store/session';
 
@@ -50,13 +60,45 @@ function isActive(pathname: string, link: SidebarLink): boolean {
 export interface SidebarProps {
   // Called after navigation, so the mobile drawer can close
   onNavigate?: () => void;
+  /** T-103 desktop: the Kropelka logo sits on top of the panel and stays with it while scrolling */
+  showLogo?: boolean;
 }
 
-export function Sidebar({ onNavigate }: SidebarProps) {
+export function Sidebar({ onNavigate, showLogo = false }: SidebarProps) {
   const canEdit = useCanEdit();
   const { pathname } = useLocation();
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
+      {showLogo && (
+        <Link
+          component={RouterLink}
+          to="/konto"
+          underline="none"
+          color="inherit"
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 1.25,
+            minHeight: 48,
+            px: 0.5,
+            borderRadius: 2,
+            color: 'primary.main',
+            '&:hover': { bgcolor: 'action.hover' },
+          }}
+        >
+          <OpacityIcon aria-hidden sx={{ fontSize: 36 }} />
+          <Typography
+            component="span"
+            sx={{ fontWeight: 800, fontSize: '1.75rem', color: 'text.primary' }}
+          >
+            Kropelka
+          </Typography>
+          <Box component="span" sx={srOnly}>
+            {' '}
+            – pulpit
+          </Box>
+        </Link>
+      )}
       <ParcelSearchBox onNavigate={onNavigate} />
       <Box component="nav" aria-label="Menu gospodarstwa">
         <List disablePadding sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
