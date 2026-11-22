@@ -23,7 +23,7 @@ Korzyści: rolnik w kilkanaście sekund dostaje czytelną decyzję dla swojej dz
 | Prezentacja PDF | gotowa: `docs/pitch/Kropelka-prezentacja.pdf` (10 slajdów) |
 | Prototyp | instrukcja uruchomienia w README (sekcja 1); link do wersji produkcyjnej w przygotowaniu |
 | Film | w przygotowaniu |
-| Raporty | w przygotowaniu |
+| Raporty | gotowe: 3 PDF w `docs/reports/`, wygenerowane na prod 22.11.2026 (dane bieżące ERA5/ERA5-Land, tło 10 lat NASA POWER). Bronowice 061409_2.0009.612, pszenica ozima, 25.05.2026 (demo, susza silna): https://app.kamil-zielinski.pl/report/6b02b1b29a3df2abfff702ad · Środa Wlkp. 302504_5.0029.66, pszenica ozima, 20.07.2023 (susza wg IUNG, Kropelka: susza silna): https://app.kamil-zielinski.pl/report/6b02b1b39a3df2abfff702af · Kruszwica 040706_4.0004.15, burak cukrowy, 31.05.2024 (brak suszy wg IUNG, Kropelka: brak suszy): https://app.kamil-zielinski.pl/report/6b02b1b49a3df2abfff702b1 |
 
 ## Dlaczego chcemy zrealizować ten projekt (do wklejenia)
 

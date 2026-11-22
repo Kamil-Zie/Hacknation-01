@@ -5,9 +5,11 @@
   "type": "docs",
   "team": "coordinator",
   "assignee": "coord-1",
-  "status": "blocked",
+  "status": "in_review",
   "priority": "high",
-  "depends_on": ["T-055"],
+  "depends_on": [
+    "T-055"
+  ],
   "contract_refs": [],
   "demo_step": null,
   "acceptance_criteria": [
@@ -20,6 +22,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 10:17: 3 PDF w docs/reports/ z prod (Claude in Chrome: raporty przez POST /analyses na api.kamil-zielinski.pl, widok /report/<id>/print w jasnym motywie, PDF A4 przez Chrome). Wszystkie status complete, pewność wysoka, źródło bieżące ERA5/ERA5-Land (role current), tło NASA POWER. Bronowice: susza silna; Środa 2023-07-20: susza silna; Kruszwica 2024-05-31: brak suszy. Linki w docs/zgloszenie.md.",
     "coord-1 00:25: raporty do PDF są w cache dev (Bronowice 2026-05-25, Środa 2023-07-20, Kruszwica 2024-05-31). PDF i linki robimy z prod po T-065 (linki w zgłoszeniu muszą prowadzić na prod): otwórz /report/<id>/print i Ctrl+P → Zapisz jako PDF. Brak Chrome headless na maszynie coord.",
     "coord-1 18:10: zgłoszenie KOWR pkt 4.1, oddanie nd 11:00."
   ],
