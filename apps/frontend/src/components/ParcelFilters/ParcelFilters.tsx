@@ -1,13 +1,17 @@
-// UI-C-019 ParcelFilters: checkbox groups (area, locality, crop) and client-side filtering of account parcels [T-088]
+// UI-C-019 ParcelFilters: checkbox groups (area, locality, crop with icons) and client-side filtering of account parcels [T-088, T-094]
 import { Box, Button, Checkbox, FormControlLabel, FormGroup, Typography } from '@mui/material';
+import type { ReactNode } from 'react';
 
 import type { ParcelOverview } from '@/api/types';
+import { CropIcon } from '@/components/CropIcon/CropIcon';
 
 export const NO_REPORT = '__no_report__';
+// "below 1 ha" option, stored in Filters.areas next to the "above N ha" thresholds
+export const BELOW_ONE_HA = 0;
 export const AREA_THRESHOLDS = [1, 5, 10] as const;
 
 export interface Filters {
-  /** area thresholds in ha (parcel must be above the smallest selected one) */
+  /** BELOW_ONE_HA and/or thresholds in ha (above the smallest selected one); OR inside the group */
   areas: number[];
   /** locality keys, see localityKey() */
   localities: string[];
@@ -29,12 +33,19 @@ export function countActiveFilters(filters: Filters): number {
   return filters.areas.length + filters.localities.length + filters.crops.length;
 }
 
-// groups are joined with AND, values inside a group with OR (area: smallest threshold)
+function matchesArea(areaHa: number, areas: number[]): boolean {
+  if (areas.length === 0) return true;
+  const thresholds = areas.filter((ha) => ha !== BELOW_ONE_HA);
+  const below = areas.includes(BELOW_ONE_HA) && areaHa < 1;
+  const above = thresholds.length > 0 && areaHa > Math.min(...thresholds);
+  return below || above;
+}
+
+// groups are joined with AND, values inside a group with OR (area: below 1 ha or above the smallest threshold)
 export function filterParcels(items: ParcelOverview[], filters: Filters): ParcelOverview[] {
-  const minArea = filters.areas.length > 0 ? Math.min(...filters.areas) : null;
   return items.filter(
     (item) =>
-      (minArea === null || item.parcel.areaHa > minArea) &&
+      matchesArea(item.parcel.areaHa, filters.areas) &&
       (filters.localities.length === 0 || filters.localities.includes(localityKey(item))) &&
       (filters.crops.length === 0 || filters.crops.includes(cropKey(item))),
   );
@@ -56,7 +67,7 @@ export interface ParcelFiltersProps {
 
 interface GroupProps {
   legend: string;
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; icon?: ReactNode }[];
   isChecked: (value: string) => boolean;
   onToggle: (value: string) => void;
 }
@@ -71,7 +82,16 @@ function Group({ legend, options, isChecked, onToggle }: GroupProps) {
         {options.map((option) => (
           <FormControlLabel
             key={option.value}
-            label={option.label}
+            label={
+              option.icon ? (
+                <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                  {option.icon}
+                  {option.label}
+                </Box>
+              ) : (
+                option.label
+              )
+            }
             control={
               <Checkbox
                 checked={isChecked(option.value)}
@@ -93,12 +113,18 @@ function Group({ legend, options, isChecked, onToggle }: GroupProps) {
 
 export function ParcelFilters({ parcels, value, onChange }: ParcelFiltersProps) {
   const localities = unique(parcels.map(localityKey));
-  const crops = unique(
-    parcels.flatMap((item) => (item.lastReport ? [item.lastReport.crop.name] : [])),
-  );
+  const cropCodes = new Map<string, string>();
+  for (const item of parcels) {
+    if (item.lastReport) cropCodes.set(item.lastReport.crop.name, item.lastReport.crop.code);
+  }
+  const crops = unique([...cropCodes.keys()]);
   const hasUnreported = parcels.some((item) => !item.lastReport);
   const cropOptions = [
-    ...crops.map((name) => ({ value: name, label: name })),
+    ...crops.map((name) => ({
+      value: name,
+      label: name,
+      icon: <CropIcon cropCode={cropCodes.get(name) ?? ''} />,
+    })),
     ...(hasUnreported ? [{ value: NO_REPORT, label: 'Bez raportu' }] : []),
   ];
 
@@ -106,7 +132,10 @@ export function ParcelFilters({ parcels, value, onChange }: ParcelFiltersProps) 
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
       <Group
         legend="Powierzchnia"
-        options={AREA_THRESHOLDS.map((ha) => ({ value: String(ha), label: `Powyżej ${ha} ha` }))}
+        options={[
+          { value: String(BELOW_ONE_HA), label: 'Poniżej 1 ha' },
+          ...AREA_THRESHOLDS.map((ha) => ({ value: String(ha), label: `Powyżej ${ha} ha` })),
+        ]}
         isChecked={(entry) => value.areas.includes(Number(entry))}
         onToggle={(entry) => onChange({ ...value, areas: toggle(value.areas, Number(entry)) })}
       />
