@@ -1,4 +1,4 @@
-// UI-S-009 T-093 Dashboard 2x2 (Kamil's layout): ThreatMap (UI-C-017) top left, drought top right, water balance (UI-C-011) under the map, quick report (UI-S-014) next to the chart
+// UI-S-009 T-093 Dashboard: ThreatMap (UI-C-017) top left, drought tile + quick report button (UI-S-014) top right, water balance (UI-C-011) under the map
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import { Box, Button, Link, MenuItem, Stack, TextField, Typography } from '@mui/material';
@@ -152,8 +152,8 @@ export function AccountPage() {
           gap: 2,
           gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
           gridTemplateAreas: {
-            xs: '"map" "side" "chart" "quick"',
-            lg: '"map side" "chart quick"',
+            xs: '"map" "side" "chart"',
+            lg: '"map side" "chart ."',
           },
           alignItems: 'stretch',
         }}
@@ -193,35 +193,46 @@ export function AccountPage() {
             </Stack>
           )}
         </DashboardTile>
-        <DashboardTile
-          id="stan-suszy"
-          title="Stan suszy"
-          isLoading={parcels.isPending}
-          isError={parcels.isError}
-          onRetry={retryParcels}
-          isEmpty={items.length === 0}
-          emptyText="Stan suszy pokażemy po sprawdzeniu pierwszej działki."
-          emptyAction={
-            <Link component={RouterLink} to="/" sx={linkSx}>
-              Sprawdź działkę
-            </Link>
-          }
-          sx={{ gridArea: 'side', alignSelf: 'start' }}
-        >
-          <Stack spacing={1}>
-            {DROUGHT_ORDER.map((value) => (
-              <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
-                <Typography sx={bigText}>{countByClass(value)}</Typography>
-              </Stack>
-            ))}
-            <Typography
-              sx={{ ...bigText, fontWeight: 700, pt: 1, borderTop: 1, borderColor: 'divider' }}
-            >
-              Zagrożony obszar: {formatHa(atRiskHa)}
-            </Typography>
-          </Stack>
-        </DashboardTile>
+        <Stack spacing={2} sx={{ gridArea: 'side', alignSelf: 'start', minWidth: 0 }}>
+          <DashboardTile
+            id="stan-suszy"
+            title="Stan suszy"
+            isLoading={parcels.isPending}
+            isError={parcels.isError}
+            onRetry={retryParcels}
+            isEmpty={items.length === 0}
+            emptyText="Stan suszy pokażemy po sprawdzeniu pierwszej działki."
+            emptyAction={
+              <Link component={RouterLink} to="/" sx={linkSx}>
+                Sprawdź działkę
+              </Link>
+            }
+          >
+            <Stack spacing={1}>
+              {DROUGHT_ORDER.map((value) => (
+                <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                  <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
+                  <Typography sx={bigText}>{countByClass(value)}</Typography>
+                </Stack>
+              ))}
+              <Typography
+                sx={{ ...bigText, fontWeight: 700, pt: 1, borderTop: 1, borderColor: 'divider' }}
+              >
+                Zagrożony obszar: {formatHa(atRiskHa)}
+              </Typography>
+            </Stack>
+          </DashboardTile>
+          <Button
+            component={RouterLink}
+            to="/szybki-raport"
+            variant="contained"
+            size="large"
+            startIcon={<PlaylistAddCheckIcon />}
+            sx={{ minHeight: 56, fontSize: '1.125rem', px: 3, alignSelf: { sm: 'flex-start' } }}
+          >
+            Szybki raport
+          </Button>
+        </Stack>
         <DashboardTile
           id="bilans-wody"
           title={top ? `Bilans wody · działka ${top.parcel.parcelNumber}` : 'Bilans wody'}
@@ -251,23 +262,6 @@ export function AccountPage() {
               </Link>
             </Stack>
           )}
-        </DashboardTile>
-        <DashboardTile id="szybki-raport" title="Szybki raport" sx={{ gridArea: 'quick' }}>
-          <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
-            <Typography sx={bigText}>
-              Wybierz działki, a Kropelka zrobi dla nich raporty o wodzie na dziś.
-            </Typography>
-            <Button
-              component={RouterLink}
-              to="/szybki-raport"
-              variant="contained"
-              size="large"
-              startIcon={<PlaylistAddCheckIcon />}
-              sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
-            >
-              Szybki raport
-            </Button>
-          </Stack>
         </DashboardTile>
       </Box>
       {accounts.length > 1 && (
