@@ -1,5 +1,7 @@
 // UI-S-007 API-016 Create a field: name + 2-20 parcels added with the same search as „Dodaj działkę” (number / address / GPS / map)
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import {
   Alert,
@@ -133,18 +135,54 @@ export function FieldCreatePage() {
         </Typography>
       </Box>
 
-      <TextField
-        label="Nazwa grupy działek"
-        placeholder="np. Pole za stodołą"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        slotProps={{
-          htmlInput: { maxLength: MAX_NAME, style: BIG_TEXT },
-          inputLabel: { style: BIG_TEXT },
+      {/* T-103: the name is a form step of its own (framed, pencil, label above, counter),
+          so it does not look like the parcel search below */}
+      <Box
+        component="section"
+        aria-labelledby="group-name-title"
+        sx={{
+          maxWidth: 640,
+          p: { xs: 2, md: 2.5 },
+          borderRadius: '16px',
+          border: 2,
+          borderColor: trimmedName ? 'success.main' : 'primary.main',
+          bgcolor: 'background.paper',
         }}
-        required
-        sx={{ maxWidth: 560 }}
-      />
+      >
+        <Stack direction="row" sx={{ alignItems: 'center', gap: 1, mb: 0.5 }}>
+          <EditOutlinedIcon aria-hidden color="primary" />
+          <Typography
+            id="group-name-title"
+            component="label"
+            htmlFor="group-name"
+            sx={{ fontWeight: 800, fontSize: '1.25rem' }}
+          >
+            Nazwij grupę
+          </Typography>
+          {trimmedName && <CheckCircleIcon aria-hidden color="success" sx={{ ml: 'auto' }} />}
+        </Stack>
+        <Typography sx={{ fontSize: 16, mb: 1.5 }} color="text.secondary">
+          Nazwa, po której rozpoznasz to pole, np. „Pole za stodołą”.
+        </Typography>
+        <TextField
+          id="group-name"
+          variant="filled"
+          hiddenLabel
+          fullWidth
+          required
+          placeholder="Wpisz nazwę grupy"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          helperText={`${name.length}/${MAX_NAME} znaków`}
+          slotProps={{
+            htmlInput: {
+              maxLength: MAX_NAME,
+              style: { fontSize: '1.25rem', fontWeight: 600 },
+            },
+            formHelperText: { sx: { textAlign: 'right', mx: 0 } },
+          }}
+        />
+      </Box>
 
       {/* T-103: lg+ two columns – the parcels in the group on the left (sticky, always in view
           while clicking the map), the search with the map on the right; phones: list above */}
