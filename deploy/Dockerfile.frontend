@@ -3,8 +3,8 @@
 # 1) Source: clone main from the public repo and scan all files + the whole history; a secret stops the build
 FROM node:22.13.0-alpine AS source
 RUN apk add --no-cache git
-# changes with every new commit on main, so the clone below is never served from cache
-ADD https://api.github.com/repos/Kamil-Zie/Hacknation-01/commits/main /tmp/main.json
+# git ref list (no API rate limit): changes with every push, so the clone below is never served from cache
+ADD https://github.com/Kamil-Zie/Hacknation-01.git/info/refs?service=git-upload-pack /tmp/refs.txt
 RUN git clone --branch main https://github.com/Kamil-Zie/Hacknation-01.git /src \
  && cd /src \
  && echo "[source] main = $(git log --oneline -1)" \
