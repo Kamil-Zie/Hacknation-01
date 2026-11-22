@@ -19,7 +19,6 @@ import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom';
 import { srOnly } from '@/app/a11yStyles';
 import { A11yBar } from '@/components/A11yBar/A11yBar';
 import { AccountMenu } from '@/components/AccountMenu/AccountMenu';
-import { AppFooter } from '@/components/AppFooter/AppFooter';
 import { ReportBackButton } from '@/components/AppNav/AppNav';
 import { Sidebar } from '@/components/Sidebar/Sidebar';
 import { StepNav } from '@/components/StepNav/StepNav';
@@ -193,7 +192,6 @@ export function AppLayout() {
             <ReportBackButton />
             <Outlet />
           </Container>
-          <AppFooter />
         </Box>
       </Box>
       {showSidebar && !isDesktop && (

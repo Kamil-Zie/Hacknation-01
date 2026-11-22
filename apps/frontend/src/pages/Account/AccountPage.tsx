@@ -39,6 +39,8 @@ function formatHa(value: number): string {
 
 // main container bottom padding on md+ (AppLayout py: 4)
 const PAGE_BOTTOM_PADDING = 32;
+// tighter tile padding than the MUI default (16 px, 24 px at the bottom)
+const tilePadding = { p: 1.5, '&:last-child': { pb: 1.5 } } as const;
 // below this the one-screen layout would crush the tiles, so the page scrolls instead
 const MIN_FIT_HEIGHT = 560;
 
@@ -114,7 +116,7 @@ export function AccountPage() {
         ref={fit.ref}
         sx={{
           display: 'grid',
-          gap: 2,
+          gap: 1.5,
           gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
           gridTemplateRows: { lg: 'auto auto minmax(0, 1fr)' },
           gridTemplateAreas: {
@@ -215,13 +217,15 @@ export function AccountPage() {
             flexDirection: 'column',
           }}
         >
-          <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <CardContent
+            sx={{ ...tilePadding, flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}
+          >
             {/* lg+: the row fills the space above the buttons and its height comes from the drought
                 counts (never scrolled); the at-risk list fills that height and only it scrolls */}
             <Box
               sx={{
                 display: 'grid',
-                gap: 2,
+                gap: 1.5,
                 gridTemplateColumns: {
                   xs: 'minmax(0, 1fr)',
                   sm: hasParcels ? 'repeat(2, minmax(0, 1fr))' : 'minmax(0, 1fr)',
@@ -231,7 +235,7 @@ export function AccountPage() {
                 flex: { lg: '1 1 auto' },
               }}
             >
-              <Stack component="section" aria-labelledby="stan-suszy-title" spacing={2}>
+              <Stack component="section" aria-labelledby="stan-suszy-title" spacing={1.5}>
                 <Typography id="stan-suszy-title" variant="h2" component="h2">
                   Stan suszy
                 </Typography>
@@ -335,7 +339,15 @@ export function AccountPage() {
           aria-labelledby="bilans-wody-title"
           sx={{ gridArea: 'chart', minWidth: 0, minHeight: 0, display: 'flex' }}
         >
-          <CardContent sx={{ flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+          <CardContent
+            sx={{
+              ...tilePadding,
+              flexGrow: 1,
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
             {top && topReport.data ? (
               <KbwChart
                 charts={topReport.data.charts}
