@@ -20,7 +20,7 @@ Korzyści: rolnik w kilkanaście sekund dostaje czytelną decyzję dla swojej dz
 |---|---|
 | Repozytorium kodu | prywatne do końca wydarzenia; link do uzupełnienia: ______ (dostęp dla jury wg instrukcji Platformy) |
 | README | gotowe (w repozytorium: `README.md`) |
-| Prezentacja PDF | w przygotowaniu |
+| Prezentacja PDF | gotowa: `docs/pitch/Kropelka-prezentacja.pdf` (10 slajdów) |
 | Prototyp | instrukcja uruchomienia w README (sekcja 1); link do wersji produkcyjnej w przygotowaniu |
 | Film | w przygotowaniu |
 | Raporty | w przygotowaniu |

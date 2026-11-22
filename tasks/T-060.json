@@ -5,7 +5,7 @@
   "type": "docs",
   "team": "coordinator",
   "assignee": "coord-1",
-  "status": "in_progress",
+  "status": "in_review",
   "priority": "high",
   "depends_on": [],
   "contract_refs": [],
@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 10:05: PDF 10 slajdów w docs/pitch/Kropelka-prezentacja.pdf (1920×1080, wydruk źródeł docs/pitch/deck = artifact, fonty Rubik/Inter osadzone). Bez zrzutów ekranu (prod 502 o 10:00).",
     "coord-1 02:25: po T-101: podmienić zrzuty na nowe (pulpit 2×2, Szybki raport) w docs/pitch/slides.md.",
     "coord-1 18:42: slajd 10 z zespołem, bez linku do prototypu; slajd 7 z wynikiem ERA5. Treść kompletna, PDF do pobrania z prezentacji.",
     "coord-1 18:35: prezentacja 10 slajdów w Claude Design (Slides): https://claude.ai/artifact/TMDihezY9H9nW4NvJyEEqS, źródła w docs/pitch/deck/. PDF: pobranie z prezentacji. Zostaje: [link do prototypu] (T-065), [imiona i role], wynik IUNG na ERA5, opcjonalnie zrzuty ekranu.",
