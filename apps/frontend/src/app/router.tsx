@@ -15,6 +15,7 @@ import { MyFieldsPage } from '@/pages/MyFields/MyFieldsPage';
 import { MyParcelsPage } from '@/pages/MyParcels/MyParcelsPage';
 import { ProfilePage } from '@/pages/Profile/ProfilePage';
 import { QuickReportPage } from '@/pages/QuickReport/QuickReportPage';
+import { QuickReportPrintPage } from '@/pages/QuickReportPrint/QuickReportPrintPage';
 import { NotFoundPage } from '@/pages/NotFound/NotFoundPage';
 import { ParcelPage } from '@/pages/Parcel/ParcelPage';
 import { PartnersPage } from '@/pages/Partners/PartnersPage';
@@ -53,6 +54,7 @@ export const router = createBrowserRouter([
     ],
   },
   { path: '/report/:id/print', element: <ReportPrintPage /> },
+  { path: '/szybki-raport/druk', element: <QuickReportPrintPage /> },
 ]);
 
 // T-081 any 401 (expired token) clears the session and sends the user to the login screen; shared reports stay public

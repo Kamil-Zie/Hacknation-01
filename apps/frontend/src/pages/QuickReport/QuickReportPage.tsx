@@ -1,4 +1,5 @@
 // UI-S-014 T-096 Quick report: pick up to 5 parcels of the account (API-020) and run their analyses (API-003/API-004) one by one
+import PrintIcon from '@mui/icons-material/Print';
 import {
   Alert,
   Box,
@@ -230,6 +231,10 @@ export function QuickReportPage() {
       </Stack>
     );
   } else {
+    const readyIds = queue.flatMap((item) => {
+      const reportId = outcomes[item.parcel.id]?.reportId;
+      return reportId ? [reportId] : [];
+    });
     body = (
       <Stack spacing={2.5}>
         <Box role="status" aria-live="polite">
@@ -279,14 +284,29 @@ export function QuickReportPage() {
             );
           })}
         </Box>
-        <Button
-          variant="outlined"
-          disabled={isRunning}
-          onClick={reset}
-          sx={{ minHeight: 56, fontSize: '1.25rem', alignSelf: { sm: 'flex-start' } }}
-        >
-          Nowy szybki raport
-        </Button>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          {/* T-100 one printout with all ready reports; new tab keeps these results on screen */}
+          {!isRunning && readyIds.length > 0 && (
+            <Button
+              variant="contained"
+              startIcon={<PrintIcon />}
+              href={`/szybki-raport/druk?ids=${readyIds.map(encodeURIComponent).join(',')}`}
+              target="_blank"
+              rel="noopener"
+              sx={{ minHeight: 56, fontSize: '1.25rem' }}
+            >
+              Drukuj wszystkie
+            </Button>
+          )}
+          <Button
+            variant="outlined"
+            disabled={isRunning}
+            onClick={reset}
+            sx={{ minHeight: 56, fontSize: '1.25rem' }}
+          >
+            Nowy szybki raport
+          </Button>
+        </Stack>
       </Stack>
     );
   }
