@@ -1,0 +1,26 @@
+{
+  "id": "T-112",
+  "title": "Raport: powód braku bilansu gleby (poza sezonem w głównym kafelku, przyczyna techniczna w szczegółach)",
+  "description": "Decyzja Kamila 08:00. Gdy data analizy jest poza marcem–październikiem, główny kafelek gleby pokazuje „Poza sezonem” z wyjaśnieniem zamiast „Brak danych”. W „Więcej informacji → Woda w glebie” przy braku deficytu pokazujemy przyczynę: poza sezonem, brak mapy gleb (SoilGrids) albo brak dni z danymi pogodowymi (luka meteo).",
+  "type": "bugfix",
+  "team": "frontend",
+  "assignee": "coord-1",
+  "status": "done",
+  "priority": "medium",
+  "depends_on": [],
+  "contract_refs": ["UI-S-003", "API-004"],
+  "acceptance_criteria": [
+    "Raport z datą z listopada: główny kafelek „Poza sezonem” z wyjaśnieniem",
+    "Szczegóły: przy braku deficytu widać przyczynę, nie samo „brak”"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 08:05: tsc i eslint OK; sezon 3–10 jak w backend water-demand.ts. Do sprawdzenia na prod na raporcie z listopada (np. działka 142807_2.0038.72 na koncie test@test.pl)."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

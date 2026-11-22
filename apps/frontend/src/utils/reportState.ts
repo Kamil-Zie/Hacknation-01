@@ -45,6 +45,12 @@ const NORM_START = 50;
 const NORM_END = 80;
 const MIN_POSITION = 4;
 
+// T-112 the soil water balance (FAO-56) is computed only March-October, as in backend water-demand.ts
+export function isSoilBalanceOffSeason(analysisDate: string): boolean {
+  const month = Number(analysisDate.slice(5, 7));
+  return month < 3 || month > 10;
+}
+
 export function soilWaterState(
   depletionMm: number | null,
   tawMm: number,

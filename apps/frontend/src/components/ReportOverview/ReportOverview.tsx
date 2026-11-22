@@ -18,7 +18,7 @@ import { MoreButton } from '@/components/MoreButton/MoreButton';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { getTodayIso } from '@/components/AnalysisForm/AnalysisForm.schema';
 import { formatDate, formatNumber, formatSigned } from '@/utils/format';
-import { soilWaterState } from '@/utils/reportState';
+import { isSoilBalanceOffSeason, soilWaterState } from '@/utils/reportState';
 import { formatEvidence } from '@/utils/sourceLabels';
 
 export interface ReportOverviewProps {
@@ -323,6 +323,8 @@ function SoilWaterCard({ report }: ReportOverviewProps) {
     : null;
   const depletion = soilWater?.depletionMm ?? null;
   const hasDeficit = depletion !== null && depletion > 0;
+  // T-112 outside March-October the balance is not computed: say so instead of "Brak danych"
+  const offSeason = depletion === null && isSoilBalanceOffSeason(report.analysisDate);
   return (
     <Box
       component="section"
@@ -339,7 +341,23 @@ function SoilWaterCard({ report }: ReportOverviewProps) {
           ? 'Ile wody jest dziś w glebie?'
           : `Ile wody było w glebie ${formatDate(report.analysisDate)}?`}
       </Typography>
-      {!soilWater || !state ? (
+      {offSeason ? (
+        <>
+          <Typography
+            component="span"
+            sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, lineHeight: 1.1, fontWeight: 800 }}
+          >
+            Poza sezonem
+          </Typography>
+          <Typography sx={{ fontSize: '1.125rem' }}>
+            Wodę w glebie liczymy od 1 marca, w sezonie wegetacji (marzec–październik). Zimą gleba
+            jest zwykle pełna wody, a rośliny jej nie pobierają.
+          </Typography>
+          <Typography color="text.secondary" sx={{ fontSize: '1.0625rem' }}>
+            Aby zobaczyć bilans gleby, sprawdź działkę na datę z sezonu, np. 10 czerwca.
+          </Typography>
+        </>
+      ) : !soilWater || !state ? (
         <>
           <Typography
             component="span"

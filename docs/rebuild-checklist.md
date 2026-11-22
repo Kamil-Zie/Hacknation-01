@@ -74,6 +74,11 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 
 - [ ] Raport → Więcej informacji: karta „Znormalizowany Różnicowy Wskaźnik Wilgotności (NDMI)”; w przyczynach etykieta „NDMI (Znormalizowany Różnicowy Wskaźnik Wilgotności)”
 
+## 2h. Brak bilansu gleby: powód (T-112)
+
+- [ ] Raport z datą z listopada (np. 142807_2.0038.72 na test@test.pl): główny kafelek „Poza sezonem” z wyjaśnieniem
+- [ ] Więcej informacji → Woda w glebie: przy braku deficytu widać przyczynę (poza sezonem / mapa gleb / dane pogodowe)
+
 ## 3. Backend
 
 - [ ] Po restarcie kontenera backendu przy chwilowym braku Atlasa log pokazuje `MongoDB: next attempt in 15 s`, a potem `MongoDB connected` bez ręcznego restartu (`225693f`)

@@ -18,6 +18,7 @@ import { SectionCard } from '@/components/SectionCard/SectionCard';
 import { formatDate, formatNumber, formatSigned, formatWithUnit } from '@/utils/format';
 import { reasonText } from '@/utils/reasonCodes';
 import {
+  isSoilBalanceOffSeason,
   ALERT_TEXT,
   indexAlert,
   kbwAlert,
@@ -177,13 +178,40 @@ function IndexCard({
   );
 }
 
-function SoilWaterCard({ assessment, gap }: { assessment: Assessment; gap?: DataGap }) {
+function SoilWaterCard({
+  assessment,
+  analysisDate,
+  gap,
+  meteoGap,
+}: {
+  assessment: Assessment;
+  analysisDate: string;
+  gap?: DataGap;
+  meteoGap?: DataGap;
+}) {
   const { soilWater } = assessment;
+  // T-112 say why the deficit is missing: soil map not available, or weather days missing since 1 March
   if (!soilWater) {
     return (
       <MetricCard
         title="Woda w glebie"
-        missingReason={gapReason(gap) ?? 'Brak danych o glebie, nie policzono deficytu.'}
+        missingReason={
+          gapReason(gap) ??
+          'Mapa gleb (SoilGrids) nie odpowiedziała albo nie ma danych dla tego miejsca, więc nie znamy pojemności wodnej gleby. Spróbuj ponownie za kilka minut.'
+        }
+      />
+    );
+  }
+  if (soilWater.depletionMm === null) {
+    return (
+      <MetricCard
+        title="Woda w glebie"
+        missingReason={
+          isSoilBalanceOffSeason(analysisDate)
+            ? 'Poza sezonem wegetacji (marzec–październik) nie liczymy wody w glebie.'
+            : (gapReason(meteoGap) ??
+              'Brakuje ponad 10% dni z danymi pogodowymi od 1 marca, więc nie policzono deficytu. Spróbuj ponownie za kilka minut.')
+        }
       />
     );
   }
@@ -286,7 +314,12 @@ export function AssessmentSection({
       >
         <KbwCard title="Ostatnie 30 dni" window={assessment.kbw30} gap={gapFor('meteo')} />
         <KbwCard title="Ostatnie 60 dni" window={assessment.kbw60} gap={gapFor('meteo')} />
-        <SoilWaterCard assessment={assessment} gap={gapFor('soilgrids')} />
+        <SoilWaterCard
+          assessment={assessment}
+          analysisDate={analysisDate}
+          gap={gapFor('soilgrids')}
+          meteoGap={gapFor('meteo')}
+        />
         <IndexCard
           title="Kondycja roślin (NDVI)"
           satellite={satellite}
