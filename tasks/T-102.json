@@ -5,7 +5,7 @@
   "type": "feature",
   "team": "frontend",
   "assignee": "frontend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": ["T-100"],
   "contract_refs": ["UI-S-001", "UI-S-009", "UI-S-010", "UI-S-011", "UI-S-013", "UI-S-014"],
@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "frontend-1 03:45: część 2 na PROD (app.kamil-zielinski.pl, baza hacknation), nowe konto juror-test-0344@test.pl, 1440 px, tryb ciemny, 12/12 OK, 0 błędów JS: 1 rejestracja → /konto; 2 pusty pulpit z komunikatem; 3 Dodaj działkę 612 → Dodaj do moich działek; 4 Sprawdź działkę 612 → pszenica ozima → raport 6b0257083e1456240d4efa16 (7,5 s); 5 Moje działki z 612; 6 pulpit z Bilansem wody; 7 Utwórz pole 612+613 → zapis; 8 raport pola (8 s); 9 Szybki raport → Gotowe + Drukuj wszystkie; 10 Wspólnicy: kamil@test.pl dodany; 11 Wyloguj → /logowanie; 12 ponowne logowanie → pełny pulpit. Uwaga: przy pierwszym podejściu (03:41) API prod zwracało 502 i zrestartowało się (uptime 11 s); wtedy krok 2 Sprawdź działkę był pusty (brak listy upraw). Po restarcie nie wystąpiło. Konta testowe na prod: juror-test-0341/0342/0344@test.pl.",
     "frontend-1 02:45: część 1 (mock, bo prod 502 i Atlas niedostępny u Dawida). Nowe konto juror-* → /konto OK. Stany puste 390/1440, jasny i ciemny+największe A, 0 błędów JS, 0 przewijania w poziomie: Pulpit (Zagrożone działki: komunikat + Dodaj działkę; Stan suszy: komunikat + Sprawdź działkę; Bilans wody: komunikat + Sprawdź działkę; Szybki raport: przycisk) OK; Moje działki OK (Sprawdź nową działkę); Moje pola OK (Utwórz pole); Szybki raport bez działek OK (Dodaj działkę); Wspólnicy tylko Ty OK (formularz Dodaj); Utwórz pole pusty OK. Dodaj działkę 612 → Dodaj do moich działek → pulpit i Szybki raport ją pokazują OK. Poprawki stanów pustych pulpitu weszły przed decyzją 02:27 (da84c7d, mock 36a6122); 3 drobne uwagi zgłoszone Natanielowi. Do zrobienia na prod po wdrożeniu: raport, Utwórz pole z 2 działek, raport pola, Wspólnicy (kamil@test.pl), wylogowanie i logowanie.",
     "coord-1 02:27: decyzja Kamila: Dawid testuje i zgłasza, poprawki implementuje Nataniel (T-103).",
     "coord-1 02:25: decyzja Kamila: T-102 robi Dawid (po T-100), nie Nataniel.",
