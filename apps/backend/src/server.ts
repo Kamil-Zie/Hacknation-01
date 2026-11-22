@@ -1,4 +1,4 @@
-// T-001 Server start: connect to MongoDB (non-fatal) and listen
+// T-001 T-065 Server start: connect to MongoDB (non-fatal, retried until it works) and listen
 import mongoose from 'mongoose';
 
 import { createApp } from '@/app';
@@ -6,6 +6,7 @@ import { env } from '@/config/env';
 import { logger } from '@/utils/logger';
 
 const DEMO_PARCEL_ID = '061409_2.0009.612';
+const DB_RETRY_MS = 15000;
 
 async function connectDb(): Promise<void> {
   if (!env.MONGODB_URI) {
@@ -20,6 +21,9 @@ async function connectDb(): Promise<void> {
     logger.info(`MongoDB connected (${mongoose.connection.name})`);
   } catch (error) {
     logger.error(`MongoDB connection failed: ${error instanceof Error ? error.message : error}`);
+    // T-065: one failed attempt at start (Atlas IP list, DNS on the NAS) must not leave prod without a database
+    logger.info(`MongoDB: next attempt in ${DB_RETRY_MS / 1000} s`);
+    setTimeout(() => void connectDb(), DB_RETRY_MS);
   }
 }
 

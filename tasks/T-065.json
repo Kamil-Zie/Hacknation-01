@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 03:35: prod wstał (app 200, API 200), ale db disconnected. Backend łączył się z bazą tylko raz przy starcie; teraz ponawia co 15 s aż do skutku (server.ts). Przyczyna po stronie NAS-a do ustalenia z logu „MongoDB connection failed: …”.",
     "coord-1 02:50: repo publiczne (decyzja Kamila) → bez tokena. deploy/docker-compose.synology.yml: dockerfile_inline z etapem source (git clone main + git-checks scan --all/--history, cache bust przez ADD api.github.com/.../commits/main), na NAS-ie tylko docker-compose.yml (curl z raw.githubusercontent) i .env.prod; komenda docker compose up -d --build. Klon + skan przetestowane z GitHuba (532 commity czyste). UWAGA: zgłoszenie mówiło „repo prywatne do końca wydarzenia”.",
     "coord-1 02:40: decyzja Kamila: Compose sam pobiera repo i skanuje przed budową. deploy/docker-compose.synology.yml: usługa source (profil update, node:22-alpine + git) klonuje/aktualizuje main do ./src z tokenem tylko w nagłówku, uruchamia git-checks scan --all i --history (521 commitów czyste 02:38), błąd skanu zatrzymuje wdrożenie; potem up -d --build z ./src. Komenda: docker compose run --rm source && docker compose up -d --build. Przetestowane lokalnie na świeżym klonie (pierwsze pobranie i aktualizacja).",
     "coord-1 18:10: zgłoszenie KOWR pkt 4.1, oddanie nd 11:00."
