@@ -5,7 +5,7 @@
   "type": "docs",
   "team": "frontend",
   "assignee": "frontend-2",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-009", "UI-S-010", "UI-S-011", "UI-S-012", "UI-S-013", "UI-S-014"],
@@ -20,7 +20,10 @@
     "by": null,
     "note": ""
   },
-  "notes": ["coord-1 02:25: z propozycji koordynatora zatwierdzonej przez Kamila."],
+  "notes": [
+    "coord-1 02:25: z propozycji koordynatora zatwierdzonej przez Kamila.",
+    "frontend-2 02:25: start; zrzuty headless Firefox/geckodriver na koncie kuba@test.pl."
+  ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
 }
