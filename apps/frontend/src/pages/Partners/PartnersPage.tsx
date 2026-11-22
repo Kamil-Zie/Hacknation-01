@@ -1,5 +1,5 @@
 // UI-S-012 API-010 API-011 API-012 API-020 API-021 Partners and per-parcel access: filter by parcel, search person, edit access [T-090]
-// T-104 role tags: owner sets tags, owner and partner invite, member and guest only view
+// T-104 role tags: owner sets tags, owner and partner invite, member and guest only view; farm picker (switches the active farm)
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Alert,
@@ -28,7 +28,7 @@ function toError(error: unknown): { code: string; message: string } | null {
 }
 
 export function PartnersPage() {
-  const { token, activeAccountId, user } = useSessionStore();
+  const { token, activeAccountId, user, accounts, setActiveAccount } = useSessionStore();
   const accountId = activeAccountId ?? '';
   const members = useMembersQuery(activeAccountId, token);
   const parcels = useAccountParcelsQuery(activeAccountId, token);
@@ -121,6 +121,26 @@ export function PartnersPage() {
       <Typography variant="h1" component="h1">
         Wspólnicy
       </Typography>
+      {accounts.length > 1 && (
+        <TextField
+          select
+          label="Gospodarstwo"
+          value={activeAccountId ?? ''}
+          onChange={(event) => {
+            setParcelId('');
+            setActiveAccount(event.target.value);
+          }}
+          helperText="Pokazujemy wspólników wybranego gospodarstwa. Ten wybór zmienia też aktywne gospodarstwo w całej aplikacji."
+          sx={{ maxWidth: 560 }}
+        >
+          {accounts.map((account) => (
+            <MenuItem key={account.id} value={account.id} sx={{ minHeight: 48 }}>
+              {account.name}
+              {account.role ? ` (Twój tag: ${ROLE_LABELS[account.role]})` : ''}
+            </MenuItem>
+          ))}
+        </TextField>
+      )}
       {me && (
         <Typography>
           Twój tag: <strong>{ROLE_LABELS[myRole]}</strong>.{' '}

@@ -49,6 +49,11 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 - [ ] Członek/Gość: „Sprawdź nową działkę” i „Raport pola” działają, ale nic nie zapisuje się w gospodarstwie
 - [ ] Po zmianie tagu przez właściciela wystarczy, że osoba odświeży stronę (konta odświeża /auth/me)
 
+## 2c. Wspólnicy: wybór gospodarstwa
+
+- [ ] Osoba w kilku gospodarstwach widzi nad listą pole „Gospodarstwo” z tagiem przy każdym
+- [ ] Zmiana gospodarstwa pokazuje jego wspólników i przełącza aktywne gospodarstwo (menu konta w nagłówku)
+
 ## 3. Backend
 
 - [ ] Po restarcie kontenera backendu przy chwilowym braku Atlasa log pokazuje `MongoDB: next attempt in 15 s`, a potem `MongoDB connected` bez ręcznego restartu (`225693f`)
