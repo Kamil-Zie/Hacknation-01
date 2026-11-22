@@ -1,0 +1,67 @@
+# T-065 Prod on Synology: Compose pulls the repo itself, scans it for secrets, then builds (docs/deploy.md)
+# Copy ONCE to /volume1/docker/hacknation/docker-compose.yml (outside the repo checkout, which Compose resets).
+# Next to it: .env (GITHUB_TOKEN for Compose, chmod 600) and .env.prod (backend secrets, chmod 600).
+#
+# Update = one line (the scan stops the deploy if it finds a secret):
+#   docker compose run --rm source && docker compose up -d --build
+name: hacknation
+
+services:
+  # 1) Pull main into ./src and scan files + full history (git-checks.mjs). Runs only via "run --rm source".
+  source:
+    image: node:22-alpine
+    profiles: ['update']
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN:?set GITHUB_TOKEN in .env next to docker-compose.yml}
+      REPO_URL: https://github.com/Kamil-Zie/Hacknation-01.git
+      BRANCH: main
+    volumes: ['./src:/repo']
+    entrypoint: ['/bin/sh', '-ec']
+    command:
+      - |
+        apk add --no-cache git >/dev/null
+        git config --global --add safe.directory /repo
+        # token only in this request header, never written to .git/config
+        AUTH="Authorization: Basic $$(printf 'x-access-token:%s' "$$GITHUB_TOKEN" | base64 | tr -d '\n')"
+        if [ -d /repo/.git ]; then
+          git -C /repo -c http.extraHeader="$$AUTH" fetch --prune origin "$$BRANCH"
+          git -C /repo reset --hard "origin/$$BRANCH"
+          git -C /repo clean -fdx
+        else
+          git -c http.extraHeader="$$AUTH" clone --branch "$$BRANCH" "$$REPO_URL" /repo
+        fi
+        cd /repo
+        echo "[source] main = $$(git log --oneline -1)"
+        node .claude/scripts/git-checks.mjs scan --all
+        node .claude/scripts/git-checks.mjs scan --history
+        echo "[source] OK: no secrets in files or history, ready to build"
+
+  # 2) App images, built from ./src after the scan passed
+  frontend:
+    build:
+      context: ./src
+      dockerfile: apps/frontend/Dockerfile
+      args:
+        VITE_API_URL: https://api.kamil-zielinski.pl/api/v1
+    image: hacknation-frontend:latest
+    restart: unless-stopped
+    ports: ['127.0.0.1:18080:80']
+    networks: [hacknation]
+
+  backend:
+    build:
+      context: ./src
+      dockerfile: apps/backend/Dockerfile
+    image: hacknation-backend:latest
+    restart: unless-stopped
+    env_file: ./.env.prod
+    ports: ['127.0.0.1:13000:3000']
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3000/api/v1/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks: [hacknation]
+
+networks:
+  hacknation:

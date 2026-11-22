@@ -103,7 +103,26 @@ Pliki `.env*` z prawdziwymi wartościami są tylko na NAS-ie (uprawnienia 600), 
 5. Po szkielecie: `docker compose pull && docker compose up -d` w folderze projektu na NAS-ie.
 6. Sprawdź: `curl -s https://api.kamil-zielinski.pl/api/v1/health` zwraca 200, `https://app.kamil-zielinski.pl` ładuje aplikację, w konsoli przeglądarki brak błędów CORS.
 
-## Wdrożenie krok po kroku (budowanie na NAS-ie, T-065)
+## Wdrożenie przez Compose z pobraniem repo i skanem (zalecane, T-065)
+
+Compose sam pobiera `main` z GitHuba do `./src`, skanuje pliki i całą historię na sekrety (`git-checks.mjs scan --all` i `--history`) i dopiero wtedy buduje. Skan z błędem zatrzymuje wdrożenie.
+
+```bash
+ssh <user>@<nas> && sudo -i
+mkdir -p /volume1/docker/hacknation && cd /volume1/docker/hacknation
+# raz: plik Compose z repo (przez przeglądarkę GitHuba albo scp z laptopa)
+#   deploy/docker-compose.synology.yml -> /volume1/docker/hacknation/docker-compose.yml
+# raz: token GitHub (fine-grained, tylko to repo, Contents: Read) dla Compose
+printf 'GITHUB_TOKEN=%s\n' '<token>' > .env && chmod 600 .env
+# raz: sekrety backendu w .env.prod (sekcja „Zmienne prod”), chmod 600
+# wdrożenie i każda aktualizacja:
+docker compose run --rm source && docker compose up -d --build
+docker compose ps && curl -s localhost:13000/api/v1/health
+```
+
+Token idzie tylko w nagłówku żądania git, nie trafia do `src/.git/config`. Układ na NAS-ie: `docker-compose.yml`, `.env`, `.env.prod`, `src/` (zarządzane przez Compose, nie edytuj ręcznie).
+
+## Wdrożenie krok po kroku (ręczny klon, budowanie na NAS-ie, T-065)
 
 ```bash
 # 1. Kod na NAS (repo prywatne: token GitHub tylko do odczytu albo rsync z laptopa bez .env)
