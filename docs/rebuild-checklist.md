@@ -79,6 +79,10 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 - [ ] Raport z datą z listopada (np. 142807_2.0038.72 na test@test.pl): główny kafelek „Poza sezonem” z wyjaśnieniem
 - [ ] Więcej informacji → Woda w glebie: przy braku deficytu widać przyczynę (poza sezonem / mapa gleb / dane pogodowe)
 
+## 2i. Liczby w skrócie: Teraz / Zwykle (T-113)
+
+- [ ] Bilans 30 i 60 dni, NDVI, NDMI i wilgotność gleby pokazują „Teraz” i „Zwykle” bez rozwijania; na 390 px obie liczby się mieszczą
+
 ## 3. Backend
 
 - [ ] Po restarcie kontenera backendu przy chwilowym braku Atlasa log pokazuje `MongoDB: next attempt in 15 s`, a potem `MongoDB connected` bez ręcznego restartu (`225693f`)

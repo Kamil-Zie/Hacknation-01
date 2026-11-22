@@ -12,6 +12,8 @@ export interface MetricCardProps {
   title: string;
   /** Big number, e.g. "−122 mm" */
   value?: string;
+  /** T-113 usual value for the same time of year, shown beside the value as "Teraz / Zwykle" */
+  usual?: string;
   caption?: string;
   /** Date or period under the caption */
   period?: string;
@@ -25,6 +27,15 @@ export interface MetricCardProps {
   /** Reason shown instead of the value when the data are missing */
   missingReason?: string;
 }
+
+const valueSx = {
+  display: 'block',
+  fontSize: 'clamp(1.875rem, 1.5rem + 1.2vw, 2.625rem)',
+  lineHeight: 1.05,
+  fontWeight: 800,
+  fontVariantNumeric: 'tabular-nums',
+  overflowWrap: 'anywhere',
+} as const;
 
 const cardSx = {
   bgcolor: 'background.paper',
@@ -64,8 +75,17 @@ function Head({ title, alert, isAlertAboveButton }: MetricCardProps) {
 }
 
 export function MetricCard(props: MetricCardProps) {
-  const { value, caption, period, alert, isAlertAboveButton, note, children, missingReason } =
-    props;
+  const {
+    value,
+    usual,
+    caption,
+    period,
+    alert,
+    isAlertAboveButton,
+    note,
+    children,
+    missingReason,
+  } = props;
 
   if (missingReason !== undefined) {
     return (
@@ -129,19 +149,33 @@ export function MetricCard(props: MetricCardProps) {
               {note}
             </Typography>
           )}
-          {value && (
-            <Typography
-              component="span"
-              sx={{
-                fontSize: 'clamp(1.875rem, 1.5rem + 1.2vw, 2.625rem)',
-                lineHeight: 1.05,
-                fontWeight: 800,
-                fontVariantNumeric: 'tabular-nums',
-                overflowWrap: 'anywhere',
-              }}
+          {value && usual !== undefined ? (
+            <Box
+              sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 1.5 }}
             >
-              {value}
-            </Typography>
+              <Box>
+                <Typography color="text.secondary" sx={{ fontSize: '1rem' }}>
+                  Teraz
+                </Typography>
+                <Typography component="span" sx={valueSx}>
+                  {value}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography color="text.secondary" sx={{ fontSize: '1rem' }}>
+                  Zwykle
+                </Typography>
+                <Typography component="span" color="text.secondary" sx={valueSx}>
+                  {usual}
+                </Typography>
+              </Box>
+            </Box>
+          ) : (
+            value && (
+              <Typography component="span" sx={valueSx}>
+                {value}
+              </Typography>
+            )
           )}
           {caption && (
             <Typography component="span" color="text.secondary" sx={{ fontSize: '1.0625rem' }}>

@@ -109,6 +109,7 @@ function KbwCard({
     <MetricCard
       title={title}
       value={`${formatSigned(window.kbwMm, 0)} mm`}
+      usual={`${formatSigned(window.normKbwMm, 0)} mm`}
       caption={window.kbwMm < 0 ? 'tyle wody brakuje' : 'nadwyżka wody'}
       period={`${formatDate(window.from)} – ${formatDate(window.to)}`}
       alert={alertOf(level, ALERT_TEXT[level])}
@@ -163,6 +164,7 @@ function IndexCard({
     <MetricCard
       title={title}
       value={formatNumber(value, 2)}
+      usual={`${formatNumber(min, 2)}–${formatNumber(max, 2)}`}
       caption={INDEX_LABEL[assessment]}
       period={`Zdjęcie z ${formatDate(satellite.sceneDate)} (${satellite.ageDays} dni temu)`}
       alert={alertOf(indexAlert(assessment), INDEX_ALERT_TEXT[assessment])}
@@ -257,8 +259,11 @@ function SoilMoistureCard({ assessment, gaps }: { assessment: Assessment; gaps: 
       />
     );
   }
-  const value =
-    sm.valuePct != null
+  // T-113 the norm is for the root zone, so "Teraz / Zwykle" compares the root zone with its norm
+  const compareRootZone = sm.rootZonePct != null && sm.normRootZonePct != null;
+  const value = compareRootZone
+    ? `${formatNumber(sm.rootZonePct!, 0)}%`
+    : sm.valuePct != null
       ? `${formatNumber(sm.valuePct, 0)}%`
       : sm.percentile != null
         ? `percentyl ${formatNumber(sm.percentile, 0)}`
@@ -267,12 +272,18 @@ function SoilMoistureCard({ assessment, gaps }: { assessment: Assessment; gaps: 
     <MetricCard
       title={sm.label ?? 'Wilgotność gleby'}
       value={value}
-      caption={`warstwa: ${sm.depthLabel}`}
+      usual={compareRootZone ? `${formatNumber(sm.normRootZonePct!, 0)}%` : undefined}
+      caption={compareRootZone ? 'strefa korzeni (7–100 cm)' : `warstwa: ${sm.depthLabel}`}
       period={`Pomiar z ${formatDate(sm.observedAt)}`}
       alert={alertOf(soilMoistureAlert(sm.assessment), SM_ALERT_TEXT[sm.assessment])}
     >
       {sm.profilePct != null && <Line>Profil gleby: {formatNumber(sm.profilePct, 0)}%</Line>}
-      {sm.rootZonePct != null && <Line>Strefa korzeni: {formatNumber(sm.rootZonePct, 0)}%</Line>}
+      {compareRootZone && sm.valuePct != null && (
+        <Line>Warstwa wierzchnia (0–7 cm): {formatNumber(sm.valuePct, 0)}%</Line>
+      )}
+      {!compareRootZone && sm.rootZonePct != null && (
+        <Line>Strefa korzeni: {formatNumber(sm.rootZonePct, 0)}%</Line>
+      )}
       {sm.valuePct != null && sm.percentile != null && (
         <Line>Percentyl 10 lat: {formatNumber(sm.percentile, 0)}</Line>
       )}
