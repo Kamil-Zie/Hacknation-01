@@ -1,0 +1,26 @@
+{
+  "id": "T-100",
+  "title": "Szybki raport: Drukuj wszystkie (jeden wydruk / PDF z raportami wybranych działek)",
+  "description": "Opcjonalna część UI-S-014 pominięta w T-096. Po wyniku szybkiego raportu przycisk „Drukuj wszystkie” otwiera jeden widok druku ze wszystkimi gotowymi raportami (każdy od nowej strony, page-break-before) i od razu okno drukowania, z którego można też zapisać PDF. Proponowana trasa: /szybki-raport/druk?ids=<id1>,<id2>,... (bez nowych endpointów: useReportQuery na każdy id). Działki z błędem pomijamy.\n\nPliki: src/pages/QuickReport/QuickReportPage.tsx (tylko przycisk przy wyniku, obok „Nowy szybki raport”; Jan skończył T-096, uprzedź go w wiadomości), nowa strona src/pages/QuickReportPrint/QuickReportPrintPage.tsx, src/app/router.tsx (trasa poza AppLayout jak /report/:id/print). Wzór: src/pages/ReportPrint/ReportPrintPage.tsx.\n\nUX dla wieku 18–99: przycisk ≥ 48 px z ikoną i podpisem, proste słowa. Termin: na main do 6:00 (zamrożenie 7:00).",
+  "type": "feature",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "backlog",
+  "priority": "medium",
+  "depends_on": ["T-096"],
+  "contract_refs": ["UI-S-014", "UI-S-004", "API-004"],
+  "demo_step": 1,
+  "acceptance_criteria": [
+    "3 raporty dają 1 wydruk, każdy raport od nowej strony",
+    "Przycisk widoczny tylko, gdy jest co najmniej 1 gotowy raport",
+    "Zapis do PDF z okna drukowania działa w Chrome"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": ["coord-1 02:10: prośba Kamila. Jan pominął „Drukuj wszystkie” w T-096."],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}
