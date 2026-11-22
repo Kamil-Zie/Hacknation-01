@@ -179,12 +179,27 @@ export function ThreatList({
       ) : (
         <Box component="ul" aria-label="Zagrożone działki" sx={{ m: 0, pl: 0, listStyle: 'none' }}>
           {atRisk.slice(0, LIST_LIMIT).map((item) => (
-            <Typography component="li" key={item.parcel.id} sx={{ fontSize: '1.125rem' }}>
+            <Typography
+              component="li"
+              key={item.parcel.id}
+              sx={{ fontSize: '1.125rem', minWidth: 0 }}
+            >
+              {/* one line per parcel; a long name ends with „…”, full name in the tooltip and for screen readers */}
               <Link
                 component="button"
                 type="button"
+                title={`Działka ${item.parcel.parcelNumber}, ${item.parcel.region}`}
                 onClick={() => onSelect(item)}
-                sx={{ fontSize: 'inherit', minHeight: 48, textAlign: 'left' }}
+                sx={{
+                  fontSize: 'inherit',
+                  minHeight: 48,
+                  textAlign: 'left',
+                  display: 'block',
+                  maxWidth: '100%',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
               >
                 {`Działka ${item.parcel.parcelNumber}, ${item.parcel.region}`}
               </Link>
