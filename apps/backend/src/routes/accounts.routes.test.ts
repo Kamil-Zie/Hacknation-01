@@ -17,6 +17,8 @@ vi.mock('@/models/AccountMember.model', () => ({
   AccountMemberModel: {
     exists: (q: { userId: string; accountId: string }) =>
       Promise.resolve(db.memberships.includes(`${q.userId}:${q.accountId}`) ? { _id: 'x' } : null),
+    // T-092 allowedParcelIds: members in these tests see every parcel
+    findOne: () => Promise.resolve({ parcelIds: undefined }),
   },
 }));
 

@@ -3138,7 +3138,7 @@
       "status": "agreed",
       "method": "POST",
       "path": "/auth/login",
-      "summary": "Logowanie e-mail + hasło (ADR-010). Limit prób (licznik w pamięci) zwraca 429. Ważność tokenu: rememberMe=true → 30 dni, false lub brak → 1 dzień (do 0.4.x było 7 dni).",
+      "summary": "Logowanie e-mail + hasło (ADR-010). Limit prób (licznik w pamięci) zwraca 429. Ważność tokenu: rememberMe=true → 30 dni, false lub brak → 1 dzień (do 0.4.x było 7 dni). Konta użytkownika od najstarszego członkostwa (własne gospodarstwo pierwsze, potem te, w których jest wspólnikiem).",
       "auth": "none",
       "request": {
         "body": {
@@ -3188,7 +3188,7 @@
       "status": "agreed",
       "method": "GET",
       "path": "/auth/me",
-      "summary": "Bieżący użytkownik i jego konta (odtworzenie sesji po odświeżeniu strony).",
+      "summary": "Bieżący użytkownik i jego konta (odtworzenie sesji po odświeżeniu strony). Konta użytkownika od najstarszego członkostwa (własne gospodarstwo pierwsze, potem te, w których jest wspólnikiem).",
       "auth": "required",
       "request": {
         "headers": {
@@ -3375,7 +3375,7 @@
       "status": "agreed",
       "method": "GET",
       "path": "/accounts/:accountId/reports",
-      "summary": "Historia konta: skróty zapisanych raportów (Report z accountId), od najnowszych (createdAt malejąco). Pełny raport: API-005.",
+      "summary": "Historia konta: skróty zapisanych raportów (Report z accountId), od najnowszych (createdAt malejąco). Pełny raport: API-005. T-092: wspólnik z ograniczonym dostępem widzi tylko raporty swoich działek.",
       "auth": "required",
       "request": {
         "params": {

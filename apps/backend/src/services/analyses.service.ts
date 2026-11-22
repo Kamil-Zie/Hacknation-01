@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 import { env } from '@/config/env';
 import { ReportModel } from '@/models/Report.model';
-import { isMember } from '@/services/accounts.service';
+import { allowedParcelIds, isMember } from '@/services/accounts.service';
 import { computeCharts, computeEngine } from '@/services/analysis/assessment';
 import type { AssessmentDto, ChartsDto } from '@/services/analysis/assessment';
 import {
@@ -357,13 +357,16 @@ export async function listAccountReports(
     throw new AppError('DB_UNAVAILABLE', 'Baza danych jest niedostępna', 503);
   }
   const { page, pageSize } = query;
+  // T-092: a partner with limited access sees only reports of their parcels
+  const allowed = await allowedParcelIds(userId, accountId);
+  const filter = allowed ? { accountId, 'parcel.id': { $in: [...allowed] } } : { accountId };
   const [rows, total] = await Promise.all([
-    ReportModel.find({ accountId }, SUMMARY_PROJECTION)
+    ReportModel.find(filter, SUMMARY_PROJECTION)
       .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .lean<SummaryRow[]>(),
-    ReportModel.countDocuments({ accountId }),
+    ReportModel.countDocuments(filter),
   ]);
   const items = rows.map((row) => ({
     id: String(row._id),

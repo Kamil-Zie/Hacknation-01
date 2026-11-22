@@ -20,6 +20,7 @@
     "note": ""
   },
   "notes": [
+    "coord-1 01:10: konto Jana „zablokowane”: po zalogowaniu otwierało się gospodarstwo Dawida (starsze, Jan tam wspólnik z 2 działkami), bo konta były sortowane po dacie założenia konta. Teraz po dacie członkostwa (własne pierwsze). API-013 filtruje raporty po parcelIds wspólnika (Jan u Dawida: 12 → 4).",
     "coord-1 01:10: pola filtrowane po dostępie wspólnika: API-017 pokazuje tylko pola w całości z dostępnych działek ($not $elemMatch $nin), API-016 403 dla cudzych działek, API-018/019 404 dla niewidocznych pól. Test na żywo: Jan w gosp. Dawida 0 pól przy 2 luźnych działkach, raport/usunięcie 404, nowe pole 403; 326 testów backendu OK.",
     "coord-1 00:20: API-021 na main, test na żywo: ograniczenie i przywrócenie 200, siebie 422 CANNOT_RESTRICT_SELF, pusta lista 422. API-010/011 zwracają parcelIds (null = wszystkie). Raporty działek nie są filtrowane po parcelIds (linki do raportów są publiczne, ADR).",
     "coord-1 00:20: z prośby Kamila o pulpit z panelem bocznym. Kontrakty, mocki, trasy i puste strony już są na main, więc zaczynasz od razu."

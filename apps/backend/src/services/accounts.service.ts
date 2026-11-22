@@ -50,12 +50,21 @@ export async function renameAccount(
 
 export async function listAccountsForUser(userId: string): Promise<AccountDto[]> {
   assertDbConnected();
-  const memberships = await AccountMemberModel.find({ userId, status: 'active' });
+  // Oldest membership first: the user's own farm (joined at registration) comes before farms that
+  // added them later as a partner, so the frontend opens the own farm after login (accounts[0]).
+  const memberships = await AccountMemberModel.find({ userId, status: 'active' }).sort({
+    addedAt: 1,
+  });
   const accountIds = memberships.map((member) => member.accountId);
-  const [accounts, members] = await Promise.all([
-    AccountModel.find({ _id: { $in: accountIds } }).sort({ createdAt: 1 }),
+  const [found, members] = await Promise.all([
+    AccountModel.find({ _id: { $in: accountIds } }),
     AccountMemberModel.find({ accountId: { $in: accountIds }, status: 'active' }),
   ]);
+  const byId = new Map(found.map((account) => [String(account._id), account]));
+  const accounts = accountIds.flatMap((id) => {
+    const account = byId.get(String(id));
+    return account ? [account] : [];
+  });
   return accounts.map((account) => ({
     id: String(account._id),
     name: account.name,
