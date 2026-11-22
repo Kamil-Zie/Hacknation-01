@@ -62,13 +62,15 @@ export interface SidebarProps {
   onNavigate?: () => void;
   /** T-103 desktop: the Kropelka logo sits on top of the panel and stays with it while scrolling */
   showLogo?: boolean;
+  /** T-103 desktop: shown at the bottom left of the panel (the account / profile menu) */
+  footer?: ReactNode;
 }
 
-export function Sidebar({ onNavigate, showLogo = false }: SidebarProps) {
+export function Sidebar({ onNavigate, showLogo = false, footer }: SidebarProps) {
   const canEdit = useCanEdit();
   const { pathname } = useLocation();
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2, minHeight: '100%' }}>
       {showLogo && (
         <Link
           component={RouterLink}
@@ -138,6 +140,7 @@ export function Sidebar({ onNavigate, showLogo = false }: SidebarProps) {
           })}
         </List>
       </Box>
+      {footer && <Box sx={{ mt: 'auto', pt: 1 }}>{footer}</Box>}
     </Box>
   );
 }

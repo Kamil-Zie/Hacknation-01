@@ -8,7 +8,12 @@ import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import { useMeQuery } from '@/api/auth';
 import { useSessionStore } from '@/store/session';
 
-export function AccountMenu() {
+export interface AccountMenuProps {
+  /** T-103: shown at the bottom of the desktop side panel (full width, left aligned, menu opens upwards) */
+  inSidebar?: boolean;
+}
+
+export function AccountMenu({ inSidebar = false }: AccountMenuProps) {
   const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
@@ -50,7 +55,7 @@ export function AccountMenu() {
   const label = active?.name ?? user.name;
 
   return (
-    <Box sx={{ ml: 'auto', minWidth: 0 }}>
+    <Box sx={inSidebar ? { width: '100%', minWidth: 0 } : { ml: 'auto', minWidth: 0 }}>
       <Button
         color="inherit"
         onClick={(event) => setAnchor(event.currentTarget)}
@@ -58,26 +63,52 @@ export function AccountMenu() {
         aria-expanded={anchor ? 'true' : undefined}
         aria-label={`Konto: ${label}`}
         startIcon={<AccountCircleIcon />}
-        sx={{
-          minHeight: 44,
-          minWidth: 44,
-          maxWidth: { xs: 44, sm: 200, md: 280 },
-          // phones: icon only (farm name is in aria-label and in the menu), so long names
-          // like "Gospodarstwo Jan Kowalski" never push the page wider than 390 px (T-068)
-          px: { xs: 0, sm: 1 },
-          '& .MuiButton-startIcon': { mr: { xs: 0, sm: 1 }, ml: { xs: 0, sm: -0.5 } },
-        }}
+        sx={
+          inSidebar
+            ? {
+                width: '100%',
+                minHeight: 56,
+                justifyContent: 'flex-start',
+                px: 1.5,
+                borderRadius: 2,
+                border: 1,
+                borderColor: 'divider',
+                fontSize: '1.125rem',
+                fontWeight: 700,
+                '& .MuiButton-startIcon': { mr: 1.25 },
+                '& .MuiButton-startIcon svg': { fontSize: 32 },
+                '&:hover': { bgcolor: 'action.hover', borderColor: 'primary.main' },
+              }
+            : {
+                minHeight: 44,
+                minWidth: 44,
+                maxWidth: { xs: 44, sm: 200, md: 280 },
+                // phones: icon only (farm name is in aria-label and in the menu), so long names
+                // like "Gospodarstwo Jan Kowalski" never push the page wider than 390 px (T-068)
+                px: { xs: 0, sm: 1 },
+                '& .MuiButton-startIcon': { mr: { xs: 0, sm: 1 }, ml: { xs: 0, sm: -0.5 } },
+              }
+        }
       >
         <Typography
           variant="body1"
           component="span"
           noWrap
-          sx={{ display: { xs: 'none', sm: 'block' } }}
+          sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: inSidebar ? 700 : undefined }}
         >
           {label}
         </Typography>
       </Button>
-      <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={() => setAnchor(null)}>
+      <Menu
+        anchorEl={anchor}
+        open={Boolean(anchor)}
+        onClose={() => setAnchor(null)}
+        // in the side panel the button is at the bottom of the screen: open the menu upwards
+        {...(inSidebar && {
+          anchorOrigin: { vertical: 'top', horizontal: 'left' },
+          transformOrigin: { vertical: 'bottom', horizontal: 'left' },
+        })}
+      >
         <ListSubheader sx={{ lineHeight: 1.4, py: 1, color: 'text.primary' }}>
           <Typography component="span" sx={{ display: 'block', fontWeight: 700 }}>
             {user.name}
