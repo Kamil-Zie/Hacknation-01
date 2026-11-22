@@ -65,6 +65,34 @@ const tileSx = (isSelected: boolean) => (theme: Theme) => ({
 // search box appears only when the list is long enough to need it
 const SEARCH_MIN_CROPS = 9;
 
+// T-103: crop categories in up to 4 columns of about equal height, keeping their order.
+// A category "weighs" its header (≈1.5 tiles) plus its tiles; a new column starts when the
+// current one would grow past the average.
+const CROP_COLUMNS = 4;
+
+function balanceColumns<T extends { crops: unknown[] }>(groups: T[], maxColumns: number): T[][] {
+  const weight = (group: T) => 1.5 + group.crops.length;
+  const target = groups.reduce((sum, group) => sum + weight(group), 0) / maxColumns;
+  const columns: T[][] = [];
+  let current: T[] = [];
+  let height = 0;
+  for (const group of groups) {
+    if (
+      current.length > 0 &&
+      height + weight(group) > target * 1.15 &&
+      columns.length < maxColumns - 1
+    ) {
+      columns.push(current);
+      current = [];
+      height = 0;
+    }
+    current.push(group);
+    height += weight(group);
+  }
+  if (current.length > 0) columns.push(current);
+  return columns;
+}
+
 const DAY_FORMAT = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long' });
 
 export function AnalysisForm({
@@ -163,8 +191,8 @@ export function AnalysisForm({
                     Nie ma takiej uprawy. Sprawdź pisownię.
                   </Typography>
                 )}
-                {/* T-103: two categories per column (stacked), columns side by side, all open,
-                    compact tiles: the whole crop list fits in one short block */}
+                {/* T-103: up to 4 columns of stacked categories, balanced by height and in order
+                    (Zboża alone, Oleiste + Okopowe, …), all open: one short, readable block */}
                 <Box
                   sx={{
                     display: 'grid',
@@ -177,97 +205,91 @@ export function AnalysisForm({
                     alignItems: 'start',
                   }}
                 >
-                  {groups
-                    .reduce<(typeof groups)[]>((columns, group, index) => {
-                      if (index % 2 === 0) columns.push([group]);
-                      else columns[columns.length - 1]?.push(group);
-                      return columns;
-                    }, [])
-                    .map((column) => (
-                      <Stack key={column.map((group) => group.category).join('|')} spacing={2}>
-                        {column.map((group) => (
-                          <Box
-                            key={group.category}
-                            role="radiogroup"
-                            aria-labelledby={`crop-group-${group.category}`}
+                  {balanceColumns(groups, CROP_COLUMNS).map((column) => (
+                    <Stack key={column.map((group) => group.category).join('|')} spacing={2}>
+                      {column.map((group) => (
+                        <Box
+                          key={group.category}
+                          role="radiogroup"
+                          aria-labelledby={`crop-group-${group.category}`}
+                          sx={{
+                            border: 1,
+                            borderColor: 'kropla.line',
+                            borderRadius: '14px',
+                            p: 1.5,
+                            minWidth: 0,
+                            bgcolor: 'background.paper',
+                          }}
+                        >
+                          <Typography
+                            variant="h3"
+                            component="h2"
+                            id={`crop-group-${group.category}`}
                             sx={{
-                              border: 1,
-                              borderColor: 'kropla.line',
-                              borderRadius: '14px',
-                              p: 1.5,
-                              minWidth: 0,
-                              bgcolor: 'background.paper',
+                              fontSize: '1.25rem',
+                              fontWeight: 800,
+                              mb: 1.25,
+                              px: 0.5,
+                              pb: 0.75,
+                              borderBottom: 1,
+                              borderColor: 'divider',
                             }}
                           >
-                            <Typography
-                              variant="h3"
-                              component="h2"
-                              id={`crop-group-${group.category}`}
-                              sx={{
-                                fontSize: '1.25rem',
-                                fontWeight: 800,
-                                mb: 1.25,
-                                px: 0.5,
-                                pb: 0.75,
-                                borderBottom: 1,
-                                borderColor: 'divider',
-                              }}
-                            >
-                              {group.category}
-                            </Typography>
-                            <Stack spacing={1}>
-                              {group.crops.map((crop) => {
-                                const isSelected = field.value === crop.code;
-                                return (
-                                  <Box component="label" key={crop.code} sx={tileSx(isSelected)}>
-                                    <input
-                                      type="radio"
-                                      name="cropCode"
-                                      value={crop.code}
-                                      checked={isSelected}
-                                      disabled={isSubmitting}
-                                      onChange={() => field.onChange(crop.code)}
-                                      onBlur={field.onBlur}
+                            {group.category}
+                          </Typography>
+                          <Stack spacing={1}>
+                            {group.crops.map((crop) => {
+                              const isSelected = field.value === crop.code;
+                              return (
+                                <Box component="label" key={crop.code} sx={tileSx(isSelected)}>
+                                  <input
+                                    type="radio"
+                                    name="cropCode"
+                                    value={crop.code}
+                                    checked={isSelected}
+                                    disabled={isSubmitting}
+                                    onChange={() => field.onChange(crop.code)}
+                                    onBlur={field.onBlur}
+                                  />
+                                  <Box
+                                    sx={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 1.5,
+                                      minHeight: 64,
+                                      width: '100%',
+                                      px: 1.75,
+                                      minWidth: 0,
+                                    }}
+                                  >
+                                    <CropIcon
+                                      cropCode={crop.code}
+                                      sx={{ fontSize: 36, flexShrink: 0 }}
                                     />
-                                    <Box
+                                    <Typography
+                                      component="span"
                                       sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 1.5,
-                                        minHeight: 64,
-                                        width: '100%',
-                                        px: 1.75,
+                                        flex: 1,
                                         minWidth: 0,
+                                        fontWeight: 700,
+                                        fontSize: '1.25rem',
+                                        lineHeight: 1.2,
+                                        // break between words only
+                                        overflowWrap: 'break-word',
+                                        hyphens: 'auto',
                                       }}
                                     >
-                                      <CropIcon
-                                        cropCode={crop.code}
-                                        sx={{ fontSize: 36, flexShrink: 0 }}
-                                      />
-                                      <Typography
-                                        component="span"
-                                        sx={{
-                                          flex: 1,
-                                          minWidth: 0,
-                                          fontWeight: 700,
-                                          fontSize: '1.25rem',
-                                          lineHeight: 1.2,
-                                          // break between words only
-                                          overflowWrap: 'break-word',
-                                          hyphens: 'auto',
-                                        }}
-                                      >
-                                        {crop.name}
-                                      </Typography>
-                                    </Box>
+                                      {crop.name}
+                                    </Typography>
                                   </Box>
-                                );
-                              })}
-                            </Stack>
-                          </Box>
-                        ))}
-                      </Stack>
-                    ))}
+                                </Box>
+                              );
+                            })}
+                          </Stack>
+                        </Box>
+                      ))}
+                    </Stack>
+                  ))}
                 </Box>
               </Stack>
             </Box>
