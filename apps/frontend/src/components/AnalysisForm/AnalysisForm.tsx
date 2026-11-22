@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import type { Theme } from '@mui/material/styles';
 import { useMemo, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -50,6 +51,15 @@ const tileSx = (isSelected: boolean) => (theme: Theme) => ({
   borderStyle: 'solid',
   borderColor: isSelected ? theme.palette.kropla.iconMuted : theme.palette.kropla.line,
   bgcolor: isSelected ? theme.palette.kropla.tint : theme.palette.background.paper,
+  // T-103 hover: primary border, light tint, small lift and shadow (also on the date tiles)
+  transition: 'transform 120ms, box-shadow 120ms, border-color 120ms, background-color 120ms',
+  '&:hover': {
+    borderColor: theme.palette.primary.main,
+    bgcolor: isSelected ? theme.palette.kropla.tint : alpha(theme.palette.primary.main, 0.12),
+    transform: 'translateY(-2px)',
+    boxShadow: theme.shadows[4],
+  },
+  '&:active': { transform: 'translateY(0)', boxShadow: theme.shadows[1] },
   '&:focus-within': { outline: `3px solid ${theme.palette.primary.main}`, outlineOffset: 2 },
   '& input': {
     position: 'absolute',
