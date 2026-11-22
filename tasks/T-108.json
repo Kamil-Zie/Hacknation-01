@@ -1,0 +1,28 @@
+{
+  "id": "T-108",
+  "title": "Raport działki: data analizy bardziej widoczna (bez zmiany układu)",
+  "description": "Prośba Kamila 07:45. W raporcie o wodzie (UI-S-003, /report/:id) data, na którą jest raport, ginie: w nagłówku jest na końcu linii z miejscowością i powierzchnią („· Stan na 10.06.2026”, ReportHeader.tsx ok. linii 76–88), a nad wynikiem jako szary tekst „Wynik na …” (ReportOverview.tsx ok. linii 106–108, color text.secondary).\n\nZrób datę wyraźną, przesuwając ją w obrębie istniejących bloków, bez zmiany układu ekranu (siatka, kolejność sekcji, kafle zostają): np. data jako pierwszy, wyróżniony element nagłówka (chip/plakietka z ikoną kalendarza nad nazwą działki albo obok tytułu), a w „Wynik na …” data pogrubiona w kolorze tekstu podstawowego. Kolory tylko z motywu (tryb ciemny, wysoki kontrast).",
+  "type": "bugfix",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "medium",
+  "depends_on": [],
+  "contract_refs": ["UI-S-003"],
+  "acceptance_criteria": [
+    "Data raportu widoczna na pierwszy rzut oka w nagłówku, na 1440 i 390 px",
+    "Układ ekranu bez zmian (te same sekcje w tej samej kolejności)",
+    "Kontrast WCAG AA w jasnym, ciemnym i wysokim kontraście; czytnik czyta datę raz, sensownie",
+    "Widok druku (/report/:id/print) nadal poprawny"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "Pliki: src/components/ReportHeader/ReportHeader.tsx, src/components/ReportOverview/ReportOverview.tsx. Zamrożenie o 9:00: to poprawka wyglądu, po 9:00 jako fix."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}
