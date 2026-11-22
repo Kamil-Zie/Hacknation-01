@@ -68,7 +68,7 @@ Pełne zasady dla agentów: [CLAUDE.md](../CLAUDE.md). Konfiguracja całego proj
 | sob 14:00–20:00 | Budowa I · **20:00 draft w HackTribe** (README i opis projektu) |
 | sob 20:00–03:00 | Budowa II: kolejne kroki demo |
 | nd 03:00–07:00 | Integracja: cały scenariusz na prawdziwym API i na prod |
-| nd **07:00** | **Zamrożenie funkcji**: tylko `fix`, `docs`, `revert` |
+| nd **09:00** | **Zamrożenie funkcji**: tylko `fix`, `docs`, `revert` |
 | nd 07:00–11:00 | Prezentacja, wideo do 2 min, README dla jury · **11:00 oddanie materiałów** |
 | nd 11:00–15:15 | Prod stabilny, próba · **15:15 pokaz na żywo** |
 
@@ -83,7 +83,7 @@ Przypomnienia o każdej fazie i godzinę przed każdym kamieniem milowym wysyła
 | Baza | hook gita | zmiana bazy bez zadania `T-DB` |
 | Spójność | hook gita + CI (`validate.mjs`) | zadania, kontrakty, wiadomości i rezerwacje |
 | Format commita | hook gita | `typ(zakres): opis [T-xxx]` |
-| Zamrożenie | hook gita | od 7:00 w niedzielę tylko `fix`, `docs`, `revert` |
+| Zamrożenie | hook gita | od 9:00 w niedzielę tylko `fix`, `docs`, `revert` |
 | Styl kodu | hook gita | Prettier i ESLint na zmienionych plikach (od szkieletu) |
 | Claude Design | hook Claude + check-tools | rejestruje użycie i przypomina frontendowi; blokadę można włączyć w `project.json` (`required: true`) |
 | Narzędzia | `check-tools.mjs` na start każdej sesji | Node, npm, git, `.env`, Atlas, webhooki, hooki gita |

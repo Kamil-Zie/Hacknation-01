@@ -77,7 +77,7 @@ Wykonawca `T-DB` po zmianie kodu uruchamia `npm run seed` na wspólnej bazie dev
 4. Gałąź `main`: małe commity, `git pull --rebase` przed każdym `push`, push po każdej działającej części.
 5. Najprostsze rozwiązanie, które działa w demo. Bez abstrakcji i optymalizacji na zapas.
 6. Stoisz ponad 20 minut: `blocker` do koordynatora i bierzesz inną część zadania.
-7. Po zamrożeniu funkcji (od 7:00 rano, 20h) tylko poprawki błędów na ścieżce demo.
+7. Po zamrożeniu funkcji (od 9:00 rano, 22h) tylko poprawki błędów na ścieżce demo.
 
 ## Wiadomości (zwykłe pliki)
 
@@ -111,7 +111,7 @@ Sekcje `## Zrobione`, `## Potrzebuję od <team>` itd. w treści wiadomości staj
 
 Format: `<typ>(<zakres>): <opis> [<id-zadania>]`, np. `feat(api): GET /items z paginacją [T-002]`. ID zadania jest wymagane dla `feat`, `fix`, `refactor`, `test`, `perf`. Wiadomości sync i zmiany rezerwacji idą w tym samym commicie co zmiana, której dotyczą.
 
-Hooki gita (`.githooks`, włącza je `check-tools`) sprawdzają każdy commit, także ręczny: sekrety (URI Mongo z hasłem, webhooki, klucze), pliki spoza `paths.write` teamu i cudze rezerwacje, zadanie `T-DB` przy zmianie bazy, spójność `tasks/`, `contracts/`, `.claude/sync/` (`validate.mjs`), format commita i **zamrożenie funkcji** (od 7:00 tylko `fix`, `docs`, `revert`). Gdy hook blokuje, popraw przyczynę z komunikatu. Nie używaj `--no-verify` bez zgody koordynatora. Kontrakty i zadania wzoruj na `_example` w `contracts/*.json` i `tasks/_TEMPLATE.json`.
+Hooki gita (`.githooks`, włącza je `check-tools`) sprawdzają każdy commit, także ręczny: sekrety (URI Mongo z hasłem, webhooki, klucze), pliki spoza `paths.write` teamu i cudze rezerwacje, zadanie `T-DB` przy zmianie bazy, spójność `tasks/`, `contracts/`, `.claude/sync/` (`validate.mjs`), format commita i **zamrożenie funkcji** (od 9:00 tylko `fix`, `docs`, `revert`). Gdy hook blokuje, popraw przyczynę z komunikatu. Nie używaj `--no-verify` bez zgody koordynatora. Kontrakty i zadania wzoruj na `_example` w `contracts/*.json` i `tasks/_TEMPLATE.json`.
 
 Koordynator: `node .claude/scripts/status.mjs` pokazuje fazę, zadania wszystkich, blokery, `T-DB`, nieaktualne rezerwacje i wiadomości bez ack.
 

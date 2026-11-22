@@ -22,4 +22,4 @@ Odpowiadasz za szkielet repo, środowiska i wdrożenie. Infrastruktura opisana j
 - MongoDB Atlas: bazy `hacknation` (dev) i `hacknation_prod`, każda z własnym użytkownikiem readWrite tylko do swojej bazy. Network Access 0.0.0.0/0 na czas hackathonu. Przy wdrożeniu odtwórz `hacknation_prod` seedem.
 - Kroki wymagające dostępu do NAS-a, Cloudflare albo Atlas, których nie możesz wykonać, zapisz jako krótką checklistę dla Kamila.
 
-Wdrożenie prod najpóźniej przed fazą Zamrożenie funkcji (20h), potem tylko poprawki.
+Wdrożenie prod najpóźniej przed fazą Zamrożenie funkcji (22h, 9:00), potem tylko poprawki.

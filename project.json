@@ -1034,10 +1034,10 @@
             "goal": "Zgłoszenie draftu w HackTribe. Repo ZOSTAJE PRYWATNE do końca wydarzenia (wymóg KOWR), jury dostaje dostęp według instrukcji z Platformy. README z opisem, działający start aplikacji i opis projektu wpisany."
           },
           {
-            "at": "2026-11-22T07:00:00+01:00",
-            "hour": 20,
+            "at": "2026-11-22T09:00:00+01:00",
+            "hour": 22,
             "name": "Zamrożenie funkcji",
-            "goal": "Od teraz tylko poprawki błędów na ścieżce demo."
+            "goal": "Od teraz tylko poprawki błędów na ścieżce demo. Przesunięte z 7:00 na 9:00 decyzją Kamila (05:35)."
           },
           {
             "at": "2026-11-22T11:00:00+01:00",
@@ -1078,8 +1078,8 @@
             "goal": "Kolejne kroki demo jako pionowe plastry: endpoint i ekran razem, scalane na bieżąco."
           },
           {
-            "until_hour": 20,
-            "until": "2026-11-22T07:00:00+01:00",
+            "until_hour": 22,
+            "until": "2026-11-22T09:00:00+01:00",
             "name": "Integracja i dopracowanie",
             "goal": "Cały scenariusz demo działa na prawdziwym API i na prod; mocki usunięte ze ścieżki demo."
           },
