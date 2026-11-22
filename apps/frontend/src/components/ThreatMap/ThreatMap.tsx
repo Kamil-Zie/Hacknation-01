@@ -164,8 +164,12 @@ export function ThreatList({
 }) {
   const atRisk = items.filter((item) => item.atRisk);
   return (
-    <Stack spacing={1}>
-      <Typography variant="h3" component="h3" sx={{ fontSize: '1.125rem', fontWeight: 800 }}>
+    <Stack spacing={1} sx={{ alignSelf: 'start', justifyContent: 'flex-start' }}>
+      <Typography
+        variant="h3"
+        component="h3"
+        sx={{ fontSize: '1.125rem', fontWeight: 800, m: 0, lineHeight: 1.5 }}
+      >
         Lista zagrożonych ({atRisk.length})
       </Typography>
       {atRisk.length === 0 ? (

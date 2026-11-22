@@ -157,6 +157,8 @@ export function AccountPage() {
                 display: 'grid',
                 gap: 2,
                 gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
+                alignItems: 'start',
+                alignContent: 'start',
               }}
             >
               <Stack spacing={1}>
