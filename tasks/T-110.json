@@ -1,0 +1,26 @@
+{
+  "id": "T-110",
+  "title": "Raport: bilans wody i norma z 10 lat na podstawowym widoku",
+  "description": "Decyzja Kamila 07:50. W karcie „Ile wody było/jest w glebie” pod suwakiem wiersz Bilans wody · ostatnie 30 dni do <data>: Na ten dzień X mm, Norma z 10 lat Y mm, różnica słowami. Dane z assessment.kbw30 (zapas kbw60). Widoczne też przy braku danych o glebie.",
+  "type": "bugfix",
+  "team": "frontend",
+  "assignee": "coord-1",
+  "status": "done",
+  "priority": "medium",
+  "depends_on": [],
+  "contract_refs": ["UI-S-003", "API-004"],
+  "acceptance_criteria": [
+    "Bilans i norma widoczne bez rozwijania szczegółów",
+    "Różnica opisana słowami"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 07:52: sprawdzone na mocku /report/demo: −122 mm, norma −88 mm, mniej o 34 mm."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

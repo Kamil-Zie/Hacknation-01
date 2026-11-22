@@ -17,7 +17,7 @@ import { Expandable } from '@/components/MoreButton/Expandable';
 import { MoreButton } from '@/components/MoreButton/MoreButton';
 import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { getTodayIso } from '@/components/AnalysisForm/AnalysisForm.schema';
-import { formatDate, formatNumber } from '@/utils/format';
+import { formatDate, formatNumber, formatSigned } from '@/utils/format';
 import { soilWaterState } from '@/utils/reportState';
 import { formatEvidence } from '@/utils/sourceLabels';
 
@@ -266,6 +266,50 @@ function ParcelColumn({ report }: ReportOverviewProps) {
   );
 }
 
+// T-110 current water balance and the 10-year norm for the report date, visible without opening the details
+function BalanceNow({ report }: ReportOverviewProps) {
+  const window = report.assessment.kbw30 ?? report.assessment.kbw60;
+  if (!window) return null;
+  const diff = window.kbwMm - window.normKbwMm;
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+        gap: 1.5,
+        pt: 1.5,
+        borderTop: 1,
+        borderColor: 'divider',
+      }}
+    >
+      <Typography sx={{ gridColumn: '1 / -1', fontWeight: 700, fontSize: '1.125rem' }}>
+        Bilans wody · ostatnie {window.days} dni do {formatDate(window.to)}
+      </Typography>
+      <Box>
+        <Typography color="text.secondary">Na ten dzień</Typography>
+        <Typography
+          sx={{ fontSize: '1.75rem', fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}
+        >
+          {formatSigned(window.kbwMm, 0)} mm
+        </Typography>
+      </Box>
+      <Box>
+        <Typography color="text.secondary">Norma z 10 lat</Typography>
+        <Typography
+          sx={{ fontSize: '1.75rem', fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}
+        >
+          {formatSigned(window.normKbwMm, 0)} mm
+        </Typography>
+      </Box>
+      <Typography sx={{ gridColumn: '1 / -1', fontSize: '1.0625rem' }}>
+        {Math.round(diff) === 0
+          ? 'Tyle co zwykle o tej porze roku.'
+          : `${diff < 0 ? 'Mniej' : 'Więcej'} wody niż zwykle o ${formatNumber(Math.abs(diff), 0)} mm.`}
+      </Typography>
+    </Box>
+  );
+}
+
 function SoilWaterCard({ report }: ReportOverviewProps) {
   const { soilWater } = report.assessment;
   // T-109 the report may be for a past day: say "was" with the date, "is today" only for today
@@ -381,6 +425,7 @@ function SoilWaterCard({ report }: ReportOverviewProps) {
           </Box>
         </>
       )}
+      <BalanceNow report={report} />
     </Box>
   );
 }

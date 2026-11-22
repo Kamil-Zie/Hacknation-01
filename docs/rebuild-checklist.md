@@ -66,6 +66,10 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 - [ ] Raport z wcześniejszą datą: „Ile wody było w glebie 10 czerwca 2026?”
 - [ ] Raport na dziś: „Ile wody jest dziś w glebie?”
 
+## 2f. Raport: bilans i norma na wierzchu (T-110)
+
+- [ ] W karcie gleby pod suwakiem: „Bilans wody · ostatnie 30 dni do <data>”, Na ten dzień, Norma z 10 lat, różnica słowami
+
 ## 3. Backend
 
 - [ ] Po restarcie kontenera backendu przy chwilowym braku Atlasa log pokazuje `MongoDB: next attempt in 15 s`, a potem `MongoDB connected` bez ręcznego restartu (`225693f`)
