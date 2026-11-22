@@ -105,9 +105,10 @@ export function AppLayout() {
         sx={{ background: (theme) => theme.palette.kropla.headerGradient, color: 'common.white' }}
       >
         <Toolbar sx={{ minHeight: { xs: 64, md: 80 }, gap: 2, px: { xs: 2, md: 4 } }}>
+          {/* T-103: logged in → the dashboard (Pulpit), otherwise the start page */}
           <Link
             component={RouterLink}
-            to="/"
+            to={token ? '/konto' : '/'}
             color="inherit"
             underline="none"
             sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5, minHeight: 44 }}
@@ -127,7 +128,7 @@ export function AppLayout() {
             </Typography>
             <Box component="span" sx={srOnly}>
               {' '}
-              – strona główna
+              {token ? '– pulpit' : '– strona główna'}
             </Box>
           </Link>
           <Box sx={{ flexGrow: 1 }} />
