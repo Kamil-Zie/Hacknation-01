@@ -1,7 +1,7 @@
-// UI-S-002 T-103 DateCalendar: month grid for the analysis date (no extra library), today selected by default, days outside min–max disabled
+// UI-S-002 T-103 DateCalendar: month grid for the analysis date (no extra library); month and year lists, grid lines, today selected by default, days outside min–max disabled
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, ButtonBase, IconButton, Stack, Typography } from '@mui/material';
+import { Box, ButtonBase, IconButton, MenuItem, Stack, TextField } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
@@ -18,7 +18,20 @@ export interface DateCalendarProps {
 }
 
 const WEEKDAYS = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
-const MONTH_FORMAT = new Intl.DateTimeFormat('pl-PL', { month: 'long', year: 'numeric' });
+const MONTHS = [
+  'Styczeń',
+  'Luty',
+  'Marzec',
+  'Kwiecień',
+  'Maj',
+  'Czerwiec',
+  'Lipiec',
+  'Sierpień',
+  'Wrzesień',
+  'Październik',
+  'Listopad',
+  'Grudzień',
+];
 const LONG_FORMAT = new Intl.DateTimeFormat('pl-PL', {
   weekday: 'long',
   day: 'numeric',
@@ -36,10 +49,15 @@ const localDate = (iso: string) => {
   const { y, m, d } = parse(iso);
   return new Date(y, m, d);
 };
+const monthIndex = (y: number, m: number) => y * 12 + m;
 
 export function formatLongDate(iso: string): string {
   return LONG_FORMAT.format(localDate(iso));
 }
+
+const selectSx = {
+  '& .MuiInputBase-root': { minHeight: 48, fontSize: '1.125rem', fontWeight: 700 },
+} as const;
 
 export function DateCalendar({ value, min, max, disabled = false, onChange }: DateCalendarProps) {
   const selected = parse(value);
@@ -47,20 +65,30 @@ export function DateCalendar({ value, min, max, disabled = false, onChange }: Da
   const minP = parse(min);
   const maxP = parse(max);
 
+  // keep the shown month inside min–max (e.g. after picking a year)
+  const clampView = (y: number, m: number) => {
+    const index = Math.min(
+      Math.max(monthIndex(y, m), monthIndex(minP.y, minP.m)),
+      monthIndex(maxP.y, maxP.m),
+    );
+    return { y: Math.floor(index / 12), m: index % 12 };
+  };
+  const showMonth = (y: number, m: number) => setView(clampView(y, m));
+
   const firstWeekday = (new Date(view.y, view.m, 1).getDay() + 6) % 7; // Monday = 0
   const daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
   const cells: (number | null)[] = [
     ...Array<null>(firstWeekday).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
+  while (cells.length % 7 !== 0) cells.push(null); // full last week, so the grid lines close
 
-  const monthIndex = (y: number, m: number) => y * 12 + m;
   const canPrev = monthIndex(view.y, view.m) > monthIndex(minP.y, minP.m);
   const canNext = monthIndex(view.y, view.m) < monthIndex(maxP.y, maxP.m);
-  const shift = (delta: number) => {
-    const date = new Date(view.y, view.m + delta, 1);
-    setView({ y: date.getFullYear(), m: date.getMonth() });
-  };
+  const years = Array.from({ length: maxP.y - minP.y + 1 }, (_, i) => maxP.y - i);
+  const monthAllowed = (m: number) =>
+    monthIndex(view.y, m) >= monthIndex(minP.y, minP.m) &&
+    monthIndex(view.y, m) <= monthIndex(maxP.y, maxP.m);
 
   const inRange = (iso: string) => iso >= min && iso <= max;
 
@@ -90,56 +118,93 @@ export function DateCalendar({ value, min, max, disabled = false, onChange }: Da
         bgcolor: 'background.paper',
         p: { xs: 1.5, md: 2 },
         width: '100%',
-        maxWidth: 440,
+        maxWidth: 520,
       }}
     >
-      <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+      {/* header: ‹ [month ▾] [year ▾] › */}
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 1.5 }}>
         <IconButton
           aria-label="Poprzedni miesiąc"
-          onClick={() => shift(-1)}
+          onClick={() => showMonth(view.y, view.m - 1)}
           disabled={!canPrev || disabled}
-          sx={{ width: 48, height: 48 }}
+          sx={{ width: 48, height: 48, border: 1, borderColor: 'kropla.line' }}
         >
           <ChevronLeftIcon />
         </IconButton>
-        <Typography
-          aria-live="polite"
-          sx={{ fontSize: '1.25rem', fontWeight: 800, textTransform: 'capitalize' }}
+        <TextField
+          select
+          label="Miesiąc"
+          value={view.m}
+          disabled={disabled}
+          onChange={(event) => showMonth(view.y, Number(event.target.value))}
+          sx={{ ...selectSx, flex: '1 1 0' }}
         >
-          {MONTH_FORMAT.format(new Date(view.y, view.m, 1))}
-        </Typography>
+          {MONTHS.map((name, m) => (
+            <MenuItem key={name} value={m} disabled={!monthAllowed(m)} sx={{ minHeight: 44 }}>
+              {name}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          select
+          label="Rok"
+          value={view.y}
+          disabled={disabled}
+          onChange={(event) => showMonth(Number(event.target.value), view.m)}
+          sx={{ ...selectSx, flex: '0 0 112px' }}
+        >
+          {years.map((y) => (
+            <MenuItem key={y} value={y} sx={{ minHeight: 44 }}>
+              {y}
+            </MenuItem>
+          ))}
+        </TextField>
         <IconButton
           aria-label="Następny miesiąc"
-          onClick={() => shift(1)}
+          onClick={() => showMonth(view.y, view.m + 1)}
           disabled={!canNext || disabled}
-          sx={{ width: 48, height: 48 }}
+          sx={{ width: 48, height: 48, border: 1, borderColor: 'kropla.line' }}
         >
           <ChevronRightIcon />
         </IconButton>
       </Stack>
 
+      {/* grid: 1 px gaps on a divider-coloured background draw the lines between days */}
       <Box
         role="grid"
-        aria-label="Kalendarz"
-        sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 0.5 }}
+        aria-label={`Kalendarz: ${MONTHS[view.m]} ${view.y}`}
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
+          gap: '1px',
+          bgcolor: 'divider',
+          border: 1,
+          borderColor: 'divider',
+          borderRadius: '12px',
+          overflow: 'hidden',
+        }}
       >
-        {WEEKDAYS.map((day) => (
-          <Typography
+        {WEEKDAYS.map((day, index) => (
+          <Box
             key={day}
             role="columnheader"
             sx={{
               textAlign: 'center',
               fontSize: '1rem',
-              fontWeight: 700,
-              color: 'text.secondary',
-              py: 0.5,
+              fontWeight: 800,
+              py: 1,
+              bgcolor: 'kropla.tint',
+              color: index >= 5 ? 'primary.main' : 'text.secondary',
             }}
           >
             {day}
-          </Typography>
+          </Box>
         ))}
         {cells.map((day, index) => {
-          if (day === null) return <Box key={`empty-${index}`} />;
+          if (day === null) {
+            // days of other months: plain background, only the grid lines show
+            return <Box key={`empty-${index}`} sx={{ bgcolor: 'background.paper' }} />;
+          }
           const iso = toIso(view.y, view.m, day);
           const isSelected = iso === value;
           const isToday = iso === today;
@@ -156,28 +221,31 @@ export function DateCalendar({ value, min, max, disabled = false, onChange }: Da
               onClick={() => onChange(iso)}
               onKeyDown={(event) => handleKey(event, iso)}
               sx={(theme) => ({
-                aspectRatio: '1',
-                minHeight: 44,
-                borderRadius: '12px',
+                minHeight: 52,
                 fontSize: '1.125rem',
                 fontWeight: isSelected || isToday ? 800 : 500,
                 color: isSelected ? theme.palette.primary.contrastText : 'text.primary',
-                bgcolor: isSelected ? theme.palette.primary.main : 'transparent',
-                border:
-                  isToday && !isSelected
-                    ? `2px solid ${theme.palette.primary.main}`
-                    : '2px solid transparent',
-                transition: 'background-color 120ms, transform 120ms',
+                bgcolor: isSelected ? theme.palette.primary.main : theme.palette.background.paper,
+                // today: ring inside the cell (the grid lines stay straight)
+                boxShadow:
+                  isToday && !isSelected ? `inset 0 0 0 3px ${theme.palette.primary.main}` : 'none',
+                transition: 'background-color 120ms, box-shadow 120ms',
                 '&:hover': {
                   bgcolor: isSelected
                     ? theme.palette.primary.main
-                    : alpha(theme.palette.primary.main, 0.15),
-                  transform: 'translateY(-1px)',
+                    : alpha(theme.palette.primary.main, 0.2),
+                  boxShadow: `inset 0 0 0 3px ${theme.palette.primary.main}`,
+                  fontWeight: 800,
                 },
-                '&.Mui-disabled': { color: 'text.disabled', opacity: 0.45 },
+                '&.Mui-disabled': {
+                  color: 'text.disabled',
+                  bgcolor: theme.palette.action.hover,
+                  textDecoration: 'line-through',
+                  textDecorationColor: alpha(theme.palette.text.primary, 0.25),
+                },
                 '&.Mui-focusVisible': {
                   outline: `3px solid ${theme.palette.primary.main}`,
-                  outlineOffset: 2,
+                  outlineOffset: -3,
                 },
               })}
             >
