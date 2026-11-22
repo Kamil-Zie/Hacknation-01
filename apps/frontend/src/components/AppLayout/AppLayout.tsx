@@ -82,7 +82,8 @@ export function AppLayout() {
   // T-103 dashboard: tiles use the full width next to the sidebar, with a narrow side gutter
   const isDashboard = pathname === '/konto';
   const token = useSessionStore((state) => state.token);
-  const showSidebar = Boolean(token) && !isLogin && !isWide;
+  // T-103: the side panel also on the report (step 3); the print view has its own route outside this layout
+  const showSidebar = Boolean(token) && !isLogin;
   const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
