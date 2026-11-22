@@ -151,8 +151,9 @@ export function AccountPage() {
             justifyContent: 'space-between',
           }}
         >
-          {/* one card, two columns from the top edge: drought counts | at-risk list and legend */}
-          <Card>
+          {/* one card, two columns from the top edge: drought counts | at-risk list and legend;
+              on lg+ it grows to fill the column, so there is no gap above the buttons */}
+          <Card sx={{ flexGrow: { lg: 1 } }}>
             <CardContent>
               <Box
                 sx={{
