@@ -1,0 +1,37 @@
+{
+  "id": "T-107",
+  "title": "Zmiana nazwy w UI: „Pole” → „Grupa działek” (Utwórz pole → Dodaj grupę działek)",
+  "description": "Decyzja Kamila 07:40. W tekstach widocznych dla użytkownika „pole” w znaczeniu zbioru działek (DM-024 Field) zmieniamy na „grupa działek”, z odmianą: Utwórz pole → Dodaj grupę działek, Moje pola → Moje grupy działek, Raport pola → Raport grupy działek, Usuń pole → Usuń grupę działek, Nie znaleziono pola → Nie znaleziono grupy działek itd.\n\nNIE zmieniamy: pól formularza (TextField, „pole wymagane”), „pole” w znaczeniu uprawy w rekomendacjach („woda spływająca z pola”), nazw w kodzie (Field, fieldId, FieldList), adresów URL (/pola, /pole/nowe, /pole/:id/raport zostają, żeby linki działały), kodów błędów (FIELD_NOT_FOUND), nazw pól już zapisanych przez użytkowników.\n\nZakres: teksty w apps/frontend/src (Sidebar, AppLayout TITLES, MyFieldsPage, FieldList, FieldCreatePage, FieldReportPage, FieldMap, FieldPickMap, AddParcel/FieldFromMap, PartnerCard, PartnersPage, Sitemap, EasyRead, ReportPrint, QuickReportPrint, router tytuły) i komunikaty błędów w apps/backend/src (fields, fieldReports). Szukaj: grep -rnE '\\b([Pp]ol(e|a|u|em|ach|ami|om)|[Pp]ól)\\b' apps/frontend/src apps/backend/src.",
+  "type": "bugfix",
+  "team": "backend",
+  "assignee": "backend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": [
+    "UI-S-010",
+    "UI-S-011",
+    "UI-S-012",
+    "DM-024",
+    "API-016",
+    "API-017",
+    "API-018",
+    "API-019"
+  ],
+  "acceptance_criteria": [
+    "W panelu bocznym „Dodaj grupę działek” i „Moje grupy działek”",
+    "Żaden ekran nie mówi już „pole” o grupie działek (sprawdź grepem i w przeglądarce)",
+    "Adresy i kod bez zmian, testy backendu przechodzą",
+    "Commity fix(frontend)/fix(api) ... [T-107], przed 9:00 albo jako fix po zamrożeniu"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1: Jan ma na czas T-107 prawo zapisu w apps/frontend/src/** (project.json teams.backend.paths.write). Nataniel ma szeroką rezerwację T-103 na src/pages/** i src/components/** – poprosiłem go o jej zwolnienie, T-103 jest już w integration."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}
