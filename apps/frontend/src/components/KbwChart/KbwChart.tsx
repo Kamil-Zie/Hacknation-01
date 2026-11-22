@@ -11,14 +11,18 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { ChartsReferenceLine, LineChart } from '@mui/x-charts';
 import { useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 
 import type { Report } from '@/api/types';
+import { srOnly } from '@/app/a11yStyles';
 import { formatNumber, formatSigned } from '@/utils/format';
 
 interface KbwChartProps {
   charts: Report['charts'];
-  /** T-103: on lg+ fill the parent's height (dashboard one-screen layout) instead of a fixed 300 px */
+  /** T-103: on lg+ fill the parent's height (dashboard one-screen layout) in a compact layout */
   fill?: boolean;
+  /** heading shown above the chart (in compact mode in one row with the period toggle) */
+  title?: ReactNode;
 }
 
 type WindowDays = 30 | 60;
@@ -74,9 +78,11 @@ function LegendSwatch({ kind }: { kind: SwatchKind }) {
   );
 }
 
-export function KbwChart({ charts, fill = false }: KbwChartProps) {
+export function KbwChart({ charts, fill = false, title }: KbwChartProps) {
   const theme = useTheme();
   const isNarrow = useMediaQuery(theme.breakpoints.down('sm'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
+  const compact = fill && isDesktop;
   const [windowDays, setWindowDays] = useState<WindowDays>(60);
 
   const rows = useMemo(() => {
@@ -138,8 +144,164 @@ export function KbwChart({ charts, fill = false }: KbwChartProps) {
   const showSeriesMarks = visible.length <= 20;
   const hidden = { display: 'none' };
 
+  const legend = (
+    <Box
+      component="ul"
+      aria-label="Legenda wykresu"
+      sx={{
+        listStyle: 'none',
+        m: 0,
+        p: 0,
+        display: 'grid',
+        gridTemplateColumns: compact
+          ? 'minmax(0, 1fr)'
+          : { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
+        justifyContent: 'start',
+        gap: compact ? 0.5 : 1,
+        columnGap: 3,
+      }}
+    >
+      {LEGEND.map((item) => (
+        <Box
+          key={item.label}
+          component="li"
+          sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minHeight: compact ? 28 : 32 }}
+        >
+          <Box aria-hidden sx={{ flex: '0 0 40px', display: 'flex', alignItems: 'center' }}>
+            <LegendSwatch kind={item.kind} />
+          </Box>
+          <Typography sx={{ fontSize: compact ? '1rem' : '1.125rem', lineHeight: 1.3 }}>
+            {item.label}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  );
+
+  const toggle = (
+    <ToggleButtonGroup
+      exclusive
+      size="small"
+      color="primary"
+      value={windowDays}
+      aria-label="Pokazany okres"
+      onChange={(_, value: WindowDays | null) => {
+        if (value) setWindowDays(value);
+      }}
+    >
+      <ToggleButton value={30} sx={{ minWidth: 64, minHeight: 48, fontSize: '1rem' }}>
+        Ostatni miesiąc
+      </ToggleButton>
+      <ToggleButton value={60} sx={{ minWidth: 64, minHeight: 48, fontSize: '1rem' }}>
+        Ostatnie 2 miesiące
+      </ToggleButton>
+    </ToggleButtonGroup>
+  );
+
+  const chart = (
+    <Box
+      role="img"
+      aria-label={ariaLabel}
+      sx={{
+        width: '100%',
+        height: compact ? '100%' : { xs: 220, md: 300 },
+        ...(compact && { flex: '1 1 0', minWidth: 0, minHeight: 120 }),
+        overflow: 'hidden',
+        '& .MuiLineElement-series-p10': hidden,
+        '& .MuiMarkElement-series-p10': hidden,
+        '& .MuiLineElement-series-band': hidden,
+        '& .MuiMarkElement-series-band': hidden,
+        '& .MuiAreaElement-series-band': { fill: theme.palette.secondary.main, fillOpacity: 0.7 },
+        '& .MuiLineElement-series-p50': { strokeDasharray: '6 4', strokeWidth: 2 },
+        '& .MuiLineElement-series-kbw': { strokeWidth: 3 },
+      }}
+    >
+      <LineChart
+        // left margin leaves room for y tick labels like "-100 mm"
+        margin={{ top: 12, right: 16, bottom: 28, left: 72 }}
+        tooltip={{ trigger: 'none' }}
+        skipAnimation
+        slotProps={{ legend: { hidden: true } }}
+        dataset={visible}
+        xAxis={[
+          {
+            id: 'x',
+            dataKey: 'date',
+            scaleType: 'point',
+            data: dates,
+            // compact: no room under the ticks for the axis label; the dates speak for themselves
+            label: compact ? undefined : 'Data (dd.MM)',
+            valueFormatter: (value: string) => formatDayMonth(value),
+            tickLabelInterval: (_value: string, index: number) => index % labelStep === 0,
+          },
+        ]}
+        yAxis={[{ id: 'y', valueFormatter: (value: number) => `${value} mm` }]}
+        series={[
+          { id: 'p10', dataKey: 'p10', stack: 'norm', showMark: false, label: 'p10' },
+          {
+            id: 'band',
+            dataKey: 'band',
+            stack: 'norm',
+            area: true,
+            showMark: false,
+            label: 'Pasmo normy',
+          },
+          {
+            id: 'p50',
+            dataKey: 'p50',
+            showMark: false,
+            label: 'Norma z 10 lat',
+            color: theme.palette.text.secondary,
+          },
+          {
+            id: 'kbw',
+            dataKey: 'kbw',
+            showMark: showSeriesMarks,
+            connectNulls: true,
+            label: 'Bilans wody',
+            color: theme.palette.primary.main,
+            valueFormatter: (value: number | null) =>
+              value === null ? '' : `${formatNumber(value)} mm`,
+          },
+        ]}
+      >
+        <ChartsReferenceLine
+          y={0}
+          lineStyle={{ stroke: theme.palette.text.primary, strokeWidth: 1.5 }}
+        />
+      </LineChart>
+    </Box>
+  );
+
+  // compact (dashboard, lg+): title and toggle in one row, chart fills the rest with the legend
+  // and the summary in a narrow column on its right; the long description goes to screen readers
+  if (compact) {
+    return (
+      <Stack spacing={1} sx={{ height: '100%', minHeight: 0 }}>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}
+        >
+          <Box sx={{ minWidth: 0 }}>{title}</Box>
+          {toggle}
+        </Stack>
+        <Typography sx={srOnly}>
+          Bilans wody z 60 dni (KBW), mm. Każdy punkt to suma z poprzednich 60 dni.
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 3, flex: '1 1 0', minHeight: 0 }}>
+          {chart}
+          <Box sx={{ flex: '0 0 auto', maxWidth: 300, alignSelf: 'flex-start' }}>{legend}</Box>
+          {/* the numeric summary does not fit next to the chart; screen readers still get it */}
+          <Typography sx={srOnly}>{summary}</Typography>
+        </Box>
+      </Stack>
+    );
+  }
+
   return (
-    <Stack spacing={1.5} sx={fill ? { height: { lg: '100%' }, minHeight: 0 } : undefined}>
+    <Stack spacing={1.5}>
+      {title}
       <Stack
         direction="row"
         spacing={1}
@@ -154,124 +316,10 @@ export function KbwChart({ charts, fill = false }: KbwChartProps) {
             Każdy punkt to suma z poprzednich 60 dni. Przełącznik zmienia tylko pokazany okres.
           </Typography>
         </Stack>
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          color="primary"
-          value={windowDays}
-          aria-label="Pokazany okres"
-          onChange={(_, value: WindowDays | null) => {
-            if (value) setWindowDays(value);
-          }}
-        >
-          <ToggleButton value={30} sx={{ minWidth: 64, minHeight: 48, fontSize: '1rem' }}>
-            Ostatni miesiąc
-          </ToggleButton>
-          <ToggleButton value={60} sx={{ minWidth: 64, minHeight: 48, fontSize: '1rem' }}>
-            Ostatnie 2 miesiące
-          </ToggleButton>
-        </ToggleButtonGroup>
+        {toggle}
       </Stack>
-
-      <Box
-        component="ul"
-        aria-label="Legenda wykresu"
-        sx={{
-          listStyle: 'none',
-          m: 0,
-          p: 0,
-          display: 'grid',
-          gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
-          gap: 1,
-          columnGap: 3,
-        }}
-      >
-        {LEGEND.map((item) => (
-          <Box
-            key={item.label}
-            component="li"
-            sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minHeight: 32 }}
-          >
-            <Box aria-hidden sx={{ flex: '0 0 40px', display: 'flex', alignItems: 'center' }}>
-              <LegendSwatch kind={item.kind} />
-            </Box>
-            <Typography sx={{ fontSize: '1.125rem', lineHeight: 1.3 }}>{item.label}</Typography>
-          </Box>
-        ))}
-      </Box>
-
-      <Box
-        role="img"
-        aria-label={ariaLabel}
-        sx={{
-          width: '100%',
-          height: fill ? { xs: 220, md: 300, lg: 'auto' } : { xs: 220, md: 300 },
-          ...(fill && { flex: { lg: '1 1 0' }, minHeight: { lg: 140 } }),
-          overflow: 'hidden',
-          '& .MuiLineElement-series-p10': hidden,
-          '& .MuiMarkElement-series-p10': hidden,
-          '& .MuiLineElement-series-band': hidden,
-          '& .MuiMarkElement-series-band': hidden,
-          '& .MuiAreaElement-series-band': { fill: theme.palette.secondary.main, fillOpacity: 0.7 },
-          '& .MuiLineElement-series-p50': { strokeDasharray: '6 4', strokeWidth: 2 },
-          '& .MuiLineElement-series-kbw': { strokeWidth: 3 },
-        }}
-      >
-        <LineChart
-          // left margin leaves room for y tick labels like "-100 mm"
-          margin={{ top: 12, right: 16, bottom: 28, left: 72 }}
-          tooltip={{ trigger: 'none' }}
-          skipAnimation
-          slotProps={{ legend: { hidden: true } }}
-          dataset={visible}
-          xAxis={[
-            {
-              id: 'x',
-              dataKey: 'date',
-              scaleType: 'point',
-              data: dates,
-              label: 'Data (dd.MM)',
-              valueFormatter: (value: string) => formatDayMonth(value),
-              tickLabelInterval: (_value: string, index: number) => index % labelStep === 0,
-            },
-          ]}
-          yAxis={[{ id: 'y', valueFormatter: (value: number) => `${value} mm` }]}
-          series={[
-            { id: 'p10', dataKey: 'p10', stack: 'norm', showMark: false, label: 'p10' },
-            {
-              id: 'band',
-              dataKey: 'band',
-              stack: 'norm',
-              area: true,
-              showMark: false,
-              label: 'Pasmo normy',
-            },
-            {
-              id: 'p50',
-              dataKey: 'p50',
-              showMark: false,
-              label: 'Norma z 10 lat',
-              color: theme.palette.text.secondary,
-            },
-            {
-              id: 'kbw',
-              dataKey: 'kbw',
-              showMark: showSeriesMarks,
-              connectNulls: true,
-              label: 'Bilans wody',
-              color: theme.palette.primary.main,
-              valueFormatter: (value: number | null) =>
-                value === null ? '' : `${formatNumber(value)} mm`,
-            },
-          ]}
-        >
-          <ChartsReferenceLine
-            y={0}
-            lineStyle={{ stroke: theme.palette.text.primary, strokeWidth: 1.5 }}
-          />
-        </LineChart>
-      </Box>
-
+      {legend}
+      {chart}
       <Typography sx={{ fontSize: '1.125rem' }}>{summary}</Typography>
     </Stack>
   );

@@ -22,7 +22,6 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAccountParcelsQuery } from '@/api/accountParcels';
 import { useReportQuery } from '@/api/analyses';
 import type { DroughtClass, ParcelOverview } from '@/api/types';
-import { DashboardTile } from '@/components/DashboardTile/DashboardTile';
 import { KbwChart } from '@/components/KbwChart/KbwChart';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { DROUGHT_WORDS, ThreatList, ThreatMap } from '@/components/ThreatMap/ThreatMap';
@@ -109,15 +108,15 @@ export function AccountPage() {
       <Typography variant="h1" component="h1" sx={srOnly}>
         {active?.name ?? 'Pulpit'}
       </Typography>
-      {/* lg+: one screen without scrolling – the grid gets the window height left below the header,
-          map row and chart row share it (rows: heading, map + drought, water balance) */}
+      {/* lg+: one screen without scrolling – the grid gets the window height left below the header;
+          the map row is as tall as the drought tile needs, the water balance chart takes the rest */}
       <Box
         ref={fit.ref}
         sx={{
           display: 'grid',
           gap: 2,
           gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
-          gridTemplateRows: { lg: 'auto minmax(0, 1.25fr) minmax(0, 1fr)' },
+          gridTemplateRows: { lg: 'auto auto minmax(0, 1fr)' },
           gridTemplateAreas: {
             xs: '"switch" "title" "map" "side" "chart"',
             lg: '"title switch" "map side" "chart chart"',
@@ -329,42 +328,77 @@ export function AccountPage() {
             </Box>
           </CardContent>
         </Card>
-        <DashboardTile
-          id="bilans-wody"
-          title={top ? `Bilans wody · działka ${top.parcel.parcelNumber}` : 'Bilans wody'}
-          isLoading={parcels.isPending || (top !== null && topReport.isPending)}
-          isError={parcels.isError || topReport.isError}
-          errorText="Nie udało się pobrać wykresu bilansu wody."
-          onRetry={() => {
-            retryParcels();
-            void topReport.refetch();
-          }}
-          sx={{ gridArea: 'chart', minHeight: 0 }}
+        {/* water balance: the title is a link to the full report and sits in one row with the
+            period toggle, so the chart gets the most height (lg+ one-screen layout) */}
+        <Card
+          component="section"
+          aria-labelledby="bilans-wody-title"
+          sx={{ gridArea: 'chart', minWidth: 0, minHeight: 0, display: 'flex' }}
         >
-          {top && topReport.data ? (
-            <Stack spacing={1} sx={{ height: { lg: '100%' } }}>
-              <Box sx={{ flex: { lg: '1 1 0' }, minHeight: 0 }}>
-                <KbwChart charts={topReport.data.charts} fill />
-              </Box>
-              <Link
-                component={RouterLink}
-                to={`/report/${top.lastReport?.id ?? ''}`}
-                sx={{ ...linkSx, flexShrink: 0 }}
-              >
-                Pełny raport
-              </Link>
-            </Stack>
-          ) : (
-            <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
-              <Typography sx={bigText}>
-                Wykres pokażemy, gdy sprawdzisz działkę i powstanie jej raport.
-              </Typography>
-              <Link component={RouterLink} to="/" sx={linkSx}>
-                Sprawdź działkę
-              </Link>
-            </Stack>
-          )}
-        </DashboardTile>
+          <CardContent sx={{ flexGrow: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+            {top && topReport.data ? (
+              <KbwChart
+                charts={topReport.data.charts}
+                fill
+                title={
+                  <Typography id="bilans-wody-title" variant="h2" component="h2">
+                    <Link
+                      component={RouterLink}
+                      to={`/report/${top.lastReport?.id ?? ''}`}
+                      color="inherit"
+                      underline="hover"
+                    >
+                      {`Bilans wody · działka ${top.parcel.parcelNumber}`}
+                    </Link>
+                  </Typography>
+                }
+              />
+            ) : (
+              <Stack spacing={1.5} sx={{ alignItems: 'flex-start' }}>
+                <Typography id="bilans-wody-title" variant="h2" component="h2">
+                  Bilans wody
+                </Typography>
+                {parcels.isPending || (top !== null && topReport.isPending) ? (
+                  <Skeleton
+                    variant="rounded"
+                    height={160}
+                    sx={{ width: '100%' }}
+                    aria-label="Ładowanie: Bilans wody"
+                  />
+                ) : parcels.isError || topReport.isError ? (
+                  <Alert
+                    severity="error"
+                    role="alert"
+                    sx={{ width: '100%' }}
+                    action={
+                      <Button
+                        color="inherit"
+                        sx={{ minHeight: 48 }}
+                        onClick={() => {
+                          retryParcels();
+                          void topReport.refetch();
+                        }}
+                      >
+                        Spróbuj ponownie
+                      </Button>
+                    }
+                  >
+                    Nie udało się pobrać wykresu bilansu wody.
+                  </Alert>
+                ) : (
+                  <>
+                    <Typography sx={bigText}>
+                      Wykres pokażemy, gdy sprawdzisz działkę i powstanie jej raport.
+                    </Typography>
+                    <Link component={RouterLink} to="/" sx={linkSx}>
+                      Sprawdź działkę
+                    </Link>
+                  </>
+                )}
+              </Stack>
+            )}
+          </CardContent>
+        </Card>
       </Box>
     </Stack>
   );
