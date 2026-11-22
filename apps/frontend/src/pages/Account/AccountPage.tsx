@@ -206,7 +206,7 @@ export function AccountPage() {
               Sprawdź działkę
             </Link>
           }
-          sx={{ gridArea: 'side' }}
+          sx={{ gridArea: 'side', alignSelf: 'start' }}
         >
           <Stack spacing={1}>
             {DROUGHT_ORDER.map((value) => (
