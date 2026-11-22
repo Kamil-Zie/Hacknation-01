@@ -140,120 +140,112 @@ export function AccountPage() {
             </Stack>
           )}
         </Box>
-        {/* lg+: same height as the map box in ThreatMap, buttons pushed to its bottom edge */}
-        <Stack
-          spacing={2}
+        {/* one card: two columns from the top edge (drought counts | at-risk list and legend),
+            action buttons at the bottom; lg+: same height as the map box in ThreatMap */}
+        <Card
           sx={{
             gridArea: 'side',
             alignSelf: 'start',
             minWidth: 0,
             minHeight: { lg: 'max(360px, 45vh)' },
-            justifyContent: 'space-between',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          {/* one card, two columns from the top edge: drought counts | at-risk list and legend;
-              on lg+ it grows to fill the column, so there is no gap above the buttons */}
-          <Card sx={{ flexGrow: { lg: 1 } }}>
-            <CardContent>
-              <Box
-                sx={{
-                  display: 'grid',
-                  gap: 2,
-                  gridTemplateColumns: {
-                    xs: 'minmax(0, 1fr)',
-                    sm: hasParcels ? 'repeat(2, minmax(0, 1fr))' : 'minmax(0, 1fr)',
-                  },
-                  alignItems: 'start',
-                }}
-              >
-                <Stack component="section" aria-labelledby="stan-suszy-title" spacing={2}>
-                  <Typography id="stan-suszy-title" variant="h2" component="h2">
-                    Stan suszy
-                  </Typography>
-                  {parcels.isPending ? (
-                    <Stack spacing={1} aria-label="Ładowanie: Stan suszy">
-                      <Skeleton variant="rounded" height={32} />
-                      <Skeleton variant="rounded" height={32} width="70%" />
-                    </Stack>
-                  ) : parcels.isError ? (
-                    <Alert
-                      severity="error"
-                      role="alert"
-                      action={
-                        <Button color="inherit" sx={{ minHeight: 48 }} onClick={retryParcels}>
-                          Spróbuj ponownie
-                        </Button>
-                      }
+          <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 2,
+                gridTemplateColumns: {
+                  xs: 'minmax(0, 1fr)',
+                  sm: hasParcels ? 'repeat(2, minmax(0, 1fr))' : 'minmax(0, 1fr)',
+                },
+                alignItems: 'start',
+              }}
+            >
+              <Stack component="section" aria-labelledby="stan-suszy-title" spacing={2}>
+                <Typography id="stan-suszy-title" variant="h2" component="h2">
+                  Stan suszy
+                </Typography>
+                {parcels.isPending ? (
+                  <Stack spacing={1} aria-label="Ładowanie: Stan suszy">
+                    <Skeleton variant="rounded" height={32} />
+                    <Skeleton variant="rounded" height={32} width="70%" />
+                  </Stack>
+                ) : parcels.isError ? (
+                  <Alert
+                    severity="error"
+                    role="alert"
+                    action={
+                      <Button color="inherit" sx={{ minHeight: 48 }} onClick={retryParcels}>
+                        Spróbuj ponownie
+                      </Button>
+                    }
+                  >
+                    Nie udało się pobrać danych.
+                  </Alert>
+                ) : !hasParcels ? (
+                  <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
+                    <Typography sx={bigText}>
+                      Stan suszy pokażemy po sprawdzeniu pierwszej działki.
+                    </Typography>
+                    <Link component={RouterLink} to="/" sx={linkSx}>
+                      Sprawdź działkę
+                    </Link>
+                  </Stack>
+                ) : (
+                  <Stack spacing={1}>
+                    {DROUGHT_ORDER.map((value) => (
+                      <Stack key={value} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                        <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
+                        <Typography sx={bigText}>{countByClass(value)}</Typography>
+                      </Stack>
+                    ))}
+                    <Typography
+                      sx={{
+                        ...bigText,
+                        fontWeight: 700,
+                        pt: 1,
+                        borderTop: 1,
+                        borderColor: 'divider',
+                      }}
                     >
-                      Nie udało się pobrać danych.
-                    </Alert>
-                  ) : !hasParcels ? (
-                    <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
-                      <Typography sx={bigText}>
-                        Stan suszy pokażemy po sprawdzeniu pierwszej działki.
-                      </Typography>
-                      <Link component={RouterLink} to="/" sx={linkSx}>
-                        Sprawdź działkę
-                      </Link>
-                    </Stack>
-                  ) : (
-                    <Stack spacing={1}>
-                      {DROUGHT_ORDER.map((value) => (
-                        <Stack
-                          key={value}
-                          direction="row"
-                          spacing={1}
-                          sx={{ alignItems: 'center' }}
-                        >
-                          <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
-                          <Typography sx={bigText}>{countByClass(value)}</Typography>
-                        </Stack>
-                      ))}
-                      <Typography
-                        sx={{
-                          ...bigText,
-                          fontWeight: 700,
-                          pt: 1,
-                          borderTop: 1,
-                          borderColor: 'divider',
-                        }}
-                      >
-                        Zagrożony obszar: {formatHa(atRiskHa)}
-                      </Typography>
-                    </Stack>
-                  )}
-                </Stack>
-                {hasParcels && <ThreatList items={items} onSelect={openReport} />}
-              </Box>
-            </CardContent>
-          </Card>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={1.5}
-            useFlexGap
-            sx={{ flexWrap: 'wrap' }}
-          >
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={<AddLocationAltIcon />}
-              onClick={() => navigate('/')}
-              sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
+                      Zagrożony obszar: {formatHa(atRiskHa)}
+                    </Typography>
+                  </Stack>
+                )}
+              </Stack>
+              {hasParcels && <ThreatList items={items} onSelect={openReport} />}
+            </Box>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1.5}
+              useFlexGap
+              sx={{ flexWrap: 'wrap', mt: 'auto' }}
             >
-              Sprawdź nową działkę
-            </Button>
-            <Button
-              component={RouterLink}
-              to="/szybki-raport"
-              variant="outlined"
-              size="large"
-              startIcon={<PlaylistAddCheckIcon />}
-              sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
-            >
-              Szybki raport
-            </Button>
-          </Stack>
-        </Stack>
+              <Button
+                variant="contained"
+                size="large"
+                startIcon={<AddLocationAltIcon />}
+                onClick={() => navigate('/')}
+                sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
+              >
+                Sprawdź nową działkę
+              </Button>
+              <Button
+                component={RouterLink}
+                to="/szybki-raport"
+                variant="outlined"
+                size="large"
+                startIcon={<PlaylistAddCheckIcon />}
+                sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
+              >
+                Szybki raport
+              </Button>
+            </Stack>
+          </CardContent>
+        </Card>
         <DashboardTile
           id="bilans-wody"
           title={top ? `Bilans wody · działka ${top.parcel.parcelNumber}` : 'Bilans wody'}
