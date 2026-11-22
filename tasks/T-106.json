@@ -5,7 +5,7 @@
   "type": "bugfix",
   "team": "frontend",
   "assignee": "frontend-1",
-  "status": "in_progress",
+  "status": "done",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-009"],
@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "frontend-1 08:10: done (3a38490, 7808d1d). FitToItems dopasowuje mapę tylko przy zmianie zestawu działek (klucz z id), więc oddalanie już nie skacze (zoom 15 → 13 zostaje). Przy aktywnym filtrze suszy i ręcznym oddaleniu: komunikat na mapie (role=status) z przyciskami Pokaż wszystkie działki (włącza wszystkie klasy) i Zamknij. Bez filtra brak komunikatu. AccountPage: 2 propsy dopisane za Nataniela za zgodą Kamila. Sprawdzone 1440 i 390, jasny i ciemny, 0 błędów JS.",
     "Pliki: src/components/ThreatMap/ThreatMap.tsx (i ewentualnie src/pages/Account/AccountPage.tsx). AccountPage ma w rezerwacji Nataniel (T-103) – zanim go ruszysz, napisz do niego. Zamrożenie funkcji o 9:00."
   ],
   "created_at": "2026-11-22",

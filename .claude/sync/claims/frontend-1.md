@@ -1,3 +1,3 @@
 # Claims: frontend-1 (Dawid)
 
-- T-106 · UI-C-017 · `src/components/ThreatMap/ThreatMap.tsx` · od 2026-11-22 07:45 (czeka na 2 propsy w AccountPage od Nataniela)
+Brak aktywnych rezerwacji. T-106 i T-108 zakończone 2026-11-22 08:10.
