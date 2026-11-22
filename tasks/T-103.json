@@ -5,7 +5,7 @@
   "type": "bug",
   "team": "frontend",
   "assignee": "backend-2",
-  "status": "in_progress",
+  "status": "integration",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-009", "UI-S-010", "UI-S-011", "UI-S-012", "UI-S-013", "UI-S-014"],
@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "backend-2 05:22: integration. Pulpit one-page (lg+: wysokość okna, mapa bez kafelka, Stan suszy z listą zagrożonych i przyciskami, Bilans wody na całą szerokość, klasy suszy jako przełączniki mapy, bez stopki, pełna szerokość), logo → /konto, Dodaj działkę: opcje Numer/GPS/Mapa, wyszukiwarka miejscowości z podpowiedziami (Photon), granice działek GUGiK od zoom 17 (Mapa i Satelita), tworzenie pola z działek klikniętych na mapie (API-022 + API-016). Sprawdzone zrzutami w Edge na mockach (1440×900, 1920×1080, 390); nie sprawdzone: prawdziwe API (tworzenie pola, klik działki) i axe – prośba do coord-1 o przegląd na prod.",
     "coord-1 02:28: decyzja Kamila: Nataniel ma zgodę na wszelkie zmiany układu (layout) wszystkich ekranów, także pulpitu UI-S-009 (np. usunięcie kafelka „Twoje działki”), bez pytania o zgodę; po zmianie aktualizuje opis w contracts/ui.json i informuje zespół.",
     "coord-1 02:27: decyzja Kamila: Nataniel implementuje poprawki, Dawid testuje (T-102)."
   ],
