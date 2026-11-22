@@ -2,14 +2,12 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Alert,
   Box,
   Button,
-  ButtonBase,
   CircularProgress,
   InputAdornment,
   Stack,
@@ -82,18 +80,6 @@ export function AnalysisForm({
   const today = getTodayIso();
   const [isOtherDay, setIsOtherDay] = useState(defaultDate !== undefined && defaultDate !== today);
   const [search, setSearch] = useState('');
-  // T-103: crop categories start folded; a category with the chosen crop starts open
-  const [openGroups, setOpenGroups] = useState<string[]>(() => {
-    const preselected = crops.find((crop) => crop.code === defaultCropCode);
-    const category = preselected ? groupCropsByCategory([preselected])[0]?.category : undefined;
-    return category ? [category] : [];
-  });
-  const toggleGroup = (category: string) =>
-    setOpenGroups((current) =>
-      current.includes(category)
-        ? current.filter((entry) => entry !== category)
-        : [...current, category],
-    );
   const cropSectionRef = useRef<HTMLFieldSetElement>(null);
   const {
     control,
@@ -178,153 +164,100 @@ export function AnalysisForm({
                     Nie ma takiej uprawy. Sprawdź pisownię.
                   </Typography>
                 )}
-                <Stack spacing={1}>
-                  {groups.map((group) => {
-                    // T-103: categories fold so the page is not a wall of buttons; open on click,
-                    // while searching, or when the chosen crop is inside
-                    const selectedHere = group.crops.find((crop) => crop.code === field.value);
-                    const isOpen = query !== '' || openGroups.includes(group.category);
-                    const panelId = `crop-panel-${group.category}`;
-                    return (
-                      <Box
-                        key={group.category}
-                        sx={{ border: 1, borderColor: 'kropla.line', borderRadius: '14px' }}
+                {/* T-103: categories side by side as columns, all open, compact tiles,
+                    so every crop is visible at once without a wall of big buttons */}
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: {
+                      xs: 'minmax(0, 1fr)',
+                      sm: 'repeat(2, minmax(0, 1fr))',
+                      md: 'repeat(3, minmax(0, 1fr))',
+                      lg: 'repeat(4, minmax(0, 1fr))',
+                    },
+                    gap: 1.5,
+                    alignItems: 'start',
+                  }}
+                >
+                  {groups.map((group) => (
+                    <Box
+                      key={group.category}
+                      role="radiogroup"
+                      aria-labelledby={`crop-group-${group.category}`}
+                      sx={{
+                        border: 1,
+                        borderColor: 'kropla.line',
+                        borderRadius: '14px',
+                        p: 1.25,
+                        minWidth: 0,
+                      }}
+                    >
+                      <Typography
+                        variant="h3"
+                        component="h2"
+                        id={`crop-group-${group.category}`}
+                        sx={{ fontSize: '1.125rem', fontWeight: 700, mb: 1, px: 0.5 }}
                       >
-                        <Typography
-                          variant="h3"
-                          component="h2"
-                          id={`crop-group-${group.category}`}
-                          sx={{ m: 0 }}
-                        >
-                          <ButtonBase
-                            aria-expanded={isOpen}
-                            aria-controls={panelId}
-                            onClick={() => toggleGroup(group.category)}
-                            sx={{
-                              width: '100%',
-                              minHeight: 56,
-                              px: 2,
-                              gap: 1.5,
-                              justifyContent: 'flex-start',
-                              textAlign: 'left',
-                              borderRadius: '14px',
-                              fontSize: '1.125rem',
-                              fontWeight: 700,
-                              '&:hover': { bgcolor: 'action.hover' },
-                              '&.Mui-focusVisible': { outline: 2, outlineColor: 'primary.main' },
-                            }}
-                          >
-                            <ExpandMoreIcon
-                              aria-hidden
-                              sx={{
-                                transition: 'transform 150ms',
-                                transform: isOpen ? 'rotate(180deg)' : 'none',
-                              }}
-                            />
-                            <Box component="span" sx={{ flex: 1 }}>
-                              {group.category}
+                        {group.category}
+                      </Typography>
+                      <Stack spacing={0.75}>
+                        {group.crops.map((crop) => {
+                          const isSelected = field.value === crop.code;
+                          return (
+                            <Box component="label" key={crop.code} sx={tileSx(isSelected)}>
+                              <input
+                                type="radio"
+                                name="cropCode"
+                                value={crop.code}
+                                checked={isSelected}
+                                disabled={isSubmitting}
+                                onChange={() => field.onChange(crop.code)}
+                                onBlur={field.onBlur}
+                              />
                               <Box
-                                component="span"
-                                sx={{ color: 'text.secondary', fontWeight: 400 }}
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 1,
+                                  minHeight: 52,
+                                  width: '100%',
+                                  px: 1.25,
+                                  minWidth: 0,
+                                }}
                               >
-                                {` (${group.crops.length})`}
+                                <CropIcon
+                                  cropCode={crop.code}
+                                  sx={{ fontSize: 28, flexShrink: 0 }}
+                                />
+                                <Typography
+                                  component="span"
+                                  sx={{
+                                    flex: 1,
+                                    minWidth: 0,
+                                    fontWeight: 700,
+                                    fontSize: '1.125rem',
+                                    lineHeight: 1.2,
+                                    // break between words only
+                                    overflowWrap: 'break-word',
+                                    hyphens: 'auto',
+                                  }}
+                                >
+                                  {crop.name}
+                                </Typography>
+                                {isSelected && (
+                                  <CheckCircleIcon
+                                    aria-hidden
+                                    sx={{ color: 'kropla.iconMuted', fontSize: 24, flexShrink: 0 }}
+                                  />
+                                )}
                               </Box>
                             </Box>
-                            {selectedHere && !isOpen && (
-                              <Box
-                                component="span"
-                                sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75 }}
-                              >
-                                <CheckCircleIcon aria-hidden sx={{ color: 'primary.main' }} />
-                                {selectedHere.name}
-                              </Box>
-                            )}
-                          </ButtonBase>
-                        </Typography>
-                        {isOpen && (
-                          <Box
-                            id={panelId}
-                            role="radiogroup"
-                            aria-labelledby={`crop-group-${group.category}`}
-                            sx={{ px: { xs: 1.5, md: 2 }, pb: { xs: 1.5, md: 2 } }}
-                          >
-                            <Box
-                              sx={{
-                                display: 'grid',
-                                gridTemplateColumns: {
-                                  // one column below 600 px: with 18 px text two columns split words ("Kukurydz-a")
-                                  xs: 'minmax(0, 1fr)',
-                                  sm: 'repeat(2, minmax(0, 1fr))',
-                                  md: 'repeat(auto-fill, minmax(240px, 1fr))',
-                                },
-                                gap: { xs: 1.25, md: 1.75 },
-                              }}
-                            >
-                              {group.crops.map((crop) => {
-                                const isSelected = field.value === crop.code;
-                                return (
-                                  <Box component="label" key={crop.code} sx={tileSx(isSelected)}>
-                                    <input
-                                      type="radio"
-                                      name="cropCode"
-                                      value={crop.code}
-                                      checked={isSelected}
-                                      disabled={isSubmitting}
-                                      onChange={() => field.onChange(crop.code)}
-                                      onBlur={field.onBlur}
-                                    />
-                                    <Box
-                                      sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: { xs: 1, md: 1.75 },
-                                        minHeight: { xs: 80, md: 88 },
-                                        width: '100%',
-                                        px: { xs: 1.5, md: 2.5 },
-                                        minWidth: 0,
-                                      }}
-                                    >
-                                      <CropIcon
-                                        cropCode={crop.code}
-                                        sx={{ fontSize: { xs: 30, md: 44 }, flexShrink: 0 }}
-                                      />
-                                      <Typography
-                                        component="span"
-                                        sx={{
-                                          flex: 1,
-                                          minWidth: 0,
-                                          fontWeight: 700,
-                                          fontSize: { xs: '1.125rem', md: '1.375rem' },
-                                          lineHeight: 1.2,
-                                          // break between words only (360 px tiles split "Psze-nica" with 'anywhere')
-                                          overflowWrap: 'break-word',
-                                          hyphens: 'auto',
-                                        }}
-                                      >
-                                        {crop.name}
-                                      </Typography>
-                                      {isSelected && (
-                                        <CheckCircleIcon
-                                          aria-hidden
-                                          sx={{
-                                            color: 'kropla.iconMuted',
-                                            fontSize: { xs: 26, md: 30 },
-                                            // on phones the highlighted tile already shows the choice; keep the width for the name
-                                            display: { xs: 'none', sm: 'inline-flex' },
-                                          }}
-                                        />
-                                      )}
-                                    </Box>
-                                  </Box>
-                                );
-                              })}
-                            </Box>
-                          </Box>
-                        )}
-                      </Box>
-                    );
-                  })}
-                </Stack>
+                          );
+                        })}
+                      </Stack>
+                    </Box>
+                  ))}
+                </Box>
               </Stack>
             </Box>
           )}
