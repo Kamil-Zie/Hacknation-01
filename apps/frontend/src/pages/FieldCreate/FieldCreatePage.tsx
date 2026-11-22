@@ -1,5 +1,4 @@
-// UI-S-007 API-016 Create a field: name + 2-20 parcels added by number or by clicking the map
-import AddIcon from '@mui/icons-material/Add';
+// UI-S-007 API-016 Create a field: name + 2-20 parcels added with the same search as „Dodaj działkę” (number / address / GPS / map)
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import {
@@ -15,13 +14,13 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import type { FormEvent } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import { useCreateFieldMutation } from '@/api/fields';
 import { getParcelById, getParcelByPoint } from '@/api/parcels';
 import type { Parcel } from '@/api/types';
-import { FieldPickMap } from '@/components/FieldPickMap/FieldPickMap';
+import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
+import { ParcelSearch } from '@/components/ParcelSearch/ParcelSearch';
 import { useRecentParcelsStore } from '@/store/recentParcels';
 import { useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
@@ -42,8 +41,12 @@ export function FieldCreatePage() {
   const recent = useRecentParcelsStore((state) => state.items);
   const create = useCreateFieldMutation(accountId ?? '', token ?? '');
   const [name, setName] = useState('');
-  const [parcelInput, setParcelInput] = useState('');
   const [parcels, setParcels] = useState<Parcel[]>([]);
+  const [focus, setFocus] = useState<{
+    lat: number;
+    lon: number;
+    bounds?: [[number, number], [number, number]];
+  } | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
 
@@ -91,7 +94,6 @@ export function FieldCreatePage() {
     setIsAdding(true);
     try {
       addParcel(await fetcher());
-      setParcelInput('');
     } catch (error) {
       setAddError(errorMessage(error).message);
     } finally {
@@ -99,15 +101,12 @@ export function FieldCreatePage() {
     }
   }
 
-  function handleAdd(event: FormEvent) {
-    event.preventDefault();
-    const id = parcelInput.trim();
-    if (!id || isAdding) return;
-    void load(() => getParcelById(id));
+  // map click or GPS position: the parcel under that point goes into the group
+  function pickAt(lat: number, lon: number) {
+    if (!isAdding) void load(() => getParcelByPoint(lat, lon));
   }
 
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+  function handleSubmit() {
     if (!canSave) return;
     resetErrors();
     create.mutate(
@@ -119,7 +118,8 @@ export function FieldCreatePage() {
   const suggestions = recent.filter((item) => !parcels.some((parcel) => parcel.id === item.id));
 
   return (
-    <Stack spacing={3} sx={{ maxWidth: 1200, mx: 'auto' }} component="form" onSubmit={handleSubmit}>
+    // not a <form>: ParcelSearch has its own forms inside (nested forms are invalid)
+    <Stack spacing={3} sx={{ maxWidth: 960 }}>
       <Box>
         <Typography variant="h1">Dodaj grupę działek</Typography>
         <Typography color="text.secondary" sx={BIG_TEXT}>
@@ -140,14 +140,7 @@ export function FieldCreatePage() {
         sx={{ maxWidth: 560 }}
       />
 
-      <Box
-        sx={{
-          display: 'grid',
-          gap: 3,
-          gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 420px) minmax(0, 1fr)' },
-          alignItems: 'start',
-        }}
-      >
+      <Box>
         <Stack spacing={2}>
           {/* T-103: the parcels already in the group sit above the search, so an added parcel
               shows up right above the field it was typed into */}
@@ -209,39 +202,53 @@ export function FieldCreatePage() {
             )}
           </Box>
 
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={1}
-            alignItems={{ sm: 'flex-start' }}
-          >
-            <TextField
-              label="Numer działki"
-              placeholder="np. 061409_2.0009.612"
-              value={parcelInput}
-              onChange={(event) => setParcelInput(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') handleAdd(event);
-              }}
-              error={addError !== null}
-              helperText={addError ?? 'Albo kliknij działkę na mapie.'}
-              slotProps={{
-                htmlInput: { style: BIG_TEXT },
-                inputLabel: { style: BIG_TEXT },
-                formHelperText: { role: addError ? 'alert' : undefined, style: { fontSize: 16 } },
-              }}
-              fullWidth
-            />
-            <Button
-              type="button"
-              variant="outlined"
-              startIcon={isAdding ? <CircularProgress size={20} /> : <AddIcon aria-hidden />}
-              disabled={isAdding || !parcelInput.trim()}
-              onClick={handleAdd}
-              sx={{ ...BIG_BUTTON, flexShrink: 0, mt: { sm: 0.5 } }}
-            >
-              Dodaj
-            </Button>
-          </Stack>
+          {/* T-103: same search as „Dodaj działkę” (number / address / GPS / map); every parcel
+              found or clicked goes into the group */}
+          <ParcelSearch
+            isLoading={isAdding}
+            onSearch={(id) => {
+              if (!isAdding) void load(() => getParcelById(id));
+            }}
+            onLocate={pickAt}
+            onPlaceFound={(lat, lon, bounds) => setFocus({ lat, lon, bounds })}
+            mapSlot={
+              <Box
+                component="section"
+                aria-label="Mapa: klikaj działki do grupy"
+                sx={{
+                  minWidth: 0,
+                  border: 1,
+                  borderColor: 'kropla.line',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                }}
+              >
+                <ParcelMap
+                  parcel={null}
+                  selectedParcels={parcels}
+                  focus={focus}
+                  height={{ xs: 320, md: 480 }}
+                  isLoading={isAdding}
+                  errorMessage={null}
+                  layerToggleInCorner
+                  showParcelBoundaries
+                  onPick={pickAt}
+                />
+              </Box>
+            }
+          />
+          {isAdding && (
+            <Stack direction="row" spacing={1.5} role="status" alignItems="center">
+              <CircularProgress size={24} aria-hidden />
+              <Typography sx={BIG_TEXT}>Dodajemy działkę…</Typography>
+            </Stack>
+          )}
+          {addError && (
+            <Alert severity="error" role="alert" sx={BIG_TEXT}>
+              {addError}
+            </Alert>
+          )}
 
           {suggestions.length > 0 && (
             <Stack spacing={1} component="section" aria-label="Ostatnie działki">
@@ -274,13 +281,6 @@ export function FieldCreatePage() {
             </Stack>
           )}
         </Stack>
-
-        <FieldPickMap
-          parcels={parcels}
-          onPick={(lat, lon) => {
-            if (!isAdding) void load(() => getParcelByPoint(lat, lon));
-          }}
-        />
       </Box>
 
       {submitError && (
@@ -291,7 +291,8 @@ export function FieldCreatePage() {
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ sm: 'center' }}>
         <Button
-          type="submit"
+          type="button"
+          onClick={handleSubmit}
           variant="contained"
           size="large"
           disabled={!canSave}
