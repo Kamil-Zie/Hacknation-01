@@ -72,8 +72,9 @@ export async function geocodeAddress(
 const PHOTON_URL = 'https://photon.komoot.io/api/';
 // Poland bounding box (lon/lat); Photon still returns border countries, so we filter by PL
 const POLAND_BBOX = '14.07,49.0,24.15,54.84';
-// a village without an extent: show about 2 km around its centre
-const VILLAGE_HALF_SPAN = 0.012;
+// a village without an extent: show the centre close up (zoom 17), where the GUGiK parcel
+// boundaries layer starts drawing, so the user can click a parcel right away
+const VILLAGE_HALF_SPAN = 0.0008;
 
 export interface PlaceSuggestion {
   id: string;

@@ -125,6 +125,7 @@ export function AddParcelPage() {
                 isLoading={isLoading}
                 errorMessage={null}
                 layerToggleInCorner
+                showParcelBoundaries
                 onPick={handlePick}
               />
             </Box>

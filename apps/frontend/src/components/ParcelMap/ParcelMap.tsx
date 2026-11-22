@@ -9,6 +9,7 @@ import {
   Tooltip,
   useMap,
   useMapEvents,
+  WMSTileLayer,
 } from 'react-leaflet';
 import { point } from 'leaflet';
 import type { LatLngBoundsExpression, LatLngTuple } from 'leaflet';
@@ -50,9 +51,24 @@ interface ParcelMapProps {
   showLayerToggle?: boolean;
   /** T-103: put the Mapa / Satelita switch in the top right corner (default sits lower) */
   layerToggleInCorner?: boolean;
+  /** T-103: draw cadastral parcel boundaries (GUGiK WMS) from zoom 17 and a "zoom in" hint */
+  showParcelBoundaries?: boolean;
   isLoading?: boolean;
   errorMessage?: string | null;
   onPick?: (lat: number, lon: number) => void;
+}
+
+const PARCEL_BOUNDARIES_WMS =
+  'https://integracja.gugik.gov.pl/cgi-bin/KrajowaIntegracjaEwidencjiGruntow';
+
+// the GUGiK service returns empty images above about 1:5000, so the layer starts at zoom 17
+const BOUNDARIES_MIN_ZOOM = 17;
+
+// reports the map zoom (for the "zoom in to see parcel boundaries" hint)
+function ZoomWatcher({ onZoom }: { onZoom: (zoom: number) => void }) {
+  const map = useMapEvents({ zoomend: () => onZoom(map.getZoom()) });
+  useEffect(() => onZoom(map.getZoom()), [map, onZoom]);
+  return null;
 }
 
 function ClickHandler({ onPick }: { onPick?: (lat: number, lon: number) => void }) {
@@ -97,7 +113,7 @@ function FocusPlace({ focus }: { focus: ParcelMapProps['focus'] }) {
     // zoom computed from the bounds + a jump without animation: an animated fitBounds from the
     // Poland view got stuck half-way (old tiles greyed out)
     const zoom = focus.bounds
-      ? Math.min(16, map.getBoundsZoom(focus.bounds, false, point(16, 16)))
+      ? Math.min(18, map.getBoundsZoom(focus.bounds, false, point(16, 16)))
       : (focus.zoom ?? 16);
     const center: [number, number] = focus.bounds
       ? [
@@ -119,6 +135,7 @@ export function ParcelMap({
   isInteractive = true,
   showLayerToggle = isInteractive,
   layerToggleInCorner = false,
+  showParcelBoundaries = false,
   isLoading = false,
   errorMessage = null,
   onPick,
@@ -127,6 +144,7 @@ export function ParcelMap({
   const [layer, setLayer] = useMapLayer();
   const layerConfig = MAP_LAYERS[layer];
   const [isHighlighted, setIsHighlighted] = useState(false);
+  const [zoom, setZoom] = useState<number | null>(null);
   useEffect(() => {
     if (!focusKey) return;
     setIsHighlighted(true);
@@ -171,6 +189,20 @@ export function ParcelMap({
           url={layerConfig.url}
           maxZoom={layerConfig.maxZoom}
         />
+        {/* T-103: cadastral parcel boundaries and numbers (GUGiK KIEG WMS) from zoom 17,
+            so the user sees which parcel they are about to click */}
+        {showParcelBoundaries && (
+          <WMSTileLayer
+            url={PARCEL_BOUNDARIES_WMS}
+            layers="dzialki,numery_dzialek"
+            format="image/png"
+            transparent
+            minZoom={BOUNDARIES_MIN_ZOOM}
+            maxZoom={layerConfig.maxZoom}
+            attribution="Granice działek: GUGiK (KIEG)"
+          />
+        )}
+        {showParcelBoundaries && <ZoomWatcher onZoom={setZoom} />}
         {isInteractive && <ClickHandler onPick={onPick} />}
         {parcel && (
           <GeoJSON
@@ -208,6 +240,30 @@ export function ParcelMap({
           aria-label="Ładowanie działki"
           sx={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1000 }}
         />
+      )}
+      {showParcelBoundaries && zoom !== null && zoom < BOUNDARIES_MIN_ZOOM && (
+        <Box
+          role="status"
+          sx={{
+            position: 'absolute',
+            left: '50%',
+            bottom: 28,
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            px: 2,
+            py: 1,
+            borderRadius: 2,
+            bgcolor: 'background.paper',
+            color: 'text.primary',
+            boxShadow: 3,
+            fontSize: '1.125rem',
+            fontWeight: 600,
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Przybliż mapę, żeby zobaczyć granice działek
+        </Box>
       )}
       {errorMessage && (
         <Alert
