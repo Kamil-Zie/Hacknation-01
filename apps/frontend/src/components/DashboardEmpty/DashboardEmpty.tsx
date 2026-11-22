@@ -139,7 +139,7 @@ export function DashboardEmpty({ canEdit }: DashboardEmptyProps) {
             component="h2"
             sx={{ mb: 1, fontSize: { xs: '1.75rem', md: '2.25rem' }, fontWeight: 800 }}
           >
-            Dodaj swoją pierwszą działkę
+            Aby rozpocząć analizę, dodaj swoją pierwszą działkę
           </Typography>
           <Typography sx={{ fontSize: { xs: '1.125rem', md: '1.25rem' }, maxWidth: 720, mb: 2.5 }}>
             Sprawdzimy, <b>ile wody</b> ma działka i <b>czy grozi jej susza</b>.
