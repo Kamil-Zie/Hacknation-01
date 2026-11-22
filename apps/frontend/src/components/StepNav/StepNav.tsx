@@ -19,13 +19,19 @@ const STEPS: StepDef[] = [
 
 function activeStep(pathname: string): number | null {
   if (matchPath('/', pathname)) return 1;
+  // T-103: the add-parcel flow is step 1 too (then /parcel/:id?z=dodaj → crop → report)
+  if (matchPath('/dodaj-dzialke', pathname)) return 1;
   if (matchPath('/parcel/:parcelId', pathname)) return 2;
   if (matchPath('/report/:id', pathname)) return 3;
   return null;
 }
 
 export function StepNav() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
+  // came from „Dodaj działkę”: step 1 goes back there, not to the start page
+  const isAddFlow =
+    matchPath('/dodaj-dzialke', pathname) !== null ||
+    new URLSearchParams(search).get('z') === 'dodaj';
   const storedParcel = useSelectionStore((state) => state.parcel);
   const active = activeStep(pathname);
   if (active === null) return null;
@@ -33,7 +39,11 @@ export function StepNav() {
   const parcelId =
     matchPath('/parcel/:parcelId', pathname)?.params.parcelId ??
     (storedParcel ? encodeURIComponent(storedParcel.id) : null);
-  const links: (string | null)[] = ['/', parcelId ? `/parcel/${parcelId}` : null, null];
+  const links: (string | null)[] = [
+    isAddFlow ? '/dodaj-dzialke' : '/',
+    parcelId ? `/parcel/${parcelId}${isAddFlow ? '?z=dodaj' : ''}` : null,
+    null,
+  ];
 
   return (
     <Box
