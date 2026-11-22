@@ -103,24 +103,20 @@ Pliki `.env*` z prawdziwymi wartościami są tylko na NAS-ie (uprawnienia 600), 
 5. Po szkielecie: `docker compose pull && docker compose up -d` w folderze projektu na NAS-ie.
 6. Sprawdź: `curl -s https://api.kamil-zielinski.pl/api/v1/health` zwraca 200, `https://app.kamil-zielinski.pl` ładuje aplikację, w konsoli przeglądarki brak błędów CORS.
 
-## Wdrożenie przez Compose z pobraniem repo i skanem (zalecane, T-065)
+## Wdrożenie: Dockerfile sam pobiera repo i skanuje (zalecane, T-065)
 
-Compose sam pobiera `main` z GitHuba do `./src`, skanuje pliki i całą historię na sekrety (`git-checks.mjs scan --all` i `--history`) i dopiero wtedy buduje. Skan z błędem zatrzymuje wdrożenie.
+Repo jest publiczne, więc tokena nie trzeba. Dockerfile w `deploy/docker-compose.synology.yml` (`dockerfile_inline`) ma etap `source`: klonuje `main` z GitHuba, skanuje pliki i całą historię na sekrety (`git-checks.mjs scan --all` i `--history`), a dopiero potem buduje obraz. Skan z błędem przerywa budowę. Nowy commit na `main` unieważnia cache, więc każde `up --build` bierze najnowszy kod.
 
 ```bash
 ssh <user>@<nas> && sudo -i
 mkdir -p /volume1/docker/hacknation && cd /volume1/docker/hacknation
-# raz: plik Compose z repo (przez przeglądarkę GitHuba albo scp z laptopa)
-#   deploy/docker-compose.synology.yml -> /volume1/docker/hacknation/docker-compose.yml
-# raz: token GitHub (fine-grained, tylko to repo, Contents: Read) dla Compose
-printf 'GITHUB_TOKEN=%s\n' '<token>' > .env && chmod 600 .env
-# raz: sekrety backendu w .env.prod (sekcja „Zmienne prod”), chmod 600
-# wdrożenie i każda aktualizacja:
-docker compose run --rm source && docker compose up -d --build
+curl -fsSL -o docker-compose.yml https://raw.githubusercontent.com/Kamil-Zie/Hacknation-01/main/deploy/docker-compose.synology.yml
+# raz: .env.prod z sekretami backendu (sekcja „Zmienne prod”), chmod 600
+docker compose up -d --build          # wdrożenie i każda aktualizacja
 docker compose ps && curl -s localhost:13000/api/v1/health
 ```
 
-Token idzie tylko w nagłówku żądania git, nie trafia do `src/.git/config`. Układ na NAS-ie: `docker-compose.yml`, `.env`, `.env.prod`, `src/` (zarządzane przez Compose, nie edytuj ręcznie).
+Na NAS-ie są tylko `docker-compose.yml` i `.env.prod`. Zmiana samego pliku Compose w repo wymaga ponownego `curl`.
 
 ## Wdrożenie krok po kroku (ręczny klon, budowanie na NAS-ie, T-065)
 
