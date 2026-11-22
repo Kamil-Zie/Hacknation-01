@@ -1,7 +1,6 @@
 // UI-C-004 AnalysisForm: crop tiles and analysis day with validation (RHF + Zod), back and submit buttons (Kropla design)
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -174,7 +173,7 @@ export function AnalysisForm({
                       sm: 'repeat(2, minmax(0, 1fr))',
                       lg: 'repeat(4, minmax(0, 1fr))',
                     },
-                    gap: 1.25,
+                    gap: 2,
                     alignItems: 'start',
                   }}
                 >
@@ -185,7 +184,7 @@ export function AnalysisForm({
                       return columns;
                     }, [])
                     .map((column) => (
-                      <Stack key={column.map((group) => group.category).join('|')} spacing={1.25}>
+                      <Stack key={column.map((group) => group.category).join('|')} spacing={2}>
                         {column.map((group) => (
                           <Box
                             key={group.category}
@@ -195,19 +194,28 @@ export function AnalysisForm({
                               border: 1,
                               borderColor: 'kropla.line',
                               borderRadius: '14px',
-                              p: 1,
+                              p: 1.5,
                               minWidth: 0,
+                              bgcolor: 'background.paper',
                             }}
                           >
                             <Typography
                               variant="h3"
                               component="h2"
                               id={`crop-group-${group.category}`}
-                              sx={{ fontSize: '1.125rem', fontWeight: 700, mb: 0.75, px: 0.5 }}
+                              sx={{
+                                fontSize: '1.25rem',
+                                fontWeight: 800,
+                                mb: 1.25,
+                                px: 0.5,
+                                pb: 0.75,
+                                borderBottom: 1,
+                                borderColor: 'divider',
+                              }}
                             >
                               {group.category}
                             </Typography>
-                            <Stack spacing={0.75}>
+                            <Stack spacing={1}>
                               {group.crops.map((crop) => {
                                 const isSelected = field.value === crop.code;
                                 return (
@@ -225,16 +233,16 @@ export function AnalysisForm({
                                       sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: 1,
-                                        minHeight: 48,
+                                        gap: 1.5,
+                                        minHeight: 64,
                                         width: '100%',
-                                        px: 1.25,
+                                        px: 1.75,
                                         minWidth: 0,
                                       }}
                                     >
                                       <CropIcon
                                         cropCode={crop.code}
-                                        sx={{ fontSize: 28, flexShrink: 0 }}
+                                        sx={{ fontSize: 36, flexShrink: 0 }}
                                       />
                                       <Typography
                                         component="span"
@@ -242,7 +250,7 @@ export function AnalysisForm({
                                           flex: 1,
                                           minWidth: 0,
                                           fontWeight: 700,
-                                          fontSize: '1.125rem',
+                                          fontSize: '1.25rem',
                                           lineHeight: 1.2,
                                           // break between words only
                                           overflowWrap: 'break-word',
@@ -251,16 +259,6 @@ export function AnalysisForm({
                                       >
                                         {crop.name}
                                       </Typography>
-                                      {isSelected && (
-                                        <CheckCircleIcon
-                                          aria-hidden
-                                          sx={{
-                                            color: 'kropla.iconMuted',
-                                            fontSize: 24,
-                                            flexShrink: 0,
-                                          }}
-                                        />
-                                      )}
                                     </Box>
                                   </Box>
                                 );
