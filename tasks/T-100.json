@@ -13,14 +13,18 @@
   "acceptance_criteria": [
     "3 raporty dają 1 wydruk, każdy raport od nowej strony",
     "Przycisk widoczny tylko, gdy jest co najmniej 1 gotowy raport",
-    "Zapis do PDF z okna drukowania działa w Chrome"
+    "Zapis do PDF z okna drukowania działa w Chrome",
+    "Po wyborze uprawy jeden klik „Zrób raport” uruchamia analizy"
   ],
   "review": {
     "status": "pending",
     "by": null,
     "note": ""
   },
-  "notes": ["coord-1 02:10: prośba Kamila. Jan pominął „Drukuj wszystkie” w T-096."],
+  "notes": [
+    "coord-1 02:20: przy okazji (ten sam plik QuickReportPage.tsx, zgłosił Jan): przy działce bez raportu pierwszy klik „Zrób raport” zaraz po wyborze uprawy tylko zamyka menu selecta MUI, dopiero drugi uruchamia analizy. Popraw, np. select natywny (SelectProps native) albo MenuProps={{ disableRestoreFocus: true }}; sprawdź jednym klikiem.",
+    "coord-1 02:10: prośba Kamila. Jan pominął „Drukuj wszystkie” w T-096."
+  ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
 }
