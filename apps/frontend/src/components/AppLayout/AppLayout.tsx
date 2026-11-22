@@ -83,7 +83,8 @@ export function AppLayout() {
   const isDashboard = pathname === '/konto';
   const token = useSessionStore((state) => state.token);
   // T-103: the side panel also on the report (step 3); the print view has its own route outside this layout
-  const showSidebar = Boolean(token) && !isLogin;
+  // guest mode: the panel is shown to guests too (account links disabled, login box at the bottom)
+  const showSidebar = !isLogin;
   const isDesktop = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);

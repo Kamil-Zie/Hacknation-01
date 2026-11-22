@@ -1,4 +1,4 @@
-// T-006 T-081 T-084 All routes in one place (UI-S-001..UI-S-006); everything except /logowanie and shared reports needs a session (T-104 view-only roles)
+// T-006 T-081 T-084 All routes in one place (UI-S-001..UI-S-006); start, parcel and report are open to guests, account pages need a session (T-104 view-only roles)
 import { createBrowserRouter } from 'react-router-dom';
 
 import { setUnauthorizedHandler } from '@/api/client';
@@ -30,11 +30,12 @@ export const router = createBrowserRouter([
   {
     element: <AppLayout />,
     children: [
+      // guest mode: checking a single parcel and its report works without logging in
+      { path: '/', element: <StartPage /> },
+      { path: '/parcel/:parcelId', element: <ParcelPage /> },
       {
         element: <RequireAuth />,
         children: [
-          { path: '/', element: <StartPage /> },
-          { path: '/parcel/:parcelId', element: <ParcelPage /> },
           {
             path: '/pole/nowe',
             element: (

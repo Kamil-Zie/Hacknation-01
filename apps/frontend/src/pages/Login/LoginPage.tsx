@@ -1,8 +1,8 @@
 // UI-S-005 T-081 Logowanie i rejestracja jako ekran startowy: logo, jedno zdanie, zakładki Zaloguj się / Załóż konto; po sukcesie powrót do state.from albo Panel (/konto)
 import OpacityIcon from '@mui/icons-material/Opacity';
-import { Alert, Box, Paper, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, Paper, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Navigate, useLocation, useSearchParams } from 'react-router-dom';
+import { Link as RouterLink, Navigate, useLocation, useSearchParams } from 'react-router-dom';
 
 import { useLoginMutation, useRegisterMutation } from '@/api/auth';
 import { ApiError } from '@/api/client';
@@ -102,6 +102,16 @@ export function LoginPage() {
             onSubmit={handleSubmit}
           />
         </Paper>
+        {/* guest mode: checking a single parcel needs no account */}
+        <Button
+          component={RouterLink}
+          to="/"
+          variant="outlined"
+          size="large"
+          sx={{ minHeight: 48, fontSize: '1.125rem' }}
+        >
+          Sprawdź działkę bez logowania
+        </Button>
       </Stack>
     </Box>
   );
