@@ -24,6 +24,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAccountParcelsQuery } from '@/api/accountParcels';
 import { useReportQuery } from '@/api/analyses';
 import type { DroughtClass, ParcelOverview } from '@/api/types';
+import { DashboardEmpty } from '@/components/DashboardEmpty/DashboardEmpty';
 import { KbwChart } from '@/components/KbwChart/KbwChart';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { DROUGHT_WORDS, ThreatList, ThreatMap } from '@/components/ThreatMap/ThreatMap';
@@ -135,6 +136,34 @@ export function AccountPage() {
   const retryParcels = () => void parcels.refetch();
 
   const active = accounts.find((account) => account.id === activeAccountId);
+
+  // T-103 first view after sign-up: no parcels yet → welcome, add-parcel CTA and a preview
+  // instead of empty tiles
+  if (!parcels.isPending && !parcels.isError && items.length === 0) {
+    return (
+      <Stack spacing={2} sx={{ width: '100%', maxWidth: 1280 }}>
+        <Typography variant="h1" component="h1" sx={srOnly}>
+          {active?.name ?? 'Pulpit'}
+        </Typography>
+        {accounts.length > 1 && (
+          <TextField
+            select
+            label="Aktywne gospodarstwo"
+            value={activeAccountId ?? ''}
+            onChange={(event) => setActiveAccount(event.target.value)}
+            sx={{ alignSelf: { xs: 'stretch', sm: 'flex-end' }, minWidth: { sm: 260 } }}
+          >
+            {accounts.map((account) => (
+              <MenuItem key={account.id} value={account.id} sx={{ minHeight: 48 }}>
+                {account.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        )}
+        <DashboardEmpty canEdit={canEdit} />
+      </Stack>
+    );
+  }
 
   return (
     <Stack sx={{ width: '100%' }}>
