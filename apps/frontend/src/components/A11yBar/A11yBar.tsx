@@ -40,7 +40,6 @@ export function A11yBar() {
   const darkMode = useA11yStore((state) => state.darkMode);
   const toggleContrast = useA11yStore((state) => state.toggleContrast);
   const toggleDark = useA11yStore((state) => state.toggleDark);
-  const customized = useA11yStore((state) => state.customized);
   const resetA11y = useA11yStore((state) => state.resetA11y);
   const [moreAnchor, setMoreAnchor] = useState<HTMLElement | null>(null);
   // after the reset the button disappears, so keyboard focus moves to the standard text size
@@ -130,27 +129,26 @@ export function A11yBar() {
               Tryb ciemny
             </Box>
           </ButtonBase>
-          {customized && (
-            <ButtonBase
-              onClick={() => {
-                resetA11y();
-                defaultSizeRef.current?.focus();
-              }}
-              aria-label="Przywróć widok domyślny"
-              sx={{
-                ...controlSx,
-                gap: 1,
-                px: { xs: 0.5, sm: 1.5 },
-                fontWeight: 700,
-                fontSize: '1rem',
-              }}
-            >
-              <RestartAltIcon aria-hidden sx={{ fontSize: '1.25rem' }} />
-              <Box component="span" sx={{ '@media (max-width: 599.95px)': srOnly }}>
-                Widok domyślny
-              </Box>
-            </ButtonBase>
-          )}
+          {/* T-103: always visible, so people know where to go back to the default view */}
+          <ButtonBase
+            onClick={() => {
+              resetA11y();
+              defaultSizeRef.current?.focus();
+            }}
+            aria-label="Przywróć widok domyślny"
+            sx={{
+              ...controlSx,
+              gap: 1,
+              px: { xs: 0.5, sm: 1.5 },
+              fontWeight: 700,
+              fontSize: '1rem',
+            }}
+          >
+            <RestartAltIcon aria-hidden sx={{ fontSize: '1.25rem' }} />
+            <Box component="span" sx={{ '@media (max-width: 599.95px)': srOnly }}>
+              Widok domyślny
+            </Box>
+          </ButtonBase>
           <ButtonBase
             id="a11y-more-button"
             aria-haspopup="menu"
