@@ -323,7 +323,7 @@ export function AnalysisForm({
           // T-103: one month calendar instead of the „Dziś / Inny dzień” tiles; today is selected
           render={({ field }) => (
             <Stack spacing={1.5}>
-              <Typography sx={{ fontSize: '1.125rem' }} aria-live="polite">
+              <Typography sx={{ fontSize: '1.125rem', textAlign: 'center' }} aria-live="polite">
                 Wybrany dzień:{' '}
                 <Box component="strong" sx={{ fontWeight: 800 }}>
                   {formatLongDate(field.value)}

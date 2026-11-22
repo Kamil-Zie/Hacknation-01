@@ -119,6 +119,9 @@ export function DateCalendar({ value, min, max, disabled = false, onChange }: Da
         p: { xs: 1.5, md: 2 },
         width: '100%',
         maxWidth: 520,
+        // centred in the form (alignSelf: a parent Stack resets margins, so mx: auto is not enough)
+        mx: 'auto',
+        alignSelf: 'center',
       }}
     >
       {/* header: ‹ [month ▾] [year ▾] › */}
