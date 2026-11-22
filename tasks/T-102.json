@@ -21,6 +21,7 @@
     "note": ""
   },
   "notes": [
+    "frontend-1 02:45: część 1 (mock, bo prod 502 i Atlas niedostępny u Dawida). Nowe konto juror-* → /konto OK. Stany puste 390/1440, jasny i ciemny+największe A, 0 błędów JS, 0 przewijania w poziomie: Pulpit (Zagrożone działki: komunikat + Dodaj działkę; Stan suszy: komunikat + Sprawdź działkę; Bilans wody: komunikat + Sprawdź działkę; Szybki raport: przycisk) OK; Moje działki OK (Sprawdź nową działkę); Moje pola OK (Utwórz pole); Szybki raport bez działek OK (Dodaj działkę); Wspólnicy tylko Ty OK (formularz Dodaj); Utwórz pole pusty OK. Dodaj działkę 612 → Dodaj do moich działek → pulpit i Szybki raport ją pokazują OK. Poprawki stanów pustych pulpitu weszły przed decyzją 02:27 (da84c7d, mock 36a6122); 3 drobne uwagi zgłoszone Natanielowi. Do zrobienia na prod po wdrożeniu: raport, Utwórz pole z 2 działek, raport pola, Wspólnicy (kamil@test.pl), wylogowanie i logowanie.",
     "coord-1 02:27: decyzja Kamila: Dawid testuje i zgłasza, poprawki implementuje Nataniel (T-103).",
     "coord-1 02:25: decyzja Kamila: T-102 robi Dawid (po T-100), nie Nataniel.",
     "coord-1 02:25: z propozycji koordynatora zatwierdzonej przez Kamila."
