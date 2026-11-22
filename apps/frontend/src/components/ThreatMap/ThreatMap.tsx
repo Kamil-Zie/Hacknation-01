@@ -347,8 +347,8 @@ export function ThreatList({
             '&:focus-visible': { outline: 2, outlineColor: 'primary.main', outlineOffset: 2 },
           }}
         >
-          {/* list rows: drought-colour dot, parcel number bold, place muted, arrow; one line each,
-              a long name ends with „…”, full name and drought class in the tooltip and for screen readers */}
+          {/* list rows: drought-colour dot, parcel number bold, place muted, arrow; up to two lines,
+              a longer name ends with „…”, full name and drought class in the tooltip and for screen readers */}
           {atRisk.map((item) => {
             const droughtClass = classOf(item);
             const fullName = `Działka ${item.parcel.parcelNumber}, ${item.parcel.region} – ${DROUGHT_WORDS[droughtClass]}`;
@@ -403,9 +403,12 @@ export function ThreatList({
                     sx={{
                       flex: '1 1 auto',
                       minWidth: 0,
-                      whiteSpace: 'nowrap',
                       overflow: 'hidden',
-                      textOverflow: 'ellipsis',
+                      // up to two lines: on 1440 px the column is too narrow for "Działka 612 · Bronowice"
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflowWrap: 'anywhere',
                     }}
                   >
                     <Box component="span" sx={{ fontWeight: 700 }}>
