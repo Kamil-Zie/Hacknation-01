@@ -28,7 +28,7 @@ import {
 } from '@/components/AnalysisForm/AnalysisForm.schema';
 import type { AnalysisFormValues } from '@/components/AnalysisForm/AnalysisForm.schema';
 import { CropIcon } from '@/components/CropIcon/CropIcon';
-import { groupCropsByCategory, normalizeSearch } from '@/utils/cropCategories';
+import { cropCategory, groupCropsByCategory, normalizeSearch } from '@/utils/cropCategories';
 
 interface AnalysisFormProps {
   crops: Crop[];
@@ -133,7 +133,14 @@ export function AnalysisForm({
   const groups = useMemo(
     () =>
       groupCropsByCategory(
-        query ? crops.filter((crop) => normalizeSearch(crop.name).includes(query)) : crops,
+        query
+          ? // T-103: a crop matches by its name or by its category ("zboża" shows all cereals)
+            crops.filter(
+              (crop) =>
+                normalizeSearch(crop.name).includes(query) ||
+                normalizeSearch(cropCategory(crop)).includes(query),
+            )
+          : crops,
       ),
     [crops, query],
   );
@@ -179,7 +186,7 @@ export function AnalysisForm({
                 {hasSearch && (
                   <TextField
                     type="search"
-                    label="Szukaj uprawy"
+                    label="Szukaj uprawy lub kategorii"
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     slotProps={{
