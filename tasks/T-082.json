@@ -4,8 +4,8 @@
   "description": "Decyzja Kamila 21:30: cache robimy na Synology. ULDK GUGiK ma awarię od ok. 21:15, a baza prod (hacknation_prod) ma pusty source_cache, więc na prod nie zadziała nawet działka demo. Skrypt database/scripts/copy-cache.ts (npm run copy-cache): czyta source_cache z MONGODB_DB=hacknation (tylko odczyt, bez zmian w dev) i robi upsert po kluczu do bazy docelowej (--target-db hacknation_prod, domyślnie odmowa zapisu do 'hacknation'), bez wpisów z expiresAt w przeszłości; opcjonalnie --only uldk,meteo,... Wypisuje liczbę wpisów per sourceId. Instrukcja uruchomienia na Synology (z .env.prod) w docs/deploy.md. Sekret tylko z .env.",
   "type": "chore",
   "team": "backend",
-  "assignee": "backend-1",
-  "status": "integration",
+  "assignee": "coord-1",
+  "status": "ready",
   "priority": "high",
   "depends_on": ["T-077"],
   "contract_refs": ["DM-002"],
@@ -25,7 +25,8 @@
     "coord-1 02:25: przejmuje Jan (backend). Zaraz po T-065 (Kamil, prod na Synology): uruchom kopiowanie cache dev → prod według sekcji „Cache na prod” w docs/deploy.md (wpis w .env.prod tylko na NAS-ie, URI prod od Kamila prywatnie), potem npm run warm-cache -- https://api.kamil-zielinski.pl/api/v1 i zapisz czasy analiz w notatce T-035. Do tego czasu: przetestuj skrypt na sucho na dev (bez zapisu do hacknation).",
     "coord-1 22:00: backend przejmuje Kamil (wcześniej coord-1).",
     "coord-1 21:30: uruchamia Kamil na Synology przy wdrożeniu T-065.",
-    "Zrobione (backend-2): database/scripts/copy-cache.ts, npm run copy-cache -- --target-db hacknation_prod [--source-db hacknation] [--only uldk,meteo] [--dry-run]. Osobne SOURCE_MONGODB_URI i TARGET_MONGODB_URI (domyślnie MONGODB_URI), bo użytkownik prod ma readWrite tylko do hacknation_prod. Upsert po key, pomija wygasłe, zakłada indeksy key (unique) i TTL expiresAt; zapis do 'hacknation' zablokowany. Test 21:40 na hacknation_copytest (potem usunięta): 2 przebiegi --only uldk,soilgrids → 79 dokumentów, bez duplikatów. Dev ma 229 wpisów (35,6 MB danych / 14 MB storage). docs/deploy.md poza ścieżkami backendu – sekcja wysłana koordynatorowi wiadomością. Kryterium 4 (analiza demo na prod przy awarii ULDK) sprawdza Kamil po skopiowaniu."
+    "Zrobione (backend-2): database/scripts/copy-cache.ts, npm run copy-cache -- --target-db hacknation_prod [--source-db hacknation] [--only uldk,meteo] [--dry-run]. Osobne SOURCE_MONGODB_URI i TARGET_MONGODB_URI (domyślnie MONGODB_URI), bo użytkownik prod ma readWrite tylko do hacknation_prod. Upsert po key, pomija wygasłe, zakłada indeksy key (unique) i TTL expiresAt; zapis do 'hacknation' zablokowany. Test 21:40 na hacknation_copytest (potem usunięta): 2 przebiegi --only uldk,soilgrids → 79 dokumentów, bez duplikatów. Dev ma 229 wpisów (35,6 MB danych / 14 MB storage). docs/deploy.md poza ścieżkami backendu – sekcja wysłana koordynatorowi wiadomością. Kryterium 4 (analiza demo na prod przy awarii ULDK) sprawdza Kamil po skopiowaniu.",
+    "coord-1 08:15: decyzja Kamila: zadanie odebrane Janowi, wraca do koordynatora. Skrypt gotowy; uruchomienie tylko jeśli prod dostanie osobną bazę (teraz prod i dev to ta sama baza hacknation)."
   ],
   "created_at": "2026-11-21",
   "updated_at": "2026-11-22"

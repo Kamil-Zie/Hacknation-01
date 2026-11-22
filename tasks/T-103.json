@@ -4,8 +4,8 @@
   "description": "Implementujesz poprawki frontendu zgłaszane przez Dawida z T-102 (przejście jurora od nowego konta: stany puste, telefon/komputer, jasny/ciemny, największe A) i przez koordynatora z przeglądów. Każda poprawka to osobny mały commit fix(frontend): ... [T-103], push od razu; po każdej odpowiedz zgłaszającemu ack z hashem commita. Błąd backendu → wiadomość do Jana.\n\nZanim Dawid zacznie (jest na T-100), sam przejdź stany puste nowego konta (pulpit bez działek, Moje pola bez pól, Szybki raport bez działek, Wspólnicy tylko z Tobą) i popraw to, co oczywiste: jasny komunikat + przycisk do następnego kroku.\n\nPliki: ekrany, których dotyczy błąd (src/pages/**, src/components/**). Przed edycją sprawdź rezerwacje: QuickReportPage.tsx ma Dawid do końca T-100. Kolory tylko z motywu (tryb ciemny). Termin: na bieżąco do 6:30, zamrożenie 7:00 (po 7:00 tylko fix na ścieżce demo).",
   "type": "bug",
   "team": "frontend",
-  "assignee": "backend-2",
-  "status": "integration",
+  "assignee": "backend-1",
+  "status": "in_progress",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-009", "UI-S-010", "UI-S-011", "UI-S-012", "UI-S-013", "UI-S-014"],
@@ -23,7 +23,8 @@
   "notes": [
     "backend-2 05:22: integration. Pulpit one-page (lg+: wysokość okna, mapa bez kafelka, Stan suszy z listą zagrożonych i przyciskami, Bilans wody na całą szerokość, klasy suszy jako przełączniki mapy, bez stopki, pełna szerokość), logo → /konto, Dodaj działkę: opcje Numer/GPS/Mapa, wyszukiwarka miejscowości z podpowiedziami (Photon), granice działek GUGiK od zoom 17 (Mapa i Satelita), tworzenie pola z działek klikniętych na mapie (API-022 + API-016). Sprawdzone zrzutami w Edge na mockach (1440×900, 1920×1080, 390); nie sprawdzone: prawdziwe API (tworzenie pola, klik działki) i axe – prośba do coord-1 o przegląd na prod.",
     "coord-1 02:28: decyzja Kamila: Nataniel ma zgodę na wszelkie zmiany układu (layout) wszystkich ekranów, także pulpitu UI-S-009 (np. usunięcie kafelka „Twoje działki”), bez pytania o zgodę; po zmianie aktualizuje opis w contracts/ui.json i informuje zespół.",
-    "coord-1 02:27: decyzja Kamila: Nataniel implementuje poprawki, Dawid testuje (T-102)."
+    "coord-1 02:27: decyzja Kamila: Nataniel implementuje poprawki, Dawid testuje (T-102).",
+    "coord-1 08:15: decyzja Kamila: T-103 przejmuje Jan (backend-1, ma zapis w apps/frontend/src/**). Nataniel zwalnia rezerwację. Po 9:00 tylko fix na ścieżce demo."
   ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
