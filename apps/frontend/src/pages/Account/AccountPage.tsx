@@ -1,4 +1,4 @@
-// UI-S-009 T-093 Dashboard: account header, 2×2 grid with ThreatMap (UI-C-017), drought + parcels, water balance (UI-C-011), quick report link (UI-S-014)
+// UI-S-009 T-093 Dashboard on one screen: header with actions (new parcel, quick report UI-S-014), ThreatMap (UI-C-017) left, drought + parcels and water balance (UI-C-011) right
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import { Box, Button, Link, MenuItem, Stack, TextField, Typography } from '@mui/material';
@@ -64,90 +64,109 @@ export function AccountPage() {
   const active = accounts.find((account) => account.id === activeAccountId);
 
   return (
-    <Stack spacing={3} sx={{ maxWidth: 1600, mx: 'auto' }}>
-      <Box>
-        {isEditing && active ? (
-          <Stack
-            component="form"
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={1}
-            noValidate
-            onSubmit={(event) => {
-              event.preventDefault();
-              rename.mutate(draft, { onSuccess: () => setIsEditing(false) });
-            }}
-            sx={{ alignItems: { sm: 'flex-start' } }}
-          >
-            <TextField
-              label="Nazwa gospodarstwa"
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              autoFocus
-              disabled={rename.isPending}
-              error={Boolean(rename.error)}
-              helperText={renameError?.message}
-              slotProps={{
-                htmlInput: { maxLength: 120 },
-                formHelperText: { role: renameError ? 'alert' : undefined },
+    <Stack spacing={2} sx={{ maxWidth: 1600, mx: 'auto' }}>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={2}
+        sx={{ alignItems: { md: 'center' }, justifyContent: 'space-between' }}
+      >
+        <Box sx={{ minWidth: 0 }}>
+          {isEditing && active ? (
+            <Stack
+              component="form"
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1}
+              noValidate
+              onSubmit={(event) => {
+                event.preventDefault();
+                rename.mutate(draft, { onSuccess: () => setIsEditing(false) });
               }}
-              sx={{ flexGrow: 1, maxWidth: 480 }}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={rename.isPending || !draft.trim()}
-              sx={{ minHeight: 48 }}
+              sx={{ alignItems: { sm: 'flex-start' } }}
             >
-              {rename.isPending ? 'Zapisuję…' : 'Zapisz'}
-            </Button>
-            <Button
-              variant="text"
-              disabled={rename.isPending}
-              onClick={() => setIsEditing(false)}
-              sx={{ minHeight: 48 }}
-            >
-              Anuluj
-            </Button>
-          </Stack>
-        ) : (
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-            <Typography variant="h1" component="h1" sx={{ overflowWrap: 'anywhere' }}>
-              {active?.name ?? 'Gospodarstwo'}
-            </Typography>
-            {active && (
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  rename.reset();
-                  setDraft(active.name);
-                  setIsEditing(true);
+              <TextField
+                label="Nazwa gospodarstwa"
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                autoFocus
+                disabled={rename.isPending}
+                error={Boolean(rename.error)}
+                helperText={renameError?.message}
+                slotProps={{
+                  htmlInput: { maxLength: 120 },
+                  formHelperText: { role: renameError ? 'alert' : undefined },
                 }}
+                sx={{ flexGrow: 1, maxWidth: 480 }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={rename.isPending || !draft.trim()}
                 sx={{ minHeight: 48 }}
               >
-                Zmień nazwę
+                {rename.isPending ? 'Zapisuję…' : 'Zapisz'}
               </Button>
-            )}
-          </Stack>
-        )}
-      </Box>
-      <Button
-        variant="contained"
-        size="large"
-        startIcon={<AddLocationAltIcon />}
-        onClick={() => navigate('/')}
-        sx={{ minHeight: 64, fontSize: '1.25rem', alignSelf: { sm: 'flex-start' }, px: 4 }}
-      >
-        Sprawdź nową działkę
-      </Button>
+              <Button
+                variant="text"
+                disabled={rename.isPending}
+                onClick={() => setIsEditing(false)}
+                sx={{ minHeight: 48 }}
+              >
+                Anuluj
+              </Button>
+            </Stack>
+          ) : (
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+              <Typography variant="h1" component="h1" sx={{ overflowWrap: 'anywhere' }}>
+                {active?.name ?? 'Gospodarstwo'}
+              </Typography>
+              {active && (
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    rename.reset();
+                    setDraft(active.name);
+                    setIsEditing(true);
+                  }}
+                  sx={{ minHeight: 48 }}
+                >
+                  Zmień nazwę
+                </Button>
+              )}
+            </Stack>
+          )}
+        </Box>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ flexShrink: 0 }}>
+          <Button
+            variant="contained"
+            size="large"
+            startIcon={<AddLocationAltIcon />}
+            onClick={() => navigate('/')}
+            sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
+          >
+            Sprawdź nową działkę
+          </Button>
+          <Button
+            component={RouterLink}
+            to="/szybki-raport"
+            variant="outlined"
+            size="large"
+            startIcon={<PlaylistAddCheckIcon />}
+            sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
+          >
+            Szybki raport
+          </Button>
+        </Stack>
+      </Stack>
       <Box
         sx={{
           display: 'grid',
-          gap: 3,
+          gap: 2,
           gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
           gridTemplateAreas: {
-            xs: '"map" "side" "chart" "quick"',
-            lg: '"map side" "chart quick"',
+            xs: '"map" "side" "chart"',
+            lg: '"map side" "map chart"',
           },
+          alignItems: 'start',
         }}
       >
         <DashboardTile
@@ -174,7 +193,15 @@ export function AccountPage() {
             </Stack>
           )}
         </DashboardTile>
-        <Stack spacing={3} sx={{ gridArea: 'side', minWidth: 0 }}>
+        <Box
+          sx={{
+            gridArea: 'side',
+            minWidth: 0,
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
+          }}
+        >
           <DashboardTile
             id="stan-suszy"
             title="Stan suszy"
@@ -211,14 +238,14 @@ export function AccountPage() {
               <Typography sx={bigText}>Liczba działek: {items.length}</Typography>
               <Typography sx={bigText}>Razem: {formatHa(totalHa)}</Typography>
               <Link component={RouterLink} to="/dzialki" sx={linkSx}>
-                Zobacz wszystkie działki
+                Wszystkie działki
               </Link>
             </Stack>
           </DashboardTile>
-        </Stack>
+        </Box>
         <DashboardTile
           id="bilans-wody"
-          title="Bilans wody"
+          title={top ? `Bilans wody · działka ${top.parcel.parcelNumber}` : 'Bilans wody'}
           isLoading={parcels.isPending || (top !== null && topReport.isPending)}
           isError={parcels.isError || topReport.isError}
           errorText="Nie udało się pobrać wykresu bilansu wody."
@@ -230,44 +257,16 @@ export function AccountPage() {
         >
           {top && topReport.data ? (
             <Stack spacing={1}>
-              <Typography sx={bigText}>
-                {`Działka ${top.parcel.parcelNumber}, ${top.parcel.region}`}
-                {top.lastReport ? ` · ${top.lastReport.crop.name}` : ''}
-              </Typography>
               <KbwChart charts={topReport.data.charts} />
               <Link component={RouterLink} to={`/report/${top.lastReport?.id ?? ''}`} sx={linkSx}>
-                Zobacz pełny raport
+                Pełny raport
               </Link>
             </Stack>
           ) : (
-            <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
-              <Typography sx={bigText}>
-                Brak raportu. Sprawdź działkę, a pokażemy tu jej bilans wody.
-              </Typography>
-              <Link component={RouterLink} to="/" sx={linkSx}>
-                Sprawdź działkę
-              </Link>
-            </Stack>
+            <Link component={RouterLink} to="/" sx={linkSx}>
+              Sprawdź działkę
+            </Link>
           )}
-        </DashboardTile>
-        <DashboardTile
-          id="szybki-raport"
-          title="Szybki raport"
-          sx={{ gridArea: 'quick', alignSelf: 'start' }}
-        >
-          <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
-            <Typography sx={bigText}>Sprawdź kilka działek naraz, do 5 jednocześnie.</Typography>
-            <Button
-              component={RouterLink}
-              to="/szybki-raport"
-              variant="contained"
-              size="large"
-              startIcon={<PlaylistAddCheckIcon />}
-              sx={{ minHeight: 64, fontSize: '1.25rem', px: 4 }}
-            >
-              Szybki raport
-            </Button>
-          </Stack>
         </DashboardTile>
       </Box>
       {accounts.length > 1 && (
