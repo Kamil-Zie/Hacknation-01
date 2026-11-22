@@ -5,10 +5,9 @@ import {
   Alert,
   Box,
   Button,
-  Card,
-  CardContent,
   Chip,
   CircularProgress,
+  IconButton,
   Stack,
   TextField,
   Typography,
@@ -24,6 +23,7 @@ import { ParcelSearch } from '@/components/ParcelSearch/ParcelSearch';
 import { useRecentParcelsStore } from '@/store/recentParcels';
 import { useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
+import { formatPlaceName } from '@/utils/format';
 
 const MAX_PARCELS = 20;
 const MAX_NAME = 120;
@@ -171,57 +171,128 @@ export function FieldCreatePage() {
             bgcolor: 'background.paper',
           }}
         >
-          <Typography id="field-parcels-title" variant="h2" sx={{ mb: 1 }}>
-            Działki w grupie ({parcels.length})
-          </Typography>
-          {parcels.length === 0 ? (
-            <Typography color="text.secondary" sx={BIG_TEXT}>
-              Nie dodano jeszcze żadnej działki.
+          {/* T-103 readable list: numbered rows (number in the map highlight colour), parcel
+              number bold, place below, area right-aligned, a small delete icon, total at the bottom */}
+          <Stack direction="row" sx={{ alignItems: 'center', gap: 1, mb: 1.5 }}>
+            <Typography id="field-parcels-title" variant="h2" sx={{ fontSize: '1.375rem' }}>
+              Działki w grupie
             </Typography>
+            <Box
+              component="span"
+              sx={{
+                minWidth: 32,
+                height: 32,
+                px: 1,
+                borderRadius: 16,
+                display: 'inline-grid',
+                placeItems: 'center',
+                fontWeight: 800,
+                fontSize: '1.0625rem',
+                bgcolor: parcels.length >= 2 ? 'success.main' : 'action.selected',
+                color: parcels.length >= 2 ? 'success.contrastText' : 'text.primary',
+              }}
+            >
+              {parcels.length}
+            </Box>
+          </Stack>
+          {parcels.length === 0 ? (
+            <Box
+              sx={{
+                p: 2,
+                borderRadius: '12px',
+                border: 2,
+                borderStyle: 'dashed',
+                borderColor: 'kropla.line',
+                textAlign: 'center',
+              }}
+            >
+              <Typography sx={{ ...BIG_TEXT, fontWeight: 700 }}>Lista jest pusta</Typography>
+              <Typography sx={{ fontSize: 16 }} color="text.secondary">
+                Wpisz numer albo kliknij działkę na mapie.
+              </Typography>
+            </Box>
           ) : (
-            <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
-              {parcels.map((parcel) => (
-                <li key={parcel.id}>
-                  <Card variant="outlined">
-                    <CardContent
-                      sx={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: 1,
-                        '&:last-child': { pb: 2 },
-                      }}
-                    >
-                      <Box sx={{ minWidth: 0 }}>
-                        <Typography sx={{ ...BIG_TEXT, fontWeight: 600 }}>
-                          Działka {parcel.parcelNumber}
-                        </Typography>
-                        <Typography sx={{ fontSize: 16 }} color="text.secondary">
-                          {parcel.region} · {formatHa(parcel.areaHa)}
-                        </Typography>
-                      </Box>
-                      <Button
-                        type="button"
-                        color="inherit"
-                        startIcon={<DeleteOutlineIcon aria-hidden />}
-                        onClick={() => {
-                          resetErrors();
-                          setParcels((current) => current.filter((item) => item.id !== parcel.id));
-                        }}
-                        sx={{ minHeight: 48, fontSize: 16 }}
-                      >
-                        Usuń z listy
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </li>
+            <Box component="ul" sx={{ listStyle: 'none', m: 0, p: 0 }}>
+              {parcels.map((parcel, index) => (
+                <Box
+                  component="li"
+                  key={parcel.id}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.25,
+                    py: 1,
+                    borderBottom: 1,
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Box
+                    component="span"
+                    aria-hidden
+                    sx={{
+                      flexShrink: 0,
+                      width: 30,
+                      height: 30,
+                      borderRadius: '50%',
+                      display: 'grid',
+                      placeItems: 'center',
+                      fontWeight: 800,
+                      fontSize: '0.9375rem',
+                      bgcolor: 'warning.main',
+                      color: 'warning.contrastText',
+                    }}
+                  >
+                    {index + 1}
+                  </Box>
+                  <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+                    <Typography sx={{ ...BIG_TEXT, fontWeight: 800, lineHeight: 1.25 }}>
+                      {parcel.parcelNumber}
+                    </Typography>
+                    <Typography noWrap sx={{ fontSize: 16 }} color="text.secondary">
+                      {formatPlaceName(parcel.region)}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    sx={{ ...BIG_TEXT, fontWeight: 700, flexShrink: 0, whiteSpace: 'nowrap' }}
+                  >
+                    {formatHa(parcel.areaHa)}
+                  </Typography>
+                  <IconButton
+                    aria-label={`Usuń z grupy działkę ${parcel.parcelNumber}`}
+                    title="Usuń z grupy"
+                    onClick={() => {
+                      resetErrors();
+                      setParcels((current) => current.filter((item) => item.id !== parcel.id));
+                    }}
+                    sx={{
+                      width: 44,
+                      height: 44,
+                      flexShrink: 0,
+                      '&:hover': { color: 'error.main' },
+                    }}
+                  >
+                    <DeleteOutlineIcon aria-hidden />
+                  </IconButton>
+                </Box>
               ))}
-            </Stack>
+            </Box>
           )}
           {parcels.length > 0 && (
-            <Typography sx={{ ...BIG_TEXT, fontWeight: 700, mt: 1 }}>
-              Razem: {formatHa(totalHa)}
+            <Stack
+              direction="row"
+              sx={{ justifyContent: 'space-between', alignItems: 'baseline', pt: 1.25, pr: 7 }}
+            >
+              <Typography sx={{ ...BIG_TEXT, fontWeight: 800 }}>Razem</Typography>
+              <Typography sx={{ fontSize: '1.25rem', fontWeight: 800 }}>
+                {formatHa(totalHa)}
+              </Typography>
+            </Stack>
+          )}
+          {parcels.length < 2 && (
+            <Typography sx={{ fontSize: 16, mt: 1.25, fontWeight: 600 }} color="warning.main">
+              {parcels.length === 0
+                ? 'Dodaj co najmniej 2 działki.'
+                : 'Dodaj jeszcze 1 działkę, aby zapisać grupę.'}
             </Typography>
           )}
         </Box>
