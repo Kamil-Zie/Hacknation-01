@@ -15,6 +15,7 @@ import type { LatLngBoundsExpression } from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 
 import type { DroughtClass, ParcelOverview } from '@/api/types';
+import { formatPlaceName } from '@/utils/format';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -186,7 +187,7 @@ export function ThreatMap({
                 {zoom >= DOT_MAX_ZOOM && (
                   <Tooltip permanent direction="center">
                     {/* T-103: place name on the map; the drought class is shown by the colour */}
-                    {`${item.parcel.parcelNumber} · ${item.parcel.region}`}
+                    {`${item.parcel.parcelNumber} · ${formatPlaceName(item.parcel.region)}`}
                   </Tooltip>
                 )}
               </GeoJSON>
@@ -204,7 +205,7 @@ export function ThreatMap({
                   eventHandlers={{ click: () => item.lastReport && onSelect(item) }}
                 >
                   <Tooltip permanent direction="top" offset={[0, -10]}>
-                    {`${item.parcel.parcelNumber} · ${item.parcel.region}`}
+                    {`${item.parcel.parcelNumber} · ${formatPlaceName(item.parcel.region)}`}
                   </Tooltip>
                 </CircleMarker>
               );

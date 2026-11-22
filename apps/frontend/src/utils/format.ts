@@ -35,3 +35,14 @@ export function formatDateTime(value: string): string {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : DATE_TIME_FORMAT.format(date);
 }
+
+/** Place name in title case: "MIASTO PUŁAWY" → "Miasto Puławy", "kędzierzyn-koźle" → "Kędzierzyn-Koźle" */
+export function formatPlaceName(value: string | null | undefined): string {
+  if (!value) return '';
+  return value
+    .toLocaleLowerCase('pl-PL')
+    .replace(
+      /(^|[\s-])(\p{L})/gu,
+      (_, sep: string, ch: string) => sep + ch.toLocaleUpperCase('pl-PL'),
+    );
+}
