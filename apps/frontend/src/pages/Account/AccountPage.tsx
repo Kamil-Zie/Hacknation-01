@@ -39,6 +39,16 @@ function formatHa(value: number): string {
 
 // main container bottom padding on md+ (AppLayout py: 4)
 const PAGE_BOTTOM_PADDING = 32;
+// the two action buttons in the drought tile: identical look, a clear hover (lift + shadow)
+const actionButtonSx = {
+  minHeight: 56,
+  fontSize: '1.125rem',
+  whiteSpace: 'nowrap',
+  boxShadow: 'none',
+  transition: 'transform 120ms, box-shadow 120ms, filter 120ms',
+  '&:hover': { transform: 'translateY(-2px)', boxShadow: 4, filter: 'brightness(1.08)' },
+  '&:active': { transform: 'translateY(0)', boxShadow: 1 },
+} as const;
 // tighter tile padding than the MUI default (16 px, 24 px at the bottom)
 const tilePadding = { p: 1.5, '&:last-child': { pb: 1.5 } } as const;
 // below this the one-screen layout would crush the tiles, so the page scrolls instead
@@ -303,7 +313,10 @@ export function AccountPage() {
                             font: 'inherit',
                             cursor: 'pointer',
                             opacity: isShown ? 1 : 0.4,
-                            '&:hover': { bgcolor: 'action.hover' },
+                            transition: 'background-color 120ms, transform 120ms',
+                            '&:hover': { bgcolor: 'action.hover', transform: 'translateX(2px)' },
+                            '&:hover .MuiChip-root': { bgcolor: 'action.selected' },
+                            '&:active': { transform: 'translateX(0)' },
                             '&:focus-visible': {
                               outline: 2,
                               outlineColor: 'primary.main',
@@ -362,18 +375,18 @@ export function AccountPage() {
                 fullWidth
                 startIcon={<AddLocationAltIcon />}
                 onClick={() => navigate('/')}
-                sx={{ minHeight: 56, fontSize: '1.125rem', whiteSpace: 'nowrap' }}
+                sx={actionButtonSx}
               >
                 Sprawdź nową działkę
               </Button>
               <Button
                 component={RouterLink}
                 to="/szybki-raport"
-                variant="outlined"
+                variant="contained"
                 size="large"
                 fullWidth
                 startIcon={<PlaylistAddCheckIcon />}
-                sx={{ minHeight: 56, fontSize: '1.125rem', whiteSpace: 'nowrap' }}
+                sx={actionButtonSx}
               >
                 Szybki raport
               </Button>
