@@ -1,11 +1,9 @@
-// UI-S-009 T-093 Dashboard: ThreatMap (UI-C-017) top left, drought tile + quick report button (UI-S-014) top right, water balance (UI-C-011) under the map
+// UI-S-009 T-093 Dashboard: ThreatMap (UI-C-017) top left without a tile, drought tile + new parcel / quick report (UI-S-014) buttons top right, water balance (UI-C-011) full width below
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
-import { Box, Button, Link, MenuItem, Stack, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
+import { Alert, Box, Button, Link, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
-import { useRenameAccountMutation } from '@/api/accounts';
 import { useAccountParcelsQuery } from '@/api/accountParcels';
 import { useReportQuery } from '@/api/analyses';
 import type { DroughtClass, ParcelOverview } from '@/api/types';
@@ -13,8 +11,8 @@ import { DashboardTile } from '@/components/DashboardTile/DashboardTile';
 import { KbwChart } from '@/components/KbwChart/KbwChart';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
 import { DROUGHT_WORDS, ThreatMap } from '@/components/ThreatMap/ThreatMap';
+import { srOnly } from '@/app/a11yStyles';
 import { useSessionStore } from '@/store/session';
-import { errorMessage } from '@/utils/errorMessages';
 
 const DROUGHT_ORDER: DroughtClass[] = ['severe', 'moderate', 'none', 'unknown'];
 
@@ -40,12 +38,7 @@ function mostThreatened(items: ParcelOverview[]): ParcelOverview | null {
 export function AccountPage() {
   const navigate = useNavigate();
   const { token, accounts, activeAccountId, setActiveAccount } = useSessionStore();
-  const accountId = activeAccountId ?? '';
-  const rename = useRenameAccountMutation(accountId, token ?? '');
   const parcels = useAccountParcelsQuery(activeAccountId, token);
-  const [isEditing, setIsEditing] = useState(false);
-  const [draft, setDraft] = useState('');
-  const renameError = rename.error ? errorMessage(rename.error) : null;
 
   const items = parcels.data ?? [];
   const atRisk = items.filter((item) => item.atRisk);
@@ -64,88 +57,10 @@ export function AccountPage() {
 
   return (
     <Stack spacing={2} sx={{ maxWidth: 1600, mx: 'auto' }}>
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        spacing={2}
-        sx={{ alignItems: { md: 'center' }, justifyContent: 'space-between' }}
-      >
-        <Box sx={{ minWidth: 0 }}>
-          {isEditing && active ? (
-            <Stack
-              component="form"
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={1}
-              noValidate
-              onSubmit={(event) => {
-                event.preventDefault();
-                rename.mutate(draft, { onSuccess: () => setIsEditing(false) });
-              }}
-              sx={{ alignItems: { sm: 'flex-start' } }}
-            >
-              <TextField
-                label="Nazwa gospodarstwa"
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                autoFocus
-                disabled={rename.isPending}
-                error={Boolean(rename.error)}
-                helperText={renameError?.message}
-                slotProps={{
-                  htmlInput: { maxLength: 120 },
-                  formHelperText: { role: renameError ? 'alert' : undefined },
-                }}
-                sx={{ flexGrow: 1, maxWidth: 480 }}
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={rename.isPending || !draft.trim()}
-                sx={{ minHeight: 48 }}
-              >
-                {rename.isPending ? 'Zapisuję…' : 'Zapisz'}
-              </Button>
-              <Button
-                variant="text"
-                disabled={rename.isPending}
-                onClick={() => setIsEditing(false)}
-                sx={{ minHeight: 48 }}
-              >
-                Anuluj
-              </Button>
-            </Stack>
-          ) : (
-            <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-              <Typography variant="h1" component="h1" sx={{ overflowWrap: 'anywhere' }}>
-                {active?.name ?? 'Gospodarstwo'}
-              </Typography>
-              {active && (
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    rename.reset();
-                    setDraft(active.name);
-                    setIsEditing(true);
-                  }}
-                  sx={{ minHeight: 48 }}
-                >
-                  Zmień nazwę
-                </Button>
-              )}
-            </Stack>
-          )}
-        </Box>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ flexShrink: 0 }}>
-          <Button
-            variant="contained"
-            size="large"
-            startIcon={<AddLocationAltIcon />}
-            onClick={() => navigate('/')}
-            sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
-          >
-            Sprawdź nową działkę
-          </Button>
-        </Stack>
-      </Stack>
+      {/* page title for screen readers only; the visible page starts with the map */}
+      <Typography variant="h1" component="h1" sx={srOnly}>
+        {active?.name ?? 'Pulpit'}
+      </Typography>
       <Box
         sx={{
           display: 'grid',
@@ -153,21 +68,34 @@ export function AccountPage() {
           gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
           gridTemplateAreas: {
             xs: '"map" "side" "chart"',
-            lg: '"map side" "chart ."',
+            lg: '"map side" "chart chart"',
           },
-          alignItems: 'stretch',
+          alignItems: 'start',
         }}
       >
-        <DashboardTile
-          id="zagrozone-dzialki"
-          title="Zagrożone działki"
-          isLoading={parcels.isPending}
-          isError={parcels.isError}
-          onRetry={retryParcels}
-          errorText="Nie udało się pobrać działek."
-          sx={{ gridArea: 'map' }}
+        <Box
+          component="section"
+          aria-labelledby="zagrozone-dzialki-title"
+          sx={{ gridArea: 'map', minWidth: 0 }}
         >
-          {items.length === 0 ? (
+          <Typography id="zagrozone-dzialki-title" variant="h2" component="h2" sx={{ mb: 1.5 }}>
+            Zagrożone działki
+          </Typography>
+          {parcels.isPending ? (
+            <ThreatMap items={[]} isLoading onSelect={openReport} />
+          ) : parcels.isError ? (
+            <Alert
+              severity="error"
+              role="alert"
+              action={
+                <Button color="inherit" sx={{ minHeight: 48 }} onClick={retryParcels}>
+                  Spróbuj ponownie
+                </Button>
+              }
+            >
+              Nie udało się pobrać działek.
+            </Alert>
+          ) : items.length === 0 ? (
             <Stack spacing={1.5} sx={{ alignItems: 'flex-start' }}>
               <Typography sx={bigText}>
                 Nie masz jeszcze działek. Dodaj pierwszą, a pokażemy ją tu na mapie.
@@ -192,7 +120,7 @@ export function AccountPage() {
               <ThreatMap items={items} onSelect={openReport} />
             </Stack>
           )}
-        </DashboardTile>
+        </Box>
         <Stack spacing={2} sx={{ gridArea: 'side', alignSelf: 'start', minWidth: 0 }}>
           <DashboardTile
             id="stan-suszy"
@@ -222,16 +150,32 @@ export function AccountPage() {
               </Typography>
             </Stack>
           </DashboardTile>
-          <Button
-            component={RouterLink}
-            to="/szybki-raport"
-            variant="contained"
-            size="large"
-            startIcon={<PlaylistAddCheckIcon />}
-            sx={{ minHeight: 56, fontSize: '1.125rem', px: 3, alignSelf: { sm: 'flex-start' } }}
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1.5}
+            useFlexGap
+            sx={{ flexWrap: 'wrap' }}
           >
-            Szybki raport
-          </Button>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={<AddLocationAltIcon />}
+              onClick={() => navigate('/')}
+              sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
+            >
+              Sprawdź nową działkę
+            </Button>
+            <Button
+              component={RouterLink}
+              to="/szybki-raport"
+              variant="outlined"
+              size="large"
+              startIcon={<PlaylistAddCheckIcon />}
+              sx={{ minHeight: 56, fontSize: '1.125rem', px: 3 }}
+            >
+              Szybki raport
+            </Button>
+          </Stack>
         </Stack>
         <DashboardTile
           id="bilans-wody"
