@@ -26,6 +26,7 @@ import { useRecentParcelsStore } from '@/store/recentParcels';
 import { useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
 import { formatPlaceName } from '@/utils/format';
+import { groupColor } from '@/utils/groupColors';
 
 const MAX_PARCELS = 20;
 const MAX_NAME = 120;
@@ -276,8 +277,9 @@ export function FieldCreatePage() {
                       placeItems: 'center',
                       fontWeight: 800,
                       fontSize: '0.9375rem',
-                      bgcolor: 'warning.main',
-                      color: 'warning.contrastText',
+                      // same colour as this parcel on the map
+                      bgcolor: groupColor(index),
+                      color: '#fff',
                     }}
                   >
                     {index + 1}

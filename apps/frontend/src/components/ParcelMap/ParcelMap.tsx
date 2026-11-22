@@ -18,6 +18,7 @@ import type { GeoJsonObject } from 'geojson';
 import type { Parcel } from '@/api/types';
 import { MapLayerToggle } from '@/components/MapLayerToggle/MapLayerToggle';
 import { MAP_LAYERS, useMapLayer } from '@/components/MapLayerToggle/mapLayers';
+import { groupColor } from '@/utils/groupColors';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -200,6 +201,14 @@ export function ParcelMap({
         minHeight: height === undefined ? DEFAULT_MIN_HEIGHT : 200,
         borderRadius: 2,
         overflow: 'hidden',
+        // group parcel labels: just the coloured number circle, without Leaflet's tooltip box
+        '& .group-parcel-label': {
+          background: 'transparent',
+          border: 0,
+          boxShadow: 'none',
+          p: 0,
+          '&::before': { display: 'none' },
+        },
       }}
     >
       <MapContainer
@@ -245,23 +254,40 @@ export function ParcelMap({
         )}
         <FitToParcel parcel={parcel} focusKey={focusKey} viewLock={viewLock} />
         <FocusPlace focus={focus} viewLock={viewLock} />
-        {selectedParcels?.map((item) => (
-          <GeoJSON
-            key={`field-${item.id}`}
-            data={item.geometry as unknown as GeoJsonObject}
-            interactive={false}
-            style={{
-              color: theme.palette.warning.main,
-              weight: 4,
-              fillColor: theme.palette.warning.main,
-              fillOpacity: 0.3,
-            }}
-          >
-            <Tooltip permanent direction="center" opacity={0.95}>
-              {item.parcelNumber}
-            </Tooltip>
-          </GeoJSON>
-        ))}
+        {/* T-103: each parcel of a group in its own colour, labelled with its number in the list */}
+        {selectedParcels?.map((item, index) => {
+          const color = groupColor(index);
+          return (
+            <GeoJSON
+              key={`field-${item.id}-${index}`}
+              data={item.geometry as unknown as GeoJsonObject}
+              interactive={false}
+              style={{ color, weight: 4, fillColor: color, fillOpacity: 0.3 }}
+            >
+              <Tooltip permanent direction="center" opacity={1} className="group-parcel-label">
+                <Box
+                  component="span"
+                  aria-label={`${index + 1}. działka ${item.parcelNumber}`}
+                  sx={{
+                    display: 'grid',
+                    placeItems: 'center',
+                    width: 30,
+                    height: 30,
+                    borderRadius: '50%',
+                    bgcolor: color,
+                    color: '#fff',
+                    border: '2px solid #fff',
+                    boxShadow: 2,
+                    fontWeight: 800,
+                    fontSize: '1rem',
+                  }}
+                >
+                  {index + 1}
+                </Box>
+              </Tooltip>
+            </GeoJSON>
+          );
+        })}
         {markers?.map((marker, index) => (
           <CircleMarker
             key={`${marker.lat},${marker.lon}-${index}`}
