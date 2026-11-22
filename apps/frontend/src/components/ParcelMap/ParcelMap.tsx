@@ -1,6 +1,6 @@
 // UI-C-002 ParcelMap: Leaflet map of Poland (OSM), parcel boundary from GeoJSON, click to pick a parcel
 import { Alert, Box, LinearProgress, useTheme } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CircleMarker,
   GeoJSON,
@@ -80,13 +80,33 @@ function ClickHandler({ onPick }: { onPick?: (lat: number, lon: number) => void 
   return null;
 }
 
-function FitToParcel({ parcel, focusKey }: { parcel: Parcel | null; focusKey: number }) {
+// T-103: true once the user moved the map or a found place was shown; a container resize then only
+// recomputes the size instead of snapping back to the parcel (or to all of Poland)
+type ViewLock = { current: boolean };
+
+function FitToParcel({
+  parcel,
+  focusKey,
+  viewLock,
+}: {
+  parcel: Parcel | null;
+  focusKey: number;
+  viewLock: ViewLock;
+}) {
   const map = useMap();
   useEffect(() => {
+    viewLock.current = false;
+    const container = map.getContainer();
+    const lock = () => {
+      viewLock.current = true;
+    };
+    container.addEventListener('pointerdown', lock);
+    container.addEventListener('wheel', lock, { passive: true });
     // Recompute size and re-fit after mount and on every container resize,
     // otherwise the parcel ends up cropped when the layout changes (e.g. 360 px)
     const fit = () => {
       map.invalidateSize();
+      if (viewLock.current) return;
       // No parcel yet: keep Poland centred (the container is resized after mount, e.g. 1920 px layout)
       if (!parcel) {
         map.setView(POLAND_CENTER, POLAND_ZOOM);
@@ -101,16 +121,21 @@ function FitToParcel({ parcel, focusKey }: { parcel: Parcel | null; focusKey: nu
     };
     map.whenReady(fit);
     const observer = new ResizeObserver(() => fit());
-    observer.observe(map.getContainer());
-    return () => observer.disconnect();
-  }, [map, parcel, focusKey]);
+    observer.observe(container);
+    return () => {
+      observer.disconnect();
+      container.removeEventListener('pointerdown', lock);
+      container.removeEventListener('wheel', lock);
+    };
+  }, [map, parcel, focusKey, viewLock]);
   return null;
 }
 
-function FocusPlace({ focus }: { focus: ParcelMapProps['focus'] }) {
+function FocusPlace({ focus, viewLock }: { focus: ParcelMapProps['focus']; viewLock: ViewLock }) {
   const map = useMap();
   useEffect(() => {
     if (!focus) return;
+    viewLock.current = true;
     // T-103: a found town shows whole (its bounding box), a point keeps the close zoom
     // zoom computed from the bounds + a jump without animation: an animated fitBounds from the
     // Poland view got stuck half-way (old tiles greyed out)
@@ -124,7 +149,7 @@ function FocusPlace({ focus }: { focus: ParcelMapProps['focus'] }) {
         ]
       : [focus.lat, focus.lon];
     map.setView(center, zoom, { animate: false });
-  }, [map, focus]);
+  }, [map, focus, viewLock]);
   return null;
 }
 
@@ -148,6 +173,7 @@ export function ParcelMap({
   const layerConfig = MAP_LAYERS[layer];
   const [isHighlighted, setIsHighlighted] = useState(false);
   const [zoom, setZoom] = useState<number | null>(null);
+  const viewLock = useRef(false);
   useEffect(() => {
     if (!focusKey) return;
     setIsHighlighted(true);
@@ -217,8 +243,8 @@ export function ParcelMap({
             style={parcelStyle}
           />
         )}
-        <FitToParcel parcel={parcel} focusKey={focusKey} />
-        <FocusPlace focus={focus} />
+        <FitToParcel parcel={parcel} focusKey={focusKey} viewLock={viewLock} />
+        <FocusPlace focus={focus} viewLock={viewLock} />
         {selectedParcels?.map((item) => (
           <GeoJSON
             key={`field-${item.id}`}

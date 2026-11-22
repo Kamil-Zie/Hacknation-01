@@ -13,6 +13,7 @@ import { ParcelMap } from '@/components/ParcelMap/ParcelMap';
 import { ParcelSearch } from '@/components/ParcelSearch/ParcelSearch';
 import { RecentParcels } from '@/components/RecentParcels/RecentParcels';
 import { useRecentParcelsStore } from '@/store/recentParcels';
+import type { Parcel } from '@/api/types';
 import { useSelectionStore } from '@/store/selection';
 import { useSessionStore } from '@/store/session';
 import { errorMessage } from '@/utils/errorMessages';
@@ -28,8 +29,10 @@ export function StartPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const isGuest = !useSessionStore((state) => state.token);
-  const parcel = useSelectionStore((state) => state.parcel);
-  const setParcel = useSelectionStore((state) => state.setParcel);
+  // T-103: the start page begins empty (a parcel viewed earlier must not zoom the map); the shared
+  // selection is set only when the user goes on to step 2
+  const [parcel, setParcel] = useState<Parcel | null>(null);
+  const setSelectedParcel = useSelectionStore((state) => state.setParcel);
   const setIsExample = useSelectionStore((state) => state.setIsExample);
   const lastPoint = useRef<{ lat: number; lon: number } | null>(null);
   const [searchId, setSearchId] = useState<string | null>(null);
@@ -105,7 +108,11 @@ export function StartPage() {
     else if (lastPoint.current) pickMutation.mutate(lastPoint.current, { onSuccess: setParcel });
   }
 
-  const goNext = () => parcel && navigate(`/parcel/${encodeURIComponent(parcel.id)}`);
+  const goNext = () => {
+    if (!parcel) return;
+    setSelectedParcel(parcel);
+    navigate(`/parcel/${encodeURIComponent(parcel.id)}`);
+  };
 
   const isSearching = searchId !== null && searchQuery.isFetching;
   const isLoading = isSearching || pickMutation.isPending;
