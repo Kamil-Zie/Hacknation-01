@@ -1,0 +1,26 @@
+{
+  "id": "T-115",
+  "title": "Moje działki → Sprawdź: działka z „/” w numerze nie była odnajdywana",
+  "description": "Zgłoszenie Kamila 08:30. Przyczyna: link „Sprawdź” w MyParcelsPage budował /parcel/<id> bez encodeURIComponent, a numery działek często mają „/” (np. 041702_2.0004.192/12), więc router nie dopasowywał trasy i pokazywał „Nie znaleziono”. Ten sam błąd w StepNav (matchPath zwraca odkodowany id, link do kroku 2 był bez kodowania). API znajduje te działki (200).",
+  "type": "bugfix",
+  "team": "frontend",
+  "assignee": "coord-1",
+  "status": "done",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-002", "UI-S-010"],
+  "acceptance_criteria": [
+    "Moje działki → Sprawdź otwiera wybór uprawy dla działki z „/” w numerze",
+    "Krok 2 w pasku kroków działa dla takiej działki"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "coord-1 08:35: sprawdzone na mocku /dzialki → 061401_1.0001.691/9 otwiera „Co rośnie na działce?”."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

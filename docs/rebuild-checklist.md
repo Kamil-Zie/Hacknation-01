@@ -32,6 +32,8 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 
 - [ ] Mapa zagrożonych działek: w prawym górnym rogu „Kliknij pinezkę, aby przejść do działki”; kliknięcie pinezki otwiera raport (T-114), na 390 px dopisek nie zasłania mapy
 
+- [ ] Moje działki → „Sprawdź” przy działce z „/” w numerze (np. 041702_2.0004.192/12 na test@test.pl) otwiera wybór uprawy, nie „Nie znaleziono” (T-115)
+
 ## 2a. Ułatwienia dostępu
 
 - [ ] Po zmianie rozmiaru tekstu, kontrastu albo trybu ciemnego na pasku pojawia się „Widok domyślny”

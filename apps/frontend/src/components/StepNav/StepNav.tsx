@@ -37,9 +37,10 @@ export function StepNav() {
   const active = activeStep(pathname);
   if (active === null) return null;
 
-  const parcelId =
-    matchPath('/parcel/:parcelId', pathname)?.params.parcelId ??
-    (storedParcel ? encodeURIComponent(storedParcel.id) : null);
+  // T-115 matchPath returns the decoded id; parcel ids often contain "/" (e.g. 192/12), so encode it again
+  const matchedId = matchPath('/parcel/:parcelId', pathname)?.params.parcelId;
+  const rawId = matchedId ?? storedParcel?.id ?? null;
+  const parcelId = rawId ? encodeURIComponent(rawId) : null;
   const links: (string | null)[] = [
     isAddFlow ? '/dodaj-dzialke' : '/',
     parcelId ? `/parcel/${parcelId}${isAddFlow ? '?z=dodaj' : ''}` : null,

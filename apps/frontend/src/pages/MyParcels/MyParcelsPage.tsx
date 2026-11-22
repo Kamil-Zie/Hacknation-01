@@ -77,7 +77,7 @@ function ParcelRow({ item }: { item: ParcelOverview }) {
         )}
         <Button
           component={RouterLink}
-          to={`/parcel/${parcel.id}`}
+          to={`/parcel/${encodeURIComponent(parcel.id)}`}
           variant={lastReport ? 'outlined' : 'contained'}
           sx={{ minHeight: 48, fontSize: '1.125rem' }}
         >
