@@ -16,7 +16,6 @@ import type { LatLngBoundsExpression, LatLngTuple } from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 
 import type { Parcel } from '@/api/types';
-import { HoverParcel } from '@/components/ParcelMap/HoverParcel';
 import { MapLayerToggle } from '@/components/MapLayerToggle/MapLayerToggle';
 import { MAP_LAYERS, useMapLayer } from '@/components/MapLayerToggle/mapLayers';
 
@@ -204,7 +203,6 @@ export function ParcelMap({
           />
         )}
         {showParcelBoundaries && <ZoomWatcher onZoom={setZoom} />}
-        {showParcelBoundaries && isInteractive && <HoverParcel minZoom={BOUNDARIES_MIN_ZOOM} />}
         {isInteractive && <ClickHandler onPick={onPick} />}
         {parcel && (
           <GeoJSON
