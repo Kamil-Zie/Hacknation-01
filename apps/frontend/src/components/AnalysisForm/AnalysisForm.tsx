@@ -164,99 +164,112 @@ export function AnalysisForm({
                     Nie ma takiej uprawy. Sprawdź pisownię.
                   </Typography>
                 )}
-                {/* T-103: categories side by side as columns, all open, compact tiles,
-                    so every crop is visible at once without a wall of big buttons */}
+                {/* T-103: two categories per column (stacked), columns side by side, all open,
+                    compact tiles: the whole crop list fits in one short block */}
                 <Box
                   sx={{
                     display: 'grid',
                     gridTemplateColumns: {
                       xs: 'minmax(0, 1fr)',
                       sm: 'repeat(2, minmax(0, 1fr))',
-                      md: 'repeat(3, minmax(0, 1fr))',
                       lg: 'repeat(4, minmax(0, 1fr))',
                     },
-                    gap: 1.5,
+                    gap: 1.25,
                     alignItems: 'start',
                   }}
                 >
-                  {groups.map((group) => (
-                    <Box
-                      key={group.category}
-                      role="radiogroup"
-                      aria-labelledby={`crop-group-${group.category}`}
-                      sx={{
-                        border: 1,
-                        borderColor: 'kropla.line',
-                        borderRadius: '14px',
-                        p: 1.25,
-                        minWidth: 0,
-                      }}
-                    >
-                      <Typography
-                        variant="h3"
-                        component="h2"
-                        id={`crop-group-${group.category}`}
-                        sx={{ fontSize: '1.125rem', fontWeight: 700, mb: 1, px: 0.5 }}
-                      >
-                        {group.category}
-                      </Typography>
-                      <Stack spacing={0.75}>
-                        {group.crops.map((crop) => {
-                          const isSelected = field.value === crop.code;
-                          return (
-                            <Box component="label" key={crop.code} sx={tileSx(isSelected)}>
-                              <input
-                                type="radio"
-                                name="cropCode"
-                                value={crop.code}
-                                checked={isSelected}
-                                disabled={isSubmitting}
-                                onChange={() => field.onChange(crop.code)}
-                                onBlur={field.onBlur}
-                              />
-                              <Box
-                                sx={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 1,
-                                  minHeight: 52,
-                                  width: '100%',
-                                  px: 1.25,
-                                  minWidth: 0,
-                                }}
-                              >
-                                <CropIcon
-                                  cropCode={crop.code}
-                                  sx={{ fontSize: 28, flexShrink: 0 }}
-                                />
-                                <Typography
-                                  component="span"
-                                  sx={{
-                                    flex: 1,
-                                    minWidth: 0,
-                                    fontWeight: 700,
-                                    fontSize: '1.125rem',
-                                    lineHeight: 1.2,
-                                    // break between words only
-                                    overflowWrap: 'break-word',
-                                    hyphens: 'auto',
-                                  }}
-                                >
-                                  {crop.name}
-                                </Typography>
-                                {isSelected && (
-                                  <CheckCircleIcon
-                                    aria-hidden
-                                    sx={{ color: 'kropla.iconMuted', fontSize: 24, flexShrink: 0 }}
-                                  />
-                                )}
-                              </Box>
-                            </Box>
-                          );
-                        })}
+                  {groups
+                    .reduce<(typeof groups)[]>((columns, group, index) => {
+                      if (index % 2 === 0) columns.push([group]);
+                      else columns[columns.length - 1]?.push(group);
+                      return columns;
+                    }, [])
+                    .map((column) => (
+                      <Stack key={column.map((group) => group.category).join('|')} spacing={1.25}>
+                        {column.map((group) => (
+                          <Box
+                            key={group.category}
+                            role="radiogroup"
+                            aria-labelledby={`crop-group-${group.category}`}
+                            sx={{
+                              border: 1,
+                              borderColor: 'kropla.line',
+                              borderRadius: '14px',
+                              p: 1,
+                              minWidth: 0,
+                            }}
+                          >
+                            <Typography
+                              variant="h3"
+                              component="h2"
+                              id={`crop-group-${group.category}`}
+                              sx={{ fontSize: '1.125rem', fontWeight: 700, mb: 0.75, px: 0.5 }}
+                            >
+                              {group.category}
+                            </Typography>
+                            <Stack spacing={0.75}>
+                              {group.crops.map((crop) => {
+                                const isSelected = field.value === crop.code;
+                                return (
+                                  <Box component="label" key={crop.code} sx={tileSx(isSelected)}>
+                                    <input
+                                      type="radio"
+                                      name="cropCode"
+                                      value={crop.code}
+                                      checked={isSelected}
+                                      disabled={isSubmitting}
+                                      onChange={() => field.onChange(crop.code)}
+                                      onBlur={field.onBlur}
+                                    />
+                                    <Box
+                                      sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1,
+                                        minHeight: 48,
+                                        width: '100%',
+                                        px: 1.25,
+                                        minWidth: 0,
+                                      }}
+                                    >
+                                      <CropIcon
+                                        cropCode={crop.code}
+                                        sx={{ fontSize: 28, flexShrink: 0 }}
+                                      />
+                                      <Typography
+                                        component="span"
+                                        sx={{
+                                          flex: 1,
+                                          minWidth: 0,
+                                          fontWeight: 700,
+                                          fontSize: '1.125rem',
+                                          lineHeight: 1.2,
+                                          // break between words only
+                                          overflowWrap: 'break-word',
+                                          hyphens: 'auto',
+                                        }}
+                                      >
+                                        {crop.name}
+                                      </Typography>
+                                      {isSelected && (
+                                        <CheckCircleIcon
+                                          aria-hidden
+                                          sx={{
+                                            color: 'kropla.iconMuted',
+                                            fontSize: 24,
+                                            flexShrink: 0,
+                                          }}
+                                        />
+                                      )}
+                                    </Box>
+                                  </Box>
+                                );
+                              })}
+                            </Stack>
+                          </Box>
+                        ))}
                       </Stack>
-                    </Box>
-                  ))}
+                    ))}
                 </Box>
               </Stack>
             </Box>
