@@ -1,13 +1,13 @@
 {
   "id": "T-102",
   "title": "Przejście jurora od nowego konta do raportu i poprawki błędów",
-  "description": "Przejdź aplikację jak juror, który zakłada NOWE konto (np. juror-test-<godzina>@test.pl na bazie hacknation): rejestracja, pusty pulpit, Dodaj działkę (061409_2.0009.612), Sprawdź działkę → raport, Moje działki, Utwórz pole z 2 działek, raport pola, Szybki raport, Wspólnicy (dodaj kamil@test.pl), wylogowanie i ponowne logowanie. Telefon 390 px i komputer, tryb jasny i ciemny, największe A.\n\nSzczególnie stany puste nowego konta: pulpit bez działek (mapa, Stan suszy, Bilans wody, Szybki raport), Moje pola bez pól, Szybki raport bez działek, Wspólnicy tylko z Tobą. Każdy ma mieć jasny komunikat i przycisk do następnego kroku.\n\nZnalezione błędy frontendu poprawiaj od razu (fix(frontend): ... [T-102]); błędy backendu zgłoś Janowi wiadomością. Pliki: te ekrany, których dotyczy błąd; przed edycją sprawdź rezerwacje (Dawid ma QuickReportPage do T-100).\n\nTermin: na main do 5:00 (zamrożenie 7:00).",
+  "description": "Przejdź aplikację jak juror, który zakłada NOWE konto (np. juror-test-<godzina>@test.pl na bazie hacknation): rejestracja, pusty pulpit, Dodaj działkę (061409_2.0009.612), Sprawdź działkę → raport, Moje działki, Utwórz pole z 2 działek, raport pola, Szybki raport, Wspólnicy (dodaj kamil@test.pl), wylogowanie i ponowne logowanie. Telefon 390 px i komputer, tryb jasny i ciemny, największe A.\n\nSzczególnie stany puste nowego konta: pulpit bez działek (mapa, Stan suszy, Bilans wody, Szybki raport), Moje pola bez pól, Szybki raport bez działek, Wspólnicy tylko z Tobą. Każdy ma mieć jasny komunikat i przycisk do następnego kroku.\n\nZnalezione błędy frontendu poprawiaj od razu (fix(frontend): ... [T-102]); błędy backendu zgłoś Janowi wiadomością. Pliki: te ekrany, których dotyczy błąd; przed edycją sprawdź rezerwacje.\n\nTermin: na main do 5:00 (zamrożenie 7:00).",
   "type": "feature",
   "team": "frontend",
-  "assignee": "backend-2",
+  "assignee": "frontend-1",
   "status": "backlog",
   "priority": "high",
-  "depends_on": [],
+  "depends_on": ["T-100"],
   "contract_refs": ["UI-S-001", "UI-S-009", "UI-S-010", "UI-S-011", "UI-S-013", "UI-S-014"],
   "demo_step": 1,
   "acceptance_criteria": [
@@ -20,7 +20,10 @@
     "by": null,
     "note": ""
   },
-  "notes": ["coord-1 02:25: z propozycji koordynatora zatwierdzonej przez Kamila."],
+  "notes": [
+    "coord-1 02:25: decyzja Kamila: T-102 robi Dawid (po T-100), nie Nataniel.",
+    "coord-1 02:25: z propozycji koordynatora zatwierdzonej przez Kamila."
+  ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
 }
