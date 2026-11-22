@@ -105,18 +105,19 @@ Pliki `.env*` z prawdziwymi wartościami są tylko na NAS-ie (uprawnienia 600), 
 
 ## Wdrożenie: Dockerfile sam pobiera repo i skanuje (zalecane, T-065)
 
-Repo jest publiczne, więc tokena nie trzeba. Dockerfile w `deploy/docker-compose.synology.yml` (`dockerfile_inline`) ma etap `source`: klonuje `main` z GitHuba, skanuje pliki i całą historię na sekrety (`git-checks.mjs scan --all` i `--history`), a dopiero potem buduje obraz. Skan z błędem przerywa budowę. Nowy commit na `main` unieważnia cache, więc każde `up --build` bierze najnowszy kod.
+Repo jest publiczne, więc tokena nie trzeba. Pliki `deploy/Dockerfile.backend` i `deploy/Dockerfile.frontend` mają etap `source`: klonuje `main` z GitHuba, skanuje pliki i całą historię na sekrety (`git-checks.mjs scan --all` i `--history`), a dopiero potem buduje obraz. Skan z błędem przerywa budowę. Nowy commit na `main` unieważnia cache, więc każde `up --build` bierze najnowszy kod.
 
 ```bash
 ssh <user>@<nas> && sudo -i
 mkdir -p /volume1/docker/hacknation && cd /volume1/docker/hacknation
-curl -fsSL -o docker-compose.yml https://raw.githubusercontent.com/Kamil-Zie/Hacknation-01/main/deploy/docker-compose.synology.yml
+for f in docker-compose.yml Dockerfile.backend Dockerfile.frontend env.prod.example; do curl -fsSL -O https://raw.githubusercontent.com/Kamil-Zie/Hacknation-01/main/deploy/$f; done
+cp -n env.prod.example .env.prod && chmod 600 .env.prod   # raz, potem uzupełnij .env.prod (nano .env.prod)
 # raz: .env.prod z sekretami backendu (sekcja „Zmienne prod”), chmod 600
 docker compose up -d --build          # wdrożenie i każda aktualizacja
 docker compose ps && curl -s localhost:13000/api/v1/health
 ```
 
-Na NAS-ie są tylko `docker-compose.yml` i `.env.prod`. Zmiana samego pliku Compose w repo wymaga ponownego `curl`.
+Na NAS-ie są tylko `docker-compose.yml`, `Dockerfile.backend`, `Dockerfile.frontend` i `.env.prod` (wzór: `deploy/env.prod.example`). Zmiana tych plików w repo wymaga ponownego `curl`.
 
 ## Wdrożenie krok po kroku (ręczny klon, budowanie na NAS-ie, T-065)
 
