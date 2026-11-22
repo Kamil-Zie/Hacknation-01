@@ -2,6 +2,7 @@
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import AgricultureOutlinedIcon from '@mui/icons-material/AgricultureOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Button, Card, CardContent, Chip, Stack, Typography, useTheme } from '@mui/material';
 import { alpha } from '@mui/material/styles';
@@ -190,6 +191,58 @@ export function DashboardEmpty({ canEdit }: DashboardEmptyProps) {
           </Card>
         ))}
       </Box>
+
+      {/* invite other people to the farm (T-104 roles) */}
+      <Card component="section" aria-labelledby="wspolnicy-title" variant="outlined">
+        <CardContent
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            gap: 2,
+            p: 2,
+            '&:last-child': { pb: 2 },
+          }}
+        >
+          <Box
+            aria-hidden
+            sx={{
+              flexShrink: 0,
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              display: 'grid',
+              placeItems: 'center',
+              bgcolor: alpha(palette.primary.main, 0.12),
+              color: 'primary.main',
+            }}
+          >
+            <GroupsOutlinedIcon />
+          </Box>
+          <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+            <Typography
+              id="wspolnicy-title"
+              component="h2"
+              sx={{ fontWeight: 700, fontSize: '1.125rem' }}
+            >
+              Pracujesz z kimś? Dodaj wspólników
+            </Typography>
+            <Typography sx={{ fontSize: '1rem' }} color="text.secondary">
+              Zaproś rodzinę, wspólnika albo doradcę do swojego gospodarstwa. Wspólnik może razem z
+              Tobą dodawać działki i grupy działek, a członek lub gość tylko ogląda raporty.
+            </Typography>
+          </Box>
+          <Button
+            component={RouterLink}
+            to="/wspolnicy"
+            variant="outlined"
+            size="large"
+            sx={{ minHeight: 48, fontSize: '1.125rem', flexShrink: 0, whiteSpace: 'nowrap' }}
+          >
+            Zaproś osoby
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* what the dashboard will show (sample data, marked) */}
       <Box component="section" aria-labelledby="podglad-title">
