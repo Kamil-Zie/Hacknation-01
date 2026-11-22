@@ -47,7 +47,7 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 - [ ] Członek/Gość: w panelu bocznym brak „Dodaj działkę” i „Utwórz pole”, na Pulpicie brak „Szybki raport”, w Moich polach brak „Utwórz pole” i „Usuń”
 - [ ] Członek/Gość: wejście na /dodaj-dzialke, /pole/nowe, /szybki-raport przekierowuje na Pulpit
 - [ ] Członek/Gość: „Sprawdź nową działkę” i „Raport pola” działają, ale nic nie zapisuje się w gospodarstwie
-- [ ] Po zmianie tagu przez właściciela osoba musi się wylogować i zalogować (rola przychodzi z logowania)
+- [ ] Po zmianie tagu przez właściciela wystarczy, że osoba odświeży stronę (konta odświeża /auth/me)
 
 ## 3. Backend
 
