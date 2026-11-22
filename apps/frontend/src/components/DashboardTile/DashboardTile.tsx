@@ -11,6 +11,8 @@ export interface DashboardTileProps {
   onRetry?: () => void;
   isEmpty?: boolean;
   emptyText?: string;
+  /** T-102 next-step button under the empty text (fresh account) */
+  emptyAction?: ReactNode;
   children?: ReactNode;
   /** Grid placement, e.g. gridColumn / gridRow */
   sx?: object;
@@ -25,6 +27,7 @@ export function DashboardTile({
   onRetry,
   isEmpty = false,
   emptyText = 'Brak danych.',
+  emptyAction,
   children,
   sx,
 }: DashboardTileProps) {
@@ -53,7 +56,12 @@ export function DashboardTile({
       </Alert>
     );
   } else if (isEmpty) {
-    body = <Typography sx={{ fontSize: '1.125rem' }}>{emptyText}</Typography>;
+    body = (
+      <Stack spacing={1.5} sx={{ alignItems: 'flex-start' }}>
+        <Typography sx={{ fontSize: '1.125rem' }}>{emptyText}</Typography>
+        {emptyAction}
+      </Stack>
+    );
   } else {
     body = children;
   }

@@ -168,9 +168,20 @@ export function AccountPage() {
           sx={{ gridArea: 'map' }}
         >
           {items.length === 0 ? (
-            <Typography sx={bigText}>
-              Nie masz jeszcze działek. Sprawdź pierwszą działkę.
-            </Typography>
+            <Stack spacing={1.5} sx={{ alignItems: 'flex-start' }}>
+              <Typography sx={bigText}>
+                Nie masz jeszcze działek. Dodaj pierwszą, a pokażemy ją tu na mapie.
+              </Typography>
+              <Button
+                component={RouterLink}
+                to="/dodaj-dzialke"
+                variant="contained"
+                startIcon={<AddLocationAltIcon />}
+                sx={{ minHeight: 48, fontSize: '1.125rem' }}
+              >
+                Dodaj działkę
+              </Button>
+            </Stack>
           ) : (
             <Stack spacing={2}>
               {atRisk.length === 0 && (
@@ -189,7 +200,12 @@ export function AccountPage() {
           isError={parcels.isError}
           onRetry={retryParcels}
           isEmpty={items.length === 0}
-          emptyText="Brak działek do oceny."
+          emptyText="Stan suszy pokażemy po sprawdzeniu pierwszej działki."
+          emptyAction={
+            <Link component={RouterLink} to="/" sx={linkSx}>
+              Sprawdź działkę
+            </Link>
+          }
           sx={{ gridArea: 'side' }}
         >
           <Stack spacing={1}>
@@ -226,9 +242,14 @@ export function AccountPage() {
               </Link>
             </Stack>
           ) : (
-            <Link component={RouterLink} to="/" sx={linkSx}>
-              Sprawdź działkę
-            </Link>
+            <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
+              <Typography sx={bigText}>
+                Wykres pokażemy, gdy sprawdzisz działkę i powstanie jej raport.
+              </Typography>
+              <Link component={RouterLink} to="/" sx={linkSx}>
+                Sprawdź działkę
+              </Link>
+            </Stack>
           )}
         </DashboardTile>
         <DashboardTile id="szybki-raport" title="Szybki raport" sx={{ gridArea: 'quick' }}>

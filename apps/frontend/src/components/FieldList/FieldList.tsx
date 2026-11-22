@@ -79,8 +79,10 @@ export function FieldList({ hideHeader = false }: FieldListProps) {
   } else if (query.data.length === 0) {
     body = (
       <Typography color="text.secondary" sx={{ fontSize: 18 }}>
-        Nie masz jeszcze pól. Pole to kilka działek obok siebie – np. jedna uprawa na kilku
-        działkach.
+        {/* T-102 the Moje pola page already explains what a field is above the list */}
+        {hideHeader
+          ? 'Nie masz jeszcze pól. Kliknij „Utwórz pole”, aby połączyć działki w jedno pole.'
+          : 'Nie masz jeszcze pól. Pole to kilka działek obok siebie – np. jedna uprawa na kilku działkach.'}
       </Typography>
     );
   } else {
