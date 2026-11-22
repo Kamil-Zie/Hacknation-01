@@ -30,10 +30,11 @@ const FORMAT_HINT = `Format: ${EXAMPLE_ID}`;
 export type ParcelSearchMode = 'number' | 'address' | 'gps' | 'map';
 type Mode = ParcelSearchMode;
 
+// T-103 order everywhere: Mapa → GPS → Numer działki (→ Adres when there is no map)
 const BASE_MODES: { value: Mode; label: string; icon: ReactNode }[] = [
+  { value: 'gps', label: 'GPS', icon: <PlaceOutlinedIcon aria-hidden /> },
   { value: 'number', label: 'Numer działki', icon: <ViewWeekOutlinedIcon aria-hidden /> },
   { value: 'address', label: 'Adres', icon: <HomeOutlinedIcon aria-hidden /> },
-  { value: 'gps', label: 'GPS', icon: <PlaceOutlinedIcon aria-hidden /> },
 ];
 // T-103: optional 4th way – pick the parcel on a map the page passes in (mapSlot)
 const MAP_MODE = { value: 'map' as Mode, label: 'Mapa', icon: <MapOutlinedIcon aria-hidden /> };
@@ -105,7 +106,7 @@ export function ParcelSearch({
 }: ParcelSearchProps) {
   // with a map, „Adres” is dropped: the town search above the map does the same job
   const MODES = mapSlot
-    ? [...BASE_MODES.filter((item) => item.value !== 'address'), MAP_MODE]
+    ? [MAP_MODE, ...BASE_MODES.filter((item) => item.value !== 'address')]
     : BASE_MODES;
   const [mode, setMode] = useState<Mode>(
     defaultMode === 'map' && !mapSlot ? 'number' : defaultMode,
