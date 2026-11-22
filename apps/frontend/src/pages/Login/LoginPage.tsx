@@ -14,8 +14,14 @@ import { errorMessage } from '@/utils/errorMessages';
 
 const PANEL_PATH = '/konto';
 
+// The start page "/" is not a destination worth returning to: after login everyone lands on the dashboard (/konto)
 function safePath(path: string | null | undefined): string | null {
-  return path && path.startsWith('/') && !path.startsWith('//') && !path.startsWith('/logowanie')
+  return path &&
+    path.startsWith('/') &&
+    !path.startsWith('//') &&
+    !path.startsWith('/logowanie') &&
+    path !== '/' &&
+    !path.startsWith('/?')
     ? path
     : null;
 }
