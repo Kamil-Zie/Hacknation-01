@@ -1,7 +1,6 @@
 // UI-C-017 ThreatMap: Leaflet map of account parcels colored by drought class, fit to at-risk parcels; ThreatList: at-risk list and legend for the drought tile
 import { Box, Link, Skeleton, Stack, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import {
   CircleMarker,
   GeoJSON,
@@ -152,9 +151,8 @@ export function ThreatMap({ items, isLoading = false, onSelect }: ThreatMapProps
   );
 }
 
-// T-103: text list of at-risk parcels and the map legend, shown next to the drought counts on the dashboard
-const LIST_LIMIT = 5;
-
+// T-103: text list of at-risk parcels and the map legend, shown next to the drought counts on the dashboard.
+// When the parent gives it a fixed height (dashboard lg+), only the list scrolls; heading and legend stay.
 export function ThreatList({
   items,
   onSelect,
@@ -168,7 +166,7 @@ export function ThreatList({
       component="section"
       aria-labelledby="lista-zagrozonych-title"
       spacing={2}
-      sx={{ alignSelf: 'start', minWidth: 0 }}
+      sx={{ minWidth: 0, minHeight: 0, height: { lg: '100%' } }}
     >
       {/* same heading level and style as the „Stan suszy” title next to it */}
       <Typography
@@ -182,8 +180,21 @@ export function ThreatList({
       {atRisk.length === 0 ? (
         <Typography sx={{ fontSize: '1.125rem' }}>Brak</Typography>
       ) : (
-        <Box component="ul" aria-label="Zagrożone działki" sx={{ m: 0, pl: 0, listStyle: 'none' }}>
-          {atRisk.slice(0, LIST_LIMIT).map((item) => (
+        <Box
+          component="ul"
+          aria-label="Zagrożone działki"
+          tabIndex={0}
+          sx={{
+            m: 0,
+            pl: 0,
+            listStyle: 'none',
+            flex: '1 1 auto',
+            minHeight: 0,
+            overflowY: 'auto',
+            '&:focus-visible': { outline: 2, outlineColor: 'primary.main', outlineOffset: 2 },
+          }}
+        >
+          {atRisk.map((item) => (
             <Typography
               component="li"
               key={item.parcel.id}
@@ -212,16 +223,7 @@ export function ThreatList({
           ))}
         </Box>
       )}
-      {atRisk.length > LIST_LIMIT && (
-        <Link
-          component={RouterLink}
-          to="/dzialki"
-          sx={{ fontSize: '1.125rem', minHeight: 48, display: 'inline-flex', alignItems: 'center' }}
-        >
-          {`+${atRisk.length - LIST_LIMIT} więcej`}
-        </Link>
-      )}
-      <Typography sx={{ fontSize: '1rem', color: 'text.secondary', pt: 1 }}>
+      <Typography sx={{ fontSize: '1rem', color: 'text.secondary', pt: 1, flexShrink: 0 }}>
         Kolory jak na mapie. Linia przerywana: {DROUGHT_WORDS.unknown.toLowerCase()}.
       </Typography>
     </Stack>
