@@ -1,10 +1,9 @@
-// T-026 UI-S-001 UI-S-002 StepNav: 3-step progress tiles under the header (Kropla design), active step derived from the route
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { Box, ButtonBase } from '@mui/material';
-import { alpha } from '@mui/material/styles';
-import type { Theme } from '@mui/material/styles';
+// T-026 UI-S-001 UI-S-002 StepNav: 3-step progress line under the header (circles joined by a line, labels below; T-103: not tab-like), active step derived from the route
+import CheckIcon from '@mui/icons-material/Check';
+import { Box, Link } from '@mui/material';
 import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom';
 
+import { srOnly } from '@/app/a11yStyles';
 import { useSelectionStore } from '@/store/selection';
 
 interface StepDef {
@@ -17,6 +16,10 @@ const STEPS: StepDef[] = [
   { label: 'Co rośnie i kiedy', shortLabel: 'Uprawa' },
   { label: 'Raport o wodzie', shortLabel: 'Raport' },
 ];
+
+// circle diameter (px) on phones / desktop; the joining line runs through the circle centres
+const CIRCLE = { xs: 32, md: 40 } as const;
+const LINE = 3;
 
 function activeStep(pathname: string): number | null {
   if (matchPath('/', pathname)) return 1;
@@ -70,12 +73,10 @@ export function StepNav() {
           m: 0,
           mx: 'auto',
           p: 0,
-          px: { xs: 1.5, md: 4 },
-          py: { xs: 1.5, md: 2.5 },
-          maxWidth: 1344,
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-          gap: { xs: 1, md: 2 },
+          px: { xs: 1, md: 4 },
+          py: { xs: 1.25, md: 1.75 },
+          maxWidth: 880,
+          display: 'flex',
         }}
       >
         {STEPS.map((step, index) => {
@@ -83,15 +84,16 @@ export function StepNav() {
           const state = number < active ? 'done' : number === active ? 'active' : 'pending';
           const href = state === 'done' ? links[index] : null;
           return (
-            <Box component="li" key={step.label} sx={{ display: 'flex', minWidth: 0 }}>
-              <StepTile
-                number={number}
-                step={step}
-                state={state}
-                href={href}
-                isCurrent={state === 'active'}
-              />
-            </Box>
+            <StepItem
+              key={step.label}
+              number={number}
+              step={step}
+              state={state}
+              href={href}
+              // the line into this step is coloured once this step is reached
+              isLineDone={number <= active}
+              isFirst={index === 0}
+            />
           );
         })}
       </Box>
@@ -99,126 +101,110 @@ export function StepNav() {
   );
 }
 
-interface StepTileProps {
+interface StepItemProps {
   number: number;
   step: StepDef;
   state: 'done' | 'active' | 'pending';
   href: string | null;
-  isCurrent: boolean;
+  isLineDone: boolean;
+  isFirst: boolean;
 }
 
-function StepTile({ number, step, state, href, isCurrent }: StepTileProps) {
+function StepItem({ number, step, state, href, isLineDone, isFirst }: StepItemProps) {
   const isActive = state === 'active';
   const isDone = state === 'done';
-  const sx = (theme: Theme) => ({
-    flex: 1,
-    minWidth: 0,
-    minHeight: 44,
-    display: 'flex',
-    flexDirection: { xs: 'column', md: 'row' },
-    alignItems: 'center',
-    justifyContent: { xs: 'center', md: 'flex-start' },
-    textAlign: { xs: 'center', md: 'left' },
-    gap: { xs: 0.5, md: 1.75 },
-    px: { xs: 0.5, md: 2.25 },
-    py: { xs: 1, md: 1.75 },
-    borderRadius: '12px',
-    border: 2,
-    borderColor: isDone
-      ? theme.palette.kropla.iconMuted
-      : isActive
-        ? 'transparent'
-        : theme.palette.kropla.line,
-    background: isActive ? theme.palette.kropla.ctaGradient : theme.palette.background.paper,
-    color: isActive ? theme.palette.kropla.ctaText : theme.palette.text.primary,
-    // T-103 hover only on steps you can go back to (links): primary border, tint, lift
-    ...(href && {
-      cursor: 'pointer',
-      transition: 'transform 120ms, box-shadow 120ms, border-color 120ms, background-color 120ms',
-      '&:hover': {
-        borderColor: theme.palette.primary.main,
-        background: alpha(theme.palette.primary.main, 0.14),
-        transform: 'translateY(-2px)',
-        boxShadow: theme.shadows[4],
-      },
-      '&:active': { transform: 'translateY(0)', boxShadow: theme.shadows[1] },
-    }),
-    '&:focus-visible': { outline: `3px solid ${theme.palette.primary.main}`, outlineOffset: 2 },
-  });
-  const content = (
-    <>
-      {isDone ? (
-        <CheckCircleIcon
-          aria-hidden
-          sx={{ fontSize: { xs: 28, md: 44 }, color: 'kropla.iconMuted', flexShrink: 0 }}
-        />
-      ) : (
-        <Box
-          component="span"
-          aria-hidden
-          sx={{
-            width: { xs: 28, md: 44 },
-            height: { xs: 28, md: 44 },
-            flexShrink: 0,
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 800,
-            fontSize: { xs: '1rem', md: '1.375rem' },
-            bgcolor: isActive ? 'background.paper' : 'transparent',
-            color: isActive ? 'primary.main' : 'text.secondary',
-            border: isActive ? 0 : 2,
-            borderColor: 'text.secondary',
-          }}
-        >
-          {number}
-        </Box>
-      )}
-      <Box component="span" sx={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        <Box
-          component="span"
-          sx={{
-            fontWeight: isActive || isDone ? 700 : 600,
-            fontSize: { xs: '0.9375rem', md: '1.25rem' },
-            lineHeight: 1.2,
-          }}
-        >
-          <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
-            {step.label}
-          </Box>
-          <Box component="span" sx={{ display: { xs: 'inline', md: 'none' } }}>
-            {step.shortLabel}
-          </Box>
-        </Box>
-        {isDone && (
-          <Box
-            component="span"
-            sx={{
-              color: 'text.secondary',
-              fontSize: { xs: '0.8125rem', md: '0.9375rem' },
-              display: { xs: 'none', sm: 'inline' },
-            }}
-          >
-            Gotowe · zmień
-          </Box>
-        )}
-      </Box>
-    </>
-  );
-  if (isDone && href) {
-    return (
-      <ButtonBase component={RouterLink} to={href} sx={sx}>
-        {content}
-      </ButtonBase>
-    );
-  }
+  const stateText = isDone ? 'zrobione' : isActive ? 'teraz' : 'następny';
   return (
     <Box
-      aria-current={isCurrent ? 'step' : undefined}
-      sx={(theme) => ({ ...sx(theme), display: 'flex' })}
+      component="li"
+      aria-current={isActive ? 'step' : undefined}
+      sx={{
+        position: 'relative',
+        flex: '1 1 0',
+        minWidth: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        gap: 0.5,
+        // line from the previous circle to this one, through the circle centres
+        ...(!isFirst && {
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: { xs: CIRCLE.xs / 2 - LINE / 2, md: CIRCLE.md / 2 - LINE / 2 },
+            left: {
+              xs: `calc(-50% + ${CIRCLE.xs / 2 + 6}px)`,
+              md: `calc(-50% + ${CIRCLE.md / 2 + 8}px)`,
+            },
+            right: {
+              xs: `calc(50% + ${CIRCLE.xs / 2 + 6}px)`,
+              md: `calc(50% + ${CIRCLE.md / 2 + 8}px)`,
+            },
+            height: LINE,
+            borderRadius: LINE,
+            bgcolor: isLineDone ? 'primary.main' : 'kropla.line',
+          },
+        }),
+      }}
     >
-      {content}
+      <Box
+        component="span"
+        aria-hidden
+        sx={{
+          width: { xs: CIRCLE.xs, md: CIRCLE.md },
+          height: { xs: CIRCLE.xs, md: CIRCLE.md },
+          flexShrink: 0,
+          borderRadius: '50%',
+          display: 'grid',
+          placeItems: 'center',
+          fontWeight: 800,
+          fontSize: { xs: '1rem', md: '1.1875rem' },
+          border: 3,
+          borderColor: isActive || isDone ? 'primary.main' : 'kropla.line',
+          bgcolor: isDone ? 'primary.main' : 'background.paper',
+          color: isDone ? 'primary.contrastText' : isActive ? 'primary.main' : 'text.secondary',
+          // current step: a soft halo so it reads as "you are here", not as a button
+          boxShadow: (theme) => (isActive ? `0 0 0 5px ${theme.palette.action.selected}` : 'none'),
+        }}
+      >
+        {isDone ? <CheckIcon sx={{ fontSize: { xs: 20, md: 24 } }} /> : number}
+      </Box>
+      <Box
+        component="span"
+        sx={{
+          fontWeight: isActive ? 800 : 600,
+          fontSize: { xs: '0.9375rem', md: '1.125rem' },
+          lineHeight: 1.2,
+          color: isActive ? 'text.primary' : 'text.secondary',
+          maxWidth: '100%',
+          overflowWrap: 'anywhere',
+        }}
+      >
+        <Box component="span" sx={srOnly}>
+          Krok {number}, {stateText}:{' '}
+        </Box>
+        <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+          {step.label}
+        </Box>
+        <Box component="span" sx={{ display: { xs: 'inline', md: 'none' } }}>
+          {step.shortLabel}
+        </Box>
+      </Box>
+      {/* a finished step can be changed: a plain text link, so it does not look like a tab */}
+      {isDone && href && (
+        <Link
+          component={RouterLink}
+          to={href}
+          sx={{ fontSize: { xs: '0.875rem', md: '1rem' }, fontWeight: 600, lineHeight: 1.3 }}
+        >
+          zmień
+          <Box component="span" sx={srOnly}>
+            {' '}
+            krok {number}: {step.label}
+          </Box>
+        </Link>
+      )}
     </Box>
   );
 }
