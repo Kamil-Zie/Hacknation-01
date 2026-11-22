@@ -25,7 +25,8 @@
     "coord-1 02:28: decyzja Kamila: Nataniel ma zgodę na wszelkie zmiany układu (layout) wszystkich ekranów, także pulpitu UI-S-009 (np. usunięcie kafelka „Twoje działki”), bez pytania o zgodę; po zmianie aktualizuje opis w contracts/ui.json i informuje zespół.",
     "coord-1 02:27: decyzja Kamila: Nataniel implementuje poprawki, Dawid testuje (T-102).",
     "coord-1 08:15: decyzja Kamila: T-103 przejmuje Jan (backend-1, ma zapis w apps/frontend/src/**). Nataniel zwalnia rezerwację. Po 9:00 tylko fix na ścieżce demo.",
-    "coord-1 08:40: decyzja Kamila: Nataniel kończy swoje (tryb gościa, AccountPage.tsx), resztę zgłoszeń T-103 i listę kontrolną (sekcja 2, wysoki kontrast, axe) robi Jan."
+    "coord-1 08:40: decyzja Kamila: Nataniel kończy swoje (tryb gościa, AccountPage.tsx), resztę zgłoszeń T-103 i listę kontrolną (sekcja 2, wysoki kontrast, axe) robi Jan.",
+    "backend-1 08:40: sprawdzone w headless Edge na mockach (1440, 1920, 390, jasny, ciemny, wysoki kontrast). OK: sekcja 2 (pulpit na jeden ekran, bez stopki, lista zagrożonych, przełączniki, 390 w kolumnie, dopisek pinezki T-114 na 390 nie zasłania mapy), 2a (Widok domyślny pojawia się i znika, fokus na A standardowe), 2d (z=dodaj → Działka sprawdzona → Zobacz raport; zwykłe Sprawdź od razu raport), 2e, 2f, 2g, 2i (Teraz/Zwykle mieszczą się na 390), stany puste nowego konta (pulpit, Moje działki, Moje grupy działek, Szybki raport, Wspólnicy: komunikat + przycisk). Poprawione: bf5189f (lista zagrożonych ucinała nazwę miejscowości na 1440), e6bf4c3 (wysoki kontrast: puste przełączniki klas suszy i niewidoczne osie wykresu). Nie sprawdzone: 2b/2c (mock nie ma tagów), 2h i T-115 (potrzebne konto test@test.pl na prawdziwym API), axe (brak axe-core w repo, wstrzyknięcie z CDN zablokowane)."
   ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
