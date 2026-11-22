@@ -1,0 +1,28 @@
+{
+  "id": "T-106",
+  "title": "Pulpit: przy filtrze suszy mapa wraca do działek przy oddalaniu – okienko z informacją",
+  "description": "Zgłoszenie Kamila 05:55. Na Pulpicie (UI-S-009, ThreatMap) po włączeniu filtra klas suszy i próbie oddalenia mapa sama przybliża się z powrotem na te same działki. Kamil chce okienko (popup), które mówi użytkownikowi, że mapa nie oddali, bo skupia się na działkach z wybranych filtrów.\n\nPrzyczyna (diagnoza coord-1): FitToItems w src/components/ThreatMap/ThreatMap.tsx robi map.fitBounds w useEffect zależnym od [map, items]. items to nowa tablica przy każdym renderze (filtrowanie), a ZoomWatcher po zoomend ustawia stan → render → nowa tablica → fitBounds znowu. Do tego ResizeObserver też woła fit.\n\nZakres: okienko/komunikat zgodnie z prośbą (np. MUI Snackbar albo Dialog z przyciskiem „Pokaż wszystkie działki”, który czyści filtr). Pokazuj go, gdy użytkownik oddala, a filtr jest aktywny. Jeśli przy okazji zrobisz tak, że fit działa tylko przy zmianie filtra (klucz z id działek zamiast tablicy), napisz o tym w notatce – to też naprawia skakanie.",
+  "type": "bugfix",
+  "team": "frontend",
+  "assignee": "frontend-1",
+  "status": "ready",
+  "priority": "high",
+  "depends_on": [],
+  "contract_refs": ["UI-S-009"],
+  "acceptance_criteria": [
+    "Filtr suszy aktywny + oddalenie mapy → widoczny komunikat po polsku, dostępny dla czytnika (role=status/alert)",
+    "Komunikat ma sposób wyjścia: zamknij i/lub pokaż wszystkie działki",
+    "Bez filtra oddalanie działa normalnie",
+    "Sprawdzone przy 1440 i 390 px, jasny i ciemny tryb"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": [
+    "Pliki: src/components/ThreatMap/ThreatMap.tsx (i ewentualnie src/pages/Account/AccountPage.tsx). AccountPage ma w rezerwacji Nataniel (T-103) – zanim go ruszysz, napisz do niego. Zamrożenie funkcji o 9:00."
+  ],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}
