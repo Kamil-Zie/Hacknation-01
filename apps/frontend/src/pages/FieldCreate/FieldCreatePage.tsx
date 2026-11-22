@@ -122,8 +122,14 @@ export function FieldCreatePage() {
     <Stack spacing={3} sx={{ maxWidth: 960 }}>
       <Box>
         <Typography variant="h1">Dodaj grupę działek</Typography>
-        <Typography color="text.secondary" sx={BIG_TEXT}>
-          Podaj nazwę grupy i wybierz co najmniej 2 działki.
+        {/* T-103: short explanation of what a group is, before the form */}
+        <Alert severity="info" icon={false} sx={{ ...BIG_TEXT, mt: 1, maxWidth: 760 }}>
+          <b>Grupa działek</b> to kilka działek, które uprawiasz <b>razem, jak jedno pole</b> – np.
+          sąsiednie działki pod tą samą uprawą. Sprawdzisz je <b>jednym raportem</b> zamiast każdej
+          osobno.
+        </Alert>
+        <Typography sx={{ ...BIG_TEXT, mt: 1.5 }}>
+          Podaj <b>nazwę grupy</b> i dodaj <b>co najmniej 2 działki</b>.
         </Typography>
       </Box>
 
