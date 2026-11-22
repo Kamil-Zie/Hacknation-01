@@ -1,4 +1,4 @@
-// UI-S-013 T-095 Add a parcel to my parcels: search (API-001/002), map preview, "Dodaj do moich działek" (API-022)
+// UI-S-013 T-095 Add a parcel to my parcels: search (API-001/002) with the map as the 4th search option, "Dodaj do moich działek" (API-022)
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
@@ -79,33 +79,51 @@ export function AddParcelPage() {
   }, [added, saveError, alreadyOnAccount, parcel?.id]);
 
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 560px) minmax(0, 1fr)' },
-        gap: { xs: 3, md: 4 },
-        alignItems: 'start',
-      }}
-    >
+    // T-103: one column; the map lives only in the „Mapa” option of „Jak znaleźć działkę?”
+    <Box sx={{ maxWidth: 960 }}>
       <Stack spacing={3} component="section" aria-label="Wyszukiwanie działki">
         <Stack spacing={1.25}>
           <Typography variant="h1" component="h1">
             Dodaj działkę
           </Typography>
           <Typography color="text.secondary" sx={{ fontSize: { xs: '1.125rem', md: '1.25rem' } }}>
-            Znajdź działkę po numerze, adresie lub GPS albo kliknij ją na mapie. Zapiszemy ją w
-            Twoich działkach.
+            Znajdź działkę po numerze, adresie, GPS albo na mapie. Zapiszemy ją w Twoich działkach.
           </Typography>
         </Stack>
         <ParcelSearch
           key={parcel?.id ?? 'empty'}
           defaultValue={parcel?.id}
+          defaultMode={picked ? 'map' : 'number'}
           isLoading={isLoading}
           error={byId ? error : null}
           pickError={byId ? null : error}
           onSearch={handleSearch}
           onLocate={handlePick}
           onPlaceFound={(lat, lon) => setFocus({ lat, lon })}
+          mapSlot={
+            <Box
+              component="section"
+              aria-label="Mapa: kliknij swoją działkę"
+              sx={{
+                minWidth: 0,
+                border: 1,
+                borderColor: 'kropla.line',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                display: 'flex',
+              }}
+            >
+              <ParcelMap
+                parcel={parcel}
+                focus={focus}
+                focusKey={parcel ? 1 : 0}
+                height={{ xs: 320, md: 480 }}
+                isLoading={isLoading}
+                errorMessage={null}
+                onPick={handlePick}
+              />
+            </Box>
+          }
         />
         {error?.canRetry && !isLoading && byId && searchId !== null && (
           <Button
@@ -124,7 +142,7 @@ export function AddParcelPage() {
         )}
         {!parcel && !isLoading && !error && (
           <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>
-            Nie wybrano jeszcze działki. Wyszukaj ją, żeby zobaczyć podgląd.
+            Nie wybrano jeszcze działki.
           </Typography>
         )}
         {parcel && !isLoading && (
@@ -213,28 +231,6 @@ export function AddParcelPage() {
           </Box>
         )}
       </Stack>
-      <Box
-        component="section"
-        aria-label="Podgląd na mapie"
-        sx={{
-          minWidth: 0,
-          border: 1,
-          borderColor: 'kropla.line',
-          borderRadius: '16px',
-          overflow: 'hidden',
-          display: 'flex',
-        }}
-      >
-        <ParcelMap
-          parcel={parcel}
-          focus={focus}
-          focusKey={parcel ? 1 : 0}
-          height={{ xs: 320, md: 520 }}
-          isLoading={isLoading}
-          errorMessage={null}
-          onPick={handlePick}
-        />
-      </Box>
     </Box>
   );
 }

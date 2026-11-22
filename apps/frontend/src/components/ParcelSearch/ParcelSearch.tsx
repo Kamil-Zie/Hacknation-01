@@ -2,6 +2,7 @@
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import MapOutlinedIcon from '@mui/icons-material/MapOutlined';
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import ViewWeekOutlinedIcon from '@mui/icons-material/ViewWeekOutlined';
@@ -25,13 +26,16 @@ const EXAMPLE_ID = '061409_2.0009.612';
 const NOT_FOUND_MESSAGE = 'Nie znaleziono działki. Sprawdź numer albo kliknij działkę na mapie.';
 const FORMAT_HINT = `Format: ${EXAMPLE_ID}`;
 
-type Mode = 'number' | 'address' | 'gps';
+export type ParcelSearchMode = 'number' | 'address' | 'gps' | 'map';
+type Mode = ParcelSearchMode;
 
-const MODES: { value: Mode; label: string; icon: ReactNode }[] = [
+const BASE_MODES: { value: Mode; label: string; icon: ReactNode }[] = [
   { value: 'number', label: 'Numer działki', icon: <ViewWeekOutlinedIcon aria-hidden /> },
   { value: 'address', label: 'Adres', icon: <HomeOutlinedIcon aria-hidden /> },
   { value: 'gps', label: 'GPS', icon: <PlaceOutlinedIcon aria-hidden /> },
 ];
+// T-103: optional 4th way – pick the parcel on a map the page passes in (mapSlot)
+const MAP_MODE = { value: 'map' as Mode, label: 'Mapa', icon: <MapOutlinedIcon aria-hidden /> };
 
 interface ParcelSearchProps {
   defaultValue?: string;
@@ -44,6 +48,10 @@ interface ParcelSearchProps {
   onLocate?: (lat: number, lon: number) => void;
   /** Address found: the page centers the map there */
   onPlaceFound?: (lat: number, lon: number) => void;
+  /** When given, a 4th option „Mapa” shows this map (the map stays hidden in the other options) */
+  mapSlot?: ReactNode;
+  /** Option selected when the component mounts (e.g. „map” after a parcel was clicked there) */
+  defaultMode?: Mode;
 }
 
 function InfoBox({ children }: { children: ReactNode }) {
@@ -91,8 +99,13 @@ export function ParcelSearch({
   onSearch,
   onLocate,
   onPlaceFound,
+  mapSlot,
+  defaultMode = 'number',
 }: ParcelSearchProps) {
-  const [mode, setMode] = useState<Mode>('number');
+  const MODES = mapSlot ? [...BASE_MODES, MAP_MODE] : BASE_MODES;
+  const [mode, setMode] = useState<Mode>(
+    defaultMode === 'map' && !mapSlot ? 'number' : defaultMode,
+  );
   const [value, setValue] = useState(defaultValue);
   const [address, setAddress] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -206,7 +219,10 @@ export function ParcelSearch({
         onKeyDown={handleKeyDown}
         sx={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+          gridTemplateColumns: {
+            xs: MODES.length > 3 ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))',
+            sm: `repeat(${MODES.length}, minmax(0, 1fr))`,
+          },
           gap: 1,
           p: 1,
           bgcolor: 'kropla.tint',
@@ -385,6 +401,29 @@ export function ParcelSearch({
           >
             {isBusy ? 'Ustalam położenie…' : 'Znajdź działkę, na której stoję'}
           </Button>
+        </Stack>
+      )}
+
+      {mode === 'map' && (
+        <Stack spacing={1.5}>
+          {/* a failed map click shows here, next to the map it came from */}
+          {pickError?.message && (
+            <Typography
+              role="alert"
+              color="error"
+              sx={{
+                fontWeight: 600,
+                fontSize: '1.125rem',
+                border: 3,
+                borderColor: 'error.main',
+                borderRadius: '12px',
+                p: 1.5,
+              }}
+            >
+              <FieldError>{pickError.message}</FieldError>
+            </Typography>
+          )}
+          {mapSlot}
         </Stack>
       )}
     </Stack>
