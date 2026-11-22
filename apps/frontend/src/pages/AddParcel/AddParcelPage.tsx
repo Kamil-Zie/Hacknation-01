@@ -148,7 +148,6 @@ export function AddParcelPage() {
         <ParcelSearch
           key={parcel?.id ?? 'empty'}
           defaultValue={parcel?.id}
-          defaultMode={picked ? 'map' : 'number'}
           isLoading={isLoading}
           error={byId ? error : null}
           pickError={byId ? null : error}

@@ -102,14 +102,19 @@ export function ParcelSearch({
   onLocate,
   onPlaceFound,
   mapSlot,
-  defaultMode = 'number',
+  defaultMode,
 }: ParcelSearchProps) {
   // with a map, „Adres” is dropped: the town search above the map does the same job
   const MODES = mapSlot
     ? [MAP_MODE, ...BASE_MODES.filter((item) => item.value !== 'address')]
     : BASE_MODES;
+  // T-103: with a map the search always opens on „Mapa”; without one on „Numer działki”
   const [mode, setMode] = useState<Mode>(
-    defaultMode === 'map' && !mapSlot ? 'number' : defaultMode,
+    !mapSlot
+      ? defaultMode === 'map' || !defaultMode
+        ? 'number'
+        : defaultMode
+      : (defaultMode ?? 'map'),
   );
   const [value, setValue] = useState(defaultValue);
   const [address, setAddress] = useState('');

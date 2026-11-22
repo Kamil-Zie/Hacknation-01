@@ -44,7 +44,6 @@ export function StartPage() {
     bounds?: [[number, number], [number, number]];
   } | null>(null);
   const [focusKey, setFocusKey] = useState(0);
-  const [isPickedOnMap, setIsPickedOnMap] = useState(false);
 
   // T-058 "Dodaj działkę" navigates here with a reset stamp: forget the previous search
   const resetStamp = (location.state as { resetAt?: number } | null)?.resetAt;
@@ -68,7 +67,6 @@ export function StartPage() {
 
   function search(parcelId: string) {
     pickMutation.reset();
-    setIsPickedOnMap(false);
     if (parcelId === searchId) {
       void searchQuery.refetch();
     } else {
@@ -89,7 +87,6 @@ export function StartPage() {
   function handlePick(lat: number, lon: number) {
     setIsExample(false);
     setSearchId(null);
-    setIsPickedOnMap(true);
     lastPoint.current = { lat, lon };
     pickMutation.mutate(
       { lat, lon },
@@ -137,7 +134,6 @@ export function StartPage() {
         <ParcelSearch
           key={parcel?.id ?? 'empty'}
           defaultValue={parcel?.id}
-          defaultMode={isPickedOnMap ? 'map' : 'number'}
           isLoading={isLoading}
           error={byId ? error : null}
           pickError={byId ? null : error}
