@@ -171,7 +171,7 @@ export async function deleteField(
   const field = await FieldModel.findOne({ _id: fieldId, accountId });
   const allowed = await allowedParcelIds(userId, accountId);
   if (!field || !canSeeField(allowed, field.parcelIds)) {
-    throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono pola.', 404, { fieldId });
+    throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono grupy działek.', 404, { fieldId });
   }
   await FieldModel.deleteOne({ _id: fieldId, accountId });
 }

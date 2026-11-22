@@ -11,7 +11,7 @@ import {
 export const createFieldReport = asyncHandler(async (req, res) => {
   const params = fieldIdParamsSchema.safeParse(req.params);
   if (!params.success) {
-    throw new AppError('VALIDATION_ERROR', 'Nieprawidłowy identyfikator pola', 422, {
+    throw new AppError('VALIDATION_ERROR', 'Nieprawidłowy identyfikator grupy działek', 422, {
       field: 'fieldId',
       hint: FIELD_ID_HINT,
     });

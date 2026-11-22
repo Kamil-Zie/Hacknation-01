@@ -117,13 +117,13 @@ export async function createFieldReport(
   deps: FieldReportDeps = defaultFieldReportDeps,
 ): Promise<FieldReportDto> {
   const field = await deps.loadField(fieldId);
-  if (!field) throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono pola.', 404);
+  if (!field) throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono grupy działek.', 404);
   if (!(await deps.isMember(userId, field.accountId))) {
     throw new AppError('NOT_A_MEMBER', 'Nie należysz do tego gospodarstwa.', 403);
   }
   // T-092: a partner without access to every parcel of the field does not see the field at all
   if (!canSeeField(await deps.allowedParcelIds(userId, field.accountId), field.parcelIds)) {
-    throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono pola.', 404);
+    throw new AppError('FIELD_NOT_FOUND', 'Nie znaleziono grupy działek.', 404);
   }
   // T-104 member and guest may view a field report; their per-parcel analyses are not saved
   const saves = deps.canEditAccount ? await deps.canEditAccount(userId, field.accountId) : true;
@@ -156,9 +156,14 @@ export async function createFieldReport(
 
   const done = outcomes.flatMap((outcome) => ('report' in outcome ? [outcome.report] : []));
   if (done.length === 0) {
-    throw new AppError('UPSTREAM_UNAVAILABLE', 'Nie udało się policzyć żadnej działki pola.', 502, {
-      reasonCode: 'UPSTREAM_ERROR',
-    });
+    throw new AppError(
+      'UPSTREAM_UNAVAILABLE',
+      'Nie udało się policzyć żadnej działki z grupy.',
+      502,
+      {
+        reasonCode: 'UPSTREAM_ERROR',
+      },
+    );
   }
 
   const parcels = field.parcelIds.map((parcelId, index) =>
