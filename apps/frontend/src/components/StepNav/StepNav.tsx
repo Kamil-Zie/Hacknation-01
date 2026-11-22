@@ -58,7 +58,8 @@ export function StepNav() {
         borderColor: 'kropla.line',
         position: 'sticky',
         top: 0,
-        zIndex: (theme) => theme.zIndex.appBar,
+        // above page toolbars that use the app-bar level (e.g. the report's PDF / Drukuj / link bar)
+        zIndex: (theme) => theme.zIndex.appBar + 2,
       }}
     >
       <Box
