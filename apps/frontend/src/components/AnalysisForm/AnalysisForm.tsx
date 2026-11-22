@@ -28,6 +28,7 @@ import {
 } from '@/components/AnalysisForm/AnalysisForm.schema';
 import type { AnalysisFormValues } from '@/components/AnalysisForm/AnalysisForm.schema';
 import { CropIcon } from '@/components/CropIcon/CropIcon';
+import { DateCalendar, formatLongDate } from '@/components/DateCalendar/DateCalendar';
 import { cropCategory, groupCropsByCategory, normalizeSearch } from '@/utils/cropCategories';
 
 interface AnalysisFormProps {
@@ -103,8 +104,6 @@ function balanceColumns<T extends { crops: unknown[] }>(groups: T[], maxColumns:
   return columns;
 }
 
-const DAY_FORMAT = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long' });
-
 export function AnalysisForm({
   crops,
   defaultDate,
@@ -115,13 +114,11 @@ export function AnalysisForm({
 }: AnalysisFormProps) {
   const schema = useMemo(() => createAnalysisFormSchema(), []);
   const today = getTodayIso();
-  const [isOtherDay, setIsOtherDay] = useState(defaultDate !== undefined && defaultDate !== today);
   const [search, setSearch] = useState('');
   const cropSectionRef = useRef<HTMLFieldSetElement>(null);
   const {
     control,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<AnalysisFormValues>({
     resolver: zodResolver(schema),
@@ -323,77 +320,31 @@ export function AnalysisForm({
         <Controller
           name="analysisDate"
           control={control}
+          // T-103: one month calendar instead of the „Dziś / Inny dzień” tiles; today is selected
           render={({ field }) => (
-            <Stack spacing={2}>
-              <Box
-                role="radiogroup"
-                aria-label="Dzień"
-                sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.75 }}
-              >
-                {[
-                  { id: 'today', label: 'Dziś', sub: DAY_FORMAT.format(new Date()) },
-                  { id: 'other', label: 'Inny dzień', sub: 'Wybierz z kalendarza' },
-                ].map((day) => {
-                  const isSelected = (day.id === 'other') === isOtherDay;
-                  return (
-                    <Box
-                      component="label"
-                      key={day.id}
-                      sx={[
-                        tileSx(isSelected),
-                        { flex: { xs: '1 1 100%', sm: '0 1 240px' }, minHeight: 76 },
-                      ]}
-                    >
-                      <input
-                        type="radio"
-                        name="dayChoice"
-                        value={day.id}
-                        checked={isSelected}
-                        disabled={isSubmitting}
-                        onChange={() => {
-                          setIsOtherDay(day.id === 'other');
-                          if (day.id === 'today') setValue('analysisDate', today);
-                        }}
-                      />
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          px: 2.75,
-                          width: '100%',
-                        }}
-                      >
-                        <Typography
-                          component="span"
-                          sx={{ fontWeight: 700, fontSize: '1.3125rem' }}
-                        >
-                          {day.label}
-                        </Typography>
-                        <Typography component="span" color="text.secondary">
-                          {day.sub}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  );
-                })}
-              </Box>
-              {(isOtherDay || errors.analysisDate) && (
-                <TextField
-                  {...field}
-                  type="date"
-                  label="Data analizy"
-                  required
-                  disabled={isSubmitting}
-                  slotProps={{
-                    inputLabel: { shrink: true },
-                    htmlInput: { min: getMinDateIso(), max: today },
-                    formHelperText: { role: errors.analysisDate ? 'alert' : undefined },
-                  }}
-                  error={Boolean(errors.analysisDate)}
-                  helperText={errors.analysisDate?.message}
-                  sx={{ maxWidth: { sm: 320 } }}
-                />
+            <Stack spacing={1.5}>
+              <Typography sx={{ fontSize: '1.125rem' }} aria-live="polite">
+                Wybrany dzień:{' '}
+                <Box component="strong" sx={{ fontWeight: 800 }}>
+                  {formatLongDate(field.value)}
+                  {field.value === today ? ' (dziś)' : ''}
+                </Box>
+              </Typography>
+              <DateCalendar
+                value={field.value}
+                min={getMinDateIso()}
+                max={today}
+                disabled={isSubmitting}
+                onChange={(next) => field.onChange(next)}
+              />
+              {errors.analysisDate && (
+                <Typography
+                  role="alert"
+                  color="error"
+                  sx={{ fontSize: '1.125rem', fontWeight: 600 }}
+                >
+                  {errors.analysisDate.message}
+                </Typography>
               )}
             </Stack>
           )}
