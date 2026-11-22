@@ -189,14 +189,17 @@ export function ParcelMap({
           url={layerConfig.url}
           maxZoom={layerConfig.maxZoom}
         />
-        {/* T-103: cadastral parcel boundaries and numbers (GUGiK KIEG WMS) from zoom 17,
+        {/* T-103: cadastral parcel boundaries (GUGiK KIEG WMS) from zoom 17, on Mapa and Satelita,
             so the user sees which parcel they are about to click */}
         {showParcelBoundaries && (
+          // boundaries only (no numbers); zIndex keeps them above the base map, also after
+          // switching Mapa ↔ Satelita (the base layer is re-created then)
           <WMSTileLayer
             url={PARCEL_BOUNDARIES_WMS}
-            layers="dzialki,numery_dzialek"
+            layers="dzialki"
             format="image/png"
             transparent
+            zIndex={10}
             minZoom={BOUNDARIES_MIN_ZOOM}
             maxZoom={layerConfig.maxZoom}
             attribution="Granice działek: GUGiK (KIEG)"
