@@ -1,4 +1,4 @@
-// T-084 T-099 Accessibility preferences: text size, high contrast and dark mode, saved in localStorage and applied on <html>
+// T-084 T-099 T-103 Accessibility preferences (with reset to the default view): text size, high contrast and dark mode, saved in localStorage and applied on <html>
 // index.html applies the same keys before the first render (no flash); keep A11Y_KEYS in sync with it.
 import { create } from 'zustand';
 
@@ -22,6 +22,18 @@ function read(key: string): string | null {
   } catch {
     return null;
   }
+}
+
+function remove(key: string): void {
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // storage unavailable: nothing saved to remove
+  }
+}
+
+function hasSavedChoice(): boolean {
+  return Object.values(A11Y_KEYS).some((key) => read(key) !== null);
 }
 
 function write(key: string, value: string): void {
@@ -72,27 +84,39 @@ interface A11yState {
   setTextSize: (size: TextSize) => void;
   toggleContrast: () => void;
   toggleDark: () => void;
+  // true when any choice is saved, i.e. the view differs from the default (system) one
+  customized: boolean;
+  resetA11y: () => void;
 }
 
 export const useA11yStore = create<A11yState>((set, get) => ({
   textSize: initialTextSize(),
   highContrast: initialContrast(),
   darkMode: initialDark(),
+  customized: hasSavedChoice(),
   setTextSize: (textSize) => {
     write(A11Y_KEYS.textSize, String(textSize));
     applyA11y(textSize, get().highContrast, get().darkMode);
-    set({ textSize });
+    set({ textSize, customized: true });
   },
   toggleContrast: () => {
     const highContrast = !get().highContrast;
     write(A11Y_KEYS.contrast, highContrast ? 'high' : 'normal');
     applyA11y(get().textSize, highContrast, get().darkMode);
-    set({ highContrast });
+    set({ highContrast, customized: true });
   },
   toggleDark: () => {
     const darkMode = !get().darkMode;
     write(A11Y_KEYS.dark, darkMode ? 'dark' : 'light');
     applyA11y(get().textSize, get().highContrast, darkMode);
-    set({ darkMode });
+    set({ darkMode, customized: true });
+  },
+  resetA11y: () => {
+    Object.values(A11Y_KEYS).forEach(remove);
+    const textSize = initialTextSize();
+    const highContrast = initialContrast();
+    const darkMode = initialDark();
+    applyA11y(textSize, highContrast, darkMode);
+    set({ textSize, highContrast, darkMode, customized: false });
   },
 }));

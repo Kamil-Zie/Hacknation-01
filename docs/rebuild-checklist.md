@@ -30,6 +30,12 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 - [ ] Telefon 390 px: pulpit się układa w kolumnę, nic nie wychodzi poza ekran
 - [ ] Tryb ciemny i wysoki kontrast: pulpit czytelny
 
+## 2a. Ułatwienia dostępu
+
+- [ ] Po zmianie rozmiaru tekstu, kontrastu albo trybu ciemnego na pasku pojawia się „Widok domyślny”
+- [ ] Kliknięcie przywraca standardowy tekst, kontrast i tryb z ustawień systemu, przycisk znika, fokus przechodzi na „A” standardowe
+- [ ] Po odświeżeniu strony widok zostaje domyślny (nic nie jest zapisane)
+
 ## 3. Backend
 
 - [ ] Po restarcie kontenera backendu przy chwilowym braku Atlasa log pokazuje `MongoDB: next attempt in 15 s`, a potem `MongoDB connected` bez ręcznego restartu (`225693f`)

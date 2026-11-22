@@ -1,10 +1,11 @@
-// T-084 T-099 Accessibility bar above the header: text size A A A, high contrast and dark mode toggles, links to accessibility pages
+// T-084 T-099 T-103 Accessibility bar above the header: text size A A A, high contrast and dark mode toggles, reset to default view, links to accessibility pages
 // (links are inline from md up, in a "Więcej" menu on phones; the footer has no accessibility options)
 import ContrastIcon from '@mui/icons-material/Contrast';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { Box, ButtonBase, Link, Menu, MenuItem, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { srOnly } from '@/app/a11yStyles';
@@ -39,7 +40,11 @@ export function A11yBar() {
   const darkMode = useA11yStore((state) => state.darkMode);
   const toggleContrast = useA11yStore((state) => state.toggleContrast);
   const toggleDark = useA11yStore((state) => state.toggleDark);
+  const customized = useA11yStore((state) => state.customized);
+  const resetA11y = useA11yStore((state) => state.resetA11y);
   const [moreAnchor, setMoreAnchor] = useState<HTMLElement | null>(null);
+  // after the reset the button disappears, so keyboard focus moves to the standard text size
+  const defaultSizeRef = useRef<HTMLButtonElement>(null);
 
   return (
     <Box
@@ -81,6 +86,7 @@ export function A11yBar() {
             {TEXT_SIZES.map((size) => (
               <ButtonBase
                 key={size.value}
+                ref={size.value === 0 ? defaultSizeRef : undefined}
                 aria-pressed={textSize === size.value}
                 aria-label={`Rozmiar tekstu: ${size.label}`}
                 onClick={() => setTextSize(size.value)}
@@ -124,6 +130,27 @@ export function A11yBar() {
               Tryb ciemny
             </Box>
           </ButtonBase>
+          {customized && (
+            <ButtonBase
+              onClick={() => {
+                resetA11y();
+                defaultSizeRef.current?.focus();
+              }}
+              aria-label="Przywróć widok domyślny"
+              sx={{
+                ...controlSx,
+                gap: 1,
+                px: { xs: 0.5, sm: 1.5 },
+                fontWeight: 700,
+                fontSize: '1rem',
+              }}
+            >
+              <RestartAltIcon aria-hidden sx={{ fontSize: '1.25rem' }} />
+              <Box component="span" sx={{ '@media (max-width: 599.95px)': srOnly }}>
+                Widok domyślny
+              </Box>
+            </ButtonBase>
+          )}
           <ButtonBase
             id="a11y-more-button"
             aria-haspopup="menu"
