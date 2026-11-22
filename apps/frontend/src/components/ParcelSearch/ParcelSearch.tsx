@@ -21,6 +21,7 @@ import type { FormEvent, KeyboardEvent } from 'react';
 
 import { geocodeAddress } from '@/api/geocode';
 import { PARCEL_ID_REGEX } from '@/api/parcels';
+import { TownSearch } from '@/components/TownSearch/TownSearch';
 
 const EXAMPLE_ID = '061409_2.0009.612';
 const NOT_FOUND_MESSAGE = 'Nie znaleziono działki. Sprawdź numer albo kliknij działkę na mapie.';
@@ -114,7 +115,6 @@ export function ParcelSearch({
   const [validationError, setValidationError] = useState<string | null>(null);
   const [addressError, setAddressError] = useState<string | null>(null);
   const [gpsError, setGpsError] = useState<string | null>(null);
-  const [placeQuery, setPlaceQuery] = useState('');
   const [placeError, setPlaceError] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const helperId = useId();
@@ -157,10 +157,9 @@ export function ParcelSearch({
     }
   }
 
-  // „Mapa” option: find a town / village and move the map there, then the user clicks the parcel
-  async function handlePlace(event: FormEvent) {
-    event.preventDefault();
-    const query = placeQuery.trim();
+  // „Mapa” option: Enter / „Szukaj” without a chosen suggestion – first settlement match
+  async function handlePlace(text: string) {
+    const query = text.trim();
     if (query.length < 2) {
       setPlaceError('Wpisz nazwę miejscowości.');
       return;
@@ -436,43 +435,16 @@ export function ParcelSearch({
 
       {mode === 'map' && (
         <Stack spacing={1.5}>
-          <Stack
-            component="form"
-            role="search"
-            aria-label="Szukaj miejscowości na mapie"
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={1}
-            noValidate
-            onSubmit={(event) => void handlePlace(event)}
-            sx={{ alignItems: { sm: 'flex-start' } }}
-          >
-            <TextField
-              label="Miejscowość"
-              value={placeQuery}
-              onChange={(event) => {
-                setPlaceQuery(event.target.value);
-                setPlaceError(null);
-              }}
-              error={placeError !== null}
-              helperText={placeError ? <FieldError>{placeError}</FieldError> : undefined}
-              slotProps={{ formHelperText: { role: placeError ? 'alert' : undefined } }}
-              placeholder="np. Puławy"
-              fullWidth
-              autoComplete="address-level2"
-              disabled={disabled}
-              sx={inputSx}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              disabled={disabled}
-              startIcon={submitIcon}
-              sx={{ minHeight: 56, fontSize: '1.125rem', flexShrink: 0, px: 3 }}
-            >
-              {isBusy ? 'Szukam…' : 'Szukaj'}
-            </Button>
-          </Stack>
+          <TownSearch
+            disabled={disabled}
+            isBusy={isBusy}
+            error={placeError}
+            onPick={(place) => {
+              setPlaceError(null);
+              onPlaceFound?.(place.lat, place.lon, place.bounds);
+            }}
+            onSubmitText={(text) => void handlePlace(text)}
+          />
           {/* a failed map click shows here, next to the map it came from */}
           {pickError?.message && (
             <Typography

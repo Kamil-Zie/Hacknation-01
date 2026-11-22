@@ -1,4 +1,4 @@
-// T-026 UI-C-001 Address geocoding via OpenStreetMap Nominatim (no backend geocoder; map centering only)
+// T-026 UI-C-001 Address geocoding via OpenStreetMap Nominatim, town type-ahead via Photon (no backend geocoder; map centering only)
 export interface GeocodeResult {
   lat: number;
   lon: number;
@@ -65,4 +65,77 @@ export async function geocodeAddress(
   } finally {
     clearTimeout(timer);
   }
+}
+
+// T-103: type-ahead for towns and villages ("sul" → "Sulnowo, powiat świecki").
+// Photon (komoot, OSM data) is built for autocomplete; Nominatim's policy forbids it.
+const PHOTON_URL = 'https://photon.komoot.io/api/';
+// Poland bounding box (lon/lat); Photon still returns border countries, so we filter by PL
+const POLAND_BBOX = '14.07,49.0,24.15,54.84';
+// a village without an extent: show about 2 km around its centre
+const VILLAGE_HALF_SPAN = 0.012;
+
+export interface PlaceSuggestion {
+  id: string;
+  name: string;
+  /** "powiat świecki, województwo kujawsko-pomorskie" */
+  detail: string;
+  lat: number;
+  lon: number;
+  bounds: [[number, number], [number, number]];
+}
+
+interface PhotonFeature {
+  geometry: { coordinates: [number, number] };
+  properties: {
+    osm_id?: number;
+    osm_type?: string;
+    name?: string;
+    county?: string;
+    state?: string;
+    countrycode?: string;
+    /** [minLon, maxLat, maxLon, minLat] */
+    extent?: [number, number, number, number];
+  };
+}
+
+export async function suggestPlaces(
+  query: string,
+  signal?: AbortSignal,
+): Promise<PlaceSuggestion[]> {
+  const params = new URLSearchParams({ q: query, limit: '15', lang: 'default', bbox: POLAND_BBOX });
+  for (const layer of ['city', 'district', 'locality']) params.append('layer', layer);
+  const response = await fetch(`${PHOTON_URL}?${params.toString()}`, { signal });
+  if (!response.ok) throw new Error(`Photon HTTP ${response.status}`);
+  const data = (await response.json()) as { features?: PhotonFeature[] };
+  const seen = new Set<string>();
+  const out: PlaceSuggestion[] = [];
+  for (const feature of data.features ?? []) {
+    const p = feature.properties;
+    if (p.countrycode !== 'PL' || !p.name) continue;
+    const [lon, lat] = feature.geometry.coordinates;
+    const detail = [p.county, p.state].filter(Boolean).join(', ');
+    const key = `${p.name}|${detail}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const bounds: [[number, number], [number, number]] = p.extent
+      ? [
+          [p.extent[3], p.extent[0]],
+          [p.extent[1], p.extent[2]],
+        ]
+      : [
+          [lat - VILLAGE_HALF_SPAN, lon - VILLAGE_HALF_SPAN * 1.6],
+          [lat + VILLAGE_HALF_SPAN, lon + VILLAGE_HALF_SPAN * 1.6],
+        ];
+    out.push({
+      id: `${p.osm_type ?? ''}${p.osm_id ?? key}`,
+      name: p.name,
+      detail,
+      lat,
+      lon,
+      bounds,
+    });
+    if (out.length >= 6) break;
+  }
+  return out;
 }
