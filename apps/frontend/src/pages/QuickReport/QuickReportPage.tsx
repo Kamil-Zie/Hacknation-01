@@ -223,15 +223,32 @@ export function QuickReportPage() {
             Możesz wybrać najwyżej {MAX_PARCELS} działek
           </Typography>
         )}
-        <Button
-          variant="contained"
-          size="large"
-          disabled={!isReady}
-          onClick={() => void run()}
-          sx={{ minHeight: 56, fontSize: '1.25rem', alignSelf: { sm: 'flex-start' } }}
+        {/* T-103: the button bar sticks to the bottom of the window while the list scrolls,
+            so „Zrób raport” is always in view, not hidden at the very end of a long list */}
+        <Box
+          sx={{
+            position: 'sticky',
+            bottom: 0,
+            zIndex: (theme) => theme.zIndex.appBar,
+            mx: { xs: -2, md: -4 },
+            px: { xs: 2, md: 4 },
+            py: 1.5,
+            bgcolor: 'background.default',
+            borderTop: 1,
+            borderColor: 'divider',
+            boxShadow: '0 -6px 12px -8px rgba(0, 0, 0, 0.25)',
+          }}
         >
-          Zrób raport
-        </Button>
+          <Button
+            variant="contained"
+            size="large"
+            disabled={!isReady}
+            onClick={() => void run()}
+            sx={{ minHeight: 56, fontSize: '1.25rem', width: { xs: '100%', sm: 'auto' } }}
+          >
+            Zrób raport
+          </Button>
+        </Box>
       </Stack>
     );
   } else {
