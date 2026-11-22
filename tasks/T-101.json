@@ -4,8 +4,8 @@
   "description": "Zrzuty na koncie demo (kamil@test.pl albo swoim z test.pl; hasło od Kamila prywatnie), tryb jasny, standardowy rozmiar tekstu, baza hacknation. Każdy ekran w dwóch wersjach: telefon 390 px i komputer 1440 px (PNG).\n\nEkrany: pulpit (/konto), Dodaj działkę z wynikiem wyszukiwania, Moje działki z filtrem, Utwórz pole, Moje pola z rozwiniętym polem, raport pola, Wspólnicy z kartą osoby, Szybki raport z wynikiem 2 działek, raport działki (góra: Stan wody), tryb wysokiego kontrastu na pulpicie (1 zrzut), tryb ciemny na pulpicie (1 zrzut).\n\nZapis: docs/references/screenshots/<nn>-<ekran>-<390|1440>.png + docs/references/screenshots/README.md z listą (plik → co pokazuje). Bez danych osobowych poza kontami test.pl.\n\nTermin: na main do 5:00 (zamrożenie 7:00).",
   "type": "docs",
   "team": "frontend",
-  "assignee": "frontend-2",
-  "status": "in_progress",
+  "assignee": "coord-1",
+  "status": "ready",
   "priority": "high",
   "depends_on": [],
   "contract_refs": ["UI-S-009", "UI-S-010", "UI-S-011", "UI-S-012", "UI-S-013", "UI-S-014"],
@@ -22,7 +22,8 @@
   },
   "notes": [
     "coord-1 02:25: z propozycji koordynatora zatwierdzonej przez Kamila.",
-    "frontend-2 02:25: start; zrzuty headless Firefox/geckodriver na koncie kuba@test.pl."
+    "frontend-2 02:25: start; zrzuty headless Firefox/geckodriver na koncie kuba@test.pl.",
+    "frontend-2 02:55: przerwane decyzją Jakuba i oddane coord-1. Częściowe zrzuty (20 PNG, część z uciętym dołem, raport pola z mocka) zostały lokalnie u Jakuba, niecommitowane."
   ],
   "created_at": "2026-11-22",
   "updated_at": "2026-11-22"
