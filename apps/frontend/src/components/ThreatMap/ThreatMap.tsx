@@ -1,5 +1,6 @@
 // UI-C-017 ThreatMap: Leaflet map of account parcels colored by drought class, fit to at-risk parcels; ThreatList: at-risk list and legend for the drought tile
-import { Box, Link, Skeleton, Stack, Typography, useTheme } from '@mui/material';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { Box, Skeleton, Stack, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
   CircleMarker,
@@ -169,6 +170,7 @@ export function ThreatList({
   items: ParcelOverview[];
   onSelect: (item: ParcelOverview) => void;
 }) {
+  const { palette } = useTheme();
   const atRisk = items.filter((item) => item.atRisk);
   return (
     <Stack
@@ -195,41 +197,91 @@ export function ThreatList({
           tabIndex={0}
           sx={{
             m: 0,
-            pl: 0,
+            p: 0,
             listStyle: 'none',
             flex: '1 1 auto',
             minHeight: 0,
             overflowY: 'auto',
+            border: 1,
+            borderColor: 'divider',
+            borderRadius: 1,
+            bgcolor: 'action.hover',
             '&:focus-visible': { outline: 2, outlineColor: 'primary.main', outlineOffset: 2 },
           }}
         >
-          {atRisk.map((item) => (
-            <Typography
-              component="li"
-              key={item.parcel.id}
-              sx={{ fontSize: '1.125rem', minWidth: 0 }}
-            >
-              {/* one line per parcel; a long name ends with „…”, full name in the tooltip and for screen readers */}
-              <Link
-                component="button"
-                type="button"
-                title={`Działka ${item.parcel.parcelNumber}, ${item.parcel.region}`}
-                onClick={() => onSelect(item)}
+          {/* list rows: drought-colour dot, parcel number bold, place muted, arrow; one line each,
+              a long name ends with „…”, full name and drought class in the tooltip and for screen readers */}
+          {atRisk.map((item) => {
+            const droughtClass = classOf(item);
+            const fullName = `Działka ${item.parcel.parcelNumber}, ${item.parcel.region} – ${DROUGHT_WORDS[droughtClass]}`;
+            return (
+              <Box
+                component="li"
+                key={item.parcel.id}
                 sx={{
-                  fontSize: 'inherit',
-                  minHeight: 48,
-                  textAlign: 'left',
-                  display: 'block',
-                  maxWidth: '100%',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
+                  minWidth: 0,
+                  '&:not(:last-of-type)': { borderBottom: 1, borderColor: 'divider' },
                 }}
               >
-                {`Działka ${item.parcel.parcelNumber}, ${item.parcel.region}`}
-              </Link>
-            </Typography>
-          ))}
+                <Box
+                  component="button"
+                  type="button"
+                  title={fullName}
+                  aria-label={fullName}
+                  onClick={() => onSelect(item)}
+                  sx={{
+                    width: '100%',
+                    minHeight: 48,
+                    px: 1.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.25,
+                    border: 0,
+                    bgcolor: 'transparent',
+                    color: 'text.primary',
+                    font: 'inherit',
+                    fontSize: '1.125rem',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    '&:hover': { bgcolor: 'action.selected' },
+                    '&:focus-visible': {
+                      outline: 2,
+                      outlineColor: 'primary.main',
+                      outlineOffset: -2,
+                    },
+                  }}
+                >
+                  <Box
+                    aria-hidden
+                    sx={{
+                      flex: '0 0 12px',
+                      height: 12,
+                      borderRadius: '50%',
+                      bgcolor: palette.drought[droughtClass],
+                    }}
+                  />
+                  <Box
+                    component="span"
+                    sx={{
+                      flex: '1 1 auto',
+                      minWidth: 0,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    <Box component="span" sx={{ fontWeight: 700 }}>
+                      {`Działka ${item.parcel.parcelNumber}`}
+                    </Box>
+                    <Box component="span" sx={{ color: 'text.secondary' }}>
+                      {` · ${item.parcel.region}`}
+                    </Box>
+                  </Box>
+                  <ChevronRightIcon aria-hidden sx={{ flexShrink: 0, color: 'text.secondary' }} />
+                </Box>
+              </Box>
+            );
+          })}
         </Box>
       )}
       <Typography sx={{ fontSize: '1rem', color: 'text.secondary', pt: 1, flexShrink: 0 }}>
