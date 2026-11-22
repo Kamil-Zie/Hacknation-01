@@ -288,11 +288,13 @@ export function AccountPage() {
                           title={isShown ? 'Ukryj na mapie' : 'Pokaż na mapie'}
                           onClick={() => toggleClass(value)}
                           sx={{
+                            // all toggles the same width: badge stretched, count in a fixed slot on the right
                             display: 'flex',
                             alignItems: 'center',
                             gap: 1,
-                            alignSelf: 'flex-start',
+                            width: '100%',
                             minHeight: 44,
+                            '& .MuiChip-root': { flex: '1 1 auto', justifyContent: 'flex-start' },
                             px: 0.5,
                             border: 0,
                             borderRadius: 2,
@@ -310,7 +312,10 @@ export function AccountPage() {
                           }}
                         >
                           <StatusBadge kind="drought" value={value} label={DROUGHT_WORDS[value]} />
-                          <Typography component="span" sx={bigText}>
+                          <Typography
+                            component="span"
+                            sx={{ ...bigText, flex: '0 0 2ch', textAlign: 'right' }}
+                          >
                             {countByClass(value)}
                           </Typography>
                         </Box>
