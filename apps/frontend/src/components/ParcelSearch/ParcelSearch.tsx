@@ -46,8 +46,8 @@ interface ParcelSearchProps {
   onSearch: (parcelId: string) => void;
   /** GPS position found: the page looks up the parcel under it (same as a map click) */
   onLocate?: (lat: number, lon: number) => void;
-  /** Address found: the page centers the map there */
-  onPlaceFound?: (lat: number, lon: number) => void;
+  /** Address / town found: the page centers the map there (bounds: fit the whole town) */
+  onPlaceFound?: (lat: number, lon: number, bounds?: [[number, number], [number, number]]) => void;
   /** When given, a 4th option „Mapa” shows this map (the map stays hidden in the other options) */
   mapSlot?: ReactNode;
   /** Option selected when the component mounts (e.g. „map” after a parcel was clicked there) */
@@ -102,7 +102,10 @@ export function ParcelSearch({
   mapSlot,
   defaultMode = 'number',
 }: ParcelSearchProps) {
-  const MODES = mapSlot ? [...BASE_MODES, MAP_MODE] : BASE_MODES;
+  // with a map, „Adres” is dropped: the town search above the map does the same job
+  const MODES = mapSlot
+    ? [...BASE_MODES.filter((item) => item.value !== 'address'), MAP_MODE]
+    : BASE_MODES;
   const [mode, setMode] = useState<Mode>(
     defaultMode === 'map' && !mapSlot ? 'number' : defaultMode,
   );
@@ -165,8 +168,9 @@ export function ParcelSearch({
     setPlaceError(null);
     setIsBusy(true);
     try {
-      const place = await geocodeAddress(query);
-      if (place) onPlaceFound?.(place.lat, place.lon);
+      // towns and villages only, so the map shows the whole place and not a street of that name
+      const place = await geocodeAddress(query, { settlement: true });
+      if (place) onPlaceFound?.(place.lat, place.lon, place.bounds);
       else setPlaceError('Nie znaleziono takiej miejscowości. Sprawdź pisownię.');
     } catch {
       setPlaceError('Nie udało się wyszukać miejscowości. Sprawdź internet.');

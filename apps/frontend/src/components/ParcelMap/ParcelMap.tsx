@@ -10,6 +10,7 @@ import {
   useMap,
   useMapEvents,
 } from 'react-leaflet';
+import { point } from 'leaflet';
 import type { LatLngBoundsExpression, LatLngTuple } from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 
@@ -34,13 +35,21 @@ interface ParcelMapProps {
   /** Responsive height (MUI sx value). When given, the default 280 px min height is dropped. */
   height?: MapHeight;
   /** Centers the map on a searched place (address search); a new object re-centers again */
-  focus?: { lat: number; lon: number; zoom?: number } | null;
+  focus?: {
+    lat: number;
+    lon: number;
+    zoom?: number;
+    /** [[south, west], [north, east]]: fit the map to this area instead of zooming on the point */
+    bounds?: [[number, number], [number, number]];
+  } | null;
   /** Changing the value re-fits the map to the parcel and briefly highlights its boundary (0 = never) */
   focusKey?: number;
   markers?: { lat: number; lon: number; label: string }[];
   isInteractive?: boolean;
   /** Mapa / Satelita switch; defaults to isInteractive (off in print) */
   showLayerToggle?: boolean;
+  /** T-103: put the Mapa / Satelita switch in the top right corner (default sits lower) */
+  layerToggleInCorner?: boolean;
   isLoading?: boolean;
   errorMessage?: string | null;
   onPick?: (lat: number, lon: number) => void;
@@ -83,7 +92,20 @@ function FitToParcel({ parcel, focusKey }: { parcel: Parcel | null; focusKey: nu
 function FocusPlace({ focus }: { focus: ParcelMapProps['focus'] }) {
   const map = useMap();
   useEffect(() => {
-    if (focus) map.setView([focus.lat, focus.lon], focus.zoom ?? 16);
+    if (!focus) return;
+    // T-103: a found town shows whole (its bounding box), a point keeps the close zoom
+    // zoom computed from the bounds + a jump without animation: an animated fitBounds from the
+    // Poland view got stuck half-way (old tiles greyed out)
+    const zoom = focus.bounds
+      ? Math.min(16, map.getBoundsZoom(focus.bounds, false, point(16, 16)))
+      : (focus.zoom ?? 16);
+    const center: [number, number] = focus.bounds
+      ? [
+          (focus.bounds[0][0] + focus.bounds[1][0]) / 2,
+          (focus.bounds[0][1] + focus.bounds[1][1]) / 2,
+        ]
+      : [focus.lat, focus.lon];
+    map.setView(center, zoom, { animate: false });
   }, [map, focus]);
   return null;
 }
@@ -96,6 +118,7 @@ export function ParcelMap({
   markers,
   isInteractive = true,
   showLayerToggle = isInteractive,
+  layerToggleInCorner = false,
   isLoading = false,
   errorMessage = null,
   onPick,
@@ -169,7 +192,14 @@ export function ParcelMap({
         ))}
       </MapContainer>
       {showLayerToggle && (
-        <Box sx={{ position: 'absolute', top: { xs: 76, md: 84 }, right: 12, zIndex: 1000 }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: layerToggleInCorner ? 12 : { xs: 76, md: 84 },
+            right: 12,
+            zIndex: 1000,
+          }}
+        >
           <MapLayerToggle value={layer} onChange={setLayer} />
         </Box>
       )}

@@ -36,7 +36,11 @@ export function AddParcelPage() {
   const accountParcels = useAccountParcelsQuery(accountId, token);
   const addMutation = useAddAccountParcelMutation(accountId ?? '', token ?? '');
   const resultRef = useRef<HTMLDivElement>(null);
-  const [focus, setFocus] = useState<{ lat: number; lon: number } | null>(null);
+  const [focus, setFocus] = useState<{
+    lat: number;
+    lon: number;
+    bounds?: [[number, number], [number, number]];
+  } | null>(null);
   const [picked, setPicked] = useState<Parcel | null>(null);
   const [added, setAdded] = useState(false);
 
@@ -99,7 +103,7 @@ export function AddParcelPage() {
           pickError={byId ? null : error}
           onSearch={handleSearch}
           onLocate={handlePick}
-          onPlaceFound={(lat, lon) => setFocus({ lat, lon })}
+          onPlaceFound={(lat, lon, bounds) => setFocus({ lat, lon, bounds })}
           mapSlot={
             <Box
               component="section"
@@ -120,6 +124,7 @@ export function AddParcelPage() {
                 height={{ xs: 320, md: 480 }}
                 isLoading={isLoading}
                 errorMessage={null}
+                layerToggleInCorner
                 onPick={handlePick}
               />
             </Box>
