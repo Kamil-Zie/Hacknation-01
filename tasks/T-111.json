@@ -1,0 +1,24 @@
+{
+  "id": "T-111",
+  "title": "NDMI nazywane „Znormalizowany Różnicowy Wskaźnik Wilgotności”",
+  "description": "Decyzja Kamila 07:53. Tytuł karty w raporcie i etykieta dowodu w przyczynach: zamiast „Wilgotność roślin (NDMI)” / „NDMI (wilgotność roślin)” pełna nazwa „Znormalizowany Różnicowy Wskaźnik Wilgotności (NDMI)”. Przykład w contracts/api.json (mock) też.",
+  "type": "bugfix",
+  "team": "frontend",
+  "assignee": "coord-1",
+  "status": "done",
+  "priority": "low",
+  "depends_on": [],
+  "contract_refs": ["UI-S-003", "API-004"],
+  "acceptance_criteria": [
+    "Karta NDMI w raporcie ma pełną nazwę",
+    "Etykieta dowodu w przyczynach ma pełną nazwę"
+  ],
+  "review": {
+    "status": "pending",
+    "by": null,
+    "note": ""
+  },
+  "notes": ["coord-1 07:55: backend 328 testów OK, sprawdzone na mocku /report/demo."],
+  "created_at": "2026-11-22",
+  "updated_at": "2026-11-22"
+}

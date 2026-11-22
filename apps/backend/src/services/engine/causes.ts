@@ -316,7 +316,7 @@ function lowVegetationMoisture(satellite: CausesSatellite | null): Cause | null 
   const { ndmi, sceneDate, expected } = satellite;
   const evidence: Evidence[] = [
     {
-      label: 'NDMI (wilgotność roślin)',
+      label: 'NDMI (Znormalizowany Różnicowy Wskaźnik Wilgotności)',
       value: ndmi,
       unit: null,
       sourceId: 'sentinel2',

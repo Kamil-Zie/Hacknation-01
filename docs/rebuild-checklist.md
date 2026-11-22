@@ -70,6 +70,10 @@ Zmiany poniżej trafią na prod przy następnym rebuildzie. Po rebuildzie odhacz
 
 - [ ] W karcie gleby pod suwakiem: „Bilans wody · ostatnie 30 dni do <data>”, Na ten dzień, Norma z 10 lat, różnica słowami
 
+## 2g. NDMI (T-111)
+
+- [ ] Raport → Więcej informacji: karta „Znormalizowany Różnicowy Wskaźnik Wilgotności (NDMI)”; w przyczynach etykieta „NDMI (Znormalizowany Różnicowy Wskaźnik Wilgotności)”
+
 ## 3. Backend
 
 - [ ] Po restarcie kontenera backendu przy chwilowym braku Atlasa log pokazuje `MongoDB: next attempt in 15 s`, a potem `MongoDB connected` bez ręcznego restartu (`225693f`)

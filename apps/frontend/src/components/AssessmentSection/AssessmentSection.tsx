@@ -294,7 +294,7 @@ export function AssessmentSection({
           gap={gapFor('sentinel2')}
         />
         <IndexCard
-          title="Wilgotność roślin (NDMI)"
+          title="Znormalizowany Różnicowy Wskaźnik Wilgotności (NDMI)"
           satellite={satellite}
           kind="ndmi"
           gap={gapFor('sentinel2')}

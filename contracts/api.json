@@ -1226,7 +1226,7 @@
                 "note": "liczony od 1 marca bilansem dziennym; przekracza próg stresu 52,8 mm"
               },
               {
-                "label": "NDMI (wilgotność roślin)",
+                "label": "NDMI (Znormalizowany Różnicowy Wskaźnik Wilgotności)",
                 "value": 0.11,
                 "unit": null,
                 "sourceId": "sentinel2",
@@ -1461,11 +1461,11 @@
             {
               "code": "low_vegetation_moisture",
               "title": "Rośliny mają za mało wody w liściach",
-              "description": "Wilgotność roślin (NDMI 0,11) jest poniżej zakresu typowego dla pszenicy w czerwcu (0.16–0.4), według zdjęcia satelitarnego z 6 czerwca.",
+              "description": "Znormalizowany Różnicowy Wskaźnik Wilgotności (NDMI 0,11) jest poniżej zakresu typowego dla pszenicy w czerwcu (0.16–0.4), według zdjęcia satelitarnego z 6 czerwca.",
               "severity": "medium",
               "evidence": [
                 {
-                  "label": "NDMI (wilgotność roślin)",
+                  "label": "NDMI (Znormalizowany Różnicowy Wskaźnik Wilgotności)",
                   "value": 0.11,
                   "unit": null,
                   "sourceId": "sentinel2",
